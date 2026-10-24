@@ -4,6 +4,7 @@ import { loadGraph } from './data.js';
 import { createState } from './core/state.js';
 import { createSetStore } from './core/store.js';
 import { emptyFilters, applyFilters } from './core/filters.js';
+import { eventShouldFocusSearch } from './core/search.js';
 import { createGraphView } from './ui/graph-view.js';
 import { createDetailsView } from './ui/details.js';
 import { createPathView } from './ui/path.js';
@@ -124,7 +125,13 @@ async function main() {
   addEventListener('hashchange', route);
   route();
   addEventListener('keydown', (e) => {
+    if (eventShouldFocusSearch(e)) {
+      const input = document.getElementById('search');
+      if (input) { e.preventDefault(); input.focus(); input.select(); }
+      return;
+    }
     if (e.key !== 'Escape') return;
+    if (e.target && e.target.id === 'search') { e.target.blur(); return; }
     if (parseRoute(location.hash)) location.hash = '#/percorso';
     else if (state.get().selected) state.set({ selected: null });
   });
