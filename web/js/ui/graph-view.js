@@ -3,11 +3,11 @@ import { edges } from '../core/topo.js';
 import { prerequisitePath } from '../core/prereq-path.js';
 import { areaColor, TIPO_SHAPE, PRIO_SIZE } from '../config.js';
 
-export function createGraphView(container, graph, { onSelect }) {
+export function createGraphView(container, graph, { onSelect, onOpen }) {
   const cy = globalThis.cytoscape;
   if (!cy) {
     container.textContent = 'Libreria del grafo non disponibile (CDN non raggiungibile): usa la scheda Percorso.';
-    return { update() {}, select() {}, resize() {}, setTheme() {} };
+    return { update() {}, select() {}, resize() {}, setTheme() {}, fit() {}, zoomBy() {}, panBy() {}, cytoscape: null };
   }
   const els = [
     ...graph.nodi.map((n) => {
@@ -36,7 +36,8 @@ export function createGraphView(container, graph, { onSelect }) {
     ],
   });
   g.on('tap', 'node', (ev) => onSelect(ev.target.id()));
-  return {
+  let currentId = null;
+  const api = {
     update({ visible, done, selected }) {
       const path = selected ? prerequisitePath(graph.nodi, selected) : { nodeIds: new Set(), edgeIds: new Set() };
       g.batch(() => {
@@ -58,12 +59,23 @@ export function createGraphView(container, graph, { onSelect }) {
       this.select(selected);
     },
     select(id) {
+      currentId = id || null;
       g.$(':selected').unselect();
       if (!id) return;
       const n = g.getElementById(id);
       if (n.nonempty()) { n.select(); g.animate({ center: { eles: n } }, { duration: 200 }); }
     },
     resize() { g.resize(); g.fit(undefined, 20); },
+    fit() { g.resize(); g.fit(undefined, 28); },
+    zoomBy(factor) {
+      const level = Math.min(g.maxZoom(), Math.max(g.minZoom(), g.zoom() * factor));
+      g.zoom({ level, renderedPosition: { x: g.width() / 2, y: g.height() / 2 } });
+    },
+    panBy(dx, dy) {
+      const p = g.pan();
+      g.pan({ x: p.x + dx, y: p.y + dy });
+    },
+    cytoscape: g,
     setTheme(theme) {
       const dark = theme === 'dark';
       g.style()
@@ -75,4 +87,19 @@ export function createGraphView(container, graph, { onSelect }) {
         .update();
     },
   };
+  container.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target !== container) return;
+    const step = e.shiftKey ? 120 : 56;
+    if (e.key === 'ArrowLeft') api.panBy(step, 0);
+    else if (e.key === 'ArrowRight') api.panBy(-step, 0);
+    else if (e.key === 'ArrowUp') api.panBy(0, step);
+    else if (e.key === 'ArrowDown') api.panBy(0, -step);
+    else if (e.key === '+' || e.key === '=') api.zoomBy(1.25);
+    else if (e.key === '-' || e.key === '_') api.zoomBy(1 / 1.25);
+    else if (e.key === 'a' || e.key === 'A' || e.key === 'Home') api.fit();
+    else if (e.key === 'Enter' && currentId && onOpen) onOpen(currentId);
+    else return;
+    e.preventDefault();
+  });
+  return api;
 }

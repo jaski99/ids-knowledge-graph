@@ -6,6 +6,7 @@ import { createSetStore } from './core/store.js';
 import { emptyFilters, applyFilters } from './core/filters.js';
 import { eventShouldFocusSearch } from './core/search.js';
 import { createGraphView } from './ui/graph-view.js';
+import { createMinimap } from './ui/minimap.js';
 import { createDetailsView } from './ui/details.js';
 import { createPathView } from './ui/path.js';
 import { createProgressView } from './ui/progress-view.js';
@@ -44,7 +45,7 @@ async function main() {
     onToggleDone: toggleDone,
   });
   const views = [
-    createGraphView($('#cy'), graph, { onSelect: select }),
+    createGraphView($('#cy'), graph, { onSelect: select, onOpen: openLesson }),
     createPathView($('#path'), graph, { onSelect: select, onToggleDone: toggleDone, onOpenLesson: openLesson }),
     createProgressView($('#progress'), graph),
     createReviewView($('#review'), graph, reviewStore, { onSelect: select }),
@@ -64,6 +65,11 @@ async function main() {
     },
   });
   themeBtn.addEventListener('click', () => theme.toggle());
+  const minimap = createMinimap(document.getElementById('minimap'), graphView.cytoscape);
+  theme.subscribe(() => minimap.redraw());
+  $('#zoom-in').addEventListener('click', () => graphView.zoomBy(1.25));
+  $('#zoom-out').addEventListener('click', () => graphView.zoomBy(1 / 1.25));
+  $('#zoom-fit').addEventListener('click', () => graphView.fit());
   const readLast = () => { try { return localStorage.getItem(STORAGE_KEYS.last); } catch { return null; } };
   const saveLast = (id) => { try { localStorage.setItem(STORAGE_KEYS.last, id); } catch { /* privacy mode */ } };
   // Barra "riprendi": ultima lezione aperta + prossima da studiare, sempre a un tocco dalla home.

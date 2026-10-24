@@ -50,7 +50,13 @@
       </div>
       <section role="tabpanel" id="view-grafo" aria-labelledby="tab-grafo">
         <div class="graph-wrap">
-          <div id="cy" tabindex="0" aria-label="Grafo dei concetti: clicca un nodo per i dettagli. Con il grafo attivo, frecce per spostare, più e meno per lo zoom. Alternativa testuale nella scheda Percorso."></div>
+          <div id="cy" tabindex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown + - a Enter" aria-label="Grafo dei concetti. Clicca un nodo per i dettagli. Con il grafo attivo: frecce per spostare, più e meno per lo zoom, A per adattare, Invio apre la lezione. Alternativa testuale nella scheda Percorso."></div>
+          <div class="graph-tools" role="toolbar" aria-label="Zoom del grafo">
+            <button type="button" id="zoom-in" class="btn" aria-label="Ingrandisci il grafo">+</button>
+            <button type="button" id="zoom-out" class="btn" aria-label="Riduci il grafo">−</button>
+            <button type="button" id="zoom-fit" class="btn" aria-label="Adatta il grafo allo schermo">Adatta</button>
+          </div>
+          <canvas id="minimap" class="minimap" aria-label="Minimappa del grafo. Clicca per spostare la vista."></canvas>
         </div>
         <p class="legend muted">Ingrandisci (rotellina o pizzico) per leggere i nomi · colore = area · dimensione = priorità, più grande vuol dire più alta · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato · al clic si illumina il percorso dei prerequisiti</p>
       </section>
