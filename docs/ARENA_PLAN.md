@@ -5,15 +5,15 @@ Regola: i worker NON modificano graph/, scripts/, schema/ (contenuti e dati sono
 
 ## Contratti condivisi
 - Dati: `web/` legge `graph/graph.json` (schema in schema/node.schema.json, docs/CONTRACTS.md). Nessun cambio di formato.
-- Punto di aggancio viste: `web/modules/registry.js` con `register({id, titolo, render(container, ctx)})` e `getAll()`. Lo crea il worker A al primo commit; il worker B lo usa (se non c'e' ancora, lo crea identico e minimo).
+- Punto di aggancio viste: `web/js/registry.js` con `register({id, titolo, render(container, ctx)})` e `getAll()`. Lo crea il worker A al primo commit; il worker B lo usa (se non c'e' ancora, lo crea identico e minimo).
 - Stato utente: solo localStorage, chiavi con prefisso `ids.` (`ids.progress`, `ids.ripasso`, `ids.simulatore`).
 - Test: `pytest` (root), `node --test web/tests`, Playwright e2e se presenti. Tutti verdi prima del push.
 
 ## Worker
 | id | ramo | scope (solo questi file) |
 |---|---|---|
-| A | feat/ux-lettore | web/ tranne web/modules/simulatore*, web/modules/ripasso*: lettore lezioni, grafo, ricerca, filtri, tema, accessibilita', mobile, web/ARCHITECTURE.md |
-| B | feat/simulatore-ripasso | web/modules/simulatore/**, web/modules/ripasso/**, relativi test; aggancio solo via registry.js |
+| A | feat/ux-lettore | web/ tranne web/js/simulatore*, web/js/ripasso*: lettore lezioni, grafo, ricerca, filtri, tema, accessibilita', mobile, web/ARCHITECTURE.md |
+| B | feat/simulatore-ripasso | web/js/simulatore/**, web/js/ripasso/**, relativi test; aggancio solo via registry.js |
 | Main | main | integra i rami, lancia tutti i test, deploy Pages, report |
 
 ## Qualita' richiesta
