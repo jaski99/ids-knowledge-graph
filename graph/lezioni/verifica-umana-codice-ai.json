@@ -1,0 +1,81 @@
+{
+  "intuizione": "Il codice generato dall'AI va trattato come quello di un collaboratore junior molto veloce: può essere ottimo, ma prima di accettarlo lo si capisce, lo si testa con casi derivati dalla specifica, lo si revisiona e lo si analizza. Chi fa commit ne è responsabile. Il punto più delicato è l'oracolo: i valori attesi dei test devono venire dalla specifica, non dal codice né dallo stesso modello che l'ha scritto.",
+  "spiegazione": "> Nota: argomento della parte più recente del programma; le tecniche usate per la verifica (EC, BVA, copertura, ispezione) sono invece quelle classiche del corso.\n\n## Il processo di verifica\n\n```mermaid\nflowchart TD\n    G[\"Codice proposto dall'AI\"] --> C[\"Passo 1: Comprensione riga per riga\"]\n    C --> T[\"Passo 2: Test dalla specifica: EC + BVA, scritti o validati da un umano\"]\n    T --> CO[\"Passo 3: Copertura: statement e decision sul nuovo codice\"]\n    CO --> R[\"Passo 4: Review con checklist\"]\n    R --> SA[\"Passo 5: Analisi statica, sicurezza, dipendenze e licenze\"]\n    SA --> CM[\"Passo 6: Piccolo commit su branch, pull request, CI verde\"]\n    C -- \"non lo capisco\" --> RIF[\"Rifiuto o chiedo spiegazioni e semplificazioni\"]\n```\n\n## Checklist di revisione del codice generato\n\n| area | domande |\n|---|---|\n| **Specifica** | Fa esattamente ciò che chiede la specifica? Limiti inclusi o esclusi come richiesto (`<` vs `<=`)? |\n| **Input** | Gestisce null, vuoto, negativi, zero, valori enormi? Valida i parametri? |\n| **Aritmetica** | Divisione intera, overflow, confronti tra double senza tolleranza, arrotondamenti? |\n| **Esistenza** | Ogni classe, metodo e dipendenza esiste davvero nella versione usata? |\n| **Sicurezza** | Concatena input in query o comandi? Segreti nel codice? Log di dati sensibili? |\n| **Progetto** | Coerente con architettura, nomi e stile del progetto? Duplica codice già esistente? |\n| **Errori** | Eccezioni appropriate, nessun `catch` vuoto, nessun errore silenzioso? |\n| **Licenze** | Il frammento è simile a codice noto con licenza incompatibile? |\n\n## Il problema dell'oracolo\n\nUn test è utile solo se il **valore atteso** è giusto. Se si chiede allo stesso modello di generare sia il codice sia i test, il modello tende a calcolare gli attesi «eseguendo mentalmente» il proprio codice: il test conferma il bug invece di trovarlo. Regola: gli attesi si calcolano **a mano dalla specifica** (o da una fonte indipendente) e i casi si scelgono con EC + BVA.\n\nEsempio con la specifica: 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; altrimenti −1. Codice generato:\n\n```java\ndouble costoPiazzola(double mq) {\n    if (mq < 15 || mq > 100) return -1;\n    return mq <= 40 ? mq * 10 : mq * 8;\n}\n```\n\nTest BVA con attesi calcolati dalla specifica (verificati eseguendoli: 13 casi; sul codice generato fallisce solo `mq=40`, atteso 320 ma ottenuto 400; corretto `mq <= 40` in `mq < 40`, passano tutti):\n\n```java\n@ParameterizedTest(name = \"mq={0} -> {1}\")\n@CsvSource({\n    \"14.9, -1\", \"15, 150\", \"15.1, 151\",\n    \"39.9, 399\", \"40, 320\", \"40.1, 320.8\",\n    \"99.9, 799.2\", \"100, 800\", \"100.1, -1\",\n    \"25, 250\", \"70, 560\", \"5, -1\", \"200, -1\"\n})\nvoid rispettaLaSpecifica(double mq, double atteso) {\n    assertEquals(atteso, Piazzola.costoPiazzola(mq), 1e-9);\n}\n```\n\nUn test generato dal modello con `\"40, 400\"` sarebbe passato, «certificando» il difetto.\n\n## Copertura come controllo dei test\n\nLa copertura dice quali parti del codice generato i test **non** hanno toccato. Per `costoPiazzola`: le decisioni sono `mq < 15 || mq > 100` e `mq < 40`; la decision coverage richiede almeno un caso fuori intervallo, uno nella prima fascia e uno nella seconda. La copertura al 100% non garantisce la correttezza (il bug sul 40 si trova solo con il valore limite), per questo copertura e BVA si usano insieme.\n\n## Benchmark e realtà\nI benchmark usati per confrontare i modelli (per esempio HumanEval per funzioni brevi, SWE-bench per issue reali di progetti open source) misurano la percentuale di problemi risolti **in quel benchmark**. Un buon punteggio non dice nulla sulla correttezza del singolo frammento che hai davanti: quella si verifica caso per caso.\n\n## Buone abitudini\n- Chiedere modifiche **piccole**, una per volta, in commit separati: il diff si revisiona facilmente e si può annullare.\n- Eseguire i test **prima** della modifica (devono passare) e **dopo** (devono ancora passare): regressione.\n- Far spiegare il codice e confrontare la spiegazione con il codice stesso: le discrepanze sono campanelli d'allarme.\n- Non fare merge di codice che non si saprebbe spiegare a un collega.",
+  "analogia": "Verificare il codice generato è come il lavoro di un caporedattore con un giornalista velocissimo ma che a volte inventa citazioni: il caporedattore non riscrive l'articolo, ma controlla le fonti dei fatti importanti con riferimenti indipendenti, non chiedendo conferma allo stesso giornalista. Le fonti indipendenti, nel software, sono la specifica e i test derivati da essa. L'analogia cede perché nel software una parte del controllo è automatizzabile (compilatore, test, analisi statica, copertura), mentre un caporedattore deve fare quasi tutto a mano.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Rischi del codice generato",
+      "collegamento": "La verifica risponde punto per punto ai rischi: allucinazioni, casi limite, sicurezza, licenze.",
+      "nodo": "rischi-codice-generato"
+    },
+    {
+      "conoscenza": "Boundary value analysis",
+      "collegamento": "I limiti delle fasce sono il punto debole tipico del codice generato; la BVA li mira direttamente.",
+      "nodo": "boundary-value-analysis"
+    },
+    {
+      "conoscenza": "Criteri di copertura",
+      "collegamento": "La copertura mostra quali rami del codice generato i test non hanno esercitato.",
+      "nodo": "criteri-copertura"
+    },
+    {
+      "conoscenza": "Ispezione del codice",
+      "collegamento": "La checklist di revisione è una forma di ispezione adattata agli errori tipici dell'AI.",
+      "nodo": "ispezione-codice"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Trovare il bug con la BVA (costoPiazzola)",
+      "problema": "Verifica il metodo costoPiazzola generato dall'AI rispetto alla specifica 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; altrimenti −1.",
+      "passi": [
+        "Classi di equivalenza: mq < 15 (non valida, −1); 15 ≤ mq < 40 (10 €/m²); 40 ≤ mq ≤ 100 (8 €/m²); mq > 100 (non valida, −1).",
+        "Limiti: 15, 40, 100; valori di prova 14.9, 15, 15.1, 39.9, 40, 40.1, 99.9, 100, 100.1.",
+        "Attesi dalla specifica: 14.9 → −1; 15 → 150; 15.1 → 151; 39.9 → 399; 40 → 320; 40.1 → 320.8; 99.9 → 799.2; 100 → 800; 100.1 → −1.",
+        "Esecuzione sul codice generato: tutti passano tranne mq = 40, che restituisce 400 (usa mq <= 40, quindi 40 cade nella prima fascia).",
+        "Correzione: mq < 40; rieseguiti i test, passano tutti."
+      ],
+      "soluzione": "Bug sul limite 40: `mq <= 40` deve essere `mq < 40`.",
+      "perche_funziona": "Il difetto sta esattamente su un confine tra classi: la BVA è progettata per esercitare proprio quei valori, e gli attesi presi dalla specifica fanno da oracolo indipendente."
+    },
+    {
+      "titolo": "Applicare la checklist a un metodo generato",
+      "problema": "Un assistente propone, per «media dei voti di uno studente»: `double media(int[] voti) { int s = 0; for (int v : voti) s += v; return s / voti.length; }`. Revisionalo.",
+      "passi": [
+        "Aritmetica: `s / voti.length` è una divisione tra interi; con voti {28, 29} restituisce 28.0 invece di 28.5.",
+        "Input: con array vuoto `voti.length` è 0 ⇒ ArithmeticException (divisione intera per zero); con null ⇒ NullPointerException.",
+        "Specifica: i voti devono essere tra 18 e 30? Il codice non valida nulla.",
+        "Correzione: validare (null o vuoto ⇒ IllegalArgumentException; voti fuori 18..30 ⇒ IllegalArgumentException) e calcolare `(double) s / voti.length`.",
+        "Test: {28, 29} → 28.5; {18} → 18.0; {} → eccezione; {17} → eccezione; {30, 30} → 30.0."
+      ],
+      "soluzione": "Tre difetti: divisione intera, array vuoto o null non gestito, nessuna validazione del dominio; corretti con cast a double e controlli in ingresso.",
+      "perche_funziona": "La checklist dirige l'attenzione sulle categorie di errore tipiche (aritmetica, input limite, validazione), che una lettura veloce del codice plausibile non nota."
+    }
+  ],
+  "errori_comuni": [
+    "Usare test generati dallo stesso modello, con attesi calcolati dal codice, come unica verifica.",
+    "Fidarsi della copertura al 100%: non garantisce che i limiti siano corretti.",
+    "Accettare grandi modifiche in un solo commit, impossibili da revisionare.",
+    "Leggere il codice solo «a occhio» senza checklist né esecuzione.",
+    "Considerare il punteggio di un modello su un benchmark come garanzia sul singolo output."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Perché il codice generato va trattato come quello di un collaboratore junior?",
+      "risposta": "Perché può essere corretto ma non è garantito: va compreso, testato e revisionato prima del merge, e la responsabilità resta di chi lo accetta."
+    },
+    {
+      "domanda": "Che cos'è il problema dell'oracolo con i test generati dall'AI?",
+      "risposta": "Se gli attesi sono calcolati dallo stesso modello o dal codice da verificare, il test conferma il comportamento sbagliato invece di rilevarlo; gli attesi devono derivare dalla specifica."
+    },
+    {
+      "domanda": "Perché la BVA è particolarmente efficace sul codice generato?",
+      "risposta": "Perché molti errori del codice generato sono sui confini (< contro <=, off-by-one), che la BVA esercita sistematicamente."
+    },
+    {
+      "domanda": "Che cosa misura un benchmark come SWE-bench?",
+      "risposta": "La percentuale di problemi del benchmark (issue reali di progetti open source) che un sistema risolve facendo passare i test associati; non garantisce la correttezza di un altro output specifico."
+    }
+  ],
+  "riepilogo": "Codice AI = codice di un junior: capire, testare, revisionare; responsabilità di chi fa commit.\nTest dalla specifica con EC + BVA; attesi calcolati a mano (problema dell'oracolo).\nCopertura per trovare codice non testato, ma da sola non basta.\nChecklist: specifica, input, aritmetica, esistenza API, sicurezza, progetto, licenze.\nPiccoli commit, regressione prima e dopo, CI verde."
+}
