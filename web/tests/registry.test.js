@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createViewRegistry, getAll, register } from '../modules/registry.js';
-import { idDaHash } from '../modules/avvia.js';
+import { idDaHash, vociNavigazione } from '../modules/avvia.js';
 
 const view = (id, titolo = id, render = () => {}) => ({ id, titolo, render });
 
@@ -47,6 +47,16 @@ test('registry applicativo permette registrazioni idempotenti per moduli e non e
   const copy = getAll();
   copy.pop();
   assert.ok(getAll().some((entry) => entry.id === 'registry-spec'));
+});
+
+test('la navigazione crea link visibili per tutte le viste registrate', () => {
+  assert.deepEqual(vociNavigazione([
+    { id: 'simulatore', titolo: 'Simulatore' },
+    { id: 'ripasso', titolo: 'Ripasso' },
+  ]), [
+    { id: 'simulatore', titolo: 'Simulatore', href: '#/simulatore' },
+    { id: 'ripasso', titolo: 'Ripasso', href: '#/ripasso' },
+  ]);
 });
 
 test('idDaHash accetta route vista ma non route lezione', () => {

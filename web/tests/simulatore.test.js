@@ -7,7 +7,7 @@ import {
 import { calcolaPunteggio, leggiPunti, nodiDaRipassare, testoEsito } from '../modules/simulatore/punteggio.js';
 import { formatTempo, leggiTimer, timerInCorso, timerInPausa, timerNuovo } from '../modules/simulatore/timer.js';
 import {
-  chiudiPerTempo, consegna, creaSessione, leggiRisposta, leggiSessione, salvaSessione, scriviGiudizio, scriviRisposta,
+  chiudiPerTempo, consegna, creaSessione, leggiRisposta, leggiSessione, salvaSessione, sessioneInCorsoValida, scriviGiudizio, scriviRisposta,
 } from '../modules/simulatore/sessione.js';
 
 const graph = JSON.parse(readFileSync(new URL('../../graph/graph.json', import.meta.url), 'utf8'));
@@ -157,6 +157,18 @@ test('timer: pausa, ripresa e scadenza', () => {
   assert.equal(scaduto.scaduto, true);
   assert.equal(scaduto.running, false);
   assert.equal(formatTempo(1), '00:00:01');
+});
+
+test('solo una prova valida non terminata è riprendibile', () => {
+  const prova = generaProva(graph.nodi, { seed: 12, now: 10_000 });
+  const attiva = creaSessione(prova, 10_000);
+  assert.equal(sessioneInCorsoValida(attiva, 10_001), true);
+  assert.equal(sessioneInCorsoValida({ ...attiva, fase: 'correzione' }, 10_001), false);
+  assert.equal(sessioneInCorsoValida(attiva, 10_000 + prova.durataMs), false);
+  assert.equal(sessioneInCorsoValida({ ...attiva, prova: { ...prova, parti: [] } }, 10_001), false);
+  assert.equal(sessioneInCorsoValida({ ...attiva, timer: { ...attiva.timer, startedAt: 20_000 } }, 10_001), false);
+  const finita = { ...attiva, timer: { ...attiva.timer, running: false, startedAt: null, elapsedMs: prova.durataMs } };
+  assert.equal(sessioneInCorsoValida(finita, 10_001), false);
 });
 
 test('la sessione sopravvive a un roundtrip e scarta il JSON sporco', () => {

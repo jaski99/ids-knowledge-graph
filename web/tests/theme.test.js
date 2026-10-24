@@ -71,4 +71,7 @@ test('token di colore e aree superano il contrasto AA', () => {
     }
   }
   for (const color of AREA_COLORS) assert.ok(contrastRatio('#ffffff', color) >= 4.5, color);
+  for (const token of ['--code-fg', '--idea', '--summary', '--analogy', '--muted']) {
+    assert.ok(contrastRatio(dark[token], dark['--code-bg']) >= 4.5, `${token} sul codice scuro`);
+  }
 });

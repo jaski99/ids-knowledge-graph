@@ -26,7 +26,8 @@
 .sim-tua { background: var(--soft-bg); color: var(--soft-fg); }
 .sim-soluzione { background: var(--ok-bg); color: var(--ok-fg); }
 .sim-voto { display: flex; flex-wrap: wrap; gap: .5rem .8rem; align-items: center; margin: .3rem 0; }
-.sim-punti { width: 5.5rem; font: inherit; padding: .4rem .5rem; min-height: 44px; border: 1px solid var(--line); border-radius: 8px; background: var(--input-bg); color: var(--input-fg); }
+.sim-punti { width: 5.5rem; font: inherit; padding: .4rem .5rem; min-height: 44px; border: 2px solid var(--muted); border-radius: 8px; background: var(--input-bg); color: var(--input-fg); }
+.sim-punti:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
 .sim-err { color: var(--danger-fg); font-weight: 600; min-height: 1.2em; margin: .15rem 0; }
 .sim-riepilogo { border: 1px solid var(--line); background: var(--soft-bg); color: var(--soft-fg); border-radius: 10px; padding: .8rem 1rem; margin: 1rem 0; }
 .sim-riepilogo p { margin: .25rem 0; }

@@ -4,7 +4,7 @@ import { copertura, generaProva, FONTE_PUNTEGGI, PUNTI_TOTALI, SOGLIA_SUFFICIENZ
 import { calcolaPunteggio, leggiPunti, messaggioPunti, nodiDaRipassare, testoEsito } from './punteggio.js';
 import { formatTempo, leggiTimer, timerInCorso, timerInPausa } from './timer.js';
 import {
-  cancellaSessione, chiudiPerTempo, consegna, creaSessione, leggiRisposta, leggiSessione, salvaSessione, scriviGiudizio, scriviRisposta,
+  CHIAVE_STORAGE, cancellaSessione, chiudiPerTempo, consegna, creaSessione, leggiRisposta, leggiSessione, salvaSessione, sessioneInCorsoValida, scriviGiudizio, scriviRisposta,
 } from './sessione.js';
 
 const hashLezione = (id) => `#/lezione/${encodeURIComponent(id)}`;
@@ -21,10 +21,20 @@ export function createSimulatoreView() {
       const win = () => root.ownerDocument.defaultView;
       let timerHandle = null;
       const stopLoop = () => { if (timerHandle != null) { win().clearInterval(timerHandle); timerHandle = null; } };
-      let sessione = leggiSessione(storage);
+      const sessioneSalvata = leggiSessione(storage);
+      let sessione = sessioneInCorsoValida(sessioneSalvata, now()) ? sessioneSalvata : null;
+      let rawSalvata = null;
+      try { rawSalvata = storage.getItem(CHIAVE_STORAGE); } catch { /* storage disabilitato */ }
+      let provaAvviata = false;
       let saveOk = true;
 
       const persist = () => { saveOk = salvaSessione(storage, sessione); };
+      if (rawSalvata && !sessione) cancellaSessione(storage);
+      if (sessione) {
+        // La prova salvata si può riprendere, ma il timer resta fermo finché l'utente non lo sceglie.
+        sessione = { ...sessione, timer: timerInPausa(sessione.timer, now()) };
+        persist();
+      }
 
       const chiudiSeScaduto = () => {
         if (!sessione || sessione.fase !== 'svolgimento') return false;
@@ -39,7 +49,7 @@ export function createSimulatoreView() {
         chiudiSeScaduto();
         clear(root);
         root.className = 'module-page sim';
-        if (!sessione) root.append(intro());
+        if (!sessione || !provaAvviata) root.append(intro());
         else if (sessione.fase === 'correzione') root.append(paginaCorrezione());
         else root.append(paginaSvolgimento());
         const titolo = root.querySelector('h1');
@@ -49,7 +59,7 @@ export function createSimulatoreView() {
 
       const armLoop = () => {
         stopLoop();
-        if (!sessione || sessione.fase !== 'svolgimento') return;
+        if (!sessione || !provaAvviata || sessione.fase !== 'svolgimento') return;
         if (!leggiTimer(sessione.timer, now()).running) return;
         timerHandle = win().setInterval(() => {
           const el = root.querySelector('#sim-timer');
@@ -71,9 +81,25 @@ export function createSimulatoreView() {
       };
 
       const inizia = () => {
+        if (sessione && !ask('Abbandonare la prova salvata e iniziarne una nuova?')) return;
+        cancellaSessione(storage);
         const seed = Math.floor(Math.random() * 0x7fffffff);
         const prova = generaProva(graph.nodi, { seed, now: now() });
         sessione = creaSessione(prova, now());
+        provaAvviata = true;
+        persist();
+        draw();
+      };
+
+      const riprendi = () => {
+        if (!sessione || !sessioneInCorsoValida(sessione, now())) {
+          sessione = null;
+          cancellaSessione(storage);
+          draw();
+          return;
+        }
+        sessione = { ...sessione, timer: timerInCorso(sessione.timer, now()) };
+        provaAvviata = true;
         persist();
         draw();
       };
@@ -94,7 +120,9 @@ export function createSimulatoreView() {
             h('p', {}, 'Con i dati attuali del grafo queste voci resterebbero scoperte:'),
             h('ul', {}, buchi.map((b) => h('li', {}, b.titolo)))) : null,
           notaSalvataggio(),
-          h('p', { class: 'sim-actions' }, h('button', { type: 'button', class: 'btn primary', id: 'sim-inizia', onclick: inizia }, 'Inizia la prova')));
+          h('p', { class: 'sim-actions' },
+            sessione ? h('button', { type: 'button', class: 'btn primary', id: 'sim-riprendi', onclick: riprendi }, 'Riprendi la prova') : null,
+            h('button', { type: 'button', class: sessione ? 'btn' : 'btn primary', id: 'sim-inizia', onclick: inizia }, sessione ? 'Inizia una nuova prova' : 'Inizia la prova')));
       }
 
       function barraTempo() {

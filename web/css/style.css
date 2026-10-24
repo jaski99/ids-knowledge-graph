@@ -48,8 +48,8 @@ html[data-theme="dark"] {
   --acc: #93c5fd;
   --btn-bg: #1d4ed8;
   --btn-fg: #ffffff;
-  --note-bg: #422006;
-  --note-fg: #fef3c7;
+  --note-bg: #292524;
+  --note-fg: #f5f5f4;
   --chip-bg: #292524;
   --chip-fg: #f5f5f4;
   --ok-bg: #052e16;
@@ -58,8 +58,8 @@ html[data-theme="dark"] {
   --warn-fg: #ffedd5;
   --danger-bg: #450a0a;
   --danger-fg: #fecaca;
-  --code-bg: #f6f8fa;
-  --code-fg: #1f2328;
+  --code-bg: #1c1f27;
+  --code-fg: #f5f5f4;
   --soft-bg: #292524;
   --soft-fg: #f5f5f4;
   --input-bg: #1c1f27;
@@ -108,6 +108,13 @@ legend { font-weight: 600; font-size: .85rem; margin-bottom: .2rem; }
 }
 [role=tab][aria-selected=true] { color: var(--fg); border-color: var(--acc); font-weight: 600; }
 .graph-wrap { position: relative; min-width: 0; }
+.graph-mobile-list { display: none; }
+.graph-mobile-items { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .4rem; }
+.graph-mobile-row { display: flex; align-items: stretch; gap: .4rem; min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: .25rem; }
+.graph-mobile-row.done .graph-mobile-item { text-decoration: line-through; color: var(--muted); }
+.graph-mobile-item { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: .5rem .65rem; border: 0; border-radius: 6px; text-align: left; font: inherit; color: var(--fg); background: transparent; overflow-wrap: anywhere; }
+.graph-mobile-item[aria-pressed="true"] { outline: 2px solid var(--acc); background: var(--chip-bg); }
+.graph-mobile-open { flex: 0 0 auto; align-self: center; }
 #cy { height: 70vh; min-height: 380px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
 .graph-tools { position: absolute; z-index: 2; top: .5rem; left: .5rem; display: flex; flex-wrap: wrap; gap: .35rem; max-width: calc(100% - 1rem); }
 .graph-tools .btn { background: var(--card); }
@@ -161,7 +168,11 @@ progress { width: 100%; height: .6rem; accent-color: var(--c, var(--acc)); }
   h1 { font-size: 1.05rem; }
   #course { margin: .1rem 0; }
   .panel { margin-bottom: .5rem; }
-  #cy { height: 62vh; min-height: 280px; }
+  .graph-wrap, .legend { display: none; }
+  .graph-mobile-list { display: block; }
+  .graph-mobile-items { gap: .45rem; }
+  .graph-mobile-row { padding: .2rem; }
+  .graph-mobile-item { min-height: 48px; }
   .minimap { width: 112px; height: 76px; }
   .chip { font-size: .95rem; }
   [role=tab] { padding: .6rem .8rem; }
@@ -228,6 +239,27 @@ body.lesson-mode > header, body.lesson-mode > .layout, body.lesson-mode > .skip 
 .codeblock .md pre.code, .codeblock pre.code { margin: 0; border: 0; border-radius: 0; }
 .md pre.code { background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--line); border-radius: 8px; padding: .7rem .8rem; overflow-x: auto; font-size: .86rem; line-height: 1.45; max-width: 100%; }
 .md pre.code code, .md pre.code code.hljs { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+html[data-theme="dark"] .md pre.code .hljs { color: var(--code-fg); background: transparent; }
+html[data-theme="dark"] .md pre.code .hljs-comment,
+html[data-theme="dark"] .md pre.code .hljs-quote { color: var(--muted); }
+html[data-theme="dark"] .md pre.code .hljs-keyword,
+html[data-theme="dark"] .md pre.code .hljs-selector-tag,
+html[data-theme="dark"] .md pre.code .hljs-literal,
+html[data-theme="dark"] .md pre.code .hljs-section,
+html[data-theme="dark"] .md pre.code .hljs-link { color: var(--idea); }
+html[data-theme="dark"] .md pre.code .hljs-string,
+html[data-theme="dark"] .md pre.code .hljs-title,
+html[data-theme="dark"] .md pre.code .hljs-title.function_,
+html[data-theme="dark"] .md pre.code .hljs-type,
+html[data-theme="dark"] .md pre.code .hljs-name,
+html[data-theme="dark"] .md pre.code .hljs-attribute,
+html[data-theme="dark"] .md pre.code .hljs-symbol,
+html[data-theme="dark"] .md pre.code .hljs-addition { color: var(--summary); }
+html[data-theme="dark"] .md pre.code .hljs-number,
+html[data-theme="dark"] .md pre.code .hljs-variable,
+html[data-theme="dark"] .md pre.code .hljs-template-variable,
+html[data-theme="dark"] .md pre.code .hljs-built_in,
+html[data-theme="dark"] .md pre.code .hljs-meta { color: var(--analogy); }
 .diagram { margin: 1rem 0; max-width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
 .diagram-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; padding: .2rem .4rem .2rem .75rem; background: var(--chip-bg); color: var(--chip-fg); font-family: system-ui, sans-serif; font-size: .85rem; }
 .diagram-bar > span { margin-right: auto; font-weight: 700; }

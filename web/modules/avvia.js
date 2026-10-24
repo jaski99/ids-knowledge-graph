@@ -10,6 +10,10 @@ export function idDaHash(hash) {
   return match ? match[1] : null;
 }
 
+export function vociNavigazione(viste) {
+  return viste.map(({ id, titolo }) => ({ id, titolo, href: `#/${id}` }));
+}
+
 function ensureCss(doc, href) {
   const selector = `link[data-moduli="${href}"]`;
   if (doc.querySelector(selector)) return;
@@ -27,6 +31,13 @@ export function avviaModuli(ctx) {
   ensureCss(doc, 'modules/chrome.css');
   ensureCss(doc, 'modules/simulatore/style.css');
   const root = doc.getElementById('module-root');
+  const entries = vociNavigazione(getAll());
+  const appNav = doc.getElementById('module-nav');
+  if (appNav) {
+    appNav.replaceChildren(...entries.map((entry) => h('a', {
+      class: 'module-link', href: entry.href,
+    }, entry.titolo)));
+  }
   const header = h('header', { class: 'module-common-header' },
     h('a', { class: 'module-home', href: '#/', 'aria-label': 'Torna alla home' }, 'Knowledge graph'),
     h('button', {
@@ -35,7 +46,7 @@ export function avviaModuli(ctx) {
     }, 'Tema scuro'));
   const nav = h('nav', { class: 'module-nav', 'aria-label': 'Viste e strumenti' },
     h('a', { class: 'module-link', href: '#/' }, 'Home'),
-    ...getAll().map((view) => h('a', { class: 'module-link', href: `#/${view.id}` }, view.titolo)));
+    ...entries.map((entry) => h('a', { class: 'module-link', href: entry.href }, entry.titolo)));
   const content = h('div', { class: 'module-content' });
   root.replaceChildren(header, nav, content);
   let current = null;

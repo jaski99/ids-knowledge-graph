@@ -7,6 +7,7 @@ import { emptyFilters, applyFilters } from './core/filters.js';
 import { eventShouldFocusSearch } from './core/search.js';
 import { createGraphView } from './ui/graph-view.js';
 import { createMinimap } from './ui/minimap.js';
+import { createGraphMobileList } from './ui/graph-mobile-list.js';
 import { createDetailsView } from './ui/details.js';
 import { createPathView } from './ui/path.js';
 import { createProgressView } from './ui/progress-view.js';
@@ -53,6 +54,7 @@ async function main() {
   ];
   createFiltersView($('#filters'), graph, { initial: emptyFilters(), onChange: (filters) => state.set({ filters }) });
   const [graphView] = views;
+  const mobileGraphList = createGraphMobileList($('#graph-mobile-list'), graph, { onSelect: select, onOpen: openLesson });
   const themeBtn = h('button', { type: 'button', class: 'btn', 'data-theme-toggle': '1' });
   $('#theme').append(themeBtn);
   const theme = createThemeController({
@@ -97,6 +99,7 @@ async function main() {
     const visible = new Set(applyFilters(graph.nodi, s.filters, s.done).map((n) => n.id));
     const vm = { visible, done: s.done, selected: s.selected };
     views.forEach((v) => (v.update || v.render).call(v, vm));
+    mobileGraphList.update(vm);
     details.render(s.selected, s.done);
     renderResume(s.done);
     $('#count').textContent = `${visible.size}/${graph.nodi.length} nodi visibili`;

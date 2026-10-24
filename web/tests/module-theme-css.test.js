@@ -4,6 +4,12 @@ import { readFile } from 'node:fs/promises';
 
 const files = ['modules/chrome.css', 'modules/simulatore/style.css', 'modules/ripasso/style.css'];
 
+test('il campo punti del simulatore ha bordo visibile e focus accessibile', async () => {
+  const css = await readFile(new URL('../modules/simulatore/style.css', import.meta.url), 'utf8');
+  assert.match(css, /\.sim-punti\s*\{[^}]*border:\s*2px solid var\(--muted\)/s);
+  assert.match(css, /\.sim-punti:focus-visible\s*\{[^}]*outline:\s*3px solid var\(--acc\)/s);
+});
+
 test('i CSS dei moduli non introducono colori fissi: usano i token del tema', async () => {
   for (const file of files) {
     const css = await readFile(new URL(`../${file}`, import.meta.url), 'utf8');

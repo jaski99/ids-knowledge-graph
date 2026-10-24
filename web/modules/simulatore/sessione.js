@@ -1,5 +1,5 @@
 // Persistenza della prova. Lo storage è iniettato: niente localStorage globale.
-import { timerNuovo, timerInPausa } from './timer.js';
+import { leggiTimer, timerNuovo, timerInPausa } from './timer.js';
 
 export const CHIAVE_STORAGE = 'ids-kg:simulatore:v1';
 
@@ -18,11 +18,27 @@ export function sessioneValida(data) {
   if (!data || data.versione !== 1) return false;
   if (data.fase !== 'svolgimento' && data.fase !== 'correzione') return false;
   const p = data.prova;
-  if (!p || !Array.isArray(p.parti) || typeof p.durataMs !== 'number') return false;
-  if (!data.timer || typeof data.timer.elapsedMs !== 'number' || typeof data.timer.durataMs !== 'number') return false;
+  if (!p || !Array.isArray(p.parti) || p.parti.length === 0 || !Number.isFinite(p.durataMs) || p.durataMs <= 0
+    || !Number.isFinite(p.puntiTotali) || p.puntiTotali <= 0 || typeof p.coperta !== 'boolean') return false;
+  if (!p.parti.every((parte) => parte && typeof parte.id === 'string' && typeof parte.titolo === 'string'
+    && Array.isArray(parte.quesiti) && Array.isArray(parte.mancanti)
+    && parte.quesiti.every((q) => typeof q?.id === 'string' && Array.isArray(q.consegne) && q.consegne.length > 0
+      && q.consegne.every((c) => typeof c?.nodoId === 'string' && typeof c.testo === 'string' && typeof c.soluzione === 'string')))
+    || !p.parti.some((parte) => parte.quesiti.length > 0)) return false;
+  const timer = data.timer;
+  if (!timer || typeof timer.running !== 'boolean' || !Number.isFinite(timer.elapsedMs)
+    || !Number.isFinite(timer.durataMs) || timer.durataMs !== p.durataMs) return false;
+  if (timer.elapsedMs < 0 || timer.elapsedMs > timer.durataMs) return false;
+  if (timer.running ? !Number.isFinite(timer.startedAt) : timer.startedAt !== null) return false;
   if (!data.risposte || typeof data.risposte !== 'object' || Array.isArray(data.risposte)) return false;
   if (!data.giudizi || typeof data.giudizi !== 'object' || Array.isArray(data.giudizi)) return false;
   return true;
+}
+
+export function sessioneInCorsoValida(data, now) {
+  if (!sessioneValida(data) || data.fase !== 'svolgimento' || !Number.isFinite(now)) return false;
+  if (data.timer.running && data.timer.startedAt > now) return false;
+  return !leggiTimer(data.timer, now).scaduto;
 }
 
 export function leggiSessione(storage, chiave = CHIAVE_STORAGE) {
