@@ -1,0 +1,83 @@
+{
+  "intuizione": "La domanda 'che cos'è il refactoring, a cosa serve, quali rischi comporta' è una domanda teorica aperta della Parte 3 (fac-simile 2016/17: 'refactoring scopo e rischi'). Ha una risposta quasi fissa in sei punti: definizione, scopi, quando, come, esempi, rischi con mitigazioni. Se si ricorda la scaletta e si mettono almeno due refactoring concreti con un mini-esempio Java, la domanda è punteggio pieno in dieci minuti.",
+  "spiegazione": "## Il formato\n\n- **Parte 3** dello scritto, domanda aperta da qualche punto (circa 3 punti; la Parte 3 vale 10-11 punti in 30-40 minuti).\n- Tempo: **circa 10 minuti**, **12-18 righe**.\n- Varianti: \"Cos'è il refactoring e quali sono i suoi rischi\"; \"Refactoring: scopo, tecniche, rischi\"; \"Che rapporto c'è tra refactoring e testing\"; \"Cosa sono i code smell\".\n\n## Scaletta in 6 punti\n\n| # | punto | che cosa scrivere |\n|---|---|---|\n| 1 | Definizione | modifica della struttura interna senza cambiare il comportamento osservabile (Fowler) |\n| 2 | Scopi | comprensibilità, modificabilità, riduzione del debito tecnico, design che non degrada, bug più facili da trovare; manutenzione preventiva |\n| 3 | Quando | code smell, regola del tre, prima di aggiungere una funzionalità, durante la review |\n| 4 | Come | piccoli passi, test automatici di regressione dopo ogni passo, supporto IDE; non mescolare con nuove funzionalità |\n| 5 | Esempi | almeno 2 refactoring con lo smell che curano (+ mini-codice) |\n| 6 | Rischi e mitigazioni | almeno 3 coppie rischio → mitigazione |\n\n```mermaid\nflowchart LR\n    D[1 Definizione] --> S[2 Scopi] --> Q[3 Quando] --> C[4 Come] --> E[5 Esempi] --> R[6 Rischi]\n```\n\n## Mini-esempio da inserire (Extract Method)\n\n```java\n// Prima\nvoid stampaFattura(Ordine o) {\n    double tot = 0;\n    for (Riga r : o.righe()) tot += r.prezzo() * r.quantita();\n    System.out.println(\"Totale: \" + tot);\n}\n// Dopo\nvoid stampaFattura(Ordine o) {\n    System.out.println(\"Totale: \" + totale(o));\n}\ndouble totale(Ordine o) {\n    double tot = 0;\n    for (Riga r : o.righe()) tot += r.prezzo() * r.quantita();\n    return tot;\n}\n```\nDue righe di commento bastano: \"il calcolo diventa un metodo con un nome, riusabile e testabile da solo; l'output non cambia\".\n\n## Rischi: la tabella da ricordare\n\n| rischio | mitigazione |\n|---|---|\n| regressioni (si cambia il comportamento senza volerlo) | test automatici prima di iniziare, passi piccoli, test dopo ogni passo |\n| mancanza di test sul codice legacy | test di caratterizzazione prima del refactoring |\n| rottura di interfacce pubbliche usate da altri | mantenere le vecchie firme deprecate che delegano |\n| costo e tempo senza nuove funzioni visibili | refactoring continuo e mirato, legato alle modifiche richieste |\n| conflitti in team | branch brevi, integrazione continua |\n| peggioramento delle prestazioni | misurare con un profiler e ottimizzare solo i punti caldi |\n| non sapere quando fermarsi | obiettivo chiaro (lo smell da eliminare), timebox |\n\n## Errori di forma\n\n- Definizione vaga (\"migliorare il codice\"): manca \"senza cambiare il comportamento\".\n- Esempi solo nominati: serve almeno un esempio con lo smell e, se possibile, due righe di codice.\n- Rischi senza mitigazione: metà dei punti del punto 6.\n",
+  "analogia": "Rispondere a questa domanda è come presentare un intervento di ristrutturazione a un condominio: che cosa si fa (si rifanno impianti e muri interni, ma la facciata e gli appartamenti restano uguali), perché conviene, quando farlo, come si procede per non lasciare nessuno senza acqua, esempi di lavori e che cosa può andare storto con le contromisure. Dove l'analogia cede: nel software il 'collaudo' dopo ogni piccolo lavoro è automatico e costa secondi, se i test ci sono.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Refactoring",
+      "collegamento": "Contiene tutto il contenuto tecnico della risposta: definizione, catalogo, rischi.",
+      "nodo": "refactoring"
+    },
+    {
+      "conoscenza": "Code smell",
+      "collegamento": "Il punto 3 (quando) e il punto 5 (esempi) si scrivono citando gli smell.",
+      "nodo": "code-smell"
+    },
+    {
+      "conoscenza": "Testing di regressione",
+      "collegamento": "Il punto 4 (come) e la mitigazione principale dei rischi si basano sui test di regressione.",
+      "nodo": "testing-livelli-tipi"
+    },
+    {
+      "conoscenza": "Domanda d'esame sulle metriche",
+      "collegamento": "Stesso formato (Parte 3, risposta strutturata in blocchi), stessa strategia di scaletta.",
+      "nodo": "esercizio-domanda-metriche"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Risposta modello: refactoring, scopo e rischi",
+      "problema": "Domanda (fac-simile 2016/17): 'Si descriva il refactoring, il suo scopo e i rischi che comporta.' Scrivi la risposta.",
+      "passi": [
+        "1. 'Il refactoring è una modifica della struttura interna del codice che non ne cambia il comportamento osservabile (Fowler), allo scopo di renderlo più comprensibile ed economico da modificare.'",
+        "2. 'Scopi: migliorare la leggibilità, contrastare il degrado del design dovuto alle modifiche, ridurre il debito tecnico, facilitare la scoperta dei bug e le modifiche future; è manutenzione preventiva.'",
+        "3. 'Si fa quando si rilevano code smell (codice duplicato, metodi lunghi, classi troppo grandi), alla terza duplicazione, prima di aggiungere una funzionalità o in code review.'",
+        "4. 'Si procede a piccoli passi, eseguendo dopo ognuno i test automatici di regressione, senza mescolare refactoring e nuove funzionalità.'",
+        "5. 'Esempi: Extract Method (un blocco del metodo lungo diventa un metodo con un nome) contro il Long Method; Replace Conditional with Polymorphism (lo switch sul tipo diventa una gerarchia di classi) contro gli Switch Statements; Rename per nomi poco chiari.'",
+        "6. 'Rischi: regressioni → test automatici e passi piccoli; codice legacy senza test → test di caratterizzazione prima di iniziare; rottura di API pubbliche → vecchie firme deprecate che delegano; costo senza funzionalità visibili → refactoring continuo legato alle modifiche.'"
+      ],
+      "soluzione": "Sei blocchi di 2-3 righe: definizione con 'comportamento invariato', scopi, quando, come (test e piccoli passi), due-tre esempi con lo smell, quattro rischi con mitigazione.",
+      "perche_funziona": "La risposta segue la stessa griglia con cui viene valutata: ogni blocco è un elemento atteso e i rischi sono accoppiati alle mitigazioni, il che dimostra comprensione e non solo memoria."
+    },
+    {
+      "titolo": "Variante: refactoring e testing",
+      "problema": "Domanda: 'Che relazione esiste tra refactoring e testing?' Imposta la risposta.",
+      "passi": [
+        "Definizione di refactoring con l'accento su 'comportamento osservabile invariato'.",
+        "Il comportamento osservabile è, in pratica, quello fissato dai test: i test di regressione sono il contratto che il refactoring deve rispettare.",
+        "Senza test automatici non si può verificare l'invarianza: per il codice legacy si scrivono prima test di caratterizzazione.",
+        "Ciclo: test verdi → piccolo passo → test → (verdi) commit o (rossi) annulla.",
+        "Nel TDD il refactoring è la terza fase del ciclo red → green → refactor.",
+        "Viceversa, il refactoring migliora la testabilità (metodi piccoli, dipendenze iniettate, V(G) più bassa)."
+      ],
+      "soluzione": "I test rendono possibile il refactoring (verificano l'invarianza) e il refactoring rende il codice più testabile; nel TDD sono fasi dello stesso ciclo.",
+      "perche_funziona": "La variante chiede la stessa conoscenza vista da un'altra angolazione: partire dalla definizione e mostrare il legame in entrambe le direzioni copre la domanda in modo completo."
+    }
+  ],
+  "errori_comuni": [
+    "Definire il refactoring senza dire che il comportamento resta invariato.",
+    "Confonderlo con ottimizzazione o correzione di bug.",
+    "Citare rischi senza mitigazioni.",
+    "Elencare refactoring senza collegarli agli smell o senza un esempio.",
+    "Scrivere mezza pagina sulla definizione e niente sui rischi, che sono esplicitamente richiesti."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i 6 punti della risposta?",
+      "risposta": "Definizione, scopi, quando, come, esempi, rischi con mitigazioni."
+    },
+    {
+      "domanda": "Qual è la mitigazione principale del rischio di regressione?",
+      "risposta": "Una suite di test automatici eseguita dopo ogni piccolo passo di refactoring."
+    },
+    {
+      "domanda": "Come si rifattorizza codice legacy senza test?",
+      "risposta": "Prima si scrivono test di caratterizzazione che fissano il comportamento attuale, poi si procede a piccoli passi."
+    },
+    {
+      "domanda": "Cita due esempi di refactoring con lo smell che curano.",
+      "risposta": "Extract Method contro Long Method; Replace Conditional with Polymorphism contro Switch Statements; Extract Class contro Large Class."
+    }
+  ],
+  "riepilogo": "Sei punti: definizione, scopi, quando, come, esempi, rischi.\nDefinizione: struttura migliore, comportamento osservabile invariato.\nCome: piccoli passi e test di regressione dopo ognuno.\nAlmeno 2 refactoring con lo smell e, se possibile, un mini-esempio Java.\nAlmeno 3 rischi, ciascuno con la sua mitigazione."
+}

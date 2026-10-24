@@ -1,0 +1,90 @@
+{
+  "intuizione": "Fare refactoring significa riorganizzare il codice senza cambiare quello che fa: stessi input, stessi output, ma nomi migliori, metodi più corti, responsabilità al posto giusto. Si procede a piccoli passi sicuri (rinomina, estrai un metodo, sposta un metodo), e dopo ognuno si rilanciano i test per controllare che il comportamento non sia cambiato. Serve a rendere più economica la prossima modifica, ed è la cura dei code smell.",
+  "spiegazione": "## Definizione (Fowler)\n\n> **Refactoring** (sostantivo): una modifica alla struttura interna del software per renderlo più facile da capire e più economico da modificare, **senza cambiarne il comportamento osservabile**.\n> **Refactor** (verbo): ristrutturare il software applicando una serie di refactoring.\n\nDue parole chiave: **struttura interna** (i client non se ne accorgono) e **comportamento osservabile invariato** (verificato dai test).\n\n## Che cosa NON è\n\n| attività | cambia il comportamento? | scopo |\n|---|---|---|\n| refactoring | no | comprensibilità, modificabilità |\n| bug fixing | sì (corregge) | correttezza |\n| nuova funzionalità | sì (aggiunge) | requisiti |\n| ottimizzazione | no, ma spesso peggiora la leggibilità | prestazioni |\n\nKent Beck parla dei **due cappelli**: mentre aggiungi una funzionalità non rifattorizzi, mentre rifattorizzi non aggiungi funzionalità. Si alternano, non si mescolano.\n\n## Perché\n\n- migliora il **design** che si degrada con le modifiche (entropia, leggi di Lehman);\n- rende il codice **più comprensibile** (anche per chi lo ha scritto);\n- aiuta a **trovare bug** (capire il codice li fa emergere);\n- a medio termine fa **programmare più velocemente**: il debito tecnico si ripaga.\nNella classificazione della manutenzione è manutenzione **preventiva**.\n\n## Quando\n\n- **regola del tre**: la prima volta scrivi, la seconda duplichi turandoti il naso, la terza rifattorizzi;\n- prima di aggiungere una funzionalità (preparatory refactoring: \"rendi facile la modifica, poi fai la modifica facile\");\n- quando si corregge un bug o durante la **code review**;\n- quando si sente uno **smell**.\nQuando no: codice da riscrivere da zero, codice che non si tocca più, a ridosso di una scadenza senza test.\n\n## Come: piccoli passi + test\n\n```mermaid\nflowchart TD\n    A[Test di regressione verdi] --> B[Un passo di refactoring]\n    B --> C[Compila ed esegui i test]\n    C -- verdi --> D{Altri smell?}\n    C -- rossi --> E[Annulla il passo]\n    E --> B\n    D -- si --> B\n    D -- no --> F[Commit]\n```\n\nPrerequisito: una suite di **test automatici** affidabili. Senza test non è refactoring, è \"modificare e sperare\". Gli IDE automatizzano molti refactoring (Rename, Extract Method, Move) in modo sicuro.\n\n## Catalogo minimo\n\n- **Rename** (variabile, metodo, classe): il nome rivela l'intenzione.\n- **Extract Method**: un frammento diventa un metodo con un nome; inverso **Inline Method**.\n- **Extract Variable** / **Replace Temp with Query**.\n- **Move Method / Move Field**: il comportamento va dove stanno i dati (cura Feature Envy).\n- **Extract Class**: separa responsabilità (cura Large Class, Divergent Change).\n- **Introduce Parameter Object**: cura Long Parameter List.\n- **Replace Conditional with Polymorphism**: cura gli switch sul tipo.\n- **Pull Up / Push Down Method**: sposta metodi nella gerarchia.\n- **Refactoring verso i pattern** (Kerievsky): Form Template Method, Replace Conditional with Strategy/State, Replace Constructors with Factory.\n\n## Esempio completo: Replace Conditional with Polymorphism\n\nPrima, lo switch sul tipo; dopo, una gerarchia. Il `main` verifica che il comportamento sia identico (prezzi inventati).\n\n```java\nimport java.util.List;\n\n// PRIMA\nclass AccessoPiscinaVecchio {\n    static double costo(String tipo, int ingressi) {\n        switch (tipo) {\n            case \"adulto\":   return ingressi * 7.0;\n            case \"ridotto\":  return ingressi * 4.0;\n            case \"agonista\": return ingressi * 3.0 + 20;   // quota fissa\n            default: throw new IllegalArgumentException(tipo);\n        }\n    }\n}\n\n// DOPO\nabstract class TipoCliente {\n    abstract double tariffaIngresso();\n    double quotaFissa() { return 0; }\n    final double costo(int ingressi) { return ingressi * tariffaIngresso() + quotaFissa(); }\n}\nclass Adulto extends TipoCliente   { double tariffaIngresso() { return 7.0; } }\nclass Ridotto extends TipoCliente  { double tariffaIngresso() { return 4.0; } }\nclass Agonista extends TipoCliente {\n    double tariffaIngresso() { return 3.0; }\n    @Override double quotaFissa() { return 20; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        String[] tipi = {\"adulto\", \"ridotto\", \"agonista\"};\n        List<TipoCliente> nuovi = List.of(new Adulto(), new Ridotto(), new Agonista());\n        for (int i = 0; i < tipi.length; i++)\n            for (int n : new int[]{0, 1, 10}) {\n                double prima = AccessoPiscinaVecchio.costo(tipi[i], n);\n                double dopo = nuovi.get(i).costo(n);\n                if (prima != dopo) throw new AssertionError(tipi[i] + \" \" + n);\n            }\n        System.out.println(\"Comportamento invariato\");\n    }\n}\n```\nIl nuovo tipo di cliente ora si aggiunge con una classe (OCP), e `costo` è un piccolo Template Method.\n\n## Rischi e mitigazioni\n\n| rischio | mitigazione |\n|---|---|\n| introdurre regressioni | test automatici prima di iniziare, passi piccoli, test dopo ogni passo |\n| tempo \"non produttivo\" agli occhi del cliente | rifattorizzare in modo continuo, legato alle funzionalità |\n| rompere API pubbliche usate da altri | deprecare gradualmente, mantenere vecchie firme che delegano |\n| conflitti di merge in team | branch brevi, commit frequenti, comunicazione |\n| refactoring infinito / gold plating | obiettivo chiaro (lo smell da eliminare), timebox |\n| peggiorare le prestazioni | misurare con il profiler; ottimizzare dopo, dove serve |\n",
+  "analogia": "Il refactoring è come riordinare un magazzino senza chiudere il negozio: gli stessi prodotti restano disponibili ai clienti, ma vengono spostati su scaffali etichettati, raggruppati per tipo, con i corridoi liberi. Si sposta uno scaffale alla volta e dopo ogni spostamento si controlla che ogni prodotto si trovi ancora. L'analogia cede su un punto: nel magazzino controlli a occhio, nel software serve una batteria di test automatici, altrimenti non sai se hai perso qualcosa.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Code smell",
+      "collegamento": "Lo smell dice dove intervenire, il refactoring come.",
+      "nodo": "code-smell"
+    },
+    {
+      "conoscenza": "Testing di regressione",
+      "collegamento": "I test di regressione definiscono il 'comportamento osservabile' che il refactoring non deve cambiare.",
+      "nodo": "testing-livelli-tipi"
+    },
+    {
+      "conoscenza": "Tipi di manutenzione",
+      "collegamento": "Il refactoring è manutenzione preventiva: migliora la manutenibilità senza cambiare funzioni.",
+      "nodo": "tipi-manutenzione"
+    },
+    {
+      "conoscenza": "Design pattern Template Method e Strategy",
+      "collegamento": "Molti refactoring portano verso un pattern (Form Template Method, Replace Conditional with Strategy).",
+      "nodo": "design-pattern-template-method"
+    },
+    {
+      "conoscenza": "Semplificazione di espressioni algebriche",
+      "collegamento": "Come trasformare un'espressione in una equivalente più leggibile: il valore non cambia, cambia la forma."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Extract Method e Rename passo per passo",
+      "problema": "void stampa(Ordine o) { double t = 0; for (Riga r : o.righe()) t += r.prezzo() * r.qta(); if (o.cliente().tessera()) t *= 0.95; System.out.println(\"Cliente: \" + o.cliente().nome()); System.out.println(\"Totale: \" + t); } Rifattorizza con passi sicuri.",
+      "passi": [
+        "Passo 0: scrivo un test che cattura l'output per un ordine con e senza tessera (test di caratterizzazione).",
+        "Passo 1, Extract Method: il ciclo diventa double totaleLordo(Ordine o). Test verdi.",
+        "Passo 2, Extract Method: lo sconto diventa double applicaSconto(Ordine o, double lordo). Test verdi.",
+        "Passo 3, Rename: t → totale, stampa → stampaRiepilogo. Test verdi.",
+        "Passo 4, Move Method: totaleLordo usa solo dati di Ordine (Feature Envy) → Ordine.totaleLordo(). Test verdi.",
+        "Risultato: void stampaRiepilogo(Ordine o) { double totale = applicaSconto(o, o.totaleLordo()); System.out.println(\"Cliente: \" + o.cliente().nome()); System.out.println(\"Totale: \" + totale); }"
+      ],
+      "soluzione": "Quattro refactoring piccoli, ognuno verificato dai test, producono un metodo corto con nomi parlanti e il calcolo del totale nella classe Ordine.",
+      "perche_funziona": "Ogni passo è una trasformazione che preserva il comportamento e che si può annullare se un test diventa rosso; la somma di passi sicuri è una ristrutturazione sicura."
+    },
+    {
+      "titolo": "È refactoring o no?",
+      "problema": "Classifica: (a) sostituire un ciclo con una ricerca binaria per velocità; (b) rinominare calc() in calcolaCostoPiazzola(); (c) correggere un off-by-one nel ciclo; (d) dividere la classe Mercato in Mercato e GeneratoreReport mantenendo gli stessi metodi pubblici che delegano; (e) aggiungere lo sconto per i residenti.",
+      "passi": [
+        "(a) Comportamento invariato ma scopo prestazioni → ottimizzazione, non refactoring.",
+        "(b) Rename: refactoring.",
+        "(c) Cambia il comportamento (corregge) → bug fixing.",
+        "(d) Extract Class con delega, comportamento osservabile invariato → refactoring.",
+        "(e) Aggiunge comportamento → nuova funzionalità (manutenzione perfettiva)."
+      ],
+      "soluzione": "Refactoring: (b), (d). Ottimizzazione: (a). Bug fix: (c). Nuova funzionalità: (e).",
+      "perche_funziona": "Il criterio è doppio: comportamento osservabile invariato e scopo di migliorare comprensibilità e modificabilità; solo (b) e (d) soddisfano entrambe le condizioni."
+    }
+  ],
+  "errori_comuni": [
+    "Chiamare refactoring qualunque modifica al codice, incluse correzioni di bug o nuove funzioni.",
+    "Rifattorizzare senza test automatici: non si può verificare che il comportamento sia invariato.",
+    "Fare un solo grande passo invece di tanti piccoli: se un test fallisce non si sa quale modifica lo ha causato.",
+    "Mescolare refactoring e nuove funzionalità nello stesso commit (i due cappelli).",
+    "Confondere refactoring e ottimizzazione: l'ottimizzazione spesso peggiora la leggibilità."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Definisci il refactoring.",
+      "risposta": "Una modifica alla struttura interna del software che lo rende più comprensibile ed economico da modificare senza cambiarne il comportamento osservabile."
+    },
+    {
+      "domanda": "Perché i test sono indispensabili?",
+      "risposta": "Perché sono l'unico modo pratico di verificare, dopo ogni passo, che il comportamento osservabile non sia cambiato."
+    },
+    {
+      "domanda": "Che cos'è la regola del tre?",
+      "risposta": "La prima volta si scrive il codice, la seconda si tollera la duplicazione, la terza si rifattorizza."
+    },
+    {
+      "domanda": "Cita tre refactoring e lo smell che curano.",
+      "risposta": "Extract Method → Long Method; Move Method → Feature Envy; Replace Conditional with Polymorphism → Switch Statements; Introduce Parameter Object → Long Parameter List."
+    },
+    {
+      "domanda": "Cita due rischi del refactoring e la loro mitigazione.",
+      "risposta": "Regressioni → test automatici e passi piccoli; rottura delle API pubbliche → deprecazione graduale e metodi che delegano; costo percepito → refactoring continuo legato alle funzionalità."
+    }
+  ],
+  "riepilogo": "Refactoring = struttura migliore, comportamento osservabile invariato.\nNon è bug fixing, né nuova funzionalità, né ottimizzazione.\nPiccoli passi, test dopo ogni passo; senza test non è refactoring.\nCatalogo: Rename, Extract Method/Class, Move Method, Replace Conditional with Polymorphism.\nRischi: regressioni, API rotte, tempo; mitigazioni: test, deprecazione, continuità."
+}
