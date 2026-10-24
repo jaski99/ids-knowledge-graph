@@ -3,8 +3,9 @@ import { h, clear } from './dom.js';
 import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { formatMinuti } from '../core/progress.js';
 import { lessonNav, hasLesson, createStepper, nextToStudy } from '../core/lesson.js';
-import { mdElement, renderMermaid } from './markdown.js';
+import { mdElement, renderMermaid, resetMermaid, setMermaidTheme } from './markdown.js';
 import { enhanceCodeBlocks } from './code-block.js';
+import { frameDiagrams, fitDiagrams } from './diagram.js';
 import { bindSectionNav } from './toc.js';
 import { syncThemeButtons } from '../core/theme.js';
 
@@ -35,7 +36,11 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
         list.append(li);
       }
       sol.hidden = !st.solutionShown;
-      if (!sol.hidden) { enhanceCodeBlocks(sol); renderMermaid(sol); } // i diagrammi nascosti si disegnano solo quando visibili
+      if (!sol.hidden) {
+        frameDiagrams(sol);
+        enhanceCodeBlocks(sol);
+        renderMermaid(sol).then(() => fitDiagrams(sol)); // i diagrammi nascosti si disegnano solo quando visibili
+      }
       btn.textContent = st.label();
       btn.disabled = st.finished;
       allBtn.hidden = st.finished;
@@ -108,6 +113,7 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
   }
 
   let detachNav = () => {};
+  let mediaToken = 0;
   return {
     async render(id, done) {
       detachNav();
@@ -147,8 +153,19 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
       );
       detachNav = bindSectionNav(toc, { label: progressLabel, bar: progressBar, fill: progressFill }, article);
       syncThemeButtons(root.ownerDocument, root.ownerDocument.documentElement.dataset.theme || 'light');
+      frameDiagrams(root);
       enhanceCodeBlocks(root);
+      const token = ++mediaToken;
       await renderMermaid(root);
+      if (token === mediaToken) fitDiagrams(root);
+    },
+    setTheme(name) { setMermaidTheme(name); },
+    async refreshDiagrams(name) {
+      const token = ++mediaToken;
+      setMermaidTheme(name);
+      resetMermaid(root);
+      await renderMermaid(root);
+      if (token === mediaToken) fitDiagrams(root);
     },
     focus() { root.querySelector('#lesson-title')?.focus({ preventScroll: true }); },
   };

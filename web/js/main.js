@@ -63,6 +63,8 @@ async function main() {
       document.documentElement.dataset.theme = name;
       syncThemeButtons(document, name);
       graphView.setTheme(name);
+      if ($('#lesson').hidden) lesson.setTheme(name);
+      else lesson.refreshDiagrams(name);
     },
   });
   themeBtn.addEventListener('click', () => theme.toggle());

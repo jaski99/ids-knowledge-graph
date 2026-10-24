@@ -228,8 +228,13 @@ body.lesson-mode > header, body.lesson-mode > .layout, body.lesson-mode > .skip 
 .codeblock .md pre.code, .codeblock pre.code { margin: 0; border: 0; border-radius: 0; }
 .md pre.code { background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--line); border-radius: 8px; padding: .7rem .8rem; overflow-x: auto; font-size: .86rem; line-height: 1.45; max-width: 100%; }
 .md pre.code code, .md pre.code code.hljs { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+.diagram { margin: 1rem 0; max-width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+.diagram-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; padding: .2rem .4rem .2rem .75rem; background: var(--chip-bg); color: var(--chip-fg); font-family: system-ui, sans-serif; font-size: .85rem; }
+.diagram-bar > span { margin-right: auto; font-weight: 700; }
+.diagram-scroll { overflow: auto; max-width: 100%; }
+.diagram pre.mermaid { margin: 0; border: 0; border-radius: 0; }
 .md pre.mermaid { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: .6rem; overflow-x: auto; text-align: center; max-width: 100%; }
-.md pre.mermaid svg { max-width: 100%; height: auto; }
+.md pre.mermaid svg, .diagram svg { max-width: 100%; height: auto; }
 .md pre.mermaid-off { text-align: left; white-space: pre-wrap; font-size: .85rem; }
 .table-wrap { overflow-x: auto; margin: .6rem 0; max-width: 100%; }
 .md table { border-collapse: collapse; min-width: 100%; font-size: .92rem; }
