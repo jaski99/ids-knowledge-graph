@@ -16,6 +16,7 @@ import { createLessonView } from './ui/lesson-view.js';
 import { parseRoute, lessonHash, nextToStudy } from './core/lesson.js';
 import { h, clear } from './ui/dom.js';
 import { navigation } from '../modules/registry.js';
+import { createThemeController, syncThemeButtons } from './core/theme.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -50,6 +51,19 @@ async function main() {
   ];
   createFiltersView($('#filters'), graph, { initial: emptyFilters(), onChange: (filters) => state.set({ filters }) });
   const [graphView] = views;
+  const themeBtn = h('button', { type: 'button', class: 'btn', 'data-theme-toggle': '1' });
+  $('#theme').append(themeBtn);
+  const theme = createThemeController({
+    storage: localStorage,
+    prefersDark: matchMedia('(prefers-color-scheme: dark)').matches,
+    media: matchMedia('(prefers-color-scheme: dark)'),
+    apply(name) {
+      document.documentElement.dataset.theme = name;
+      syncThemeButtons(document, name);
+      graphView.setTheme(name);
+    },
+  });
+  themeBtn.addEventListener('click', () => theme.toggle());
   const readLast = () => { try { return localStorage.getItem(STORAGE_KEYS.last); } catch { return null; } };
   const saveLast = (id) => { try { localStorage.setItem(STORAGE_KEYS.last, id); } catch { /* privacy mode */ } };
   // Barra "riprendi": ultima lezione aperta + prossima da studiare, sempre a un tocco dalla home.

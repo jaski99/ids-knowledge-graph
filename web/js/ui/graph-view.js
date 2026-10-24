@@ -6,7 +6,7 @@ export function createGraphView(container, graph, { onSelect }) {
   const cy = globalThis.cytoscape;
   if (!cy) {
     container.textContent = 'Libreria del grafo non disponibile (CDN non raggiungibile): usa la scheda Percorso.';
-    return { update() {}, select() {}, resize() {} };
+    return { update() {}, select() {}, resize() {}, setTheme() {} };
   }
   const els = [
     ...graph.nodi.map((n) => ({ data: { id: n.id, label: n.title, color: areaColor(n.area), shape: TIPO_SHAPE[n.tipo] } })),
@@ -19,10 +19,10 @@ export function createGraphView(container, graph, { onSelect }) {
     // Contenitore largo -> ranghi in righe (TB); stretto/alto (mobile) -> ranghi in colonne (LR).
     layout: hasDagre ? { name: 'dagre', rankDir: container.clientWidth > container.clientHeight ? 'TB' : 'LR', nodeSep: 30, rankSep: 70 } : { name: 'breadthfirst', directed: true },
     style: [
-      { selector: 'node', style: { 'background-color': 'data(color)', shape: 'data(shape)', label: 'data(label)', 'font-size': 11, 'min-zoomed-font-size': 7, 'text-wrap': 'wrap', 'text-max-width': 110, 'text-valign': 'bottom', 'text-margin-y': 4, width: 26, height: 26, color: '#1f2937', 'text-background-color': '#fff', 'text-background-opacity': 0.7 } },
-      { selector: 'node.done', style: { 'border-width': 4, 'border-color': '#16a34a' } },
-      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#111827', 'overlay-opacity': 0.08 } },
-      { selector: 'edge', style: { width: 1.6, 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },
+      { selector: 'node', style: { 'background-color': 'data(color)', shape: 'data(shape)', label: 'data(label)', 'font-size': 11, 'min-zoomed-font-size': 7, 'text-wrap': 'wrap', 'text-max-width': 110, 'text-valign': 'bottom', 'text-margin-y': 4, width: 26, height: 26, color: '#1c1917', 'text-background-color': '#fffcf7', 'text-background-opacity': 0.85 } },
+      { selector: 'node.done', style: { 'border-width': 4, 'border-color': '#15803d' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#1c1917', 'overlay-opacity': 0.08 } },
+      { selector: 'edge', style: { width: 1.6, 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#78716c', 'target-arrow-color': '#78716c' } },
       { selector: 'edge.soft', style: { 'line-style': 'dashed', 'line-dash-pattern': [6, 4] } },
       { selector: '.faded', style: { opacity: 0.12 } },
     ],
@@ -43,5 +43,13 @@ export function createGraphView(container, graph, { onSelect }) {
       if (n.nonempty()) { n.select(); g.animate({ center: { eles: n } }, { duration: 200 }); }
     },
     resize() { g.resize(); g.fit(undefined, 20); },
+    setTheme(theme) {
+      const dark = theme === 'dark';
+      g.style()
+        .selector('node').style({ color: dark ? '#f5f5f4' : '#1c1917', 'text-background-color': dark ? '#1c1f27' : '#fffcf7' })
+        .selector('node:selected').style({ 'border-color': dark ? '#f5f5f4' : '#1c1917' })
+        .selector('edge').style({ 'line-color': dark ? '#a8a29e' : '#78716c', 'target-arrow-color': dark ? '#a8a29e' : '#78716c' })
+        .update();
+    },
   };
 }
