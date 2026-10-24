@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingegneria del Software — Knowledge graph di studio</title>
+  <meta name="description" content="Grafo delle conoscenze, percorso di studio e checklist di ripasso per Ingegneria del Software (UNIMORE).">
+  <!-- Percorsi provati in ordine: copia generata da build.sh, poi sorgente nel repo. Override: ?graph=URL -->
+  <meta name="kg-graph-url" content="graph.json ../graph/graph.json">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+  <script defer src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+  <script defer src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Vai al contenuto</a>
+  <header>
+    <h1>Ingegneria del Software · Knowledge graph</h1>
+    <p id="course" class="muted"></p>
+    <p id="exam-note" class="note"></p>
+  </header>
+  <div class="layout">
+    <aside class="side" aria-label="Filtri e progresso">
+      <details open class="panel"><summary><h2>Filtri</h2></summary><div id="filters"></div><p id="count" class="muted" aria-live="polite"></p></details>
+      <details open class="panel"><summary><h2>Progresso</h2></summary><div id="progress" aria-live="polite"></div></details>
+    </aside>
+    <main id="main">
+      <p id="status" role="status">Caricamento…</p>
+      <div role="tablist" aria-label="Viste">
+        <button role="tab" id="tab-grafo" data-tab="grafo" aria-controls="view-grafo" aria-selected="true">Grafo</button>
+        <button role="tab" id="tab-percorso" data-tab="percorso" aria-controls="view-percorso" aria-selected="false" tabindex="-1">Percorso</button>
+        <button role="tab" id="tab-ripasso" data-tab="ripasso" aria-controls="view-ripasso" aria-selected="false" tabindex="-1">Ripasso</button>
+      </div>
+      <section role="tabpanel" id="view-grafo" aria-labelledby="tab-grafo">
+        <div id="cy" aria-label="Grafo dei concetti: clicca un nodo per i dettagli. Alternativa testuale nella scheda Percorso."></div>
+        <p class="legend muted">Colore = area · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato</p>
+      </section>
+      <section role="tabpanel" id="view-percorso" aria-labelledby="tab-percorso" hidden>
+        <p class="muted">Ordine topologico: ogni nodo viene dopo i suoi prerequisiti. Le spunte restano salvate in questo browser.</p>
+        <div id="path"></div>
+      </section>
+      <section role="tabpanel" id="view-ripasso" aria-labelledby="tab-ripasso" hidden>
+        <div id="review"></div>
+      </section>
+    </main>
+    <aside id="details" class="details" aria-labelledby="det-title" hidden></aside>
+  </div>
+</body>
+</html>
