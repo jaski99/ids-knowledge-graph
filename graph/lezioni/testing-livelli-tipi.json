@@ -1,0 +1,77 @@
+{
+  "intuizione": "Testare significa eseguire il programma con l'intenzione di farlo sbagliare, per scoprire difetti prima che li scopra l'utente. Si testa a più livelli, dal pezzo più piccolo (il singolo metodo) al sistema intero davanti al cliente, e servono parole precise: l'errore è dello sviluppatore, il difetto sta nel codice, il malfunzionamento è ciò che si vede eseguendo.",
+  "spiegazione": "## Che cosa è (e che cosa non è) il testing\n\n**Testing** = eseguire il software su casi scelti, confrontando il risultato ottenuto con quello atteso (l'**oracolo**), allo scopo di **trovare failure**. Celebre osservazione di Dijkstra: *il testing può mostrare la presenza dei bug, mai la loro assenza*. Un test che passa non prova che il programma sia corretto: prova solo che su quell'input si comporta come previsto. Per questo i casi si scelgono con tecniche (classi di equivalenza, BVA, copertura) che massimizzano la probabilità di trovare difetti con pochi test.\n\n## Terminologia: error, fault, failure\n\n```mermaid\nflowchart LR\n    E[\"Error (sbaglio umano): il programmatore fraintende la regola\"] --> F[\"Fault / defect (difetto nel codice): scrive numero minore di 50 invece di minore o uguale\"]\n    F --> X[\"Failure (malfunzionamento osservabile): una spedizione di 50 pagine costa 10,00 € invece di 2,00 €\"]\n```\n\n- **Error (mistake)**: azione umana sbagliata (fraintendere un requisito, distrazione).\n- **Fault (defect, bug)**: la conseguenza nel prodotto: una riga sbagliata, un requisito mancante, un diagramma errato.\n- **Failure**: il comportamento osservabile diverso da quello atteso, che si manifesta **solo se** il fault viene eseguito con input che lo attivano. Un fault può restare dormiente per anni.\n\nIl **testing** fa emergere le failure; il **debugging** risale dalla failure al fault e lo corregge.\n\n## Verifica e validazione (V&V)\n\n- **Verifica**: *«stiamo costruendo il prodotto nel modo giusto?»* — il prodotto è conforme alla specifica (test, ispezioni, analisi statica).\n- **Validazione**: *«stiamo costruendo il prodotto giusto?»* — il prodotto soddisfa i bisogni reali dell'utente (test di accettazione, prototipi, beta).\n\nUn software può superare la verifica (fa esattamente ciò che dice la specifica) e fallire la validazione (la specifica era sbagliata): è il motivo per cui gli errori nei requisiti sono così costosi.\n\n## I livelli (modello a V)\n\n| livello | oggetto | chi | tecnica tipica |\n|---|---|---|---|\n| **Unit** | un metodo o una classe isolata | sviluppatore | JUnit, black + white box, stub/mock per le dipendenze |\n| **Integration** | più moduli che collaborano (interfacce) | sviluppatori/tester | big bang, top-down (con stub), bottom-up (con driver), incrementale |\n| **System** | il sistema completo nell'ambiente reale | team di test indipendente | black box su requisiti funzionali e non funzionali (prestazioni, sicurezza, carico, usabilità) |\n| **Acceptance** | il sistema rispetto ai bisogni del cliente | cliente/utenti | scenari dei casi d'uso; alpha test (presso lo sviluppatore), beta test (presso utenti reali) |\n\n```mermaid\nflowchart LR\n    R[\"Requisiti\"] -.-> AT[\"Test di accettazione\"]\n    A[\"Architettura\"] -.-> ST[\"Test di sistema\"]\n    D[\"Progetto di dettaglio\"] -.-> IT[\"Test di integrazione\"]\n    C[\"Codice\"] -.-> UT[\"Test di unità\"]\n    R --> A --> D --> C --> UT --> IT --> ST --> AT\n```\n\nNel **modello a V** ogni fase di sviluppo a sinistra corrisponde a un livello di test a destra, che la verifica; i test si possono **progettare** già quando la fase di sinistra è finita (i test di accettazione dai requisiti, ad esempio).\n\n## Tipi trasversali\n\n- **Regressione**: rieseguire i test esistenti dopo ogni modifica per controllare di non aver rotto ciò che funzionava. È il motivo principale per automatizzare (JUnit + CI).\n- **Funzionale vs non funzionale**: cosa fa il sistema vs come lo fa (prestazioni, stress, sicurezza, usabilità).\n- **Smoke test**: pochi test rapidi che dicono se la build è «accesa» abbastanza da proseguire.\n- **Black box vs white box**: è la dimensione della *tecnica*, indipendente dal livello.\n\n## Un unit test in Java, con l'oracolo in evidenza\n\n```java\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport org.junit.jupiter.api.Test;\n\nclass SpedizioniTest {\n    @Test\n    void cinquantaPagineCostanoDueEuro() {\n        double ottenuto = Spedizioni.calcolaCostoSpedizione(50, 2, 10);\n        assertEquals(2.0, ottenuto, 1e-9);   // 2.0 è l'oracolo, ricavato dalla specifica\n    }\n}\n```\n\nSe il codice contiene il fault `numero < 50`, questo test produce una **failure** visibile (`expected 2.0 but was 10.0`): il testing ha fatto il suo lavoro, ora tocca al debugging.\n\n## Quando smettere di testare\n\nNon si arriva mai a «zero difetti dimostrati»: si smette quando si raggiungono criteri decisi prima (copertura obiettivo, tutti i requisiti con almeno un test, tasso di nuovi difetti trovati sotto una soglia, scadenza e rischio accettato).",
+  "analogia": "Costruire un'auto: prima si collauda ogni pezzo sul banco (unit: il freno da solo), poi i pezzi montati insieme (integration: freno + pedale + centralina), poi l'auto intera in pista (system), infine il cliente la prova su strada e decide se la compra (acceptance). Error è l'ingegnere che sbaglia un calcolo, fault è il pezzo difettoso, failure è l'auto che non frena. L'analogia cede sulla regressione: un freno fisico non si «rompe» perché hai cambiato la radio, mentre nel software una modifica in un punto può davvero rompere un modulo lontano.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Eccezioni e stack trace in Java",
+      "collegamento": "Una failure spesso si presenta come un'eccezione non gestita: lo stack trace è il primo indizio per risalire al fault."
+    },
+    {
+      "conoscenza": "Modelli di processo (cascata, iterativo) visti nei corsi precedenti",
+      "collegamento": "Il modello a V è una cascata in cui ogni fase ha il suo livello di test speculare."
+    },
+    {
+      "conoscenza": "Specifica dei requisiti",
+      "collegamento": "Requisiti chiari e verificabili sono l'oracolo dei test di sistema e di accettazione.",
+      "nodo": "requisiti-obiettivi"
+    },
+    {
+      "conoscenza": "Costo degli errori nei requisiti (curva di Boehm)",
+      "collegamento": "Spiega perché la validazione precoce conviene: un difetto dei requisiti trovato in accettazione costa molto di più.",
+      "nodo": "requisiti-costo-errori-boehm"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Error, fault, failure su un caso concreto",
+      "problema": "La specifica dice: «ai clienti con tessera si applica lo sconto quando la spesa cumulativa supera 500 €». Lo sviluppatore scrive `if (totale >= 500)`. Un cliente con esattamente 500 € riceve lo sconto. Classifica error, fault e failure.",
+      "passi": [
+        "Error: lo sviluppatore ha interpretato «supera» come «raggiunge» (fraintendimento umano).",
+        "Fault: la riga `if (totale >= 500)` invece di `if (totale > 500)`.",
+        "Failure: il cliente con 500,00 € ottiene uno sconto che non gli spetta (osservabile).",
+        "Quale tecnica lo avrebbe trovato: la BVA sul bordo 500 (test con 500 → nessuno sconto)."
+      ],
+      "soluzione": "Error = fraintendimento di «supera»; fault = operatore >= nel codice; failure = sconto concesso a 500 €. Un test di boundary su 500 lo rileva.",
+      "perche_funziona": "Separare i tre concetti chiarisce dove intervenire: formazione/requisiti chiari (error), correzione del codice (fault), test che lo rendano visibile (failure)."
+    },
+    {
+      "titolo": "Domanda: livelli di test",
+      "problema": "«Si descrivano i livelli di testing indicando per ciascuno obiettivo e responsabile.»",
+      "passi": [
+        "Elenco i 4 livelli nell'ordine: unit, integration, system, acceptance.",
+        "Per ciascuno: oggetto, chi lo fa, tecnica (vedi tabella).",
+        "Aggiungo la regressione come tipo trasversale e il modello a V come schema che lega livelli e fasi.",
+        "Chiudo con verifica (unit-system rispetto alla specifica) vs validazione (accettazione rispetto ai bisogni)."
+      ],
+      "soluzione": "Risposta strutturata: tabella dei 4 livelli + regressione + modello a V + V&V.",
+      "perche_funziona": "Mostra la visione d'insieme (perché più livelli) oltre all'elenco, collegando ogni livello al documento di riferimento che verifica."
+    }
+  ],
+  "errori_comuni": [
+    "Usare error, fault e failure come sinonimi.",
+    "Dire che il testing dimostra la correttezza: mostra solo la presenza di difetti.",
+    "Confondere verifica e validazione (le domande «prodotto giusto» e «nel modo giusto» vanno invertite spesso).",
+    "Pensare che il test di regressione sia un livello: è un tipo di test che si ripete a qualunque livello.",
+    "Dimenticare i requisiti non funzionali nel test di sistema."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra fault e failure?",
+      "risposta": "Il fault è il difetto statico nel codice o in un artefatto; la failure è il comportamento errato osservabile durante l'esecuzione, che si verifica solo se il fault viene eseguito con input che lo attivano."
+    },
+    {
+      "domanda": "Che cosa distingue verifica e validazione?",
+      "risposta": "Verifica: il prodotto è conforme alla specifica («nel modo giusto»). Validazione: il prodotto soddisfa i bisogni reali dell'utente («il prodotto giusto»)."
+    },
+    {
+      "domanda": "A che cosa servono stub e driver nell'integrazione?",
+      "risposta": "Lo stub simula un modulo chiamato non ancora disponibile (integrazione top-down); il driver simula il chiamante per eseguire un modulo di basso livello (integrazione bottom-up)."
+    },
+    {
+      "domanda": "Perché il test di regressione richiede automazione?",
+      "risposta": "Perché va ripetuto a ogni modifica sull'intera suite: a mano sarebbe troppo costoso, mentre con JUnit e una pipeline CI si esegue in pochi minuti a ogni push."
+    }
+  ],
+  "riepilogo": "Testing = eseguire per trovare failure; non prova l'assenza di bug (Dijkstra).\nError (umano) → fault (nel codice) → failure (osservabile).\nVerifica = conforme alla specifica; validazione = soddisfa l'utente.\nLivelli: unit, integration, system, acceptance (modello a V); regressione trasversale.\nSi smette con criteri decisi prima, non quando «non ci sono più bug»."
+}

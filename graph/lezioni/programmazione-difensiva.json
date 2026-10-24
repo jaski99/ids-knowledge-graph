@@ -1,0 +1,79 @@
+{
+  "intuizione": "Programmare in modo difensivo significa non fidarsi di ciò che arriva da fuori: un metodo pubblico controlla subito i suoi parametri e, se non vanno bene, lo dice in modo esplicito (un'eccezione chiara o un valore d'errore documentato) invece di produrre un risultato assurdo più avanti. Le asserzioni, invece, controllano le cose che dentro il tuo codice «non possono mai succedere»: se succedono, hai un bug.",
+  "spiegazione": "## Il problema: errori che esplodono lontano dalla causa\n\nSe un metodo accetta una quantità negativa senza dire niente, il carrello avrà un totale negativo, il rapporto giornaliero sarà sbagliato, e la failure apparirà ore dopo in un altro modulo: il debugging diventa lungo. Il codice difensivo **fallisce presto e in modo rumoroso** (*fail fast*) vicino alla causa.\n\n## Precondizioni, postcondizioni, invarianti (design by contract)\n\n- **Precondizione**: cosa deve essere vero quando il metodo viene chiamato (es. `quantita > 0`). È responsabilità del chiamante, ma un metodo **pubblico** la controlla comunque.\n- **Postcondizione**: cosa il metodo garantisce alla fine (es. il totale è aumentato di prezzo × quantità).\n- **Invariante di classe**: proprietà sempre vera per ogni oggetto tra una chiamata e l'altra (es. `disponibile >= 0`).\n\n## Gli strumenti in Java\n\n### 1. Eccezioni per gli input dall'esterno\n\n```java\nimport java.util.Objects;\n\npublic class Magazzino {\n    private int disponibile;\n\n    public Magazzino(int iniziale) {\n        if (iniziale < 0) throw new IllegalArgumentException(\"quantità iniziale negativa: \" + iniziale);\n        this.disponibile = iniziale;\n    }\n\n    public void preleva(Prodotto p, int quantita) {\n        Objects.requireNonNull(p, \"prodotto nullo\");                  // NullPointerException con messaggio\n        if (quantita <= 0)\n            throw new IllegalArgumentException(\"quantità deve essere > 0: \" + quantita);\n        if (quantita > disponibile)\n            throw new IllegalStateException(\"disponibilità insufficiente\");\n        disponibile -= quantita;\n        assert disponibile >= 0 : \"invariante violato\";              // controllo interno\n    }\n\n    public int getDisponibile() { return disponibile; }\n}\n```\n\n- `IllegalArgumentException`: parametro non valido. `IllegalStateException`: l'oggetto non è nello stato giusto per l'operazione. `NullPointerException` tramite `Objects.requireNonNull` con un messaggio chiaro.\n- Sono **unchecked**: il chiamante corretto non è obbligato a gestirle.\n\n### 2. Valore d'errore documentato\nNegli esercizi d'esame la specifica dice spesso *«in caso di errore ritorna -1»* (es. `luggageCost` del fac-simile 2016/17). È una scelta difensiva più debole: il chiamante può dimenticarsi di controllare il -1 e usarlo come un prezzo. Va bene se è **documentata nel contratto**; nel codice nuovo si preferiscono eccezioni o `Optional`.\n\n### 3. Asserzioni (`assert`)\n`assert condizione : messaggio;` lancia `AssertionError` se la condizione è falsa, **ma solo se la JVM è avviata con `-ea`** (*enable assertions*). In produzione di solito sono disattivate. Quindi:\n\n| | eccezione | assert |\n|---|---|---|\n| serve per | input esterni, parametri di metodi pubblici, errori prevedibili | invarianti interni, postcondizioni, «impossibile arrivare qui» |\n| sempre attiva? | sì | no, solo con `-ea` |\n| se fallisce | errore gestibile dal chiamante | bug del programmatore |\n| esempio | `quantita <= 0` | `disponibile >= 0` dopo il prelievo |\n\n**Mai** usare `assert` per validare i parametri di un metodo pubblico e **mai** mettere effetti collaterali dentro un assert (`assert lista.remove(x);`): con le asserzioni disattivate l'istruzione non viene eseguita.\n\n### 4. Altre tecniche\n- **Copie difensive**: un getter che restituisce una lista interna la espone a modifiche esterne; restituisci `List.copyOf(lista)` o `Collections.unmodifiableList(lista)`.\n- **Immutabilità**: campi `final`, `record` di Java.\n- **Gestione degli errori senza ingoiarli**: niente `catch (Exception e) {}` vuoti.\n\n## Legame con il testing\n\n```mermaid\nflowchart LR\n    S[\"Specifica: input ammessi\"] --> NV[\"Classi non valide e bordi esterni (BVA)\"]\n    NV --> PC[\"Controlli difensivi nel codice\"]\n    PC --> T[\"Test con assertThrows o atteso -1\"]\n```\n\nLe **classi non valide** delle classi di equivalenza e i valori `min − ε` / `max + ε` della BVA sono proprio gli input che i controlli difensivi devono respingere. Ogni controllo merita un test (`assertThrows`), altrimenti nessuno si accorgerà se viene cancellato.\n\n## Quanto essere difensivi\nTroppi controlli ridondanti in ogni metodo privato rendono il codice illeggibile. Regola pratica: **validare ai confini** (API pubbliche, input utente, file, rete, database) e usare asserzioni all'interno, dove i dati sono già stati controllati.",
+  "analogia": "È come la reception di un ospedale: prima di farti entrare in reparto controlla documento e tessera sanitaria (precondizioni), e se mancano te lo dice subito, invece di scoprire il problema in sala operatoria. Dentro il reparto i medici non ricontrollano il documento a ogni passaggio, ma verificano cose interne critiche, come il paziente giusto prima dell'intervento (asserzioni). L'analogia cede perché la reception non si può «spegnere», mentre in Java le asserzioni sono disattivate di default in produzione: per questo i controlli sugli input esterni devono essere eccezioni.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Eccezioni in Java: throw, try/catch, checked e unchecked",
+      "collegamento": "IllegalArgumentException e IllegalStateException sono unchecked e segnalano un uso scorretto del metodo."
+    },
+    {
+      "conoscenza": "Vincoli di integrità nelle Basi di dati (NOT NULL, CHECK)",
+      "collegamento": "Sono programmazione difensiva a livello di database: il dato invalido è rifiutato al confine."
+    },
+    {
+      "conoscenza": "Incapsulamento OOP",
+      "collegamento": "Campi privati e copie difensive proteggono gli invarianti della classe.",
+      "nodo": "buone-pratiche-programmazione"
+    },
+    {
+      "conoscenza": "Classi di equivalenza non valide",
+      "collegamento": "Ogni classe NV corrisponde a un controllo difensivo da testare.",
+      "nodo": "classi-equivalenza"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Rendere difensivo un metodo",
+      "problema": "Rendi difensivo `public double luggageCost(int nPieces, double weight)` secondo la specifica del fac-simile 2016/17 (al massimo 2 pezzi, peso inferiore a 60 kg, -1 in caso di errore; gratis fino a 20 kg, poi 10 €/kg).",
+      "passi": [
+        "Individuo le precondizioni dalla specifica: 0 ≤ nPieces ≤ 2 (lo zero è valido come nella soluzione ufficiale), 0 ≤ weight < 60.",
+        "La specifica impone il valore d'errore -1, quindi non uso eccezioni: `if (nPieces < 0 || nPieces > 2 || weight < 0 || weight >= 60) return -1;`.",
+        "Calcolo: `return weight <= 20 ? 0 : (weight - 20) * 10;`.",
+        "Aggiungo un'asserzione sulla postcondizione: `assert risultato >= 0;` prima del return nel ramo valido.",
+        "Test: un caso per ogni classe NV (-1, 3 pezzi; peso -1, 60) con atteso -1."
+      ],
+      "soluzione": "Controllo delle precondizioni in testa con return -1 come da contratto, calcolo, assert sulla postcondizione, test sulle classi non valide.",
+      "perche_funziona": "Rispettare il contratto dato (-1) è più importante dello stile preferito (eccezioni): il chiamante si aspetta quel valore."
+    },
+    {
+      "titolo": "Eccezione o assert?",
+      "problema": "Per ciascun controllo scegli eccezione o assert: (a) parametro email null in un metodo pubblico registraCliente; (b) dopo aver ordinato una lista, il primo elemento è il minimo; (c) il file di configurazione non esiste; (d) in uno switch su un enum interno si arriva al default.",
+      "passi": [
+        "(a) Input esterno di un metodo pubblico ⇒ eccezione (NullPointerException con requireNonNull o IllegalArgumentException).",
+        "(b) Postcondizione interna di un algoritmo ⇒ assert.",
+        "(c) Condizione dell'ambiente, prevedibile e da gestire ⇒ eccezione (checked, es. IOException, o un messaggio all'utente).",
+        "(d) Caso «impossibile» se il codice è corretto ⇒ assert false o, meglio ancora, `throw new AssertionError(\"caso non previsto\")`, che resta attivo anche senza -ea."
+      ],
+      "soluzione": "(a) eccezione; (b) assert; (c) eccezione; (d) AssertionError lanciato esplicitamente.",
+      "perche_funziona": "Il criterio è: chi ha sbagliato? Il chiamante o l'ambiente ⇒ eccezione; il programmatore stesso ⇒ asserzione."
+    }
+  ],
+  "errori_comuni": [
+    "Usare assert per validare i parametri di metodi pubblici: con le asserzioni disattivate il controllo sparisce.",
+    "Mettere effetti collaterali dentro un assert.",
+    "Ingoiare le eccezioni con catch vuoti, nascondendo il problema.",
+    "Restituire -1 senza documentarlo: il chiamante lo userà come valore valido.",
+    "Controllare tutto ovunque, anche nei metodi privati già protetti, rendendo il codice illeggibile.",
+    "Dimenticare di scrivere test per i controlli difensivi."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quando si usa un'eccezione e quando un'asserzione?",
+      "risposta": "Eccezione per errori dovuti al chiamante o all'ambiente (parametri non validi, file mancante), sempre attiva. Asserzione per condizioni interne che sono vere se il codice è corretto (invarianti, postcondizioni), attiva solo con -ea durante sviluppo e test."
+    },
+    {
+      "domanda": "Che cosa succede a `assert x > 0;` se la JVM è avviata senza -ea?",
+      "risposta": "Niente: l'asserzione non viene valutata. Per questo non deve contenere effetti collaterali né sostituire controlli necessari."
+    },
+    {
+      "domanda": "Che cos'è una copia difensiva e perché serve?",
+      "risposta": "Restituire (o memorizzare) una copia o una vista non modificabile di un oggetto mutabile interno, ad esempio List.copyOf(lista), così il codice esterno non può violare gli invarianti della classe modificando la lista."
+    },
+    {
+      "domanda": "Che legame c'è tra programmazione difensiva e BVA?",
+      "risposta": "I valori appena fuori dal dominio (min − ε, max + ε) individuati dalla BVA sono quelli che i controlli difensivi devono respingere: i test di boundary verificano che le precondizioni usino gli operatori giusti."
+    }
+  ],
+  "riepilogo": "Fail fast: controlla presto gli input esterni e segnala in modo esplicito.\nEccezioni (IllegalArgumentException, IllegalStateException, requireNonNull) per errori del chiamante o dell'ambiente.\nassert (solo con -ea) per invarianti interni; mai per parametri pubblici, mai con effetti collaterali.\nValori d'errore (-1) solo se documentati nel contratto.\nOgni controllo difensivo ha il suo test."
+}
