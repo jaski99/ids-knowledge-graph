@@ -11,3 +11,12 @@ Scritto 2h, sufficienza >17/30, nessun materiale.
 - Parte 2 Testing (3 pt, 10 min): black box calcolaCostoSpedizione(int numero,int peso,int tariffa) a fasce (<=50, 51-150, 151-500, peso<=1000g): classi di equivalenza + BVA solo su 'numero'.
 - Parte 3 Domande (11 pt, 30 min): debugging e processo di debugging (3); riconoscere Simple Factory dal codice e pro/contro del metodo static (2); white box e decision coverage (2); dato codice con if/while: diagramma di flusso + test minimi per statement coverage e decision coverage (4).
 Priorità aggiornate ALTA: class diagram (molteplicità/direzione), sequence, activity, state diagram, use case, Observer, Composite, Factory (simple/method/abstract), black box EC+BVA, white box (CFG, statement/decision coverage), debugging, refactoring, metriche, specifica requisiti.
+
+# Prove 9/6/2022 e 27/1/2023 (da sintesi dell'utente, testo originale non disponibile)
+- 2022: Design su mercato ambulanti; 1.4 = Decorator (accessori opzionali piazzole con costo). Black box costoPiazzola a scaglioni m² (<15, 15..40, 40..100). Domande: ottimizzazione per la velocità (Knuth: premature optimization; make it work/right/fast; profiling); coesione dei componenti Clean Architecture (REP, CCP, CRP); statement e decision coverage; errori nei requisiti e costo di correzione nel ciclo di vita (curva di Boehm; review, prototipi, stakeholder).
+- 2023: Design su piscine (badge, accessi, servizi, top 10); 1.4 = Template Method. Black box calcolaCostoAccessi (4 scaglioni). Domande: REP/CCP/CRP; MC/DC; processo requisiti; processo debugging.
+# Regole ricorrenti
+- 1.4 non chiede mai "descrivi X": scenario operativo -> riconoscere il pattern (Decorator, Template Method, Observer, Composite, Factory...).
+- Parte 2 sempre funzione a scaglioni: EC + BVA su un parametro.
+- Clean Architecture REP/CCP/CRP richiesta in 2 prove su 3.
+- White box: dalle definizioni (statement, decision, MC/DC) al CFG con calcolo dei test.
