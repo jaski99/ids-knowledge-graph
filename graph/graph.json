@@ -39,27 +39,99 @@
   "nota_esame": "Formato d'esame non ancora noto: le priorità sono motivate da programma ufficiale e testi di riferimento.",
   "nodi": [
     {
-      "id": "requisiti-obiettivi",
-      "title": "Obiettivi della specifica dei requisiti",
+      "id": "casi-uso-descrizione-testuale",
+      "title": "Descrizione testuale di un caso d'uso (scenari)",
       "area": 1,
-      "tipo": "concetto",
-      "sapere": "La specifica dei requisiti descrive COSA deve fare il sistema (non COME): obiettivi, input attesi, requisiti funzionali e non funzionali, vincoli. È il contratto tra committente e sviluppatori e la base per progettazione e collaudo.",
+      "tipo": "abilita",
+      "sapere": "Ogni caso d'uso si descrive con nome, attori, precondizioni, scenario principale (passi numerati attore/sistema), scenari alternativi ed eccezioni, postcondizioni. La descrizione è il ponte verso sequence e activity diagram.",
       "saper_fare": [
-        "Distinguere requisiti funzionali da non funzionali",
-        "Riconoscere un requisito ambiguo, non verificabile o che descrive una soluzione"
+        "Scrivere scenario principale e alternativi di un caso d'uso",
+        "Indicare pre e postcondizioni",
+        "Derivare dallo scenario i messaggi di un sequence diagram"
       ],
-      "prerequisiti": [],
-      "esercizi": [
+      "prerequisiti": [
         {
-          "tipo_esame": "scritto: classifica requisiti",
-          "testo": "Sistema prenotazione aule. Classifica: (a) l'utente prenota un'aula; (b) la risposta arriva entro 2 s; (c) il sistema è facile da usare.",
-          "soluzione": "(a) funzionale: descrive un servizio. (b) non funzionale (prestazioni), verificabile. (c) non funzionale ma ambiguo/non verificabile: va riscritto, es. 'un nuovo utente completa una prenotazione in meno di 3 minuti senza aiuto'."
+          "id": "uml-casi-uso",
+          "forza": "hard",
+          "motivo": "Si descrive un caso d'uso già individuato nel diagramma."
         }
       ],
-      "tempo_studio_min": 45,
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: descrivi caso d'uso",
+          "testo": "Farmacia: descrivi 'Ordina prodotti' per un cliente con tessera.",
+          "soluzione": "Attore: ClienteTesserato. Pre: cliente autenticato. Principale: 1) il cliente aggiunge prodotti al carrello; 2) conferma l'ordine; 3) il sistema verifica la tessera e applica lo sconto; 4) il sistema richiede il pagamento; 5) il pagamento è accettato; 6) il sistema registra l'ordine e invia conferma. Alternativi: 3a tessera scaduta → nessuno sconto, si prosegue; 5a pagamento rifiutato → ordine annullato. Post: ordine registrato in stato 'pagato'."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non richiesta esplicitamente, ma è il passaggio che rende coerenti use case, sequence e activity (valutati insieme nella Parte 1)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Use case",
+          "url": "https://en.wikipedia.org/wiki/Use_case",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "6.3.2 Requirements Analysis and Clustering with Object-Oriented Use Cases"
+        },
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        }
+      ],
+      "checklist_ripasso": [
+        "Pre/post condizioni",
+        "Scenario principale numerato",
+        "Alternativi ed eccezioni con riferimento al passo"
+      ]
+    },
+    {
+      "id": "esercizio-domanda-processo-requisiti",
+      "title": "Esercizio d'esame: domanda teorica sui requisiti",
+      "area": 1,
+      "tipo": "tipo_esercizio",
+      "sapere": "Domanda aperta della Parte 3 (circa 3 pt, ~8-10 minuti): descrivere il processo di specifica dei requisiti, le sue fasi, i tipi di requisito e le qualità dell'SRS, con un esempio.",
+      "saper_fare": [
+        "Strutturare una risposta in fasi numerate con output di ciascuna",
+        "Inserire un esempio concreto di requisito F e NF",
+        "Stare nel tempo con una risposta di 10-15 righe"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-processo-specifica",
+          "forza": "hard",
+          "motivo": "Contenuto della risposta."
+        },
+        {
+          "id": "requisiti-scrittura-verificabile",
+          "forza": "soft",
+          "motivo": "Per gli esempi di requisiti ben scritti."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica (Parte 3)",
+          "testo": "Descrivi il processo di specifica dei requisiti (fac-simile 2016/17).",
+          "soluzione": "Schema di risposta: 1) Definizione: cosa fa il sistema, non come. 2) Fasi: elicitazione (stakeholder, interviste), analisi (F/NF, priorità, conflitti, modelli use case), specifica (SRS), validazione (review, prototipi), gestione modifiche (tracciabilità). 3) Esempi: F 'il cliente può annullare un ordine non spedito'; NF 'conferma entro 2 s'. 4) Qualità: non ambiguo, verificabile, coerente, completo. 5) Motivazione: errori tardivi costano molto di più."
+        }
+      ],
+      "tempo_studio_min": 30,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Punto 1 del programma ufficiale; base per i diagrammi dei casi d'uso. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda effettivamente presente nella Parte 3 del fac-simile 2016/17."
       },
       "risorse": [
         {
@@ -70,6 +142,281 @@
         {
           "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
           "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Requirements engineering",
+          "url": "https://en.wikipedia.org/wiki/Requirements_engineering",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 6 Requirements Engineering"
+        }
+      ],
+      "checklist_ripasso": [
+        "Scaletta 5 fasi",
+        "Risposta attesa: chiudere con il costo degli errori tardivi (Boehm)",
+        "1 esempio F + 1 NF",
+        "Qualità SRS",
+        "Perché costa correggere tardi"
+      ]
+    },
+    {
+      "id": "esercizio-use-case-da-testo",
+      "title": "Esercizio d'esame: use case da un caso di studio testuale",
+      "area": 1,
+      "tipo": "tipo_esercizio",
+      "sapere": "Famiglia di esercizi della Parte 1: dal testo del caso di studio (biblioteca, farmacia...) si estraggono attori e funzionalità e si disegna il diagramma dei casi d'uso con include/extend/generalizzazioni corrette, in pochi minuti.",
+      "saper_fare": [
+        "Sottolineare nel testo soggetti (attori) e verbi (casi d'uso)",
+        "Produrre in 10 minuti un diagramma completo e leggibile",
+        "Evitare errori tipici: casi d'uso come passi interni, frecce include/extend invertite"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-casi-uso",
+          "forza": "hard",
+          "motivo": "Notazione del diagramma."
+        },
+        {
+          "id": "casi-uso-descrizione-testuale",
+          "forza": "soft",
+          "motivo": "Aiuta a decidere cosa è un caso d'uso e cosa un passo."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: use case (2 pt, fac-simile 2025)",
+          "testo": "Farmacia: i clienti ordinano online o al banco; il cliente con tessera fedeltà ottiene sconti; il farmacista registra le vendite al banco e gestisce gli ordini; il titolare invia promozioni alla mailing list.",
+          "soluzione": "Procedura: 1) Attori: Cliente, ClienteTesserato (specializza Cliente), Farmacista, Titolare. 2) UC: Ordina online (Cliente), Registra vendita al banco (Farmacista), Gestisci ordini (Farmacista), Invia promozioni (Titolare), Iscriviti a mailing list (Cliente). 3) Applica sconto tessera <<extend>> Ordina online e Registra vendita. 4) Confine 'Sistema Farmacia'. In PlantUML-like: Cliente -- (Ordina online); (Applica sconto) .> (Ordina online) : <<extend>>; ClienteTesserato --|> Cliente."
+        },
+        {
+          "tipo_esame": "scritto: errori da evitare",
+          "testo": "Uno studente disegna 'Clicca su conferma' e 'Salva nel DB' come casi d'uso. Correggi.",
+          "soluzione": "Sono passi/operazioni interne, non obiettivi dell'attore. Il caso d'uso corretto è 'Conferma ordine' (obiettivo dell'utente); il salvataggio va nel sequence diagram, non nello use case."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): presente in entrambe le prove (2-3 pt); è il primo esercizio della Parte 1."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Use case diagram",
+          "url": "https://en.wikipedia.org/wiki/Use_case_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: use case diagram",
+          "url": "https://plantuml.com/use-case-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "6.3.2 Requirements Analysis and Clustering with Object-Oriented Use Cases"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Attori = ruoli, non persone",
+        "Casi d'uso = obiettivi dell'attore",
+        "Generalizzazione per il cliente tesserato",
+        "Max 10 minuti",
+        "Trappola: casi d'uso come passi interni ('salva nel DB')",
+        "Trappola: freccia extend dalla base all'estensione (è il contrario)"
+      ]
+    },
+    {
+      "id": "requisiti-costo-errori-boehm",
+      "title": "Costo degli errori nei requisiti (curva di Boehm)",
+      "area": 1,
+      "tipo": "concetto",
+      "sapere": "Il costo per correggere un difetto cresce di ordini di grandezza quanto più tardi viene scoperto (requisiti → progetto → codice → test → esercizio): curva dei costi di Boehm. Le contromisure sono coinvolgere gli stakeholder, revisioni/ispezioni dei requisiti, prototipazione e tracciabilità requisiti-test.",
+      "saper_fare": [
+        "Spiegare l'andamento del costo di correzione lungo il ciclo di vita",
+        "Proporre almeno tre tecniche per scoprire presto gli errori nei requisiti",
+        "Collegare errori nei requisiti a cause concrete (ambiguità, stakeholder mancanti, requisiti impliciti)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-processo-specifica",
+          "forza": "hard",
+          "motivo": "Le contromisure (review, prototipi, validazione) sono fasi del processo."
+        },
+        {
+          "id": "requisiti-input-stakeholder",
+          "forza": "soft",
+          "motivo": "Il coinvolgimento degli stakeholder è una contromisura chiave."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica (Parte 3, prova 9/6/2022)",
+          "testo": "Perché gli errori nei requisiti sono critici e come si riducono?",
+          "soluzione": "1) Un errore nei requisiti si propaga a progetto, codice e test: scoperto in esercizio può costare 10-100 volte di più che in fase di specifica (curva di Boehm, cresce circa esponenzialmente con la fase). 2) Cause: ambiguità, requisiti mancanti/impliciti, stakeholder non consultati, cambi non gestiti. 3) Contromisure: coinvolgere tutti gli stakeholder; revisioni/ispezioni dell'SRS con checklist; prototipi (anche usa e getta) per validare con l'utente; requisiti verificabili con criteri di accettazione; tracciabilità e change control. 4) Esempio: farmacia, sconto tessera non specificato su prodotti già in promozione → scoperto in produzione richiede modifica di codice, test e dati."
+        }
+      ],
+      "tempo_studio_min": 35,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della prova 9/6/2022 (errori nei requisiti, review, prototipazione, stakeholder) e argomento chiave della domanda sul processo dei requisiti."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Barry Boehm",
+          "url": "https://en.wikipedia.org/wiki/Barry_Boehm",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software prototyping",
+          "url": "https://en.wikipedia.org/wiki/Software_prototyping",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software review",
+          "url": "https://en.wikipedia.org/wiki/Software_review",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI"
+        }
+      ],
+      "checklist_ripasso": [
+        "Trappola: dire 'costa un po' di più' → risposta attesa: cresce di ordini di grandezza con la fase",
+        "Citare review, prototipi, stakeholder, tracciabilità",
+        "Un esempio concreto vale punti"
+      ]
+    },
+    {
+      "id": "requisiti-input-stakeholder",
+      "title": "Input dei requisiti: stakeholder ed elicitazione",
+      "area": 1,
+      "tipo": "concetto",
+      "sapere": "Gli input della specifica sono stakeholder (committente, utenti, esperti di dominio), documenti esistenti, normative e sistemi da sostituire. Si raccolgono con tecniche di elicitazione: interviste, questionari, osservazione, workshop, prototipi, analisi di documenti.",
+      "saper_fare": [
+        "Elencare gli stakeholder di un caso di studio",
+        "Scegliere e motivare una tecnica di elicitazione adatta al contesto",
+        "Riconoscere conflitti tra requisiti di stakeholder diversi"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "hard",
+          "motivo": "Bisogna sapere cosa si vuole ottenere (requisiti F/NF) prima di capire da chi e come raccoglierli."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica breve",
+          "testo": "Farmacia con vendita online: chi sono gli stakeholder e con quali tecniche raccogli i requisiti?",
+          "soluzione": "1) Stakeholder: titolare (committente), farmacisti, clienti con/senza tessera fedeltà, corriere, normativa sanitaria/privacy (GDPR). 2) Tecniche: intervista al titolare per obiettivi; osservazione al banco per il flusso di vendita; questionario ai clienti per preferenze; prototipo dell'interfaccia per validare. 3) Conflitto tipico: marketing vuole molti dati dei clienti, la privacy li limita → va negoziato e documentato."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è richiesto da solo, ma è parte della risposta alla domanda sul processo di specifica (Parte 3)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Requirements elicitation",
+          "url": "https://en.wikipedia.org/wiki/Requirements_elicitation",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 6 Requirements Engineering"
+        }
+      ],
+      "checklist_ripasso": [
+        "Stakeholder ≠ utente finale",
+        "Interviste, questionari, osservazione, workshop, prototipi",
+        "Conflitti tra stakeholder vanno negoziati"
+      ]
+    },
+    {
+      "id": "requisiti-obiettivi",
+      "title": "Obiettivi della specifica dei requisiti",
+      "area": 1,
+      "tipo": "concetto",
+      "sapere": "La specifica dei requisiti descrive COSA deve fare il sistema (non COME): obiettivi, input attesi, requisiti funzionali e non funzionali, vincoli. È il contratto tra committente e sviluppatori e la base per progettazione e collaudo.",
+      "saper_fare": [
+        "Distinguere requisiti funzionali da non funzionali",
+        "Riconoscere un requisito ambiguo, non verificabile o che descrive una soluzione",
+        "Spiegare perché un errore nei requisiti costa di più se scoperto tardi"
+      ],
+      "prerequisiti": [],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: classifica requisiti",
+          "testo": "Sistema prenotazione aule. Classifica: (a) l'utente prenota un'aula; (b) la risposta arriva entro 2 s; (c) il sistema è facile da usare.",
+          "soluzione": "(a) funzionale: descrive un servizio. (b) non funzionale (prestazioni), verificabile. (c) non funzionale ma ambiguo/non verificabile: va riscritto, es. 'un nuovo utente completa una prenotazione in meno di 3 minuti senza aiuto'."
+        },
+        {
+          "tipo_esame": "domanda teorica breve",
+          "testo": "Farmacia online: 'Il sistema deve usare un database MySQL per salvare gli ordini'. È un buon requisito?",
+          "soluzione": "1) Descrive il COME (tecnologia), non il COSA. 2) Se è un vincolo reale del committente va classificato come vincolo/requisito non funzionale di implementazione. 3) Altrimenti si riformula: 'Il sistema conserva lo storico degli ordini di ogni cliente per almeno 10 anni'."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): la Parte 3 chiede il processo di specifica dei requisiti; è il punto 1 del programma e la base per lo use case (2-3 pt nella Parte 1)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Functional requirement",
+          "url": "https://en.wikipedia.org/wiki/Functional_requirement",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Non-functional requirement",
+          "url": "https://en.wikipedia.org/wiki/Non-functional_requirement",
           "verificato": true
         }
       ],
@@ -86,7 +433,145 @@
       "checklist_ripasso": [
         "Funzionale vs non funzionale",
         "Requisito verificabile e non ambiguo",
-        "Requisito = cosa, non come"
+        "Requisito = cosa, non come",
+        "Costo dell'errore cresce con la fase"
+      ]
+    },
+    {
+      "id": "requisiti-processo-specifica",
+      "title": "Processo di specifica dei requisiti e documento SRS",
+      "area": 1,
+      "tipo": "concetto",
+      "sapere": "Il processo di ingegneria dei requisiti comprende elicitazione, analisi (classificazione, priorità, risoluzione conflitti), specifica (documento SRS), validazione (revisioni, prototipi) e gestione delle modifiche con tracciabilità. L'SRS organizza introduzione, descrizione generale, requisiti funzionali e non funzionali, vincoli; ogni requisito deve essere corretto, non ambiguo, completo, coerente, verificabile e tracciabile.",
+      "saper_fare": [
+        "Descrivere in ordine le fasi del processo dei requisiti con i loro output",
+        "Elencare le sezioni tipiche di un SRS",
+        "Elencare le qualità di un buon requisito"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-input-stakeholder",
+          "forza": "hard",
+          "motivo": "L'elicitazione è la prima fase del processo."
+        },
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "hard",
+          "motivo": "Il processo produce requisiti F/NF con le qualità viste."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica (Parte 3)",
+          "testo": "Descrivi il processo di specifica dei requisiti.",
+          "soluzione": "1) Elicitazione: raccolta da stakeholder (interviste, osservazione...). 2) Analisi: classificazione F/NF, priorità, risoluzione conflitti, modelli (casi d'uso). 3) Specifica: SRS con requisiti numerati e verificabili. 4) Validazione: revisione con il committente, prototipi, controllo di coerenza/completezza. 5) Gestione: baseline, change control, tracciabilità requisito→progetto→test. Chiudere con: errori nei requisiti sono i più costosi da correggere tardi."
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda teorica esplicita della Parte 3 ('processo di specifica dei requisiti'); punto 1 del programma."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Requirements engineering",
+          "url": "https://en.wikipedia.org/wiki/Requirements_engineering",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software requirements specification",
+          "url": "https://en.wikipedia.org/wiki/Software_requirements_specification",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 6 (6.5 Requirements Definition, Prototyping, Reviews)"
+        },
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "App. B Example of a Requirements Specification"
+        }
+      ],
+      "checklist_ripasso": [
+        "Elicitazione → analisi → specifica → validazione → gestione",
+        "Sezioni SRS",
+        "Qualità: corretto, non ambiguo, completo, coerente, verificabile, tracciabile"
+      ]
+    },
+    {
+      "id": "requisiti-scrittura-verificabile",
+      "title": "Scrivere requisiti verificabili",
+      "area": 1,
+      "tipo": "abilita",
+      "sapere": "Un requisito ben scritto è atomico, misurabile e testabile: soggetto (il sistema), verbo modale ('deve'), azione, condizione e criterio di accettazione. I requisiti non funzionali vanno quantificati.",
+      "saper_fare": [
+        "Riscrivere un requisito vago in forma misurabile",
+        "Dividere un requisito composto in requisiti atomici",
+        "Associare a un requisito un criterio di accettazione"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-processo-specifica",
+          "forza": "soft",
+          "motivo": "Le qualità del requisito vengono dal processo di specifica/SRS."
+        },
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "hard",
+          "motivo": "Serve distinguere F/NF."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: riscrivi requisiti",
+          "testo": "Farmacia: 'Il sistema deve essere veloce e gestire bene gli sconti tessera'.",
+          "soluzione": "1) Separare: R1 prestazioni, R2 sconti. 2) R1: 'Il sistema mostra il riepilogo dell'ordine entro 2 s nel 95% delle richieste con 100 utenti concorrenti'. 3) R2: 'Se il cliente presenta una tessera valida, il sistema applica uno sconto del 5% sul totale dei prodotti da banco'. 4) Criterio: test con tessera valida → totale ridotto del 5%; tessera scaduta → nessuno sconto."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): utile per l'analisi del testo della Parte 1 e per la domanda sui requisiti; non è un esercizio a sé."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Non-functional requirement",
+          "url": "https://en.wikipedia.org/wiki/Non-functional_requirement",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software requirements specification",
+          "url": "https://en.wikipedia.org/wiki/Software_requirements_specification",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 6 Requirements Engineering"
+        }
+      ],
+      "checklist_ripasso": [
+        "Atomico, misurabile, testabile",
+        "NF sempre quantificati",
+        "Un requisito = un criterio di accettazione"
       ]
     },
     {
@@ -94,17 +579,17 @@
       "title": "Diagramma UML dei casi d'uso",
       "area": 1,
       "tipo": "abilita",
-      "sapere": "Il diagramma dei casi d'uso rappresenta attori, casi d'uso, confine del sistema e relazioni (associazione, include, extend, generalizzazione). Ogni caso d'uso va accompagnato da una descrizione testuale (scenario principale e alternativi).",
+      "sapere": "Il diagramma dei casi d'uso rappresenta attori, casi d'uso, confine del sistema e relazioni (associazione, include, extend, generalizzazione tra attori o casi d'uso). Mostra le funzionalità visibili dall'esterno, non il flusso interno.",
       "saper_fare": [
         "Disegnare un diagramma dei casi d'uso a partire da requisiti testuali",
-        "Usare correttamente include ed extend",
-        "Scrivere lo scenario principale e gli scenari alternativi di un caso d'uso"
+        "Usare correttamente include ed extend (direzione delle frecce)",
+        "Usare la generalizzazione tra attori"
       ],
       "prerequisiti": [
         {
           "id": "requisiti-obiettivi",
           "forza": "hard",
-          "motivo": "I casi d'uso rappresentano requisiti funzionali: serve saperli distinguere e formulare."
+          "motivo": "I casi d'uso rappresentano requisiti funzionali: serve saperli distinguere."
         }
       ],
       "esercizi": [
@@ -112,12 +597,17 @@
           "tipo_esame": "scritto: disegna use case",
           "testo": "Biblioteca: il Socio cerca un libro e lo prende in prestito; il prestito richiede sempre l'autenticazione; se il libro non è disponibile il Socio può prenotarlo. Il Bibliotecario registra i libri.",
           "soluzione": "1) Attori: Socio, Bibliotecario (fuori dal confine). 2) Casi d'uso: Cerca libro, Prendi in prestito, Autenticati, Prenota libro, Registra libro. 3) Associazioni: Socio–Cerca/Prendi in prestito; Bibliotecario–Registra libro. 4) Prendi in prestito <<include>> Autenticati (sempre). 5) Prenota libro <<extend>> Prendi in prestito (solo se non disponibile; freccia da Prenota verso Prendi in prestito)."
+        },
+        {
+          "tipo_esame": "scritto: use case (2 pt)",
+          "testo": "Farmacia: il Cliente acquista prodotti online; il Cliente con tessera è un Cliente che accumula punti; il Farmacista gestisce il magazzino; il pagamento passa dal Sistema di pagamento esterno.",
+          "soluzione": "Attori: Cliente, ClienteTesserato --|> Cliente (generalizzazione), Farmacista, SistemaPagamento (attore secondario). UC: Acquista prodotti, Paga (Acquista <<include>> Paga), Accumula punti <<extend>> Acquista (condizione: tessera presente), Gestisci magazzino (Farmacista). ClienteTesserato eredita i casi del Cliente."
         }
       ],
       "tempo_studio_min": 90,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Parte applicativa esplicita del punto 1 del programma. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): use case richiesto in entrambi i fac-simile (2-3 pt Parte 1); applicazione esplicita del punto 1 del programma."
       },
       "risorse": [
         {
@@ -133,6 +623,16 @@
         {
           "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
           "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Use case diagram",
+          "url": "https://en.wikipedia.org/wiki/Use_case_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: use case diagram",
+          "url": "https://plantuml.com/use-case-diagram",
           "verificato": true
         }
       ],
@@ -154,7 +654,74 @@
       "checklist_ripasso": [
         "Attori fuori dal confine del sistema",
         "include = sempre, extend = condizionale",
-        "Direzione delle frecce include/extend"
+        "include: base → incluso; extend: estensione → base",
+        "Generalizzazione tra attori"
+      ]
+    },
+    {
+      "id": "clean-architecture-coesione-componenti",
+      "title": "Coesione dei componenti (Clean Architecture): REP, CCP, CRP",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "Principi di R. C. Martin per decidere quali classi mettere nello stesso componente: REP (Reuse/Release Equivalence: l'unità di riuso è l'unità di rilascio, classi rilasciate e versionate insieme), CCP (Common Closure: raggruppare classi che cambiano per le stesse ragioni, è SRP a livello di componente), CRP (Common Reuse: non costringere chi usa un componente a dipendere da classi che non usa, è ISP a livello di componente). I tre principi sono in tensione (diagramma a triangolo): REP e CCP tendono a ingrandire i componenti, CRP a rimpicciolirli.",
+      "saper_fare": [
+        "Enunciare REP, CCP, CRP con la loro motivazione",
+        "Collegare CCP a SRP e CRP a ISP",
+        "Spiegare la tensione tra i tre principi e cosa succede trascurandone uno",
+        "Applicarli a un esempio di suddivisione in componenti"
+      ],
+      "prerequisiti": [
+        {
+          "id": "principi-solid",
+          "forza": "hard",
+          "motivo": "CCP e CRP generalizzano SRP e ISP ai componenti."
+        },
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "hard",
+          "motivo": "Sono principi di coesione a livello di componente."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica (Parte 3, prove 2022 e 2023)",
+          "testo": "Descrivi i principi di coesione dei componenti di Clean Architecture.",
+          "soluzione": "1) REP: si riusa solo ciò che è rilasciato con numero di versione; le classi di un componente devono avere un senso comune di riuso e venire rilasciate insieme. 2) CCP: le classi che cambiano insieme, per le stesse ragioni, stanno nello stesso componente → una modifica tocca un solo componente (SRP per componenti). 3) CRP: le classi usate insieme stanno insieme; chi dipende da un componente non deve dipendere da classi che non usa, altrimenti viene ricompilato/ridistribuito inutilmente (ISP per componenti). 4) Tensione: trascurare REP → difficile da riusare; trascurare CCP → troppi componenti cambiano insieme; trascurare CRP → troppi rilasci inutili. Nelle fasi iniziali si privilegia CCP, poi REP quando il sistema matura."
+        },
+        {
+          "tipo_esame": "scritto: applica",
+          "testo": "Farmacia: un componente 'utils' contiene CalcoloSconti (cambia ad ogni promozione), ParserCSV e FormatoData. Il modulo Report usa solo FormatoData.",
+          "soluzione": "Viola CCP (CalcoloSconti cambia per ragioni di business diverse dalle altre) e CRP (Report viene ridistribuito ad ogni cambio degli sconti pur non usandoli). Soluzione: componente 'promozioni' con CalcoloSconti e componente 'common-format' con FormatoData e ParserCSV."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della Parte 3 in 2 prove su 3 tra quelle con domande note (9/6/2022 e 27/1/2023)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Package principles",
+          "url": "https://en.wikipedia.org/wiki/Package_principles",
+          "verificato": true
+        },
+        {
+          "titolo": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+          "url": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [],
+      "checklist_ripasso": [
+        "REP = riuso/rilascio, CCP = cambiano insieme (SRP), CRP = usate insieme (ISP)",
+        "Risposta attesa: citare la tensione (triangolo) tra i tre",
+        "Trappola: confonderli con i principi di accoppiamento (ADP, SDP, SAP)",
+        "Esempio concreto di suddivisione"
       ]
     },
     {
@@ -162,23 +729,35 @@
       "title": "Coesione e accoppiamento dei moduli",
       "area": 2,
       "tipo": "concetto",
-      "sapere": "La coesione misura quanto gli elementi di un modulo concorrono a un unico scopo; l'accoppiamento misura quanto un modulo dipende da altri. Un buon progetto punta ad alta coesione e basso accoppiamento, favorendo manutenibilità, riuso e testabilità.",
+      "sapere": "La coesione misura quanto gli elementi di un modulo concorrono a un unico scopo; l'accoppiamento misura quanto un modulo dipende da altri. Scale classiche: coesione da coincidentale a funzionale; accoppiamento da contenuto a dati. Un buon progetto punta ad alta coesione e basso accoppiamento, favorendo manutenibilità, riuso e testabilità.",
       "saper_fare": [
         "Classificare i livelli di coesione e accoppiamento in un esempio di codice",
-        "Proporre una ristrutturazione che riduca l'accoppiamento"
+        "Proporre una ristrutturazione che riduca l'accoppiamento",
+        "Usare coesione/accoppiamento per giustificare un design pattern"
       ],
-      "prerequisiti": [],
+      "prerequisiti": [
+        {
+          "id": "progettazione-obiettivi-livelli",
+          "forza": "soft",
+          "motivo": "Sono criteri di qualità del progetto."
+        }
+      ],
       "esercizi": [
         {
           "tipo_esame": "orale/scritto: analizza un modulo",
           "testo": "La classe Report legge dati dal DB, calcola statistiche e le stampa in HTML. Quale coesione ha? Come migliorarla?",
           "soluzione": "1) Tre responsabilità non correlate nello stesso modulo: coesione bassa (al più sequenziale/comunicativa). 2) Dividere in ReportRepository (accesso dati), StatisticheService (calcolo), HtmlRenderer (presentazione). 3) Collegarle tramite interfacce: ogni classe diventa coesa e l'accoppiamento passa ai dati, non al controllo."
+        },
+        {
+          "tipo_esame": "domanda breve",
+          "testo": "Il metodo calcola(int tipo) di Spedizione fa uno switch su 'tipo' passato da Ordine. Che accoppiamento è?",
+          "soluzione": "Accoppiamento di controllo: Ordine passa un flag che decide il flusso interno di Spedizione. Rimedio: polimorfismo (Strategy) → Ordine chiama spedizione.costo() senza flag."
         }
       ],
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Esplicitamente nel programma (qualità del progetto); prerequisito dei design pattern. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): base per motivare i pattern nella Parte 1 (punto 1.4) e per le domande su metriche e Clean Architecture."
       },
       "risorse": [
         {
@@ -190,6 +769,16 @@
           "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
           "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
           "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Cohesion (computer science)",
+          "url": "https://en.wikipedia.org/wiki/Cohesion_(computer_science)",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Coupling (computer programming)",
+          "url": "https://en.wikipedia.org/wiki/Coupling_(computer_programming)",
+          "verificato": true
         }
       ],
       "riferimenti_testo": [
@@ -199,9 +788,423 @@
         }
       ],
       "checklist_ripasso": [
-        "Scala della coesione (da coincidentale a funzionale)",
-        "Scala dell'accoppiamento (da contenuto a dati)",
-        "Obiettivo: alta coesione, basso accoppiamento"
+        "Scala della coesione (coincidentale, logica, temporale, procedurale, comunicativa, sequenziale, funzionale)",
+        "Scala dell'accoppiamento (contenuto, comune, controllo, stamp, dati)",
+        "Obiettivo: alta coesione, basso accoppiamento",
+        "Trappola: invertire gli estremi delle scale"
+      ]
+    },
+    {
+      "id": "decomposizione-funzionale",
+      "title": "Decomposizione funzionale",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "La decomposizione funzionale (top-down) scompone una funzione del sistema in sottofunzioni sempre più semplici fino a moduli implementabili, documentando flussi di dati tra di essi. È l'approccio strutturato, alternativo alla decomposizione a oggetti.",
+      "saper_fare": [
+        "Scomporre una funzione in un albero di sottofunzioni",
+        "Confrontare decomposizione funzionale e orientata agli oggetti"
+      ],
+      "prerequisiti": [
+        {
+          "id": "progettazione-obiettivi-livelli",
+          "forza": "hard",
+          "motivo": "È una tecnica di progettazione di alto livello."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: scomponi",
+          "testo": "Farmacia: scomponi 'Gestisci ordine online'.",
+          "soluzione": "Gestisci ordine → 1) Ricevi ordine (valida prodotti, verifica disponibilità); 2) Calcola totale (prezzi, sconto tessera, spedizione); 3) Gestisci pagamento (richiesta, esito); 4) Evadi ordine (prepara pacco, aggiorna magazzino, notifica cliente). Ogni foglia è un modulo con input/output chiari. Limite: dati condivisi tra moduli → accoppiamento; l'approccio OO li incapsula in classi (Ordine, Magazzino)."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "bassa",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non compare in nessuna prova nota; è nel programma ma di solito non è un esercizio d'esame."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Functional decomposition",
+          "url": "https://en.wikipedia.org/wiki/Functional_decomposition",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "7.3.1 Introduction of Design Methodologies (functional decomposition)"
+        }
+      ],
+      "checklist_ripasso": [
+        "Top-down: funzione → sottofunzioni",
+        "Confronto con OO: dati incapsulati"
+      ]
+    },
+    {
+      "id": "design-pattern-abstract-factory",
+      "title": "Pattern Abstract Factory",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Abstract Factory (creazionale) fornisce un'interfaccia per creare famiglie di oggetti correlati senza specificarne le classi concrete: ogni ConcreteFactory crea una variante coerente di tutti i prodotti della famiglia. Il client riceve la factory (dependency injection) e dipende solo dalle interfacce.",
+      "saper_fare": [
+        "Riconoscere famiglie di prodotti che devono essere coerenti tra loro",
+        "Implementare interfaccia factory con più metodi create e due factory concrete",
+        "Discutere il limite: aggiungere un nuovo tipo di prodotto cambia tutte le factory"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-factory-method",
+          "forza": "soft",
+          "motivo": "Ogni metodo di un'Abstract Factory è spesso un factory method."
+        },
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4",
+          "testo": "Farmacia: l'app deve funzionare per farmacie italiane e svizzere; ciascun paese ha Ricevuta e CalcoloIva propri, che non vanno mescolati.",
+          "soluzione": "Pattern: Abstract Factory (famiglie coerenti per paese).\ninterface FabbricaPaese { Ricevuta creaRicevuta(); CalcoloIva creaIva(); }\nclass FabbricaItalia implements FabbricaPaese { public Ricevuta creaRicevuta(){ return new RicevutaIT(); } public CalcoloIva creaIva(){ return new IvaIT(); } }\nclass FabbricaSvizzera implements FabbricaPaese { ... RicevutaCH, IvaCH }\nclass Cassa { private final FabbricaPaese f; Cassa(FabbricaPaese f){ this.f=f; } }\nLimite: aggiungere un nuovo prodotto (es. Etichetta) richiede di modificare l'interfaccia e tutte le factory."
+        }
+      ],
+      "tempo_studio_min": 35,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): incluso nelle priorità alte (Factory simple/method/abstract) per il confronto tra le tre varianti."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: abstract factory",
+          "url": "https://refactoring.guru/design-patterns/abstract-factory",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: creational patterns",
+          "url": "https://refactoring.guru/design-patterns/creational-patterns",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Abstract factory pattern",
+          "url": "https://en.wikipedia.org/wiki/Abstract_factory_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Famiglie di prodotti coerenti",
+        "Facile aggiungere famiglie, difficile aggiungere prodotti",
+        "Factory iniettata nel client"
+      ]
+    },
+    {
+      "id": "design-pattern-adapter",
+      "title": "Pattern Adapter",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Adapter (strutturale) converte l'interfaccia di una classe esistente (Adaptee) in quella attesa dal client (Target), permettendo a classi incompatibili di collaborare. Object adapter: l'Adapter implementa Target e contiene un riferimento all'Adaptee; class adapter: eredita dall'Adaptee.",
+      "saper_fare": [
+        "Riconoscere un'integrazione con libreria/servizio esterno con interfaccia diversa",
+        "Implementare un object adapter in Java"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4",
+          "testo": "La farmacia usa l'interfaccia Pagamento{ boolean paga(double euro); } ma il nuovo gateway esterno offre solo GatewayX.charge(long centesimi): String (\"OK\"/\"KO\") e non si può modificare.",
+          "soluzione": "class GatewayXAdapter implements Pagamento {\n  private final GatewayX gw;\n  GatewayXAdapter(GatewayX gw){ this.gw=gw; }\n  public boolean paga(double euro){ return \"OK\".equals(gw.charge(Math.round(euro*100))); }\n}\nGiustificazione: il client resta invariato (OCP), l'Adaptee non è modificabile. Limiti: un livello di indirezione in più; l'adattamento può perdere informazioni (codici di errore)."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): scenario plausibile per l'esercizio 1.4 (integrazione di servizi esterni) ma non presente nelle prove note."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: adapter",
+          "url": "https://refactoring.guru/design-patterns/adapter",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: adapter (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/adapter/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Adapter pattern",
+          "url": "https://en.wikipedia.org/wiki/Adapter_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Target, Adapter, Adaptee",
+        "Object adapter (composizione) preferibile",
+        "Adapter cambia interfaccia; Decorator la mantiene"
+      ]
+    },
+    {
+      "id": "design-pattern-composite",
+      "title": "Pattern Composite",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Composite (strutturale) compone oggetti in strutture ad albero parte-tutto e permette ai client di trattare uniformemente foglie e contenitori tramite un'interfaccia comune Component; il Composite contiene una collezione di Component e delega ricorsivamente le operazioni.",
+      "saper_fare": [
+        "Riconoscere una gerarchia parte-tutto ricorsiva nello scenario",
+        "Disegnare Component, Leaf, Composite con l'associazione 0..* ricorsiva",
+        "Implementare in Java un'operazione ricorsiva (es. conteggio, costo)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "uml-associazioni-molteplicita",
+          "forza": "soft",
+          "motivo": "Il class diagram del pattern richiede associazioni con molteplicità."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4 (fac-simile 2016/17, biblioteca)",
+          "testo": "La biblioteca è organizzata in settori, che contengono scaffali o altri settori; gli scaffali contengono documenti. Si vuole contare i documenti di qualunque settore.",
+          "soluzione": "Pattern: Composite (struttura ricorsiva parte-tutto, trattamento uniforme). Class diagram: interface Elemento{+contaDocumenti(): int}; Documento ..|> Elemento (foglia); Scaffale ..|> Elemento con 0..* Documento; Settore ..|> Elemento con Settore *-- \"0..*\" Elemento.\nJava:\ninterface Elemento { int contaDocumenti(); }\nclass Documento implements Elemento { public int contaDocumenti(){ return 1; } }\nclass Settore implements Elemento {\n  private List<Elemento> figli = new ArrayList<>();\n  void aggiungi(Elemento e){ figli.add(e); }\n  public int contaDocumenti(){ int n=0; for(Elemento e: figli) n+=e.contaDocumenti(); return n; }\n}\nLimiti: difficile vincolare i tipi di figli (es. documenti solo negli scaffali); gestione figli in Component vs Composite (trasparenza vs sicurezza)."
+        }
+      ],
+      "tempo_studio_min": 50,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione ufficiale dell'esercizio 1.4 del 2016/17; citato tra le priorità alte."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: composite",
+          "url": "https://refactoring.guru/design-patterns/composite",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: composite (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/composite/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Composite pattern",
+          "url": "https://en.wikipedia.org/wiki/Composite_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Albero parte-tutto + trattamento uniforme",
+        "Composite contiene 0..* Component (ricorsione)",
+        "Limite: vincolare i tipi dei figli",
+        "Trappola: far ereditare Settore da Scaffale invece di usare l'interfaccia comune"
+      ]
+    },
+    {
+      "id": "design-pattern-decorator",
+      "title": "Pattern Decorator",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Decorator (strutturale) aggiunge responsabilità a un oggetto dinamicamente avvolgendolo in decoratori che implementano la stessa interfaccia e delegano all'oggetto avvolto, aggiungendo il proprio comportamento (es. costo). Alternativa flessibile all'ereditarietà per combinazioni di opzioni.",
+      "saper_fare": [
+        "Riconoscere opzioni combinabili che modificano un comportamento (costo, descrizione)",
+        "Disegnare Component, ConcreteComponent, Decorator astratto con riferimento al Component",
+        "Implementare in Java la catena di decoratori e calcolarne il risultato"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Il pattern si motiva con i principi SOLID."
+        },
+        {
+          "id": "uml-associazioni-molteplicita",
+          "forza": "soft",
+          "motivo": "Il class diagram del pattern richiede associazioni con molteplicità."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4 (prova 9/6/2022, mercato ambulanti)",
+          "testo": "Una piazzola del mercato ha un costo base; si possono aggiungere accessori opzionali e combinabili (allaccio elettrico +10, tettoia +15, posto auto +5), anche più volte. Calcola il costo totale.",
+          "soluzione": "Pattern: Decorator (opzioni combinabili a runtime; con l'ereditarietà servirebbe una sottoclasse per ogni combinazione).\ninterface Piazzola { double costo(); }\nclass PiazzolaBase implements Piazzola { private double mq; public double costo(){ return mq*2; } }\nabstract class Accessorio implements Piazzola { protected final Piazzola p; Accessorio(Piazzola p){ this.p=p; } }\nclass Elettricita extends Accessorio { Elettricita(Piazzola p){ super(p);} public double costo(){ return p.costo()+10; } }\nclass Tettoia extends Accessorio { Tettoia(Piazzola p){ super(p);} public double costo(){ return p.costo()+15; } }\nUso: new Tettoia(new Elettricita(new PiazzolaBase(20))).costo() = 40+10+15 = 65.\nClass diagram: Accessorio --> \"1\" Piazzola (wrappee) e Accessorio ..|> Piazzola.\nLimiti: molti oggetti piccoli; l'identità dell'oggetto decorato cambia; ordine dei decoratori può contare."
+        }
+      ],
+      "tempo_studio_min": 50,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova 9/6/2022 (accessori opzionali con costo)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: decorator",
+          "url": "https://refactoring.guru/design-patterns/decorator",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: decorator (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/decorator/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Decorator pattern",
+          "url": "https://en.wikipedia.org/wiki/Decorator_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Parole chiave: opzioni/accessori/supplementi combinabili",
+        "Decorator È un Component E HA un Component",
+        "Costo = costo avvolto + supplemento",
+        "Trappola: usare sottoclassi per ogni combinazione (esplosione di classi)"
+      ]
+    },
+    {
+      "id": "design-pattern-factory-method",
+      "title": "Pattern Factory Method",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Factory Method (creazionale, GoF) definisce un metodo astratto di creazione in una classe Creator e lascia alle sottoclassi (ConcreteCreator) decidere quale prodotto concreto istanziare; il resto del Creator lavora solo con l'interfaccia Product. Rispetto alla Simple Factory usa l'ereditarietà invece di uno switch: nuovi prodotti = nuove sottoclassi (OCP).",
+      "saper_fare": [
+        "Implementare Creator astratto con metodo factory e sottoclassi concrete",
+        "Spiegare la differenza con Simple Factory e Abstract Factory",
+        "Riconoscere il pattern in un class diagram"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-simple-factory",
+          "forza": "soft",
+          "motivo": "Si capisce meglio come evoluzione della Simple Factory."
+        },
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4",
+          "testo": "Farmacia: ogni canale (negozio, online) gestisce un ordine con gli stessi passi ma crea un tipo di Ricevuta diverso (cartacea o PDF).",
+          "soluzione": "Pattern: Factory Method.\nabstract class Canale { public void chiudiOrdine(Ordine o){ Ricevuta r = creaRicevuta(); r.emetti(o); } protected abstract Ricevuta creaRicevuta(); }\nclass Negozio extends Canale { protected Ricevuta creaRicevuta(){ return new RicevutaCartacea(); } }\nclass Online extends Canale { protected Ricevuta creaRicevuta(){ return new RicevutaPdf(); } }\nConfronto: Simple Factory = un metodo con switch (spesso static); Factory Method = un metodo astratto ridefinito nelle sottoclassi; Abstract Factory = un oggetto con più metodi di creazione per una famiglia di prodotti.\nLimiti: una sottoclasse Creator per ogni prodotto."
+        }
+      ],
+      "tempo_studio_min": 35,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): citato tra le priorità alte (Factory simple/method/abstract) e richiesto come confronto nella domanda 2025."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: factory method",
+          "url": "https://refactoring.guru/design-patterns/factory-method",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: factory method (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/factory-method/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Factory method pattern",
+          "url": "https://en.wikipedia.org/wiki/Factory_method_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Metodo factory astratto + sottoclassi",
+        "Spesso usato dentro un Template Method",
+        "Tabella: Simple (switch) / Method (ereditarietà) / Abstract (famiglie)"
       ]
     },
     {
@@ -209,9 +1212,10 @@
       "title": "Design pattern: concetto e classificazione",
       "area": 2,
       "tipo": "concetto",
-      "sapere": "Un design pattern è una soluzione riusabile a un problema ricorrente di progettazione. Il catalogo GoF li divide in creazionali, strutturali e comportamentali; ogni pattern ha nome, problema, soluzione e conseguenze.",
+      "sapere": "Un design pattern è una soluzione riusabile a un problema ricorrente di progettazione. Il catalogo GoF (23 pattern) li divide in creazionali (come si creano gli oggetti), strutturali (come si compongono) e comportamentali (come collaborano e si distribuiscono le responsabilità); ogni pattern ha nome, problema, soluzione (partecipanti) e conseguenze (vantaggi e limiti).",
       "saper_fare": [
         "Classificare un pattern GoF nella sua categoria",
+        "Descrivere un pattern con nome, problema, soluzione e conseguenze",
         "Spiegare quale problema di accoppiamento risolve un pattern dato"
       ],
       "prerequisiti": [
@@ -219,6 +1223,11 @@
           "id": "coesione-accoppiamento",
           "forza": "hard",
           "motivo": "I pattern si giustificano per come riducono l'accoppiamento e aumentano la coesione."
+        },
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "hard",
+          "motivo": "La soluzione di ogni pattern si descrive con un class diagram."
         }
       ],
       "esercizi": [
@@ -228,10 +1237,10 @@
           "soluzione": "1) Problema: notificare N dipendenti di un cambiamento di stato con basso accoppiamento. 2) Pattern: Observer (comportamentale). 3) Il Subject (modello) mantiene una lista di Observer (interfaccia con update()); attach/detach; al cambio di stato chiama notify() → update() su ciascuno. 4) Conseguenza: il modello dipende solo dall'interfaccia Observer."
         }
       ],
-      "tempo_studio_min": 60,
+      "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Parte applicativa del punto 2 del programma (uso dei design pattern). (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): l'esercizio 1.4 (4-5 pt) chiede in ogni prova di scegliere, motivare e implementare un pattern."
       },
       "risorse": [
         {
@@ -240,8 +1249,18 @@
           "verificato": true
         },
         {
-          "titolo": "Refactoring.Guru - Design Patterns",
+          "titolo": "https://refactoring.guru/design-patterns",
           "url": "https://refactoring.guru/design-patterns",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: catalog",
+          "url": "https://refactoring.guru/design-patterns/catalog",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Design Patterns",
+          "url": "https://en.wikipedia.org/wiki/Design_Patterns",
           "verificato": true
         },
         {
@@ -264,8 +1283,1876 @@
       ],
       "checklist_ripasso": [
         "Tre categorie GoF",
-        "Struttura nome/problema/soluzione/conseguenze",
-        "Esempi: Singleton, Adapter, Observer"
+        "Nome/problema/soluzione/conseguenze",
+        "Ogni pattern ha anche LIMITI (vanno scritti all'esame)"
+      ]
+    },
+    {
+      "id": "design-pattern-observer",
+      "title": "Pattern Observer",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Observer (comportamentale) definisce una dipendenza uno-a-molti: quando il Subject cambia stato, notifica automaticamente tutti gli Observer registrati tramite un'interfaccia comune (update). Subject e Observer restano debolmente accoppiati; varianti push (dati nella notifica) e pull (l'observer interroga il subject).",
+      "saper_fare": [
+        "Riconoscere uno scenario di iscrizione/notifica (mailing list, eventi, viste)",
+        "Disegnare Subject con attach/detach/notify e Observer con update",
+        "Implementare in Java la versione minima e discuterne i limiti"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Il pattern si motiva con i principi SOLID."
+        },
+        {
+          "id": "uml-associazioni-molteplicita",
+          "forza": "soft",
+          "motivo": "Il class diagram del pattern richiede associazioni con molteplicità."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4 (prova 5/11/2025, farmacia)",
+          "testo": "La farmacia vuole che i clienti iscritti alla mailing list ricevano le promozioni appena il titolare ne pubblica una; i clienti possono iscriversi e disiscriversi in qualunque momento. Quale pattern? Giustifica, disegna e scrivi le classi minime.",
+          "soluzione": "Pattern: Observer. Giustificazione: relazione uno-a-molti, numero di iscritti variabile a runtime, la farmacia non deve conoscere le classi concrete dei destinatari (OCP: nuovi tipi di iscritti, es. SMS, senza modificare MailingList).\nClass diagram: MailingList{-iscritti; +iscrivi(o); +disiscrivi(o); +pubblica(p: Promozione)} --> \"0..*\" Iscritto; interface Iscritto{+notifica(p: Promozione)}; Cliente ..|> Iscritto.\nJava:\ninterface Iscritto { void notifica(Promozione p); }\nclass MailingList {\n  private final List<Iscritto> iscritti = new ArrayList<>();\n  void iscrivi(Iscritto i){ iscritti.add(i); }\n  void disiscrivi(Iscritto i){ iscritti.remove(i); }\n  void pubblica(Promozione p){ for(Iscritto i: iscritti) i.notifica(p); }\n}\nclass Cliente implements Iscritto { private String email; public void notifica(Promozione p){ System.out.println(\"Mail a \"+email+\": \"+p); } }\nLimiti: ordine di notifica non garantito; aggiornamenti a cascata/costosi con molti iscritti; rischio di memory leak se non ci si disiscrive."
+        }
+      ],
+      "tempo_studio_min": 50,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova più recente (5/11/2025, mailing list promozioni, 4 pt)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: observer",
+          "url": "https://refactoring.guru/design-patterns/observer",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: observer (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/observer/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Observer pattern",
+          "url": "https://en.wikipedia.org/wiki/Observer_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Uno-a-molti, iscrizione dinamica",
+        "Subject: attach/detach/notify; Observer: update",
+        "Push vs pull",
+        "Limiti: ordine notifiche, cascata, memory leak",
+        "Parole chiave nello scenario: iscriversi, notificare, avvisare, mailing list"
+      ]
+    },
+    {
+      "id": "design-pattern-simple-factory",
+      "title": "Simple Factory e static factory method",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "La Simple Factory non è un pattern GoF ma un idioma: una classe con un metodo (spesso static) che, in base a un parametro, decide quale sottoclasse concreta istanziare e la restituisce come tipo astratto. Centralizza la creazione e toglie i 'new' dal client. Il metodo static è comodo (nessuna istanza, nome espressivo) ma non può essere ridefinito né sostituito/mockato nei test e la factory va modificata ad ogni nuovo prodotto (viola OCP).",
+      "saper_fare": [
+        "Riconoscere una Simple Factory nel codice (switch/if che fa new e ritorna l'interfaccia)",
+        "Elencare pro e contro del metodo factory static",
+        "Distinguere Simple Factory da Factory Method e Abstract Factory"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Il pattern si motiva con i principi SOLID."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda (Parte 3, prova 5/11/2025, 2 pt)",
+          "testo": "Che cosa implementa questo codice? Pro e contro del metodo static.\nclass PagamentoFactory {\n  static Pagamento crea(String tipo){\n    switch(tipo){ case \"carta\": return new Carta(); case \"paypal\": return new PayPal(); default: throw new IllegalArgumentException(tipo); }\n  }\n}",
+          "soluzione": "1) È una Simple Factory (static factory): incapsula la scelta della classe concreta e restituisce l'astrazione Pagamento; il client non usa new e dipende solo dall'interfaccia. 2) Pro static: invocabile senza creare la factory; punto unico di creazione; nome esplicativo; può restituire istanze in cache. 3) Contro static: non si può estendere con sottoclassi/override (niente polimorfismo), non si può sostituire con una factory finta nei test (accoppiamento statico), aggiungere un tipo richiede di modificare lo switch (viola OCP). 4) Evoluzione: Factory Method o factory iniettata come oggetto."
+        }
+      ],
+      "tempo_studio_min": 35,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della prova più recente (5/11/2025): riconoscere la Simple Factory dal codice e discutere il metodo static."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: factory method",
+          "url": "https://refactoring.guru/design-patterns/factory-method",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: factory method (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/factory-method/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Factory %28object-oriented programming%29",
+          "url": "https://en.wikipedia.org/wiki/Factory_%28object-oriented_programming%29",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Non è GoF: è un idioma",
+        "Pro static: niente istanza, punto unico, nome espressivo",
+        "Contro static: niente override, difficile da mockare, viola OCP",
+        "Risposta attesa: nome del pattern + pro + contro, in 5-6 righe"
+      ]
+    },
+    {
+      "id": "design-pattern-singleton",
+      "title": "Pattern Singleton",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Singleton (creazionale) garantisce che una classe abbia una sola istanza e fornisce un punto di accesso globale: costruttore privato, campo statico, metodo statico getInstance (inizializzazione eager, lazy sincronizzata o tramite holder/enum).",
+      "saper_fare": [
+        "Implementare un Singleton thread-safe in Java",
+        "Elencare i limiti (stato globale, test difficili, accoppiamento nascosto)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: implementa",
+          "testo": "Farmacia: un solo Registro delle vendite condiviso da tutte le casse.",
+          "soluzione": "public final class Registro {\n  private static final Registro INSTANCE = new Registro(); // eager, thread-safe\n  private final List<Vendita> vendite = new ArrayList<>();\n  private Registro(){}\n  public static Registro getInstance(){ return INSTANCE; }\n  public synchronized void registra(Vendita v){ vendite.add(v); }\n}\nLimiti: è stato globale (accoppiamento nascosto), difficile da sostituire nei test, viola SRP (gestisce anche il proprio ciclo di vita); spesso meglio un'unica istanza creata e iniettata."
+        }
+      ],
+      "tempo_studio_min": 25,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): pattern semplice e noto, ma non è mai stato la soluzione dell'esercizio 1.4 nelle prove note; utile per domande sui limiti del 'static'."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: singleton",
+          "url": "https://refactoring.guru/design-patterns/singleton",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: singleton (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/singleton/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Singleton pattern",
+          "url": "https://en.wikipedia.org/wiki/Singleton_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Costruttore privato + static getInstance",
+        "Thread safety (eager/holder/enum)",
+        "Limiti: stato globale, test"
+      ]
+    },
+    {
+      "id": "design-pattern-state",
+      "title": "Pattern State",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "State (comportamentale) permette a un oggetto di cambiare comportamento quando cambia il suo stato interno: ogni stato è una classe che implementa un'interfaccia comune; il Context delega allo stato corrente e gli stati decidono le transizioni. È la traduzione a oggetti di uno state diagram.",
+      "saper_fare": [
+        "Tradurre uno state diagram in classi State",
+        "Implementare transizioni in Java senza switch sullo stato",
+        "Confrontare State e Strategy"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "uml-diagramma-stati",
+          "forza": "hard",
+          "motivo": "Il pattern implementa una macchina a stati."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4",
+          "testo": "Acquisto della farmacia con stati Creato, Pagato, Spedito: paga() vale solo da Creato, spedisci() solo da Pagato; le altre richieste vanno rifiutate.",
+          "soluzione": "interface StatoAcquisto { StatoAcquisto paga(); StatoAcquisto spedisci(); }\nclass Creato implements StatoAcquisto { public StatoAcquisto paga(){ return new Pagato(); } public StatoAcquisto spedisci(){ throw new IllegalStateException(\"non pagato\"); } }\nclass Pagato implements StatoAcquisto { public StatoAcquisto paga(){ throw new IllegalStateException(\"già pagato\"); } public StatoAcquisto spedisci(){ return new Spedito(); } }\nclass Spedito implements StatoAcquisto { /* entrambe lanciano eccezione */ }\nclass Acquisto { private StatoAcquisto stato = new Creato(); void paga(){ stato = stato.paga(); } void spedisci(){ stato = stato.spedisci(); } }\nLimiti: molte classi se gli stati sono tanti; con pochi stati e regole semplici un enum + switch è più leggibile."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è stato la soluzione 1.4 nelle prove note, ma si collega direttamente allo state diagram richiesto nel 2025."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: state",
+          "url": "https://refactoring.guru/design-patterns/state",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: state (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/state/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): State pattern",
+          "url": "https://en.wikipedia.org/wiki/State_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Una classe per stato, il contesto delega",
+        "Le transizioni le decidono gli stati (≠ Strategy)",
+        "Mappa diretta da state diagram"
+      ]
+    },
+    {
+      "id": "design-pattern-strategy",
+      "title": "Pattern Strategy",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Strategy (comportamentale) incapsula una famiglia di algoritmi intercambiabili dietro un'interfaccia comune; il Context delega l'algoritmo alla strategia corrente, che può cambiare a runtime. Sostituisce catene di if/switch sul tipo di algoritmo (OCP).",
+      "saper_fare": [
+        "Riconoscere algoritmi alternativi intercambiabili",
+        "Implementare interfaccia Strategy, strategie concrete e Context",
+        "Confrontare Strategy con State e Template Method"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Il pattern si motiva con i principi SOLID."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4",
+          "testo": "Farmacia: il costo di spedizione può essere calcolato con corriere espresso, standard o ritiro in negozio; nuove modalità verranno aggiunte.",
+          "soluzione": "Pattern: Strategy (algoritmi alternativi, scelta a runtime, aggiunta di modalità senza modificare Acquisto).\ninterface Spedizione { double costo(double peso); }\nclass Espresso implements Spedizione { public double costo(double peso){ return 10 + peso*0.5; } }\nclass Ritiro implements Spedizione { public double costo(double peso){ return 0; } }\nclass Acquisto { private Spedizione sped; void setSpedizione(Spedizione s){ sped=s; } double totale(){ return subtotale() + sped.costo(peso()); } }\nLimiti: il client deve conoscere le strategie per sceglierle; proliferazione di classi piccole."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): pattern tra i più comuni nello scenario 'algoritmi alternativi' dell'esercizio 1.4; elencato tra i pattern da saper motivare."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: strategy",
+          "url": "https://refactoring.guru/design-patterns/strategy",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: strategy (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/strategy/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Strategy pattern",
+          "url": "https://en.wikipedia.org/wiki/Strategy_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Algoritmi intercambiabili, scelti dal client",
+        "Elimina switch sul tipo (OCP)",
+        "Diverso da State: in State le transizioni le decide lo stato stesso"
+      ]
+    },
+    {
+      "id": "design-pattern-template-method",
+      "title": "Pattern Template Method",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Template Method (comportamentale) definisce in una classe astratta lo scheletro di un algoritmo in un metodo (final) che chiama passi; le sottoclassi ridefiniscono i passi variabili (metodi astratti o hook) senza cambiare la sequenza. Si basa su ereditarietà (principio di Hollywood: 'non chiamarci, ti chiamiamo noi').",
+      "saper_fare": [
+        "Riconoscere un algoritmo a passi fissi con varianti in alcuni passi",
+        "Implementare il metodo template final e i passi astratti/hook",
+        "Confrontare Template Method (ereditarietà) con Strategy (composizione)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Serve la classificazione e la struttura nome/problema/soluzione/conseguenze."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Il pattern si motiva con i principi SOLID."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: pattern 1.4 (prova 27/1/2023, piscine)",
+          "testo": "Ogni accesso alla piscina segue gli stessi passi: verifica badge, calcolo costo, registrazione ingresso, stampa ricevuta; il calcolo del costo e la verifica cambiano tra nuoto libero, corso e acquagym.",
+          "soluzione": "Pattern: Template Method (sequenza fissa, passi variabili).\nabstract class Accesso {\n  public final void esegui(Badge b){ if(!verifica(b)) return; double c = costo(b); registra(b, c); stampaRicevuta(c); }\n  protected abstract boolean verifica(Badge b);\n  protected abstract double costo(Badge b);\n  protected void registra(Badge b, double c){ /* comune */ }\n  protected void stampaRicevuta(double c){ System.out.println(c); } // hook ridefinibile\n}\nclass NuotoLibero extends Accesso { protected boolean verifica(Badge b){ return b.valido(); } protected double costo(Badge b){ return 6; } }\nclass Corso extends Accesso { protected boolean verifica(Badge b){ return b.valido() && b.iscrittoCorso(); } protected double costo(Badge b){ return 0; } }\nLimiti: legato all'ereditarietà (una sola superclasse, variazioni fissate a compile time); molte sottoclassi se le varianti si combinano."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova 27/1/2023 (algoritmo a passi con varianti)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: template method",
+          "url": "https://refactoring.guru/design-patterns/template-method",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: template method (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/template-method/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Template method pattern",
+          "url": "https://en.wikipedia.org/wiki/Template_method_pattern",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "Metodo template final + passi abstract/hook",
+        "Ereditarietà (TM) vs composizione (Strategy)",
+        "Parole chiave: 'segue sempre gli stessi passi, ma...'",
+        "Trappola: rendere il template ridefinibile (va final)"
+      ]
+    },
+    {
+      "id": "esercizio-class-diagram-da-testo",
+      "title": "Esercizio d'esame: class diagram da un caso di studio",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "Esercizio 1.1 della Parte 1 (3-5 pt): dal testo del caso (biblioteca, farmacia, mercato, piscina) si produce un class diagram con attributi tipizzati, operazioni, associazioni con direzione e molteplicità, generalizzazioni. Deve essere coerente con i diagrammi successivi.",
+      "saper_fare": [
+        "Applicare in 15-20 minuti la procedura sostantivi/verbi",
+        "Annotare ogni associazione con molteplicità su entrambi i lati e direzione",
+        "Inserire le operazioni che verranno usate nel sequence diagram"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "hard",
+          "motivo": "Notazione."
+        },
+        {
+          "id": "uml-associazioni-molteplicita",
+          "forza": "hard",
+          "motivo": "Parte del punteggio è su molteplicità e direzione."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: class diagram (5 pt, stile 2025)",
+          "testo": "Farmacia: i clienti, opzionalmente con tessera a punti, effettuano acquisti composti da più prodotti in quantità diverse; ogni acquisto ha uno stato (creato, pagato, spedito, consegnato, annullato); i farmacisti gestiscono il catalogo.",
+          "soluzione": "Classi: Cliente{-nome; -email; +getTessera()}, Tessera{-codice; -punti: int; +aggiungiPunti(n:int); +sconto(): double}, Acquisto{-data; -stato: StatoAcquisto; +aggiungi(p:Prodotto,q:int); +totale(): double; +paga(); +spedisci()}, RigaAcquisto{-quantita: int; +subtotale(): double}, Prodotto{-codice; -prezzo: double}, Farmacista{+aggiornaCatalogo()}, enum StatoAcquisto{CREATO,PAGATO,SPEDITO,CONSEGNATO,ANNULLATO}.\nAssociazioni: Cliente \"1\" --> \"0..1\" Tessera; Acquisto \"0..*\" --> \"1\" Cliente; Acquisto \"1\" *-- \"1..*\" RigaAcquisto; RigaAcquisto \"0..*\" --> \"1\" Prodotto; Farmacista --> \"0..*\" Prodotto (gestisce)."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio presente in tutte le prove note (3 pt nel 2016/17, 5 pt nel 2025)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Class diagram",
+          "url": "https://en.wikipedia.org/wiki/Class_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: class diagram",
+          "url": "https://plantuml.com/class-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "7.3.4 Object-Oriented Design and UML"
+        }
+      ],
+      "checklist_ripasso": [
+        "Sostantivi → classi/attributi, verbi → operazioni",
+        "Tipi agli attributi",
+        "Stato come enum o attributo (serve per lo state diagram)",
+        "Trappola: diagramma senza operazioni → il sequence non è coerente"
+      ]
+    },
+    {
+      "id": "esercizio-diagrammi-coerenti",
+      "title": "Esercizio d'esame: sequence, activity e state coerenti con le classi",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "Esercizio 1.2 della Parte 1 (3-5 pt): sullo stesso caso si disegnano sequence (scenario dato), activity (processo o intera app) e state diagram (ciclo di vita di un oggetto), valutati sulla coerenza con il class diagram: stessi nomi di classi e operazioni, associazioni navigabili per ogni messaggio, stati = valori dell'attributo di stato.",
+      "saper_fare": [
+        "Fare un controllo incrociato messaggi ↔ operazioni e stati ↔ enum",
+        "Correggere il class diagram aggiungendo le operazioni mancanti",
+        "Mantenere la stessa terminologia in tutti i diagrammi"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-diagramma-sequenza",
+          "forza": "hard",
+          "motivo": "Parte dell'esercizio."
+        },
+        {
+          "id": "uml-diagramma-attivita",
+          "forza": "hard",
+          "motivo": "Parte dell'esercizio."
+        },
+        {
+          "id": "uml-diagramma-stati",
+          "forza": "hard",
+          "motivo": "Parte dell'esercizio (prova 2025)."
+        },
+        {
+          "id": "esercizio-class-diagram-da-testo",
+          "forza": "hard",
+          "motivo": "La coerenza si valuta rispetto al class diagram."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: verifica di coerenza",
+          "testo": "Nel sequence c'è 'A -> T: calcolaSconto()' ma nel class diagram Tessera ha solo sconto(); lo state diagram ha lo stato 'InPreparazione' che non è nell'enum; Acquisto non ha associazione verso Tessera.",
+          "soluzione": "1) Rinominare il messaggio in sconto() (o aggiungere calcolaSconto() a Tessera): un solo nome. 2) Aggiungere IN_PREPARAZIONE all'enum StatoAcquisto oppure togliere lo stato. 3) Il messaggio A→T richiede navigabilità: o si aggiunge Acquisto → Tessera, o si passa da Cliente (A -> C: getTessera(), poi T.sconto()), coerente con Acquisto → Cliente → Tessera."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio 1.2 (3 pt nel 2016/17, 5 pt nel 2025) esplicitamente valutato sulla coerenza con le classi."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: sequence diagram",
+          "url": "https://plantuml.com/sequence-diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: state diagram",
+          "url": "https://plantuml.com/state-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        }
+      ],
+      "checklist_ripasso": [
+        "Checklist finale: ogni messaggio è un'operazione?",
+        "Ogni messaggio segue un'associazione navigabile?",
+        "Stati = valori dell'enum?",
+        "Azioni dell'activity = casi d'uso/operazioni?"
+      ]
+    },
+    {
+      "id": "esercizio-domanda-metriche",
+      "title": "Esercizio d'esame: domanda teorica sulle metriche",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "Domanda aperta della Parte 3: definire le metriche software, classificarle e descriverne una a scelta con formula, esempio numerico, interpretazione e limiti.",
+      "saper_fare": [
+        "Rispondere in 10-15 righe con struttura definizione/categorie/metrica scelta/limiti",
+        "Includere un mini-esempio numerico"
+      ],
+      "prerequisiti": [
+        {
+          "id": "metriche-software",
+          "forza": "hard",
+          "motivo": "Contenuto della risposta."
+        },
+        {
+          "id": "metrica-complessita-ciclomatica",
+          "forza": "soft",
+          "motivo": "Metrica consigliata da presentare con esempio."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica (Parte 3)",
+          "testo": "Descrivi le software metrics e approfondisci una metrica.",
+          "soluzione": "Scaletta: 1) definizione e scopo (stima, qualità, rischio); 2) categorie: dimensione LOC/FP, complessità McCabe/Halstead, OO CK (CBO, LCOM, DIT...); 3) McCabe: V(G)=E−N+2, esempio con un if e un while → 3; significato: cammini indipendenti, soglia ~10; 4) limiti: non misura leggibilità, va combinata con altre metriche."
+        }
+      ],
+      "tempo_studio_min": 25,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda presente nel fac-simile 2016/17."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software metric",
+          "url": "https://en.wikipedia.org/wiki/Software_metric",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Cyclomatic complexity",
+          "url": "https://en.wikipedia.org/wiki/Cyclomatic_complexity",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 8 Design Characteristics and Metrics"
+        }
+      ],
+      "checklist_ripasso": [
+        "Scaletta in 4 punti",
+        "Esempio numerico",
+        "Limiti delle metriche"
+      ]
+    },
+    {
+      "id": "esercizio-pattern-motivato-java",
+      "title": "Esercizio d'esame: pattern motivato + class diagram + Java minimo",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "Esercizio 1.4 della Parte 1 (4-5 pt, ~15-20 minuti): dato uno scenario si sceglie il pattern, lo si giustifica (problema, alternativa scartata, limiti), si disegna il class diagram con i ruoli del pattern applicati alle classi del caso e si scrivono le classi Java minime (interfacce, campi, metodi chiave).",
+      "saper_fare": [
+        "Seguire la scaletta: nome pattern → giustificazione → limiti → class diagram → Java",
+        "Usare i nomi del dominio (non Component/Leaf) indicando il ruolo",
+        "Scrivere solo il Java essenziale ma compilabile"
+      ],
+      "prerequisiti": [
+        {
+          "id": "riconoscere-pattern-scenario",
+          "forza": "hard",
+          "motivo": "Prima bisogna riconoscere il pattern."
+        },
+        {
+          "id": "uml-associazioni-molteplicita",
+          "forza": "hard",
+          "motivo": "Il class diagram richiede associazioni corrette."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Per la giustificazione."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: 1.4 completo (stile 2025)",
+          "testo": "Farmacia: quando arriva un nuovo lotto di un farmaco esaurito, i clienti che lo avevano richiesto devono essere avvisati via email o SMS.",
+          "soluzione": "1) Pattern: Observer. 2) Giustificazione: uno-a-molti, iscritti variabili per prodotto, il Prodotto non deve conoscere email/SMS (basso accoppiamento, OCP). Alternativa scartata: polling dei clienti (inefficiente). 3) Limiti: ordine di notifica non garantito, iscritti da rimuovere dopo l'avviso. 4) Class diagram: Prodotto(Subject){+iscrivi(a); +rimuovi(a); +riassortisci(q:int)} --> \"0..*\" Avvisabile; interface Avvisabile{+avvisa(p:Prodotto)}; AvvisoEmail, AvvisoSms ..|> Avvisabile.\n5) Java:\ninterface Avvisabile { void avvisa(Prodotto p); }\nclass Prodotto { private int qta; private final List<Avvisabile> attesa = new ArrayList<>();\n  void iscrivi(Avvisabile a){ attesa.add(a); }\n  void riassortisci(int q){ boolean eraEsaurito = qta==0; qta+=q; if(eraEsaurito){ attesa.forEach(a -> a.avvisa(this)); attesa.clear(); } } }\nclass AvvisoEmail implements Avvisabile { private String email; public void avvisa(Prodotto p){ /* invia */ } }"
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio 1.4 presente in tutte le prove note (5 pt nel 2016/17, 4 pt nel 2025)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: catalog",
+          "url": "https://refactoring.guru/design-patterns/catalog",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: observer (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/observer/java/example",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: composite (esempio Java)",
+          "url": "https://refactoring.guru/design-patterns/composite/java/example",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "HFDP"
+        },
+        {
+          "libro": "GOF"
+        }
+      ],
+      "checklist_ripasso": [
+        "Scaletta: pattern, perché, alternativa scartata, limiti, diagramma, Java",
+        "Ruoli del pattern annotati sulle classi del dominio",
+        "Trappola: dimenticare i LIMITI (chiesti esplicitamente)",
+        "Java minimo: interfaccia + 2 classi + metodo chiave"
+      ]
+    },
+    {
+      "id": "esercizio-riconosci-pattern-dal-codice",
+      "title": "Esercizio d'esame: riconoscere il pattern dal codice",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "Domanda della Parte 3 (circa 2 pt): dato un frammento Java si nomina il pattern o idioma implementato (Simple Factory, Singleton, Observer, Decorator...), si indicano i ruoli delle classi e si discutono pro e contro di una scelta implementativa (es. metodo static).",
+      "saper_fare": [
+        "Individuare la firma tipica del pattern (static create con switch, costruttore che riceve lo stesso tipo, lista di listener...)",
+        "Indicare ruoli e conseguenze in poche righe"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-simple-factory",
+          "forza": "hard",
+          "motivo": "Caso della prova 2025."
+        },
+        {
+          "id": "riconoscere-pattern-scenario",
+          "forza": "soft",
+          "motivo": "Stessa tabella di indizi, letta dal codice."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda (Parte 3)",
+          "testo": "class Bevanda { ... } class ConLatte extends Bevanda { private Bevanda b; ConLatte(Bevanda b){ this.b=b; } double costo(){ return b.costo()+0.3; } } — che pattern è?",
+          "soluzione": "Decorator: ConLatte È una Bevanda e HA una Bevanda a cui delega costo() aggiungendo il supplemento; si possono impilare più decoratori. Pro: combinazioni a runtime senza sottoclassi per ogni combinazione. Contro: molti oggetti, debug più difficile."
+        },
+        {
+          "tipo_esame": "domanda (Parte 3, prova 2025)",
+          "testo": "static Pagamento crea(String tipo){ switch(tipo){ ... return new Carta(); ... } } — che cos'è? pro/contro di static?",
+          "soluzione": "Simple Factory con metodo static. Pro: nessuna istanza, creazione centralizzata, client disaccoppiato dalle classi concrete. Contro: non sovrascrivibile né mockabile, modifica dello switch per ogni nuovo tipo (viola OCP)."
+        }
+      ],
+      "tempo_studio_min": 20,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): tipo di domanda presente nella prova più recente (5/11/2025, 2 pt)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: catalog",
+          "url": "https://refactoring.guru/design-patterns/catalog",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Factory %28object-oriented programming%29",
+          "url": "https://en.wikipedia.org/wiki/Factory_%28object-oriented_programming%29",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "HFDP"
+        },
+        {
+          "libro": "GOF"
+        }
+      ],
+      "checklist_ripasso": [
+        "static + switch + new → Simple Factory",
+        "Costruttore privato + getInstance → Singleton",
+        "Riceve e avvolge lo stesso tipo → Decorator",
+        "Lista di listener + notify → Observer"
+      ]
+    },
+    {
+      "id": "metrica-complessita-ciclomatica",
+      "title": "Calcolare la complessità ciclomatica",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "La complessità ciclomatica di McCabe si calcola sul grafo di flusso: V(G) = E − N + 2 (componente connessa singola), oppure numero di predicati (if, while, for, case, &&/||) + 1, oppure numero di regioni del grafo planare. Indica il numero di cammini linearmente indipendenti.",
+      "saper_fare": [
+        "Disegnare il grafo di flusso di un metodo",
+        "Calcolare V(G) con due formule e verificare che coincidano",
+        "Usare V(G) come limite superiore ai test per la copertura delle decisioni"
+      ],
+      "prerequisiti": [
+        {
+          "id": "metriche-software",
+          "forza": "hard",
+          "motivo": "È la metrica di complessità di riferimento."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: calcola V(G)",
+          "testo": "int sconto(int tot, boolean tessera){ int s=0; if(tessera) s=5; while(tot>100){ s++; tot-=100; } return s; }",
+          "soluzione": "1) Predicati: if(tessera), while(tot>100) → 2. 2) V(G)=2+1=3. 3) Verifica col grafo: nodi N={start,if,s=5,while,corpo,return}=6, archi E={start→if, if→s=5, if→while, s=5→while, while→corpo, corpo→while, while→return}=7 → 7−6+2=3. 4) Servono al più 3 cammini indipendenti, es. (tessera=F,tot=50), (tessera=T,tot=50), (tessera=F,tot=150)."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): è la 'metrica a scelta' più facile da presentare e si collega al grafo di flusso richiesto nella Parte 3 (white box) della prova 2025."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Cyclomatic complexity",
+          "url": "https://en.wikipedia.org/wiki/Cyclomatic_complexity",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "8.2 Measurement Theory (cap. 8)"
+        }
+      ],
+      "checklist_ripasso": [
+        "V(G)=E−N+2 = decisioni+1",
+        "Contare && e || come decisioni se si conta per condizioni",
+        "Verificare con due formule"
+      ]
+    },
+    {
+      "id": "metriche-software",
+      "title": "Metriche software",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "Le metriche quantificano attributi del software: dimensione (LOC, function point), complessità (complessità ciclomatica di McCabe, Halstead), metriche OO di Chidamber-Kemerer (WMC, DIT, NOC, CBO, RFC, LCOM). Servono a stimare costi, individuare moduli a rischio e confrontare progetti, ma vanno interpretate: una metrica isolata non misura la qualità.",
+      "saper_fare": [
+        "Definire almeno tre metriche con formula e significato",
+        "Interpretare un valore anomalo (es. CBO alto, LCOM alto)",
+        "Discutere limiti delle metriche (LOC dipende dal linguaggio)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "qualita-progettazione",
+          "forza": "hard",
+          "motivo": "Le metriche misurano attributi di qualità."
+        },
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "hard",
+          "motivo": "CBO e LCOM misurano accoppiamento e coesione."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica (Parte 3)",
+          "testo": "Software metrics: cosa sono? Descrivine una a scelta (fac-simile 2016/17).",
+          "soluzione": "1) Misure quantitative di attributi di prodotto/processo; usate per stima, controllo qualità, individuazione di moduli critici. 2) Categorie: dimensione (LOC, FP), complessità (McCabe, Halstead), OO (CK). 3) Metrica scelta: complessità ciclomatica V(G)=E−N+2 (archi−nodi+2) = numero di decisioni +1; misura i cammini indipendenti, quindi il numero minimo di test per coprirli; V(G)>10 indica un modulo da semplificare. 4) Limiti: misura solo il flusso di controllo, non la leggibilità dei dati."
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della Parte 3 del fac-simile 2016/17 ('software metrics e una metrica a scelta'); citate tra le priorità alte."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software metric",
+          "url": "https://en.wikipedia.org/wiki/Software_metric",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Function point",
+          "url": "https://en.wikipedia.org/wiki/Function_point",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Source lines of code",
+          "url": "https://en.wikipedia.org/wiki/Source_lines_of_code",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Halstead complexity measures",
+          "url": "https://en.wikipedia.org/wiki/Halstead_complexity_measures",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "8.2 Measurement Theory; 8.4 OO Design Metrics (cap. 8)"
+        }
+      ],
+      "checklist_ripasso": [
+        "Dimensione, complessità, OO (CK)",
+        "Per la metrica scelta: definizione, formula, esempio, interpretazione, limiti",
+        "Trappola: dire che una metrica misura direttamente la 'qualità'"
+      ]
+    },
+    {
+      "id": "orm-object-relational-mapping",
+      "title": "Object Relational Mapping, problematiche e JPA/Hibernate",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "L'ORM mappa classi e associazioni su tabelle e chiavi esterne. Problematiche (impedance mismatch): identità vs chiave primaria, ereditarietà (single table, joined, table per class), associazioni navigabili vs join, granularità, caricamento lazy/eager e problema N+1 query. In Java lo standard è JPA (Jakarta Persistence), con Hibernate come implementazione: @Entity, @Id, @OneToMany, @ManyToOne, EntityManager.",
+      "saper_fare": [
+        "Elencare i problemi di impedance mismatch con un esempio",
+        "Mappare una classe con un'associazione 1..* tramite annotazioni JPA",
+        "Spiegare il problema N+1 e come evitarlo (fetch join)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "progettazione-obiettivi-livelli",
+          "forza": "soft",
+          "motivo": "L'ORM è una scelta di progetto del livello dati."
+        },
+        {
+          "id": "uml-associazioni-molteplicita",
+          "forza": "hard",
+          "motivo": "Le molteplicità determinano il mapping (1..*, *..*)."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: mapping JPA",
+          "testo": "Farmacia: un Cliente ha molti Ordini, ogni Ordine un solo Cliente. Scrivi le entità minime.",
+          "soluzione": "@Entity class Cliente { @Id @GeneratedValue Long id; String nome; @OneToMany(mappedBy=\"cliente\") List<Ordine> ordini; }\n@Entity class Ordine { @Id @GeneratedValue Long id; @ManyToOne Cliente cliente; }\nLa FK sta nella tabella ORDINE (lato 'molti', proprietario); mappedBy evita una join table. Con caricamento lazy, iterare 100 clienti e leggere ordini genera 1+100 query (N+1): usare 'join fetch'."
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "bassa",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): nessuna delle prove note (2016/17, 2022, 2023, 2025) chiede ORM; è nel programma (teoria + JPA/Hibernate) quindi va conosciuto a livello di definizione."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Object–relational mapping",
+          "url": "https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Object–relational impedance mismatch",
+          "url": "https://en.wikipedia.org/wiki/Object%E2%80%93relational_impedance_mismatch",
+          "verificato": true
+        },
+        {
+          "titolo": "https://jakarta.ee/specifications/persistence/3.1/",
+          "url": "https://jakarta.ee/specifications/persistence/3.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html",
+          "url": "https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html",
+          "verificato": true
+        },
+        {
+          "titolo": "https://martinfowler.com/bliki/OrmHate.html",
+          "url": "https://martinfowler.com/bliki/OrmHate.html",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "7.3.2 Relational Database Design"
+        }
+      ],
+      "checklist_ripasso": [
+        "Impedance mismatch: identità, ereditarietà, associazioni, granularità",
+        "FK sul lato molti",
+        "Lazy/eager e N+1"
+      ]
+    },
+    {
+      "id": "principi-solid",
+      "title": "Principi SOLID",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "SOLID: Single Responsibility (una sola ragione di cambiamento), Open/Closed (aperto all'estensione, chiuso alla modifica), Liskov Substitution (i sottotipi sostituiscono i supertipi senza rompere i contratti), Interface Segregation (interfacce piccole e specifiche), Dependency Inversion (dipendere da astrazioni, non da implementazioni). Sono la motivazione di gran parte dei design pattern.",
+      "saper_fare": [
+        "Riconoscere la violazione di un principio in un frammento di codice",
+        "Correggere la violazione con un'astrazione o una separazione",
+        "Collegare un pattern al principio che applica (es. Strategy → OCP, DIP)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "hard",
+          "motivo": "SRP e ISP sono coesione; DIP riduce l'accoppiamento."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: individua la violazione",
+          "testo": "class Acquisto { double spedizione(String tipo){ if(tipo.equals(\"corriere\")) return 7; else if(tipo.equals(\"ritiro\")) return 0; ... } }",
+          "soluzione": "Viola OCP: ogni nuovo tipo di spedizione modifica Acquisto. Correzione: interface Spedizione { double costo(); } con Corriere, Ritiro; Acquisto riceve una Spedizione (DIP: dipende dall'astrazione). Nuovi tipi = nuove classi, Acquisto invariato (è lo Strategy)."
+        },
+        {
+          "tipo_esame": "domanda breve",
+          "testo": "Quadrato extends Rettangolo con setLarghezza che cambia anche l'altezza: quale principio?",
+          "soluzione": "Liskov: un client che imposta larghezza 5 e altezza 4 si aspetta area 20 ma ottiene 16; il sottotipo non rispetta il contratto del supertipo."
+        }
+      ],
+      "tempo_studio_min": 50,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): usati per giustificare il pattern nell'esercizio 1.4 e legati a REP/CCP/CRP (domanda in 2 prove su 3); regole di codice richieste anche dall'utente."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): SOLID",
+          "url": "https://en.wikipedia.org/wiki/SOLID",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Single-responsibility principle",
+          "url": "https://en.wikipedia.org/wiki/Single-responsibility_principle",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Open–closed principle",
+          "url": "https://en.wikipedia.org/wiki/Open%E2%80%93closed_principle",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Liskov substitution principle",
+          "url": "https://en.wikipedia.org/wiki/Liskov_substitution_principle",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Interface segregation principle",
+          "url": "https://en.wikipedia.org/wiki/Interface_segregation_principle",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Dependency inversion principle",
+          "url": "https://en.wikipedia.org/wiki/Dependency_inversion_principle",
+          "verificato": true
+        },
+        {
+          "titolo": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+          "url": "https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "HFDP"
+        }
+      ],
+      "checklist_ripasso": [
+        "S: una ragione di cambiamento",
+        "O: estendi senza modificare",
+        "L: sottotipo sostituibile",
+        "I: interfacce piccole",
+        "D: dipendi da astrazioni",
+        "Trappola: SRP non è 'un solo metodo'"
+      ]
+    },
+    {
+      "id": "progettazione-obiettivi-livelli",
+      "title": "Obiettivi della progettazione: alto livello e dettaglio",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "La progettazione trasforma i requisiti in una soluzione: il progetto di alto livello (architettura) decide componenti, loro responsabilità e interfacce; il progetto di dettaglio definisce classi, algoritmi, strutture dati e dati persistenti. Obiettivi: soddisfare i requisiti F/NF, gestire la complessità, facilitare manutenzione e riuso.",
+      "saper_fare": [
+        "Distinguere decisioni di alto livello da decisioni di dettaglio",
+        "Spiegare come i requisiti non funzionali guidano l'architettura",
+        "Elencare gli artefatti prodotti a ciascun livello"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "hard",
+          "motivo": "La progettazione parte dai requisiti F/NF."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica breve",
+          "testo": "Farmacia online. Classifica: (a) separare app web, servizio ordini e DB; (b) usare una HashMap per il carrello; (c) il servizio pagamenti comunica via REST.",
+          "soluzione": "(a) alto livello: componenti e architettura. (b) dettaglio: struttura dati interna. (c) alto livello: interfaccia/connettore tra componenti."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è un esercizio a sé, ma fornisce il lessico per le domande di teoria e per motivare i diagrammi."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software design",
+          "url": "https://en.wikipedia.org/wiki/Software_design",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 7 Design: Architecture and Methodology (7.2 Architectural Design)"
+        }
+      ],
+      "checklist_ripasso": [
+        "Alto livello = componenti + interfacce",
+        "Dettaglio = classi, algoritmi, dati",
+        "NF guidano l'architettura"
+      ]
+    },
+    {
+      "id": "qualita-progettazione",
+      "title": "Caratteristiche di qualità del progetto",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "Un progetto di qualità soddisfa i requisiti ed è manutenibile, comprensibile, modificabile, riusabile, testabile ed efficiente. I modelli di qualità del prodotto (ISO/IEC 9126, poi 25010) elencano caratteristiche come funzionalità, affidabilità, usabilità, efficienza, manutenibilità, portabilità; coesione, accoppiamento e semplicità sono attributi interni che le influenzano.",
+      "saper_fare": [
+        "Elencare le caratteristiche di qualità di un modello ISO",
+        "Collegare un attributo interno (coesione, accoppiamento) a una qualità esterna (manutenibilità)"
+      ],
+      "prerequisiti": [
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "hard",
+          "motivo": "Coesione e accoppiamento sono gli attributi interni principali."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica breve",
+          "testo": "Perché un basso accoppiamento migliora la manutenibilità?",
+          "soluzione": "Una modifica in un modulo poco accoppiato si propaga a pochi altri moduli: meno classi da cambiare e ritestare, meno regressioni. Inoltre il modulo si testa isolato (stub/mock) e si riusa altrove."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): supporta la domanda sulle metriche (cosa misurano) senza essere chiesto da solo nelle prove note."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Software quality",
+          "url": "https://en.wikipedia.org/wiki/Software_quality",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): ISO/IEC 9126",
+          "url": "https://en.wikipedia.org/wiki/ISO/IEC_9126",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 8 Design Characteristics and Metrics"
+        }
+      ],
+      "checklist_ripasso": [
+        "Qualità esterne vs attributi interni",
+        "ISO 9126/25010: 6-8 caratteristiche",
+        "Manutenibilità ← coesione/accoppiamento"
+      ]
+    },
+    {
+      "id": "riconoscere-pattern-scenario",
+      "title": "Riconoscere il pattern dallo scenario",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "L'esercizio 1.4 non chiede mai 'descrivi il pattern X' ma presenta uno scenario operativo da cui ricavare il pattern. Indizi tipici: struttura ad albero/contenitori annidati → Composite; iscrizione e notifiche → Observer; opzioni/accessori combinabili che sommano costi → Decorator; stessi passi con varianti → Template Method; algoritmi intercambiabili → Strategy; comportamento che dipende dallo stato → State; creazione dipendente da un parametro → Factory; interfaccia incompatibile → Adapter; unica istanza → Singleton.",
+      "saper_fare": [
+        "Associare uno scenario al pattern usando le parole chiave",
+        "Escludere i pattern simili motivando (Decorator vs Strategy, State vs Strategy, Template Method vs Strategy)",
+        "Scrivere una giustificazione di 3-4 righe con problema, soluzione e limite"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-composite",
+          "forza": "hard",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-observer",
+          "forza": "hard",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-decorator",
+          "forza": "hard",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-template-method",
+          "forza": "hard",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-strategy",
+          "forza": "hard",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-state",
+          "forza": "soft",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-simple-factory",
+          "forza": "soft",
+          "motivo": "Pattern della tabella."
+        },
+        {
+          "id": "design-pattern-adapter",
+          "forza": "soft",
+          "motivo": "Pattern della tabella."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: riconosci (tabella scenario → pattern)",
+          "testo": "Abbina: (a) piscina: corsi composti da lezioni e moduli che contengono altre lezioni, durata totale; (b) mercato: un ambulante vuole ricevere avvisi quando si libera una piazzola; (c) farmacia: confezione regalo, spedizione assicurata e biglietto si aggiungono a scelta all'ordine con un sovrapprezzo; (d) piscina: ogni tipo di ingresso esegue verifica, addebito, registrazione, ma con regole diverse; (e) farmacia: sconto calcolato con politiche diverse (percentuale, a punti, 3x2) scelte dal titolare.",
+          "soluzione": "(a) Composite: gerarchia ricorsiva, operazione uniforme (durata). (b) Observer: iscrizione + notifica. (c) Decorator: aggiunte combinabili che modificano il costo, non Strategy perché si sommano più opzioni insieme. (d) Template Method: sequenza fissa, passi variabili per sottoclasse. (e) Strategy: un algoritmo alla volta, intercambiabile a runtime; non Decorator perché non si combinano."
+        },
+        {
+          "tipo_esame": "scritto: giustificazione",
+          "testo": "Scrivi la giustificazione per (c).",
+          "soluzione": "Il numero di combinazioni di aggiunte cresce esponenzialmente: con l'ereditarietà servirebbe una sottoclasse per combinazione. Decorator avvolge l'ordine con oggetti che hanno la stessa interfaccia e aggiungono il proprio costo, combinabili a runtime (OCP). Limite: molti oggetti piccoli e l'ordine di avvolgimento può influire su descrizione/costo."
+        }
+      ],
+      "tempo_studio_min": 50,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): in tutte le prove note l'esercizio 1.4 (4-5 pt) parte da uno scenario: Composite (2016/17), Decorator (2022), Template Method (2023), Observer (2025)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: catalog",
+          "url": "https://refactoring.guru/design-patterns/catalog",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: creational patterns",
+          "url": "https://refactoring.guru/design-patterns/creational-patterns",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: structural patterns",
+          "url": "https://refactoring.guru/design-patterns/structural-patterns",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: behavioral patterns",
+          "url": "https://refactoring.guru/design-patterns/behavioral-patterns",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "HFDP"
+        },
+        {
+          "libro": "GOF"
+        }
+      ],
+      "checklist_ripasso": [
+        "Albero → Composite",
+        "Iscriviti/avvisa → Observer",
+        "Opzioni combinabili con costo → Decorator",
+        "Stessi passi, varianti → Template Method",
+        "Algoritmo scelto a runtime → Strategy",
+        "Trappola: scegliere Strategy quando le opzioni si sommano (è Decorator)"
+      ]
+    },
+    {
+      "id": "stili-architetturali",
+      "title": "Stili architetturali",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "Uno stile architetturale è una famiglia ricorrente di organizzazioni di componenti e connettori: a livelli (layered), client-server, pipe and filter, MVC, event-driven/publish-subscribe, repository/database-centrico. Ogni stile favorisce alcune qualità (es. layered: manutenibilità; pipe and filter: riuso dei filtri) e ne penalizza altre.",
+      "saper_fare": [
+        "Riconoscere lo stile di un sistema descritto",
+        "Motivare la scelta di uno stile con qualità e limiti",
+        "Disegnare uno schema a blocchi dello stile"
+      ],
+      "prerequisiti": [
+        {
+          "id": "progettazione-obiettivi-livelli",
+          "forza": "hard",
+          "motivo": "Gli stili sono scelte di progetto di alto livello."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica breve",
+          "testo": "Farmacia: app mobile e sito web, logica ordini comune, DB unico. Che stile proponi?",
+          "soluzione": "1) Client-server con architettura a 3 livelli: presentazione (app/web), logica (servizio ordini), dati (DB). 2) Pro: client diversi riusano la stessa logica; livelli sostituibili. 3) Contro: latenza tra livelli, il server è un punto critico. 4) Dentro la presentazione si può usare MVC."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non comparso nelle prove note; resta nel punto 2 del programma e può essere domanda di teoria."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Architectural pattern",
+          "url": "https://en.wikipedia.org/wiki/Architectural_pattern",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Multitier architecture",
+          "url": "https://en.wikipedia.org/wiki/Multitier_architecture",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Model–view–controller",
+          "url": "https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Pipeline (software)",
+          "url": "https://en.wikipedia.org/wiki/Pipeline_(software)",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "7.2.3 Meta-Architectural Knowledge: Styles, Patterns, Tactics, and Reference Architectures"
+        }
+      ],
+      "checklist_ripasso": [
+        "Layered, client-server, pipe&filter, MVC, event-driven, repository",
+        "Ogni stile: qualità favorite e limiti",
+        "Trappola: confondere MVC (stile/pattern di presentazione) con 3-tier"
+      ]
+    },
+    {
+      "id": "uml-associazioni-molteplicita",
+      "title": "Associazioni: molteplicità, navigabilità, ruoli",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Ogni estremo di un'associazione ha molteplicità (1, 0..1, *, 1..*, n..m), eventuale nome di ruolo e navigabilità (freccia = chi conosce chi). La navigabilità diventa un attributo nella classe sorgente in Java; le molteplicità diventano riferimento singolo o collezione. Aggregazione e composizione sono associazioni con semantica parte-tutto.",
+      "saper_fare": [
+        "Leggere e scrivere molteplicità corrette dal testo ('ogni', 'al più', 'almeno uno')",
+        "Decidere la direzione delle associazioni in base a chi invoca chi nel sequence diagram",
+        "Tradurre un'associazione in attributi Java"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "hard",
+          "motivo": "Le associazioni sono elementi del class diagram."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: molteplicità e direzione (prova 2025)",
+          "testo": "Farmacia: un Cliente può avere al più una Tessera; una Tessera appartiene a un solo Cliente; un Cliente effettua zero o più Acquisti; ogni Acquisto è di un Cliente; l'Acquisto deve conoscere il Cliente per applicare lo sconto, il Cliente non ha bisogno di elencare gli acquisti.",
+          "soluzione": "1) Cliente \"1\" -- \"0..1\" Tessera (bidirezionale o Cliente → Tessera, perché lo sconto si chiede al cliente). 2) Acquisto \"0..*\" --> \"1\" Cliente: freccia da Acquisto verso Cliente (solo Acquisto naviga). 3) Java: class Acquisto { private Cliente cliente; } class Cliente { private Tessera tessera; /* può essere null */ }. 4) Molteplicità lette: 'al più una' = 0..1, 'zero o più' = 0..* (o *), 'ogni acquisto è di un cliente' = 1."
+        },
+        {
+          "tipo_esame": "scritto: dal codice al diagramma",
+          "testo": "class Scaffale { private List<Documento> docs; } class Documento { }",
+          "soluzione": "Scaffale --> \"0..*\" Documento, navigabile solo da Scaffale; molteplicità lato Scaffale non deducibile dal codice (di solito 1 o 0..1)."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): la prova 2025 assegna 5 pt al class diagram chiedendo esplicitamente direzione e molteplicità delle associazioni."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Multiplicity %28informatics%29",
+          "url": "https://en.wikipedia.org/wiki/Multiplicity_%28informatics%29",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Association %28object-oriented programming%29",
+          "url": "https://en.wikipedia.org/wiki/Association_%28object-oriented_programming%29",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Object composition",
+          "url": "https://en.wikipedia.org/wiki/Object_composition",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Molteplicità su ENTRAMBI gli estremi",
+        "Molteplicità vicino alla classe a cui si riferisce",
+        "Freccia = navigabilità = attributo in Java",
+        "Trappola: mettere la molteplicità dal lato sbagliato",
+        "0..1 vs 1: obbligatorietà"
+      ]
+    },
+    {
+      "id": "uml-componenti-deployment",
+      "title": "Diagrammi UML di componenti e deployment",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "Il component diagram mostra i componenti software e le loro interfacce fornite (lollipop) e richieste (socket); il deployment diagram mostra nodi hardware/ambienti di esecuzione e gli artefatti installati, con i canali di comunicazione. Documentano l'architettura di alto livello.",
+      "saper_fare": [
+        "Leggere un component diagram con interfacce fornite/richieste",
+        "Disegnare un deployment diagram a 3 nodi"
+      ],
+      "prerequisiti": [
+        {
+          "id": "stili-architetturali",
+          "forza": "soft",
+          "motivo": "Descrivono l'architettura scelta."
+        },
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "soft",
+          "motivo": "Stessa notazione di base UML."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: deployment",
+          "testo": "Farmacia: browser del cliente, server applicativo con il servizio ordini, server DB.",
+          "soluzione": "Nodi: <<device>> PC Cliente {Browser}; <<device>> Server App {<<executionEnvironment>> JVM {artifact ordini.jar}}; <<device>> Server DB {PostgreSQL}. Collegamenti: PC–ServerApp <<HTTPS>>, ServerApp–ServerDB <<JDBC>>."
+        }
+      ],
+      "tempo_studio_min": 25,
+      "priorita": {
+        "livello": "bassa",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): mai richiesto nelle prove note (2016/17, 2022, 2023, 2025); utile solo come conoscenza di base dei diagrammi UML."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Component diagram",
+          "url": "https://en.wikipedia.org/wiki/Component_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Deployment diagram",
+          "url": "https://en.wikipedia.org/wiki/Deployment_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: component diagram",
+          "url": "https://plantuml.com/component-diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: deployment diagram",
+          "url": "https://plantuml.com/deployment-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Interfaccia fornita = lollipop, richiesta = socket",
+        "Deployment: nodi, artefatti, canali"
+      ]
+    },
+    {
+      "id": "uml-diagramma-attivita",
+      "title": "Diagramma UML di attività",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "L'activity diagram modella un flusso di lavoro: nodo iniziale/finale, azioni, decisioni e merge con guardie, fork/join per attività parallele, partizioni (swimlane) per responsabile, flussi di oggetti. All'esame è usato per il flusso di un processo o dell'intera applicazione.",
+      "saper_fare": [
+        "Modellare un processo con decisioni, cicli e parallelismo",
+        "Usare swimlane per separare attori/sistemi",
+        "Distinguere decision/merge da fork/join"
+      ],
+      "prerequisiti": [
+        {
+          "id": "casi-uso-descrizione-testuale",
+          "forza": "soft",
+          "motivo": "Il flusso deriva dagli scenari dei casi d'uso."
+        },
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "soft",
+          "motivo": "Le azioni dovrebbero richiamare operazioni del modello per coerenza."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: activity (prova 2025: intera app)",
+          "testo": "Farmacia: il cliente sceglie prodotti; se ha la tessera si applica lo sconto; paga; se il pagamento fallisce può riprovare al massimo una volta; in parallelo il sistema aggiorna il magazzino e invia l'email di conferma.",
+          "soluzione": "start → [Scegli prodotti] → <decisione: tessera?> [sì] → [Applica sconto] → merge; [no] → merge → [Paga] → <esito?> [ok] → fork → ([Aggiorna magazzino] || [Invia email]) → join → stop; [ko e tentativi<2] → [Paga] (ritorno); [ko e tentativi=2] → [Annulla acquisto] → stop. Swimlane: Cliente, Sistema, Pagamento."
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove (2 pt nel 2016/17; intera app nel 2025)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Activity diagram",
+          "url": "https://en.wikipedia.org/wiki/Activity_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: activity diagram beta",
+          "url": "https://plantuml.com/activity-diagram-beta",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Rombo = decisione/merge, barra = fork/join",
+        "Guardie tra [ ] su ogni uscita, mutuamente esclusive",
+        "Un solo nodo iniziale",
+        "Trappola: usare fork per una scelta alternativa"
+      ]
+    },
+    {
+      "id": "uml-diagramma-classi",
+      "title": "Diagramma UML delle classi",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Il class diagram mostra classi con attributi (visibilità nome: tipo) e operazioni (nome(parametri): ritorno), interfacce, classi astratte e relazioni: associazione, aggregazione, composizione, generalizzazione, realizzazione, dipendenza. È la vista statica su cui devono basarsi sequence, activity e state diagram.",
+      "saper_fare": [
+        "Estrarre classi, attributi e operazioni da un testo (sostantivi → classi/attributi, verbi → operazioni)",
+        "Usare la notazione corretta per visibilità, classi astratte e interfacce",
+        "Scegliere tra associazione, aggregazione, composizione ed ereditarietà"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "soft",
+          "motivo": "Le classi derivano dal dominio descritto nei requisiti."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: class diagram",
+          "testo": "Farmacia: un Prodotto ha codice, nome, prezzo; un Farmaco è un Prodotto con flag ricetta obbligatoria; un Ordine contiene righe con quantità di un prodotto.",
+          "soluzione": "class Prodotto { -codice: String; -nome: String; -prezzo: double; +getPrezzo(): double }\nclass Farmaco extends Prodotto { -richiedeRicetta: boolean }\nclass Ordine { -data: Date; +totale(): double; +aggiungi(p: Prodotto, q: int) }\nclass RigaOrdine { -quantita: int; +subtotale(): double }\nOrdine *-- \"1..*\" RigaOrdine (composizione: le righe non esistono senza ordine)\nRigaOrdine --> \"1\" Prodotto (associazione navigabile verso Prodotto)\nFarmaco --|> Prodotto"
+        }
+      ],
+      "tempo_studio_min": 90,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove: 3 pt (2016/17) e 5 pt (2025, con proprietà, operazioni, direzione e molteplicità)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Class diagram",
+          "url": "https://en.wikipedia.org/wiki/Class_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: class diagram",
+          "url": "https://plantuml.com/class-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "7.3.4 Object-Oriented Design and UML"
+        },
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Visibilità + - # ~",
+        "Corsivo/<<abstract>> per classi astratte",
+        "Composizione = rombo pieno, ciclo di vita legato",
+        "Trappola: mettere chiavi esterne come attributi (è un modello OO, non un DB)"
+      ]
+    },
+    {
+      "id": "uml-diagramma-sequenza",
+      "title": "Diagramma UML di sequenza",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Il sequence diagram mostra lo scambio di messaggi nel tempo tra oggetti (lifeline) per uno scenario: messaggi sincroni/asincroni, risposte, creazione di oggetti, barre di attivazione e frammenti combinati (alt, opt, loop). Ogni messaggio verso un oggetto deve corrispondere a un'operazione della sua classe e a un'associazione navigabile.",
+      "saper_fare": [
+        "Disegnare il sequence di uno scenario di caso d'uso",
+        "Usare frammenti alt/opt/loop con guardie",
+        "Verificare la coerenza messaggi-operazioni con il class diagram"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "hard",
+          "motivo": "Le lifeline sono istanze delle classi e i messaggi sono loro operazioni."
+        },
+        {
+          "id": "casi-uso-descrizione-testuale",
+          "forza": "soft",
+          "motivo": "Lo scenario testuale dà l'ordine dei messaggi."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: sequence (prova 2025)",
+          "testo": "Farmacia: un cliente con tessera effettua un ordine di due prodotti e paga.",
+          "soluzione": "actor Cliente; participant \":Acquisto\" as A; participant \":Tessera\" as T; participant \":SistemaPagamento\" as P\nCliente -> A: aggiungi(p1,2)\nCliente -> A: aggiungi(p2,1)\nCliente -> A: conferma()\nA -> A: totale()\nopt [cliente.getTessera() != null]\n  A -> T: sconto()\n  T --> A: 0.05\n  A -> T: aggiungiPunti(n)\nend\nA -> P: paga(importo)\nP --> A: esito\nalt [esito ok] A -> A: setStato(PAGATO) else A -> A: setStato(ANNULLATO) end\nTutti i messaggi (aggiungi, totale, sconto, aggiungiPunti, paga) devono esistere come operazioni nel class diagram."
+        }
+      ],
+      "tempo_studio_min": 75,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove (3 pt nel 2016/17, parte dei 5 pt 1.2 nel 2025) e valutato sulla coerenza con le classi."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Sequence diagram",
+          "url": "https://en.wikipedia.org/wiki/Sequence_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: sequence diagram",
+          "url": "https://plantuml.com/sequence-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Lifeline = oggetto :Classe",
+        "alt (if/else), opt (if), loop",
+        "Messaggio = operazione della classe destinataria",
+        "Trappola: messaggi verso classi non associate/navigabili"
+      ]
+    },
+    {
+      "id": "uml-diagramma-stati",
+      "title": "Diagramma UML degli stati (state machine)",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Lo state diagram descrive il ciclo di vita di un oggetto: stati, transizioni etichettate evento [guardia] / azione, stato iniziale e finale, attività entry/exit/do, stati compositi. Gli stati devono corrispondere ai valori dell'attributo di stato nel class diagram e gli eventi alle sue operazioni.",
+      "saper_fare": [
+        "Individuare gli stati di un oggetto dal testo",
+        "Etichettare le transizioni con evento [guardia] / azione",
+        "Verificare la coerenza con l'attributo/enum di stato e le operazioni della classe"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "hard",
+          "motivo": "Gli stati e gli eventi devono corrispondere ad attributi e operazioni della classe."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "scritto: state diagram (prova 2025: stati di un acquisto)",
+          "testo": "Farmacia: un acquisto creato può essere pagato o annullato; pagato viene spedito; spedito viene consegnato; un acquisto pagato ma non spedito può essere annullato con rimborso.",
+          "soluzione": "[*] → Creato\nCreato → Pagato : paga() [esito ok]\nCreato → Annullato : annulla()\nPagato → Spedito : spedisci()\nPagato → Annullato : annulla() / rimborsa()\nSpedito → Consegnato : consegna()\nConsegnato → [*]; Annullato → [*]\nCoerenza: enum StatoAcquisto {CREATO, PAGATO, SPEDITO, CONSEGNATO, ANNULLATO} e operazioni paga(), annulla(), spedisci(), consegna() in Acquisto."
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto nella prova più recente (5/11/2025, stati di un acquisto) dentro l'esercizio 1.2 da 5 pt; base anche del pattern State."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): UML state machine",
+          "url": "https://en.wikipedia.org/wiki/UML_state_machine",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): State diagram",
+          "url": "https://en.wikipedia.org/wiki/State_diagram",
+          "verificato": true
+        },
+        {
+          "titolo": "PlantUML: state diagram",
+          "url": "https://plantuml.com/state-diagram",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "MILES"
+        }
+      ],
+      "checklist_ripasso": [
+        "Etichetta: evento [guardia] / azione",
+        "Stato = condizione stabile, non un'azione (Trappola: 'Pagare' come stato)",
+        "Stati = valori dell'enum nel class diagram",
+        "Stato iniziale obbligatorio, finale se il ciclo termina"
       ]
     },
     {
