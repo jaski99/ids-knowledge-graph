@@ -1,0 +1,85 @@
+{
+  "intuizione": "Un code smell è un 'cattivo odore' nel codice: non è un bug, il programma funziona, ma qualcosa nella struttura suggerisce che modificarlo sarà costoso o rischioso. Un metodo di 200 righe, lo stesso blocco copiato in tre classi, uno switch sul tipo ripetuto ovunque. Il termine viene da Kent Beck e Martin Fowler, e ogni smell ha un nome e uno o più refactoring che lo eliminano.",
+  "spiegazione": "## Che cos'è (e che cosa non è)\n\nNel libro *Refactoring* (Fowler, 1999, capitolo scritto con Kent Beck) uno smell è un **sintomo superficiale** che di solito corrisponde a un **problema più profondo di progettazione**.\n- **Non è un bug**: il comportamento può essere corretto.\n- **Non è una regola assoluta**: è un indizio da valutare (un metodo lungo può essere accettabile se lineare).\n- Si **riconosce** spesso a colpo d'occhio, ed è la risposta pratica a \"quando devo fare refactoring?\".\n\n## Catalogo essenziale (con il refactoring che lo cura)\n\n| smell | sintomo | refactoring tipico |\n|---|---|---|\n| **Duplicated Code** | stesso codice in più punti | Extract Method, Pull Up Method, Form Template Method |\n| **Long Method** | metodo lungo, con commenti che separano \"sezioni\" | Extract Method, Replace Temp with Query |\n| **Large Class** (God Class) | troppi attributi e metodi, responsabilità diverse | Extract Class, Extract Subclass |\n| **Long Parameter List** | 5-6 parametri o più | Introduce Parameter Object, Preserve Whole Object |\n| **Divergent Change** | una classe cambia per motivi diversi | Extract Class (SRP) |\n| **Shotgun Surgery** | una modifica richiede ritocchi in molte classi | Move Method/Field, Inline Class |\n| **Feature Envy** | un metodo usa più i dati di un'altra classe che i propri | Move Method |\n| **Data Clumps** | gli stessi 3-4 dati viaggiano sempre insieme | Extract Class, Introduce Parameter Object |\n| **Primitive Obsession** | primitivi/stringhe al posto di piccoli oggetti (importi, codici) | Replace Data Value with Object |\n| **Switch Statements** | switch/if sul tipo ripetuti in più punti | Replace Conditional with Polymorphism, State/Strategy |\n| **Speculative Generality** | astrazioni \"per il futuro\" mai usate (contro YAGNI) | Collapse Hierarchy, Inline Class |\n| **Data Class** | solo attributi e getter/setter, logica altrove | Move Method (portare il comportamento ai dati) |\n| **Comments** (come deodorante) | commenti che spiegano codice oscuro | Extract Method, Rename |\n| **Dead Code** | codice mai eseguito | eliminarlo |\n| **Message Chains** | `a.getB().getC().getD()` | Hide Delegate (legge di Demetra) |\n\n## Esempio: quanti smell vedi?\n\n```java\nclass GestorePiscina {\n    double costo(String tipo, int ingressi, boolean tessera, boolean corso, String nome, String cognome) {\n        double c = 0;\n        // calcolo base\n        if (tipo.equals(\"adulto\")) c = ingressi * 7;\n        else if (tipo.equals(\"ridotto\")) c = ingressi * 4;\n        else if (tipo.equals(\"agonista\")) c = ingressi * 3;\n        // sconto\n        if (tessera) c = c * 0.9;\n        if (corso) c = c + 50;\n        // stampa ricevuta\n        System.out.println(nome + \" \" + cognome + \": \" + c);\n        return c;\n    }\n    double costoMensile(String tipo, int giorni) {\n        if (tipo.equals(\"adulto\")) return giorni * 7;      // stessa tabella, duplicata\n        else if (tipo.equals(\"ridotto\")) return giorni * 4;\n        else return giorni * 3;\n    }\n}\n```\n(prezzi inventati)\n- **Long Parameter List** (6 parametri) e **Data Clumps** (nome + cognome);\n- **Long Method** con commenti-sezione (**Comments** come deodorante);\n- **Switch Statements** su `tipo`, ripetuti in due metodi → anche **Duplicated Code**;\n- **Primitive Obsession**: il tipo di cliente è una `String`;\n- calcolo e stampa nello stesso metodo (**Divergent Change** in piccolo).\n\nCura: `enum TipoCliente { ADULTO(7), RIDOTTO(4), AGONISTA(3); final double tariffa; ... }` (o polimorfismo), classe `Cliente` per i dati anagrafici, stampa separata, Extract Method per sconto e supplementi.\n\n```mermaid\nflowchart LR\n    S[Smell rilevato] --> D{Il problema è reale?}\n    D -- no --> K[Tieni il codice]\n    D -- si --> T[Test di regressione verdi]\n    T --> R[Refactoring a piccoli passi]\n    R --> T2[Test ancora verdi]\n```\n\n## Come si scoprono\n\n- **lettura** e **code review**;\n- **metriche**: V(G) alto → Long Method; WMC/LCOM alti → Large Class; CBO alto → accoppiamento eccessivo;\n- **strumenti di analisi statica** (es. SonarQube, PMD) che segnalano smell con regole configurabili.\n\n## Smell e pattern\n\nMolti smell si curano introducendo un pattern: Switch Statements → State o Strategy; Duplicated Code in sottoclassi con lo stesso algoritmo → Template Method; costruzione condizionale di oggetti ripetuta → Factory.\n",
+  "analogia": "Un code smell è come l'odore di bruciato in cucina: non vuol dire che la casa stia andando a fuoco, e qualche volta è solo il pane tostato, ma è un segnale da non ignorare che dice dove andare a guardare. Ogni odore ha una causa tipica e un rimedio tipico. Dove l'analogia cede: gli smell non peggiorano da soli col tempo, peggiorano a ogni modifica fatta senza curarli.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Buone pratiche di programmazione",
+      "collegamento": "Uno smell è la traccia visibile di una buona pratica violata (DRY, metodi brevi, nomi chiari).",
+      "nodo": "buone-pratiche-programmazione"
+    },
+    {
+      "conoscenza": "Principi SOLID",
+      "collegamento": "Divergent Change è una violazione di SRP, Switch Statements di OCP, Data Class e Feature Envy di una cattiva distribuzione delle responsabilità.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Metriche software",
+      "collegamento": "Le metriche (V(G), WMC, LCOM, CBO) trovano automaticamente i candidati smell.",
+      "nodo": "metriche-software"
+    },
+    {
+      "conoscenza": "Design pattern State e Strategy",
+      "collegamento": "Sono la cura standard dello smell Switch Statements sul tipo o sullo stato.",
+      "nodo": "design-pattern-strategy"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Feature Envy e Move Method",
+      "problema": "class Ordine { List<Riga> righe; Cliente cliente; } class CalcolatoreSconto { double sconto(Ordine o) { double tot = 0; for (Riga r : o.righe) tot += r.prezzo * r.qta; if (o.cliente.punti > 100 && o.cliente.tessera) return tot * 0.1; return 0; } } (soglia e sconto inventati). Quale smell? Come si cura?",
+      "passi": [
+        "CalcolatoreSconto.sconto usa solo dati di Ordine, Riga e Cliente e nessun dato proprio → Feature Envy.",
+        "Il totale dovrebbe stare in Ordine: Move Method → Ordine.totale() che a sua volta usa Riga.importo() (prezzo * qta).",
+        "La condizione sul cliente appartiene al Cliente: Move Method → Cliente.haDirittoASconto().",
+        "Risultato: sconto(Ordine o) diventa return o.cliente().haDirittoASconto() ? o.totale() * 0.1 : 0; oppure si sposta in Ordine.",
+        "Test di regressione su tre casi (cliente con tessera e punti > 100, senza tessera, con 100 punti esatti) prima e dopo."
+      ],
+      "soluzione": "Feature Envy: si spostano i calcoli dove stanno i dati (Ordine.totale, Riga.importo, Cliente.haDirittoASconto).",
+      "perche_funziona": "Il comportamento va dove stanno i dati che usa: così l'incapsulamento migliora, la classe che 'invidiava' perde dipendenze e il calcolo del totale diventa riusabile."
+    },
+    {
+      "titolo": "Shotgun Surgery contro Divergent Change",
+      "problema": "In un'app per ambulanti, aggiungere un nuovo tipo di accessorio per le piazzole richiede di modificare PiazzolaView, CalcoloCosto, Report e Fattura. Nella stessa app, la classe Mercato cambia sia quando cambiano le regole di assegnazione sia quando cambia il formato dei report. Classifica i due problemi.",
+      "passi": [
+        "Una modifica → molte classi toccate: Shotgun Surgery (la conoscenza sugli accessori è sparpagliata).",
+        "Una classe → molte ragioni di cambiamento: Divergent Change (violazione di SRP).",
+        "Cura Shotgun Surgery: concentrare la conoscenza sugli accessori (Move Method/Field), ad esempio un Decorator per accessorio che sa il proprio costo e la propria descrizione.",
+        "Cura Divergent Change: Extract Class → AssegnatorePiazzole e GeneratoreReport.",
+        "Osservazione: i due smell sono speculari."
+      ],
+      "soluzione": "Il primo è Shotgun Surgery (curato concentrando la responsabilità, es. Decorator per accessori); il secondo è Divergent Change (curato con Extract Class).",
+      "perche_funziona": "Classificare correttamente lo smell indica la direzione del refactoring: nel primo caso bisogna riunire responsabilità sparse, nel secondo separare responsabilità mescolate."
+    }
+  ],
+  "errori_comuni": [
+    "Definire uno smell come un bug: è un problema di struttura, il comportamento può essere corretto.",
+    "Trattare ogni smell come un obbligo di intervento: va valutato il costo/beneficio.",
+    "Confondere Shotgun Surgery (una modifica, molte classi) con Divergent Change (una classe, molte modifiche).",
+    "Nominare lo smell senza indicare il refactoring che lo elimina.",
+    "Eliminare i commenti invece di rendere il codice autoesplicativo: lo smell è il codice oscuro, non il commento."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cos'è un code smell?",
+      "risposta": "Un sintomo superficiale nel codice che indica un probabile problema di progettazione; non è un bug e va valutato caso per caso."
+    },
+    {
+      "domanda": "Quale refactoring cura il Long Method?",
+      "risposta": "Soprattutto Extract Method (spesso le sezioni commentate diventano metodi con un nome), poi Replace Temp with Query e Decompose Conditional."
+    },
+    {
+      "domanda": "Che cos'è Feature Envy?",
+      "risposta": "Un metodo che usa più i dati e i metodi di un'altra classe che i propri; si cura spostandolo (Move Method) nella classe dei dati."
+    },
+    {
+      "domanda": "Quale pattern elimina lo smell Switch Statements sul tipo?",
+      "risposta": "Replace Conditional with Polymorphism, cioè una gerarchia di classi; se il tipo cambia a runtime State, se è un algoritmo intercambiabile Strategy."
+    },
+    {
+      "domanda": "Come si possono trovare gli smell in un progetto grande?",
+      "risposta": "Con code review, metriche (V(G), WMC, LCOM, CBO) e strumenti di analisi statica che applicano regole."
+    }
+  ],
+  "riepilogo": "Smell = sintomo di cattiva struttura, non bug; va valutato.\nDuplicated Code, Long Method, Large Class, Long Parameter List, Feature Envy.\nSwitch Statements, Shotgun Surgery, Divergent Change, Data Class, Primitive Obsession.\nOgni smell ha un refactoring associato; molti si curano con pattern.\nSi trovano con review, metriche e analisi statica."
+}

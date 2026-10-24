@@ -1,0 +1,88 @@
+{
+  "intuizione": "La complessità ciclomatica conta quante strade indipendenti può prendere l'esecuzione di un metodo. Un metodo senza if ha una sola strada (V = 1); ogni decisione binaria (if, while, for, case, ogni && o ||) ne aggiunge una. Il numero si ottiene dal grafo di flusso con tre formule che devono dare lo stesso risultato, ed è sia una misura di quanto il metodo è difficile da capire sia il numero di test della basis path coverage.",
+  "spiegazione": "## Definizione\n\nThomas McCabe (1976) definisce la complessità ciclomatica V(G) di un grafo di flusso di controllo G come il **numero di cammini linearmente indipendenti** dall'ingresso all'uscita. Un cammino è indipendente dagli altri se percorre almeno un arco che gli altri non percorrono.\n\n## Il grafo di flusso (CFG)\n\n- **nodi** = istruzioni o blocchi di istruzioni sequenziali (un blocco senza salti può diventare un solo nodo);\n- **nodi predicato** = nodi con due archi uscenti (T/F);\n- **archi** = possibili passaggi del controllo;\n- un solo ingresso e una sola uscita (più `return` confluiscono in un nodo di uscita, oppure si conta ciascuno come nodo e si collegano a un'uscita comune).\n\n## Le tre formule (devono coincidere)\n\n1. **Archi e nodi**: V(G) = E − N + 2 (grafo connesso; in generale E − N + 2P con P componenti connesse).\n2. **Predicati**: V(G) = P + 1, dove P è il numero di nodi decisione binari.\n3. **Regioni**: V(G) = numero di regioni del grafo disegnato nel piano, **contando anche la regione esterna**.\n\nCome contare i predicati nel codice Java:\n\n| costrutto | contributo |\n|---|---|\n| `if`, `else if` | +1 ciascuno (`else` non conta) |\n| `while`, `do-while`, `for`, for-each | +1 |\n| `case` di uno `switch` | +1 per ogni `case` (il `default` non conta) |\n| `&&`, `\\|\\|` | +1 ciascuno, **se** si scompongono le condizioni composte |\n| operatore ternario `?:` | +1 |\n| `catch` | +1 (convenzione di molti strumenti) |\n\n## Condizioni composte: due convenzioni\n\nCon `if (x && y)` si può disegnare un solo nodo decisione (McCabe \"classico\", conta le **decisioni**) oppure due nodi, uno per condizione semplice (conta le **condizioni**, come fanno la maggior parte degli strumenti di analisi). La seconda convenzione dà un valore più alto e corrisponde al fatto che `&&` in Java è **cortocircuitato**: se x è falso, y non viene valutata, quindi esistono davvero due rami. All'esame: dichiarare quale convenzione si usa.\n\n## Esempio completo\n\n```java\nint contaPromossi(int[] voti, boolean[] presenti) {\n    int n = 0;                                      // 1  (con i = 0)\n    for (int i = 0; i < voti.length; i++) {         // 2: i < voti.length   5: i++\n        if (presenti[i] && voti[i] >= 18)           // 3a: presenti[i]   3b: voti[i] >= 18\n            n++;                                    // 4\n    }\n    return n;                                       // 6\n}\n```\n\n```mermaid\nflowchart TD\n    N1[\"1: n = 0, i = 0\"] --> N2{\"2: i #lt; voti.length ?\"}\n    N2 -- T --> N3a{\"3a: presenti i ?\"}\n    N2 -- F --> N6[\"6: return n\"]\n    N3a -- T --> N3b{\"3b: voti i #gt;= 18 ?\"}\n    N3a -- F --> N5[\"5: i++\"]\n    N3b -- T --> N4[\"4: n++\"]\n    N3b -- F --> N5\n    N4 --> N5\n    N5 --> N2\n```\n\n- Nodi: 1, 2, 3a, 3b, 4, 5, 6 → **N = 7**.\n- Archi: 1→2, 2→3a, 2→6, 3a→3b, 3a→5, 3b→4, 3b→5, 4→5, 5→2 → **E = 9**.\n- Formula 1: 9 − 7 + 2 = **4**.\n- Formula 2: predicati 2, 3a, 3b → 3 + 1 = **4**.\n- Formula 3: regioni interne delimitate da 2-3a-5, 3a-3b-5, 3b-4-5 più la regione esterna → **4**.\n\nCon la convenzione \"una decisione per if\" (3a e 3b fusi in un nodo 3): N = 6, E = 7, V = 3.\n\n## Interpretazione\n\n| V(G) | lettura indicativa |\n|---|---|\n| 1-10 | metodo semplice, rischio basso |\n| 11-20 | moderatamente complesso |\n| 21-50 | complesso, rischio alto |\n| > 50 | non testabile in pratica |\n\nLa soglia **10** è quella proposta da McCabe; valori alti suggeriscono di spezzare il metodo (Extract Method) o sostituire catene di if con polimorfismo.\n\nUsi nel testing:\n- V(G) è il numero di test della **basis path coverage** (un insieme di cammini indipendenti);\n- è un **limite superiore** al numero di test necessari per la **decision coverage** (ne bastano spesso meno) e un limite inferiore per la copertura di tutti i cammini (che con i cicli possono essere infiniti).\n\n## Limiti\n\n- Non distingue tra un `switch` piatto di 15 casi (facile da leggere) e 15 if annidati (difficilissimi): per questo esistono metriche alternative come la complessità cognitiva.\n- Ignora la complessità dei dati e delle espressioni (Halstead la considera).\n- Dipende dalla convenzione sulle condizioni composte.\n",
+  "analogia": "È come contare le strade di un incrocio cittadino: un rettilineo ha una sola strada, ogni bivio ne aggiunge una, e una rotonda che riporta indietro (un ciclo) aggiunge la possibilità di ripassare. V(G) dice quanti percorsi diversi deve provare un ispettore per aver usato ogni tratto almeno una volta in una combinazione nuova. L'analogia cede sui cicli: un automobilista può girare nella rotonda all'infinito, ma V(G) non conta quante volte si gira, solo che si può girare o no.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Grafo di flusso di controllo",
+      "collegamento": "V(G) si calcola sul CFG: se il grafo è sbagliato (archi di ritorno mancanti, condizioni non separate), anche il numero è sbagliato.",
+      "nodo": "grafo-flusso-controllo"
+    },
+    {
+      "conoscenza": "Teoria dei grafi (numero ciclomatico)",
+      "collegamento": "E − N + 2 deriva dal numero ciclomatico dei grafi, E − N + P, applicato al grafo reso fortemente connesso con un arco fittizio uscita → ingresso."
+    },
+    {
+      "conoscenza": "Formula di Eulero per i grafi planari",
+      "collegamento": "N − E + F = 2 implica F = E − N + 2: ecco perché il numero di regioni (facce, inclusa quella esterna) coincide con V(G)."
+    },
+    {
+      "conoscenza": "Valutazione cortocircuitata di && e || in Java",
+      "collegamento": "Il cortocircuito crea rami reali nel bytecode: è la giustificazione per contare ogni condizione semplice come un predicato."
+    },
+    {
+      "conoscenza": "Metriche software",
+      "collegamento": "McCabe è la metrica di complessità più citata; nella domanda sulle metriche è la scelta più comoda per un esempio numerico.",
+      "nodo": "metriche-software"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "V(G) di uno switch con calcolo a scaglioni",
+      "problema": "double tariffa(int zona, boolean urgente) { double t; switch (zona) { case 1: t = 5; break; case 2: t = 8; break; case 3: t = 12; break; default: t = 20; } if (urgente) t = t * 1.5; return t; } (valori inventati). Calcola V(G) con due formule.",
+      "passi": [
+        "Predicati: 3 case (il default non conta) + 1 if = 4 → V = 4 + 1 = 5.",
+        "CFG: nodo S (switch) con 4 archi uscenti verso c1, c2, c3, d; i quattro confluiscono in I (if urgente); I va in U (t *= 1.5) o direttamente in R (return); U → R.",
+        "Nodi: S, c1, c2, c3, d, I, U, R → N = 8.",
+        "Archi: S→c1, S→c2, S→c3, S→d (4), c1→I, c2→I, c3→I, d→I (4), I→U, I→R, U→R (3) → E = 11.",
+        "E − N + 2 = 11 − 8 + 2 = 5. Coincide.",
+        "Nota: un nodo con k uscite vale k − 1 predicati; lo switch con 4 uscite vale 3."
+      ],
+      "soluzione": "V(G) = 5 con entrambe le formule.",
+      "perche_funziona": "Lo switch è una decisione a più vie: ogni uscita oltre la prima aggiunge un cammino indipendente, quindi conta come k − 1 predicati binari; l'accordo tra le formule verifica il grafo."
+    },
+    {
+      "titolo": "Due convenzioni e un ciclo while con condizione composta",
+      "problema": "int cerca(int[] v, int x) { int i = 0; while (i < v.length && v[i] != x) i++; if (i == v.length) return -1; return i; } Calcola V(G) contando le decisioni e contando le condizioni.",
+      "passi": [
+        "Decisioni: while (1) + if (1) = 2 → V = 3.",
+        "Condizioni: while con && vale 2 + if 1 = 3 → V = 4.",
+        "CFG per condizioni: A (i = 0) → W1 (i < v.length?) T → W2 (v[i] != x?) T → B (i++) → W1; W1 F → I; W2 F → I; I (i == v.length?) T → R1 (return -1), F → R2 (return i); R1 e R2 → U (uscita).",
+        "Nodi: A, W1, W2, B, I, R1, R2, U → N = 8; archi: A→W1, W1→W2, W1→I, W2→B, W2→I, B→W1, I→R1, I→R2, R1→U, R2→U → E = 10.",
+        "E − N + 2 = 4: coincide con il conteggio per condizioni."
+      ],
+      "soluzione": "V(G) = 3 per decisioni, 4 per condizioni (convenzione degli strumenti e del grafo con condizioni separate).",
+      "perche_funziona": "Separare le condizioni nel CFG rende visibile il ramo creato dal cortocircuito (esco dal ciclo perché ho finito l'array oppure perché ho trovato x); dichiarando la convenzione la risposta è corretta in entrambi i casi."
+    }
+  ],
+  "errori_comuni": [
+    "Dimenticare l'arco di ritorno del ciclo nel CFG: E diminuisce di 1 e V(G) risulta sottostimata.",
+    "Contare l'else o il default come predicati.",
+    "Usare E − N + 1 o dimenticare la regione esterna nel conteggio delle regioni.",
+    "Lasciare più uscite non collegate (più return) e applicare E − N + 2 senza un nodo di uscita comune: il risultato può non coincidere con P + 1.",
+    "Non dichiarare la convenzione sulle condizioni composte quando il codice contiene && o ||."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono le tre formule per V(G)?",
+      "risposta": "E − N + 2 (archi − nodi + 2), P + 1 (predicati binari + 1), numero di regioni del grafo planare compresa quella esterna."
+    },
+    {
+      "domanda": "Quanto vale V(G) per un metodo senza istruzioni di controllo?",
+      "risposta": "1: c'è un solo cammino."
+    },
+    {
+      "domanda": "Un metodo ha 2 if annidati dentro un for. Quanto vale V(G)?",
+      "risposta": "3 predicati + 1 = 4."
+    },
+    {
+      "domanda": "Che relazione c'è tra V(G) e il numero di test per la decision coverage?",
+      "risposta": "V(G) è un limite superiore: un insieme di cammini di base garantisce la decision coverage, ma spesso bastano meno test."
+    },
+    {
+      "domanda": "Perché un if con && può contare due predicati?",
+      "risposta": "Perché in Java && è cortocircuitato: la seconda condizione è valutata solo se la prima è vera, quindi nel grafo ci sono due nodi decisione distinti."
+    }
+  ],
+  "riepilogo": "V(G) = numero di cammini linearmente indipendenti del CFG.\nTre formule da far coincidere: E − N + 2, predicati + 1, regioni (con l'esterna).\nif/while/for/case/?: valgono +1; && e || +1 se si separano le condizioni.\nSoglia indicativa 10; V(G) = test della basis path, limite superiore per la decision coverage."
+}
