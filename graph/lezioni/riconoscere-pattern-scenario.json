@@ -1,0 +1,88 @@
+{
+  "intuizione": "All'esame il pattern non viene mai nominato: il testo racconta un pezzo del caso di studio e tocca a te capire quale problema di progettazione nasconde. Il trucco è leggere le frasi cercando il tipo di variabilità o di struttura descritta (un albero? notifiche? accessori combinabili? passi fissi con varianti?) e non i nomi degli oggetti. Ogni pattern ha un piccolo insieme di 'frasi spia' che lo tradiscono.",
+  "spiegazione": "## Perché è un'abilità a sé\n\nNelle prove disponibili l'esercizio 1.4 descrive sempre una situazione operativa e chiede di progettarla \"attraverso un design pattern\", giustificando la scelta:\n\n| prova | scenario (come appare nel testo) | pattern |\n|---|---|---|\n| 2016/17 (fac-simile) | biblioteca organizzata in settori che contengono scaffali che contengono documenti; stampa dell'elenco completo | **Composite** |\n| 9/6/2022 (da sintesi) | caratteristiche e costo delle piazzole in base ad accessori opzionali (corrente, illuminazione, musica) | **Decorator** |\n| 27/1/2023 (da sintesi) | algoritmo con struttura fissa e passi personalizzabili | **Template Method** |\n| 5/11/2025 | clienti con tessera iscritti a una mailing list, informati quando un prodotto di loro interesse è in promozione | **Observer** |\n\nIn più la Parte 3 del 2025 chiedeva di riconoscere una **Simple Factory** da un frammento di codice. Conclusione operativa: devi saper passare da *descrizione* → *problema* → *pattern* in pochi minuti.\n\n## Il metodo in 4 passi\n\n1. **Isola il paragrafo** indicato dall'esercizio e sottolinea i verbi e le relazioni (\"contiene\", \"si iscrive\", \"aggiunge\", \"sempre le stesse fasi\", \"a seconda dello stato\").\n2. **Classifica il problema**: riguarda *come si creano* gli oggetti (creazionale), *come si compongono* (strutturale) o *come collaborano/variano i comportamenti* (comportamentale)?\n3. **Confronta con le frasi spia** (tabella sotto) e scegli il candidato; **scarta esplicitamente** il più vicino (\"non è Strategy perché...\").\n4. **Verifica con la mappatura dei ruoli**: se riesci ad assegnare ogni ruolo del pattern a un concetto del testo senza forzature, la scelta regge.\n\n## Tabella delle frasi spia\n\n| frasi nel testo | problema nascosto | pattern |\n|---|---|---|\n| \"è organizzato in… che contengono… che contengono\", \"gerarchia\", \"parte-tutto\", \"stampare/calcolare l'intera struttura\" | albero di oggetti trattati in modo uniforme | **Composite** |\n| \"accessori / opzioni / extra / supplementi combinabili\", \"il costo dipende dalle aggiunte\" | aggiungere responsabilità senza esplosione di sottoclassi | **Decorator** |\n| \"si iscrive / si disiscrive\", \"viene informato / notificato quando\", \"mailing list\", \"aggiornare automaticamente le viste\" | dipendenza uno-a-molti con interessati variabili | **Observer** |\n| \"la procedura si compone sempre delle stesse fasi\", \"alcuni passi cambiano a seconda del tipo\" | scheletro fisso, passi variabili | **Template Method** |\n| \"diverse modalità / politiche / criteri di calcolo, intercambiabili\", \"l'utente sceglie\", \"in futuro altre modalità\" | famiglia di algoritmi intercambiabili | **Strategy** |\n| \"a seconda dello stato (attivo, sospeso, chiuso) l'operazione è permessa o cambia\", \"passa da… a…\" | comportamento dipendente dallo stato | **State** |\n| \"creare oggetti di tipo diverso a seconda di un parametro\", \"centralizzare la creazione\" | togliere i new concreti dai client | **Simple Factory** / **Factory Method** |\n| \"famiglie di prodotti coerenti\", \"temi\", \"piattaforme\" | creare kit coerenti | **Abstract Factory** |\n| \"un unico registro / configurazione condivisa da tutto il sistema\" | istanza unica con accesso globale | **Singleton** |\n| \"integrare un sistema esistente / di un fornitore con interfaccia diversa\", \"non modificabile\" | interfacce incompatibili | **Adapter** |\n\n```mermaid\nflowchart TD\n    A[Leggi il paragrafo] --> B{Struttura annidata parte-tutto?}\n    B -- si --> C[Composite]\n    B -- no --> D{Aggiunte opzionali combinabili su un oggetto base?}\n    D -- si --> E[Decorator]\n    D -- no --> F{Un evento deve avvisare molti interessati variabili?}\n    F -- si --> G[Observer]\n    F -- no --> H{Sequenza fissa con passi che variano per tipo?}\n    H -- si --> I[Template Method]\n    H -- no --> J{Comportamento che cambia con lo stato del ciclo di vita?}\n    J -- si --> K[State]\n    J -- no --> L{Algoritmi alternativi scelti dall'esterno?}\n    L -- si --> M[Strategy]\n    L -- no --> N{Creazione di oggetti di tipi diversi o famiglie?}\n    N -- si --> O[Factory: Simple, Method o Abstract]\n    N -- no --> P{Interfaccia esistente incompatibile?}\n    P -- si --> Q[Adapter]\n    P -- no --> R[Rileggi: forse Singleton o nessun pattern]\n```\n\n## Le coppie che si confondono (e come separarle)\n\n- **Strategy vs State**: chi sceglie? Il client dall'esterno → Strategy. Gli stati stessi, seguendo il ciclo di vita → State.\n- **Strategy vs Template Method**: varia l'intero algoritmo e va scelto a runtime → Strategy (composizione). Varia qualche passo di una sequenza fissa, legato al tipo → Template Method (ereditarietà).\n- **Decorator vs Composite**: un oggetto avvolto, si aggiungono strati → Decorator. Molti figli, un albero → Composite.\n- **Decorator vs Adapter**: stessa interfaccia → Decorator; interfaccia da convertire → Adapter.\n- **Observer vs \"metodo che chiama gli altri\"**: se i destinatari sono fissi e noti in anticipo, una chiamata diretta basta; Observer serve quando sono **variabili** e il Subject non deve conoscerne le classi.\n- **Factory Method vs Abstract Factory**: un prodotto → Factory Method; famiglia di prodotti coerenti → Abstract Factory.\n\n## Come scrivere la giustificazione\n\nUna motivazione completa contiene: **(a)** la frase del testo che rivela il problema, **(b)** il problema in termini di progettazione, **(c)** l'alternativa ingenua e perché è peggiore, **(d)** la mappatura dei ruoli, **(e)** un limite.\n\nEsempio (Observer, farmacia): *\"(a) 'il cliente stabilisce le tipologie di prodotti a cui è interessato e viene informato quando sono in promozione' (b) dipendenza uno-a-molti tra le promozioni e un insieme variabile di clienti (c) una chiamata diretta a ogni cliente legherebbe MailingList alle classi dei destinatari e andrebbe modificata per ogni nuovo canale (d) MailingList = Subject, Cliente = ConcreteObserver, Iscritto = Observer (e) limite: ordine di notifica non garantito, memory leak senza detach.\"*\n\n## Quando lo scenario sembra adatto a due pattern\n\nSuccede: la mailing list potrebbe usare anche una Strategy per il canale di invio, il rapporto giornaliero potrebbe essere un Singleton e un Observer delle vendite. Scegli il pattern che risolve il **problema centrale del paragrafo**, citando l'altro come possibile complemento in una riga. È meglio un pattern ben motivato e mappato che due nominati.\n",
+  "analogia": "È come la diagnosi di un medico: il paziente non dice 'ho l'appendicite', descrive sintomi (dolore in basso a destra, febbre). Il medico conosce i sintomi tipici di ogni malattia, formula un'ipotesi, la distingue dalle malattie simili e la conferma con un controllo. Allo stesso modo leggi i 'sintomi' nel testo, ipotizzi il pattern, escludi i vicini e confermi con la mappatura dei ruoli. L'analogia cede perché in progettazione possono esistere più 'cure' valide: conta che la scelta sia motivata.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Composite, Decorator, Observer, Template Method",
+      "collegamento": "Questa abilità presuppone di conoscere struttura e intento di ciascun pattern: qui impari a richiamarli partendo dal testo.",
+      "nodo": "design-pattern-composite"
+    },
+    {
+      "conoscenza": "Observer",
+      "collegamento": "Il caso farmacia 2025 è il modello di scenario mascherato più recente.",
+      "nodo": "design-pattern-observer"
+    },
+    {
+      "conoscenza": "Strategy e State",
+      "collegamento": "Sono la coppia più facile da confondere: il criterio 'chi sceglie l'implementazione' risolve quasi sempre il dubbio.",
+      "nodo": "design-pattern-state"
+    },
+    {
+      "conoscenza": "Analisi del testo dei requisiti",
+      "collegamento": "Sottolineare sostantivi (classi) e verbi (operazioni/relazioni) è la stessa tecnica che usi per ricavare il class diagram; qui cerchi relazioni e variabilità."
+    },
+    {
+      "conoscenza": "Problemi di Fondamenti 'riconosci l'algoritmo'",
+      "collegamento": "Come riconosci che un problema si risolve con una ricerca binaria dalla parola 'ordinato', qui riconosci il pattern da parole come 'contiene', 'si iscrive', 'accessori'."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Cinque scenari, cinque pattern",
+      "problema": "Riconosci il pattern: (1) 'Un menu di ristorante ha sezioni, che possono contenere sottosezioni e piatti; si vuole stampare il menu completo e calcolare il numero di piatti.' (2) 'Il gestore della palestra vuole che i display delle sale si aggiornino ogni volta che cambia l'occupazione.' (3) 'Una prenotazione può essere in attesa, confermata, annullata; in attesa si può modificare, confermata no.' (4) 'Il premio della lotteria può essere assegnato con estrazione casuale o al cliente con la spesa maggiore, a scelta del gestore.' (5) 'Ogni pizza parte da una base e il cliente può aggiungere ingredienti extra, ciascuno con il suo prezzo.'",
+      "passi": [
+        "(1) 'sezioni che contengono sottosezioni e piatti' + operazioni sull'intera struttura → albero parte-tutto → Composite.",
+        "(2) un cambiamento (occupazione) che deve aggiornare più display, numero variabile → Observer.",
+        "(3) comportamento (modifica permessa o no) che dipende dallo stato del ciclo di vita → State.",
+        "(4) algoritmi alternativi scelti dall'esterno (dal gestore) → Strategy; non State perché nessuna transizione interna.",
+        "(5) base + aggiunte combinabili con costo → Decorator; non Composite perché non c'è un albero ma una catena."
+      ],
+      "soluzione": "1 Composite, 2 Observer, 3 State, 4 Strategy, 5 Decorator.",
+      "perche_funziona": "Ogni scenario contiene una frase spia della tabella; per i casi ambigui (3-4) il criterio 'chi sceglie l'implementazione' separa State e Strategy, per il 5 'uno avvolto contro molti figli' separa Decorator e Composite."
+    },
+    {
+      "titolo": "Scenario ambiguo: giustificare e scartare",
+      "problema": "Testo: 'Il sistema del mercato calcola la tariffa di ogni piazzola. Esistono tariffe giornaliere, settimanali e stagionali, e l'operatore può cambiarla per un ambulante in qualunque momento. Ogni tariffa segue però sempre lo stesso schema: costo base, eventuali maggiorazioni, arrotondamento.' Template Method o Strategy?",
+      "passi": [
+        "Frasi spia per Template Method: 'sempre lo stesso schema: costo base, maggiorazioni, arrotondamento' (sequenza fissa).",
+        "Frasi spia per Strategy: 'tariffe diverse', 'l'operatore può cambiarla in qualunque momento' (scelta esterna, a runtime).",
+        "Il requisito di cambiare tariffa a runtime per lo stesso ambulante pesa: con Template Method dovrei sostituire l'oggetto con un'istanza di un'altra sottoclasse; con Strategy basta setTariffa(...).",
+        "Soluzione: Strategy (interface Tariffa { double calcola(Piazzola p); }) con Giornaliera, Settimanale, Stagionale; lo schema comune può stare in una classe astratta TariffaBase che implementa Tariffa con un template method final, quindi i due pattern collaborano.",
+        "Nella risposta: scelgo Strategy come pattern principale, cito Template Method come complemento interno e motivo lo scarto come principale con il requisito 'in qualunque momento'."
+      ],
+      "soluzione": "Strategy come pattern principale (cambio della tariffa a runtime, scelto dall'operatore), con un Template Method dentro la gerarchia delle tariffe per lo schema comune. Motivazione legata alla frase 'in qualunque momento'.",
+      "perche_funziona": "La scelta non è a sensazione: ogni pattern candidato è collegato a una frase del testo e il requisito decisivo (cambio a runtime) è esplicitato; citare la collaborazione dei due pattern mostra padronanza."
+    }
+  ],
+  "errori_comuni": [
+    "Scegliere il pattern dai nomi degli oggetti ('ci sono notifiche quindi Observer') senza verificare che il problema sia davvero uno-a-molti con destinatari variabili.",
+    "Nominare il pattern senza mappare i ruoli sulle classi del caso: la scelta non risulta motivata.",
+    "Non scartare il pattern più vicino (Strategy/State, Decorator/Composite): è il punto in cui si distingue una risposta da 30.",
+    "Proporre più pattern insieme senza indicare quale risolve il problema centrale.",
+    "Ignorare il limite: le prove chiedono di spiegare motivazioni ed eventualmente limiti della scelta."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali frasi del testo fanno pensare a Composite?",
+      "risposta": "Strutture annidate parte-tutto ('organizzato in… che contengono…'), gerarchie, e operazioni da eseguire sull'intera struttura (stampa completa, totali)."
+    },
+    {
+      "domanda": "Come distingui Strategy da State in uno scenario?",
+      "risposta": "Se è il client/utente a scegliere l'algoritmo dall'esterno è Strategy; se il comportamento cambia seguendo un ciclo di vita e le transizioni avvengono internamente è State."
+    },
+    {
+      "domanda": "Quali elementi deve contenere la giustificazione di un pattern all'esame?",
+      "risposta": "La frase del testo che rivela il problema, il problema di progettazione, l'alternativa ingenua scartata, la mappatura dei ruoli sulle classi del caso, almeno un limite."
+    },
+    {
+      "domanda": "Lo scenario 'accessori opzionali con costo' a quale pattern porta e perché non all'ereditarietà?",
+      "risposta": "Decorator: le combinazioni di accessori con l'ereditarietà richiederebbero una sottoclasse per combinazione (esplosione esponenziale), mentre i decoratori si impilano a runtime."
+    },
+    {
+      "domanda": "Che cosa fai se due pattern sembrano adatti?",
+      "risposta": "Scegli quello che risolve il problema centrale del paragrafo, motivandolo con una frase del testo, e citi l'altro come complemento o alternativa scartata con il motivo."
+    }
+  ],
+  "riepilogo": "Il pattern non è mai nominato: leggi i 'sintomi' nel testo.\nFrasi spia: contiene… → Composite; accessori → Decorator; si iscrive/notifica → Observer; stesse fasi → Template Method; stati → State; modalità scelte → Strategy.\nMetodo: isola, classifica, confronta, verifica con la mappatura dei ruoli.\nScarta esplicitamente il pattern più vicino.\nGiustificazione: frase del testo, problema, alternativa, ruoli, limite."
+}
