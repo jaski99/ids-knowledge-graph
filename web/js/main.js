@@ -43,6 +43,7 @@ async function main() {
     onOpen: openLesson,
     onClose: () => { location.hash = '#/percorso'; },
     onToggleDone: toggleDone,
+    onToggleTheme: () => theme.toggle(),
   });
   const views = [
     createGraphView($('#cy'), graph, { onSelect: select, onOpen: openLesson }),
