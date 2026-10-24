@@ -1,0 +1,79 @@
+{
+  "intuizione": "Due licenze sono compatibili se puoi combinare il codice sotto di esse in un unico programma e distribuirlo rispettando entrambe le licenze contemporaneamente. La regola pratica: il programma combinato prende la licenza «più restrittiva», e quella licenza deve accettare tutte le altre. Il codice permissivo entra senza problemi nel copyleft; il copyleft forte non può entrare in un prodotto proprietario distribuito.",
+  "spiegazione": "## La domanda da porsi\n\nQuando combino codice A (licenza LA) con codice B (licenza LB) e **distribuisco** il risultato, esiste una licenza con cui posso distribuire l'insieme rispettando **tutte** le condizioni di LA e LB? Se sì, sono compatibili.\n\nLa compatibilità è **direzionale**: «MIT è compatibile con GPL» significa che codice MIT può entrare in un'opera GPL (l'insieme si distribuisce sotto GPL, mantenendo l'avviso MIT); non il contrario.\n\n## Il flusso della compatibilità\n\n```mermaid\nflowchart LR\n    MIT[\"MIT, BSD-3-Clause\"] --> AP[\"Apache-2.0\"]\n    MIT --> LG[\"LGPL\"]\n    MIT --> G2[\"GPL-2.0\"]\n    AP --> G3[\"GPL-3.0\"]\n    LG --> G2\n    LG --> G3\n    G2 -- \"solo se or-later\" --> G3\n    G3 --> AG[\"AGPL-3.0\"]\n```\n\nUna freccia da X a Y significa: codice sotto X può essere incorporato in un'opera distribuita sotto Y. Si «scorre» sempre verso licenze più restrittive, mai all'indietro.\n\n## Matrice di riferimento\n\n| incorporo codice… | in un prodotto proprietario distribuito | in un progetto GPL-2.0-only | in un progetto GPL-3.0 |\n|---|---|---|---|\n| MIT / BSD-3-Clause | ✅ (mantieni copyright e testo) | ✅ | ✅ |\n| Apache-2.0 | ✅ (copyright, NOTICE, modifiche indicate) | ❌ (condizioni su brevetti incompatibili con GPLv2) | ✅ |\n| LGPL (collegata come libreria) | ✅ se resta libreria separata sostituibile e le sue modifiche restano LGPL | ✅ | ✅ |\n| GPL-2.0-only | ❌ | ✅ | ❌ |\n| GPL-2.0-or-later | ❌ | ✅ | ✅ (si sceglie la v3) |\n| GPL-3.0 | ❌ | ❌ | ✅ |\n\nAltri punti noti: la vecchia BSD a 4 clausole (con la «clausola pubblicitaria») non è compatibile con la GPL; la MPL-2.0 è di norma compatibile con la GPL; l'AGPL impone obblighi anche per l'uso via rete, quindi è spesso vietata nei servizi SaaS proprietari.\n\n## Procedura in 5 passi\n1. **Inventario**: elenca tutte le componenti incluse, **dipendenze transitive comprese**, con il loro identificatore SPDX.\n2. **Modalità d'uso**: codice copiato nel sorgente, libreria collegata, programma separato invocato (es. processo esterno), solo strumento di build (es. un plugin che non finisce nel prodotto).\n3. **Distribuzione**: il prodotto viene distribuito (installabile, app) o solo usato internamente / come servizio?\n4. **Licenza di destinazione**: con quale licenza vuoi distribuire? Verifica che ogni componente possa «scorrere» verso di essa.\n5. **Obblighi residui**: avvisi di copyright, file NOTICE, sorgente da fornire, indicazione delle modifiche.\n\nNota: gli strumenti di build e test (JUnit, Maven, i plugin) di solito **non** finiscono nell'artefatto distribuito, quindi la loro licenza non vincola il prodotto (JUnit 5 è sotto EPL-2.0, dipendenza con scope `test`).\n\n## Automatizzare il controllo\n\n```java\nimport java.util.Map;\nimport java.util.Set;\n\n/** Controllo semplificato: quali licenze di dipendenza accetta una licenza di destinazione. */\npublic class LicenseCheck {\n    static final Map<String, Set<String>> ACCETTA = Map.of(\n        \"PROPRIETARY\",  Set.of(\"MIT\", \"BSD-3-Clause\", \"Apache-2.0\"),\n        \"GPL-2.0-only\", Set.of(\"MIT\", \"BSD-3-Clause\", \"GPL-2.0-only\", \"GPL-2.0-or-later\"),\n        \"GPL-3.0-only\", Set.of(\"MIT\", \"BSD-3-Clause\", \"Apache-2.0\", \"GPL-2.0-or-later\", \"GPL-3.0-only\", \"GPL-3.0-or-later\"));\n\n    static boolean compatibile(String destinazione, String dipendenza) {\n        return ACCETTA.getOrDefault(destinazione, Set.of()).contains(dipendenza);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(compatibile(\"GPL-2.0-only\", \"Apache-2.0\")); // false\n        System.out.println(compatibile(\"GPL-3.0-only\", \"Apache-2.0\")); // true\n    }\n}\n```\n\nNella realtà si usano scanner che leggono il pom e producono un elenco delle licenze (SBOM) e una CI che fallisce se compare una licenza non ammessa: è la stessa logica del quality gate della pipeline. La tabella è una semplificazione didattica: nei casi dubbi (combinazioni particolari, eccezioni nelle licenze) si chiede un parere legale.",
+  "analogia": "Le licenze sono come gruppi sanguigni nelle trasfusioni: il codice permissivo è come il donatore universale, entra quasi ovunque; il copyleft forte è come un ricevente che accetta molti donatori ma il cui sangue non può andare a chi ha un gruppo diverso. Ciò che conta è la direzione: chi dona a chi. L'analogia cede perché nel software la compatibilità dipende anche da come si combinano i pezzi (copiati, collegati, programmi separati) e se il prodotto viene distribuito, cose che in medicina non esistono.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Licenze software",
+      "collegamento": "Per valutare la compatibilità serve conoscere le condizioni di ciascuna licenza (permissiva, copyleft debole o forte).",
+      "nodo": "licenze-software"
+    },
+    {
+      "conoscenza": "Dipendenze Maven e scope",
+      "collegamento": "Le dipendenze transitive portano licenze; quelle con scope test non entrano nel prodotto distribuito.",
+      "nodo": "maven"
+    },
+    {
+      "conoscenza": "Relazioni d'ordine (Matematica discreta)",
+      "collegamento": "La compatibilità è direzionale: si può rappresentare come un grafo orientato in cui si scorre verso licenze più restrittive."
+    },
+    {
+      "conoscenza": "CI/CD",
+      "collegamento": "Il controllo delle licenze si può automatizzare come quality gate della pipeline.",
+      "nodo": "ci-cd"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "App proprietaria con dipendenze miste",
+      "problema": "Un'azienda vuole vendere un'app desktop proprietaria (installabile, quindi distribuita). Dipendenze: Gson (Apache-2.0), una libreria di grafici MIT, una libreria PDF sotto GPL-3.0-only, JUnit 5 (EPL-2.0, scope test). Problemi?",
+      "passi": [
+        "Gson Apache-2.0: compatibile con proprietario; obblighi: copyright, testo della licenza, eventuale NOTICE.",
+        "Grafici MIT: compatibile; mantenere avviso di copyright.",
+        "PDF GPL-3.0-only: incorporata in un programma distribuito, renderebbe l'intera app un'opera derivata da distribuire in GPL con sorgente ⇒ incompatibile con l'obiettivo proprietario.",
+        "JUnit (scope test): non viene distribuita nell'app, quindi non vincola il prodotto.",
+        "Soluzioni per la libreria PDF: sostituirla con una permissiva o LGPL, acquistare una licenza commerciale se l'autore offre il doppio licenziamento, oppure rilasciare l'app in GPL."
+      ],
+      "soluzione": "Unico problema: la libreria GPL-3.0-only; va sostituita, ri-licenziata commercialmente, o l'app deve diventare GPL.",
+      "perche_funziona": "Il controllo segue la procedura: inventario, modalità d'uso, distribuzione, licenza di destinazione, obblighi."
+    },
+    {
+      "titolo": "Progetto GPL-2.0-only con codice Apache",
+      "problema": "Un progetto open source rilasciato come GPL-2.0-only vuole incorporare un modulo Apache-2.0 e un file da un progetto GPL-3.0-or-later. Si può?",
+      "passi": [
+        "Apache-2.0 in GPLv2: non compatibile (le condizioni di Apache-2.0 sui brevetti sono restrizioni ulteriori che la GPLv2 non ammette).",
+        "GPL-3.0-or-later in GPL-2.0-only: non compatibile, la v3 non può diventare v2.",
+        "Se il progetto fosse GPL-2.0-or-later, potrebbe essere distribuito come GPL-3.0: allora sia Apache-2.0 sia GPL-3.0 sarebbero compatibili.",
+        "Opzioni: ri-licenziare il progetto come GPL-2.0-or-later/GPL-3.0 (serve il consenso di tutti i titolari del copyright) oppure non usare quei componenti."
+      ],
+      "soluzione": "Nessuno dei due può entrare in un progetto GPL-2.0-only; passando a GPL-3.0 entrambi diventano compatibili.",
+      "perche_funziona": "La compatibilità è direzionale e la clausola «or later» è ciò che permette di salire di versione."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che la compatibilità sia simmetrica (MIT entra in GPL, non viceversa).",
+    "Dimenticare le dipendenze transitive.",
+    "Ritenere che Apache-2.0 sia compatibile con qualsiasi GPL (non con GPL-2.0-only).",
+    "Considerare vincolanti le licenze di strumenti di build o test che non entrano nel prodotto distribuito.",
+    "Ignorare la differenza tra -only e -or-later."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa significa che due licenze sono compatibili?",
+      "risposta": "Che il codice sotto le due licenze può essere combinato in un'unica opera distribuita rispettando contemporaneamente le condizioni di entrambe; in pratica l'insieme si distribuisce sotto la licenza più restrittiva che accetta l'altra."
+    },
+    {
+      "domanda": "Posso includere codice GPL in un prodotto proprietario che vendo?",
+      "risposta": "No: distribuendo l'opera derivata dovrei rilasciarla sotto GPL con il sorgente. Le alternative sono sostituire il componente, ottenere una licenza commerciale o rilasciare il prodotto in GPL."
+    },
+    {
+      "domanda": "Codice Apache-2.0 si può usare in un progetto GPL?",
+      "risposta": "Sì in un progetto GPL-3.0 (o GPL-2.0-or-later distribuito come v3); no in un progetto GPL-2.0-only."
+    },
+    {
+      "domanda": "Perché la licenza di JUnit di solito non vincola il prodotto?",
+      "risposta": "Perché JUnit è una dipendenza con scope test: serve solo durante la build e non viene inclusa nell'artefatto distribuito."
+    }
+  ],
+  "riepilogo": "Compatibili = combinabili e distribuibili rispettando entrambe le licenze.\nDirezionale: permissive → copyleft debole → copyleft forte, mai al contrario.\nApache-2.0 ok con GPL-3.0, non con GPL-2.0-only; GPL non entra nel proprietario distribuito.\nProcedura: inventario (anche transitive), modalità d'uso, distribuzione, destinazione, obblighi.\nAutomatizzabile in CI; nei casi dubbi parere legale."
+}
