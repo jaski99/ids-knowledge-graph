@@ -14,6 +14,7 @@ import { initTabs } from './ui/tabs.js';
 import { createLessonView } from './ui/lesson-view.js';
 import { parseRoute, lessonHash, nextToStudy } from './core/lesson.js';
 import { h, clear } from './ui/dom.js';
+import { navigation } from '../modules/registry.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -62,13 +63,34 @@ async function main() {
     if (!next) box.append(h('p', { class: 'muted' }, 'Percorso completato 🎉 Usa la scheda Ripasso.'));
     box.hidden = !box.children.length;
   };
-  initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
+  const tabs = initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
+  // Viste extra: importano `navigation` e chiamano register({ id, title, mount }).
+  // Gli id grafo, percorso e ripasso sono già nel markup: un id nuovo diventa una scheda.
+  const extraViews = [];
+  const navCtx = { graph, getState: () => state.get(), subscribe: (fn) => state.subscribe(fn), openLesson, select, toggleDone, h, clear };
+  let lastVm = null;
+  navigation.subscribe((view) => {
+    if (document.getElementById(`tab-${view.id}`)) return;
+    const btn = h('button', {
+      type: 'button', role: 'tab', id: `tab-${view.id}`, 'data-tab': view.id,
+      'aria-controls': `view-${view.id}`, 'aria-selected': 'false', tabindex: '-1',
+    }, view.title);
+    const panel = h('section', { role: 'tabpanel', id: `view-${view.id}`, 'aria-labelledby': `tab-${view.id}`, hidden: true });
+    document.querySelector('[role="tablist"]').append(btn);
+    $('#main').append(panel);
+    tabs.bind(btn);
+    const api = view.mount ? view.mount(panel, navCtx) || {} : {};
+    extraViews.push(api);
+    if (lastVm && api.update) api.update(lastVm);
+  });
 
   let lastSel;
   const render = (s) => {
     const visible = new Set(applyFilters(graph.nodi, s.filters, s.done).map((n) => n.id));
     const vm = { visible, done: s.done, selected: s.selected };
+    lastVm = vm;
     views.forEach((v) => (v.update || v.render).call(v, vm));
+    extraViews.forEach((v) => v.update?.(vm));
     details.render(s.selected, s.done);
     renderResume(s.done);
     $('#count').textContent = `${visible.size}/${graph.nodi.length} nodi visibili`;
