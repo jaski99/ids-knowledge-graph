@@ -1,0 +1,40 @@
+{
+  "versione": 2,
+  "corso": {
+    "nome": "Ingegneria del Software (INF-36)",
+    "ateneo": "UNIMORE - Dipartimento di Ingegneria \"Enzo Ferrari\"",
+    "docente": "Francesco Guerra",
+    "fonte_programma": "https://fguerra73.github.io/teaching/"
+  },
+  "aree": [
+    {
+      "id": 1,
+      "titolo": "Specifica dei requisiti"
+    },
+    {
+      "id": 2,
+      "titolo": "Progettazione"
+    },
+    {
+      "id": 3,
+      "titolo": "Implementazione e testing"
+    },
+    {
+      "id": 4,
+      "titolo": "Distribuzione e manutenzione"
+    },
+    {
+      "id": 5,
+      "titolo": "Ingegneria del software AI-native"
+    }
+  ],
+  "testi": {
+    "TSUI": "F. Tsui, O. Karam, B. Bernal - Essentials of Software Engineering, 5th ed., Jones & Bartlett Learning, 2022",
+    "HFDP": "E. Freeman, E. Robson, B. Bates, K. Sierra - Head First Design Patterns, 2nd ed., O'Reilly, 2020",
+    "GOF": "E. Gamma, R. Helm, R. Johnson, J. Vlissides - Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley, 1994",
+    "FOWLER": "M. Fowler - UML Distilled, Addison-Wesley",
+    "MILES": "R. Miles, K. Hamilton - Learning UML 2.0, O'Reilly, 2006",
+    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015"
+  },
+  "nota_esame": "Formato d'esame non ancora noto: le priorità sono motivate da programma ufficiale e testi di riferimento."
+}

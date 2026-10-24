@@ -1,0 +1,60 @@
+[
+  {
+    "id": "boundary-value-analysis",
+    "title": "Analisi dei valori limite (Boundary Value Analysis)",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "Tecnica di test black-box: gli errori si concentrano ai bordi delle classi di equivalenza dell'input, quindi si scelgono casi di test sui valori minimo, appena sotto/sopra il minimo, nominale, appena sotto/sopra il massimo e massimo.",
+    "saper_fare": [
+      "Derivare i casi di test ai limiti per un intervallo di input",
+      "Tradurre i casi di test in test JUnit"
+    ],
+    "prerequisiti": [
+      {
+        "id": "requisiti-obiettivi",
+        "forza": "soft",
+        "motivo": "I casi di test derivano dai vincoli sugli input espressi nei requisiti."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto: casi di test BVA",
+        "testo": "isAdulto(eta) accetta età intere valide 18..65 (incluse) e restituisce true, false altrimenti. Ricava i casi di test con BVA.",
+        "soluzione": "1) Limiti: min=18, max=65. 2) Valori: 17, 18, 19, 41 (nominale), 64, 65, 66. 3) Atteso: 17→false, 18→true, 19→true, 41→true, 64→true, 65→true, 66→false. 4) In JUnit 5: @ParameterizedTest con @CsvSource({\"17,false\",\"18,true\",...})."
+      }
+    ],
+    "tempo_studio_min": 45,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Tecnica di testing citata esplicitamente nel programma. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      },
+      {
+        "titolo": "JUnit 5 User Guide",
+        "url": "https://junit.org/junit5/docs/current/user-guide/",
+        "verificato": true
+      },
+      {
+        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.2 Boundary Value Analysis"
+      }
+    ],
+    "checklist_ripasso": [
+      "min-1, min, min+1, nominale, max-1, max, max+1",
+      "Rapporto con le classi di equivalenza",
+      "Test parametrici JUnit"
+    ]
+  }
+]

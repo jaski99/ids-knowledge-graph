@@ -1,0 +1,121 @@
+[
+  {
+    "id": "requisiti-obiettivi",
+    "title": "Obiettivi della specifica dei requisiti",
+    "area": 1,
+    "tipo": "concetto",
+    "sapere": "La specifica dei requisiti descrive COSA deve fare il sistema (non COME): obiettivi, input attesi, requisiti funzionali e non funzionali, vincoli. È il contratto tra committente e sviluppatori e la base per progettazione e collaudo.",
+    "saper_fare": [
+      "Distinguere requisiti funzionali da non funzionali",
+      "Riconoscere un requisito ambiguo, non verificabile o che descrive una soluzione"
+    ],
+    "prerequisiti": [],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto: classifica requisiti",
+        "testo": "Sistema prenotazione aule. Classifica: (a) l'utente prenota un'aula; (b) la risposta arriva entro 2 s; (c) il sistema è facile da usare.",
+        "soluzione": "(a) funzionale: descrive un servizio. (b) non funzionale (prestazioni), verificabile. (c) non funzionale ma ambiguo/non verificabile: va riscritto, es. 'un nuovo utente completa una prenotazione in meno di 3 minuti senza aiuto'."
+      }
+    ],
+    "tempo_studio_min": 45,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Punto 1 del programma ufficiale; base per i diagrammi dei casi d'uso. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      },
+      {
+        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "1.1.2-1.1.3 Functional/Nonfunctional Requirements"
+      },
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 6 Requirements Engineering"
+      }
+    ],
+    "checklist_ripasso": [
+      "Funzionale vs non funzionale",
+      "Requisito verificabile e non ambiguo",
+      "Requisito = cosa, non come"
+    ]
+  },
+  {
+    "id": "uml-casi-uso",
+    "title": "Diagramma UML dei casi d'uso",
+    "area": 1,
+    "tipo": "abilita",
+    "sapere": "Il diagramma dei casi d'uso rappresenta attori, casi d'uso, confine del sistema e relazioni (associazione, include, extend, generalizzazione). Ogni caso d'uso va accompagnato da una descrizione testuale (scenario principale e alternativi).",
+    "saper_fare": [
+      "Disegnare un diagramma dei casi d'uso a partire da requisiti testuali",
+      "Usare correttamente include ed extend",
+      "Scrivere lo scenario principale e gli scenari alternativi di un caso d'uso"
+    ],
+    "prerequisiti": [
+      {
+        "id": "requisiti-obiettivi",
+        "forza": "hard",
+        "motivo": "I casi d'uso rappresentano requisiti funzionali: serve saperli distinguere e formulare."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto: disegna use case",
+        "testo": "Biblioteca: il Socio cerca un libro e lo prende in prestito; il prestito richiede sempre l'autenticazione; se il libro non è disponibile il Socio può prenotarlo. Il Bibliotecario registra i libri.",
+        "soluzione": "1) Attori: Socio, Bibliotecario (fuori dal confine). 2) Casi d'uso: Cerca libro, Prendi in prestito, Autenticati, Prenota libro, Registra libro. 3) Associazioni: Socio–Cerca/Prendi in prestito; Bibliotecario–Registra libro. 4) Prendi in prestito <<include>> Autenticati (sempre). 5) Prenota libro <<extend>> Prendi in prestito (solo se non disponibile; freccia da Prenota verso Prendi in prestito)."
+      }
+    ],
+    "tempo_studio_min": 90,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Parte applicativa esplicita del punto 1 del programma. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      },
+      {
+        "titolo": "OMG UML 2.5.1 Specification",
+        "url": "https://www.omg.org/spec/UML/2.5.1/",
+        "verificato": true
+      },
+      {
+        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "6.3.2 Requirements Analysis and Clustering with Object-Oriented Use Cases"
+      },
+      {
+        "libro": "UMLCLASS"
+      },
+      {
+        "libro": "FOWLER"
+      },
+      {
+        "libro": "MILES"
+      }
+    ],
+    "checklist_ripasso": [
+      "Attori fuori dal confine del sistema",
+      "include = sempre, extend = condizionale",
+      "Direzione delle frecce include/extend"
+    ]
+  }
+]

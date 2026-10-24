@@ -1,11 +1,12 @@
 # Contratti del knowledge graph IdS
 
-**Fonte unica di verità: `graph/graph.json`.** Niente note Markdown. Gli archi NON sono memorizzati: si derivano da `prerequisiti` (arco `prerequisito → nodo`).
+**Fonte unica di verità: `graph/graph.json`** (schema v2), **generato** da `graph/meta.json` + `graph/parts/area-N.json` con `python scripts/kg.py build`. Niente note Markdown. Gli archi NON sono memorizzati: si derivano da `prerequisiti` (arco `prerequisito.id → nodo`, sia hard sia soft).
 
 ## graph.json (radice)
 ```json
-{ "versione": 1, "corso": {...}, "aree": [{"id":1,"titolo":"..."}, ... 5 aree],
-  "testi": {"TSUI": "...", "HFDP": "...", ...}, "nodi": [ <nodo>, ... ] }
+{ "versione": 2, "corso": {...}, "aree": [{"id":1,"titolo":"..."}, ... 5 aree],
+  "testi": {"TSUI": "...", ...}, "nota_esame": "...",
+  "nodi": [ <nodo>, ... ordinati per (area, id) ] }
 ```
 
 ## Nodo — `schema/node.schema.json` (JSON Schema 2020-12, `additionalProperties: false`)
@@ -17,10 +18,11 @@
 | `tipo` | `concetto` \| `abilita` \| `tipo_esercizio` | concetto = sapere; abilita = procedura; tipo_esercizio = famiglia di esercizi d'esame |
 | `sapere` | string | 1-4 frasi, cosa si deve conoscere |
 | `saper_fare` | string[] ≥1 | criteri osservabili (verbo d'azione), ~2-4 |
-| `prerequisiti` | id[] | esistenti, senza duplicati, niente cicli/self-loop |
-| `esercizi` | [{testo, svolto: bool}] | `svolto` = soluzione presente/fatta dallo studente |
+| `prerequisiti` | [{id, forza: hard\|soft, motivo}] | id esistenti, niente self-loop; **nessun ciclo considerando archi hard+soft**. hard = indispensabile; soft = utile |
+| `esercizi` | [{tipo_esame, testo, soluzione}] | mini-esempi **svolti**: `tipo_esame` es. "scritto: disegna use case"; `soluzione` breve, passo-passo. **minItems 1** se `tipo` è `abilita` o `tipo_esercizio` |
+| `checklist_ripasso` | string[] (opzionale) | punti flash per il ripasso finale |
 | `tempo_studio_min` | int 5..600 | stima |
-| `priorita` | {livello: alta\|media\|bassa, motivazione} | motivazione legata al programma |
+| `priorita` | {livello: alta\|media\|bassa, motivazione} | motivazione legata a programma + testi; **formato d'esame sconosciuto** finché non confermato (vedi `nota_esame`) |
 | `risorse` | [{titolo, url, verificato: true}] ≥1 | solo URL reali controllati con `scripts/check_urls.py` |
 | `riferimenti_testo` | [{libro, capitolo_o_sezione?}] | `libro` = chiave in `testi`; capitolo SOLO se verificato su indice reale |
 
@@ -37,7 +39,7 @@
 | TSUI | Tsui, Karam, Bernal — Essentials of Software Engineering, 5th ed., Jones & Bartlett, 2022 |
 | HFDP | Freeman, Robson, Bates, Sierra — Head First Design Patterns, 2nd ed., O'Reilly, 2020 |
 | GOF | Gamma, Helm, Johnson, Vlissides — Design Patterns, Addison-Wesley, 1994 |
-| FOWLER | Fowler — UML Distilled |
+| FOWLER | Fowler — UML Distilled (citare solo il titolo, edizione non specificata) |
 | MILES | Miles, Hamilton — Learning UML 2.0, O'Reilly, 2006 |
 | UMLCLASS | Seidl, Scholz, Huemer, Kappel — UML @ Classroom, Springer, 2015 |
 
@@ -55,9 +57,16 @@ Per HFDP, GOF, FOWLER, MILES, UMLCLASS i capitoli NON sono stati verificati: cit
 - id: `kebab-case` italiano, senza prefisso area (l'area è un campo). Pattern: `design-pattern-observer`, `uml-diagramma-classi`, `esercizio-bva-intervalli` (per `tipo_esercizio`).
 - Lingua contenuti: italiano; termini tecnici inglesi ammessi.
 - Prerequisiti cross-area ammessi (es. testing → requisiti) ma solo verso id esistenti su `main` o nello stesso ramo.
-- Ogni ramo modifica solo i nodi delle proprie aree; i conflitti su `graph.json` si risolvono mantenendo l'ordine dei nodi per (area, id).
+
+## Regole per i rami contenuti
+- Ogni ramo contenuti scrive **SOLO** in `graph/parts/area-N.json` delle proprie aree (`feat/contenuti-a`: area-1, area-2; `feat/contenuti-b`: area-3, area-4, area-5).
+- Ogni file part è un **array JSON di nodi**; ogni nodo ha `area == N` del file.
+- Vietato modificare a mano `graph/graph.json`, `graph/meta.json`, `schema/` o i part di altre aree: modifiche a contratti/meta solo su `main`.
+- Prima di ogni commit: `python scripts/kg.py build` (rigenera `graph.json`) e `pytest -q` (verde). `python scripts/kg.py check` fallisce se `graph.json` non è aggiornato.
+- Prerequisiti verso altre aree: solo id già presenti su `main`. In caso di conflitto su `graph.json` al merge: prendere qualsiasi versione e rieseguire `kg.py build`.
+- I seed esistenti stanno nei part; si possono arricchire, non rinominare.
 
 ## Regole/validazione
-- `pytest` (offline): schema valido, ogni nodo conforme, 5 aree dichiarate, id unici, prerequisiti esistenti, niente self-loop, **niente cicli**, ordine topologico generabile e coerente, ≥1 risorsa per nodo, `riferimenti_testo.libro` dichiarato.
+- `pytest` (offline): schema valido, ogni nodo conforme, 5 aree dichiarate, id unici, prerequisiti esistenti, niente self-loop, **niente cicli (hard+soft)**, ordine topologico generabile e coerente, ≥1 risorsa per nodo, `riferimenti_testo.libro` dichiarato, abilità/tipo_esercizio con ≥1 esercizio svolto, part nominati `area-N.json` con area coerente, `graph.json` uguale all'output di `kg.py build`.
 - `python scripts/check_urls.py` (online, fuori dai test): HEAD→GET, exit 1 su 4xx/5xx/errori.
 - `python scripts/topo.py`: ordine di studio (Kahn deterministico per area, id) con tempo totale.

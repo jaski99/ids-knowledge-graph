@@ -1,5 +1,5 @@
 {
-  "versione": 1,
+  "versione": 2,
   "corso": {
     "nome": "Ingegneria del Software (INF-36)",
     "ateneo": "UNIMORE - Dipartimento di Ingegneria \"Enzo Ferrari\"",
@@ -28,6 +28,15 @@
       "titolo": "Ingegneria del software AI-native"
     }
   ],
+  "testi": {
+    "TSUI": "F. Tsui, O. Karam, B. Bernal - Essentials of Software Engineering, 5th ed., Jones & Bartlett Learning, 2022",
+    "HFDP": "E. Freeman, E. Robson, B. Bates, K. Sierra - Head First Design Patterns, 2nd ed., O'Reilly, 2020",
+    "GOF": "E. Gamma, R. Helm, R. Johnson, J. Vlissides - Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley, 1994",
+    "FOWLER": "M. Fowler - UML Distilled, Addison-Wesley",
+    "MILES": "R. Miles, K. Hamilton - Learning UML 2.0, O'Reilly, 2006",
+    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015"
+  },
+  "nota_esame": "Formato d'esame non ancora noto: le priorità sono motivate da programma ufficiale e testi di riferimento.",
   "nodi": [
     {
       "id": "requisiti-obiettivi",
@@ -42,14 +51,15 @@
       "prerequisiti": [],
       "esercizi": [
         {
-          "testo": "Data una breve descrizione di un sistema di prenotazione aule, elenca 5 requisiti funzionali e 3 non funzionali.",
-          "svolto": false
+          "tipo_esame": "scritto: classifica requisiti",
+          "testo": "Sistema prenotazione aule. Classifica: (a) l'utente prenota un'aula; (b) la risposta arriva entro 2 s; (c) il sistema è facile da usare.",
+          "soluzione": "(a) funzionale: descrive un servizio. (b) non funzionale (prestazioni), verificabile. (c) non funzionale ma ambiguo/non verificabile: va riscritto, es. 'un nuovo utente completa una prenotazione in meno di 3 minuti senza aiuto'."
         }
       ],
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Punto 1 del programma ufficiale; base per i diagrammi dei casi d'uso."
+        "motivazione": "Punto 1 del programma ufficiale; base per i diagrammi dei casi d'uso. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
       },
       "risorse": [
         {
@@ -72,6 +82,11 @@
           "libro": "TSUI",
           "capitolo_o_sezione": "cap. 6 Requirements Engineering"
         }
+      ],
+      "checklist_ripasso": [
+        "Funzionale vs non funzionale",
+        "Requisito verificabile e non ambiguo",
+        "Requisito = cosa, non come"
       ]
     },
     {
@@ -86,18 +101,23 @@
         "Scrivere lo scenario principale e gli scenari alternativi di un caso d'uso"
       ],
       "prerequisiti": [
-        "requisiti-obiettivi"
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "hard",
+          "motivo": "I casi d'uso rappresentano requisiti funzionali: serve saperli distinguere e formulare."
+        }
       ],
       "esercizi": [
         {
-          "testo": "Modella con un diagramma dei casi d'uso un sistema di e-commerce con attori Cliente, Amministratore e Sistema di pagamento.",
-          "svolto": false
+          "tipo_esame": "scritto: disegna use case",
+          "testo": "Biblioteca: il Socio cerca un libro e lo prende in prestito; il prestito richiede sempre l'autenticazione; se il libro non è disponibile il Socio può prenotarlo. Il Bibliotecario registra i libri.",
+          "soluzione": "1) Attori: Socio, Bibliotecario (fuori dal confine). 2) Casi d'uso: Cerca libro, Prendi in prestito, Autenticati, Prenota libro, Registra libro. 3) Associazioni: Socio–Cerca/Prendi in prestito; Bibliotecario–Registra libro. 4) Prendi in prestito <<include>> Autenticati (sempre). 5) Prenota libro <<extend>> Prendi in prestito (solo se non disponibile; freccia da Prenota verso Prendi in prestito)."
         }
       ],
       "tempo_studio_min": 90,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Parte applicativa esplicita del punto 1 del programma."
+        "motivazione": "Parte applicativa esplicita del punto 1 del programma. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
       },
       "risorse": [
         {
@@ -130,6 +150,11 @@
         {
           "libro": "MILES"
         }
+      ],
+      "checklist_ripasso": [
+        "Attori fuori dal confine del sistema",
+        "include = sempre, extend = condizionale",
+        "Direzione delle frecce include/extend"
       ]
     },
     {
@@ -145,14 +170,15 @@
       "prerequisiti": [],
       "esercizi": [
         {
-          "testo": "Data una classe che gestisce input utente, logica di calcolo e salvataggio su file, indica il tipo di coesione e proponi una scomposizione.",
-          "svolto": false
+          "tipo_esame": "orale/scritto: analizza un modulo",
+          "testo": "La classe Report legge dati dal DB, calcola statistiche e le stampa in HTML. Quale coesione ha? Come migliorarla?",
+          "soluzione": "1) Tre responsabilità non correlate nello stesso modulo: coesione bassa (al più sequenziale/comunicativa). 2) Dividere in ReportRepository (accesso dati), StatisticheService (calcolo), HtmlRenderer (presentazione). 3) Collegarle tramite interfacce: ogni classe diventa coesa e l'accoppiamento passa ai dati, non al controllo."
         }
       ],
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Esplicitamente nel programma (qualità del progetto); prerequisito dei design pattern."
+        "motivazione": "Esplicitamente nel programma (qualità del progetto); prerequisito dei design pattern. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
       },
       "risorse": [
         {
@@ -171,6 +197,11 @@
           "libro": "TSUI",
           "capitolo_o_sezione": "8.3 \"Good\" Design Attributes (8.3.1 Cohesion, 8.3.2 Coupling)"
         }
+      ],
+      "checklist_ripasso": [
+        "Scala della coesione (da coincidentale a funzionale)",
+        "Scala dell'accoppiamento (da contenuto a dati)",
+        "Obiettivo: alta coesione, basso accoppiamento"
       ]
     },
     {
@@ -184,18 +215,23 @@
         "Spiegare quale problema di accoppiamento risolve un pattern dato"
       ],
       "prerequisiti": [
-        "coesione-accoppiamento"
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "hard",
+          "motivo": "I pattern si giustificano per come riducono l'accoppiamento e aumentano la coesione."
+        }
       ],
       "esercizi": [
         {
-          "testo": "Per Singleton, Adapter e Observer indica categoria, problema risolto e una conseguenza negativa.",
-          "svolto": false
+          "tipo_esame": "scritto: riconosci il pattern",
+          "testo": "Più viste devono aggiornarsi automaticamente quando cambia un modello dati, senza che il modello conosca le classi concrete delle viste. Quale pattern e di che categoria?",
+          "soluzione": "1) Problema: notificare N dipendenti di un cambiamento di stato con basso accoppiamento. 2) Pattern: Observer (comportamentale). 3) Il Subject (modello) mantiene una lista di Observer (interfaccia con update()); attach/detach; al cambio di stato chiama notify() → update() su ciascuno. 4) Conseguenza: il modello dipende solo dall'interfaccia Observer."
         }
       ],
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Parte applicativa del punto 2 del programma (uso dei design pattern)."
+        "motivazione": "Parte applicativa del punto 2 del programma (uso dei design pattern). (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
       },
       "risorse": [
         {
@@ -225,6 +261,11 @@
           "libro": "TSUI",
           "capitolo_o_sezione": "7.2.3 Meta-Architectural Knowledge: Styles, Patterns, Tactics, and Reference Architectures"
         }
+      ],
+      "checklist_ripasso": [
+        "Tre categorie GoF",
+        "Struttura nome/problema/soluzione/conseguenze",
+        "Esempi: Singleton, Adapter, Observer"
       ]
     },
     {
@@ -238,18 +279,23 @@
         "Tradurre i casi di test in test JUnit"
       ],
       "prerequisiti": [
-        "requisiti-obiettivi"
+        {
+          "id": "requisiti-obiettivi",
+          "forza": "soft",
+          "motivo": "I casi di test derivano dai vincoli sugli input espressi nei requisiti."
+        }
       ],
       "esercizi": [
         {
-          "testo": "Una funzione accetta un'età tra 18 e 65 inclusi: elenca i casi di test con BVA e il risultato atteso.",
-          "svolto": false
+          "tipo_esame": "scritto: casi di test BVA",
+          "testo": "isAdulto(eta) accetta età intere valide 18..65 (incluse) e restituisce true, false altrimenti. Ricava i casi di test con BVA.",
+          "soluzione": "1) Limiti: min=18, max=65. 2) Valori: 17, 18, 19, 41 (nominale), 64, 65, 66. 3) Atteso: 17→false, 18→true, 19→true, 41→true, 64→true, 65→true, 66→false. 4) In JUnit 5: @ParameterizedTest con @CsvSource({\"17,false\",\"18,true\",...})."
         }
       ],
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Tecnica di testing citata esplicitamente nel programma."
+        "motivazione": "Tecnica di testing citata esplicitamente nel programma. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
       },
       "risorse": [
         {
@@ -273,15 +319,12 @@
           "libro": "TSUI",
           "capitolo_o_sezione": "10.3.2 Boundary Value Analysis"
         }
+      ],
+      "checklist_ripasso": [
+        "min-1, min, min+1, nominale, max-1, max, max+1",
+        "Rapporto con le classi di equivalenza",
+        "Test parametrici JUnit"
       ]
     }
-  ],
-  "testi": {
-    "TSUI": "F. Tsui, O. Karam, B. Bernal - Essentials of Software Engineering, 5th ed., Jones & Bartlett Learning, 2022",
-    "HFDP": "E. Freeman, E. Robson, B. Bates, K. Sierra - Head First Design Patterns, 2nd ed., O'Reilly, 2020",
-    "GOF": "E. Gamma, R. Helm, R. Johnson, J. Vlissides - Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley, 1994",
-    "FOWLER": "M. Fowler - UML Distilled, Addison-Wesley",
-    "MILES": "R. Miles, K. Hamilton - Learning UML 2.0, O'Reilly, 2006",
-    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015"
-  }
+  ]
 }

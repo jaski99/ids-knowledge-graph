@@ -1,0 +1,113 @@
+[
+  {
+    "id": "coesione-accoppiamento",
+    "title": "Coesione e accoppiamento dei moduli",
+    "area": 2,
+    "tipo": "concetto",
+    "sapere": "La coesione misura quanto gli elementi di un modulo concorrono a un unico scopo; l'accoppiamento misura quanto un modulo dipende da altri. Un buon progetto punta ad alta coesione e basso accoppiamento, favorendo manutenibilità, riuso e testabilità.",
+    "saper_fare": [
+      "Classificare i livelli di coesione e accoppiamento in un esempio di codice",
+      "Proporre una ristrutturazione che riduca l'accoppiamento"
+    ],
+    "prerequisiti": [],
+    "esercizi": [
+      {
+        "tipo_esame": "orale/scritto: analizza un modulo",
+        "testo": "La classe Report legge dati dal DB, calcola statistiche e le stampa in HTML. Quale coesione ha? Come migliorarla?",
+        "soluzione": "1) Tre responsabilità non correlate nello stesso modulo: coesione bassa (al più sequenziale/comunicativa). 2) Dividere in ReportRepository (accesso dati), StatisticheService (calcolo), HtmlRenderer (presentazione). 3) Collegarle tramite interfacce: ogni classe diventa coesa e l'accoppiamento passa ai dati, non al controllo."
+      }
+    ],
+    "tempo_studio_min": 60,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Esplicitamente nel programma (qualità del progetto); prerequisito dei design pattern. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      },
+      {
+        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "8.3 \"Good\" Design Attributes (8.3.1 Cohesion, 8.3.2 Coupling)"
+      }
+    ],
+    "checklist_ripasso": [
+      "Scala della coesione (da coincidentale a funzionale)",
+      "Scala dell'accoppiamento (da contenuto a dati)",
+      "Obiettivo: alta coesione, basso accoppiamento"
+    ]
+  },
+  {
+    "id": "design-pattern-introduzione",
+    "title": "Design pattern: concetto e classificazione",
+    "area": 2,
+    "tipo": "concetto",
+    "sapere": "Un design pattern è una soluzione riusabile a un problema ricorrente di progettazione. Il catalogo GoF li divide in creazionali, strutturali e comportamentali; ogni pattern ha nome, problema, soluzione e conseguenze.",
+    "saper_fare": [
+      "Classificare un pattern GoF nella sua categoria",
+      "Spiegare quale problema di accoppiamento risolve un pattern dato"
+    ],
+    "prerequisiti": [
+      {
+        "id": "coesione-accoppiamento",
+        "forza": "hard",
+        "motivo": "I pattern si giustificano per come riducono l'accoppiamento e aumentano la coesione."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto: riconosci il pattern",
+        "testo": "Più viste devono aggiornarsi automaticamente quando cambia un modello dati, senza che il modello conosca le classi concrete delle viste. Quale pattern e di che categoria?",
+        "soluzione": "1) Problema: notificare N dipendenti di un cambiamento di stato con basso accoppiamento. 2) Pattern: Observer (comportamentale). 3) Il Subject (modello) mantiene una lista di Observer (interfaccia con update()); attach/detach; al cambio di stato chiama notify() → update() su ciascuno. 4) Conseguenza: il modello dipende solo dall'interfaccia Observer."
+      }
+    ],
+    "tempo_studio_min": 60,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Parte applicativa del punto 2 del programma (uso dei design pattern). (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      },
+      {
+        "titolo": "Refactoring.Guru - Design Patterns",
+        "url": "https://refactoring.guru/design-patterns",
+        "verificato": true
+      },
+      {
+        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "GOF"
+      },
+      {
+        "libro": "HFDP"
+      },
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "7.2.3 Meta-Architectural Knowledge: Styles, Patterns, Tactics, and Reference Architectures"
+      }
+    ],
+    "checklist_ripasso": [
+      "Tre categorie GoF",
+      "Struttura nome/problema/soluzione/conseguenze",
+      "Esempi: Singleton, Adapter, Observer"
+    ]
+  }
+]

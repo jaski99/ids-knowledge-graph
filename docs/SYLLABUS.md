@@ -27,18 +27,17 @@ Fornire le conoscenze fondamentali su modelli, linguaggi e tecnologie per specif
 - Tsui, Karam, Bernal — *Essentials of Software Engineering*, 5th ed., Jones & Bartlett (2022) — indice verificato
 - Freeman, Robson, Bates, Sierra — *Head First Design Patterns*, 2nd ed. (2020)
 - Gamma, Helm, Johnson, Vlissides — *Design Patterns* (1994)
-- Fowler — *UML Distilled*
+- Fowler — *UML Distilled* (si cita solo il titolo)
 - Miles, Hamilton — *Learning UML 2.0* (2006)
 - Seidl, Scholz, Huemer, Kappel — *UML @ Classroom*, Springer (2015)
 
 Mappa aree → testi e sezioni verificate: vedi `docs/CONTRACTS.md`. Nessun appunto/slide del prof disponibile.
 
 ## Formato d'esame
-**NON TROVATO** su fonti pubbliche per INF-36 (prof. Guerra). Le pagine trovate con modalità d'esame riguardano **altri corsi** UNIMORE (Progetto del Software, Metodologie e Architetture Software: progetto + scritto/orale) e non vanno usate come riferimento.
+**NON TROVATO** su fonti pubbliche per INF-36 (prof. Guerra). Le pagine trovate con modalità d'esame riguardano **altri corsi** UNIMORE (Progetto del Software, Metodologie e Architetture Software: progetto + scritto/orale) e non vanno usate come riferimento. **Decisione (24/10/2026):** formato sconosciuto per ora; le priorità dei nodi sono motivate da programma e testi.
 
 ## Cosa NON è stato trovato
 - Modalità d'esame ufficiale (scritto/orale/progetto, pesi, appelli) per INF-36.
 - Sezione "testi di riferimento" e "verifica dell'apprendimento" della scheda ufficiale nel Course Catalogue (pagina renderizzata via JS, API non accessibile senza browser).
 - Contenuti del corso Moodle (accesso riservato).
 - Indici verificati per HFDP, GoF, UML Distilled, Learning UML 2.0, UML @ Classroom.
-- Edizione precisa di UML Distilled indicata dal prof.
