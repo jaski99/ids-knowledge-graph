@@ -148,7 +148,7 @@ async function main() {
   addEventListener('hashchange', route);
   route();
   addEventListener('keydown', (e) => {
-    if (eventShouldFocusSearch(e)) {
+    if (eventShouldFocusSearch(e) && !document.body.classList.contains('lesson-mode')) {
       const input = document.getElementById('search');
       if (input) { e.preventDefault(); input.focus(); input.select(); }
       return;
