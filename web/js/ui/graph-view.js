@@ -1,15 +1,19 @@
 // Grafo interattivo (Cytoscape.js + dagre da CDN). Dipende solo da dati e callback.
 import { edges } from '../core/topo.js';
-import { areaColor, TIPO_SHAPE } from '../config.js';
+import { prerequisitePath } from '../core/prereq-path.js';
+import { areaColor, TIPO_SHAPE, PRIO_SIZE } from '../config.js';
 
-export function createGraphView(container, graph, { onSelect }) {
+export function createGraphView(container, graph, { onSelect, onOpen }) {
   const cy = globalThis.cytoscape;
   if (!cy) {
     container.textContent = 'Libreria del grafo non disponibile (CDN non raggiungibile): usa la scheda Percorso.';
-    return { update() {}, select() {}, resize() {} };
+    return { update() {}, select() {}, resize() {}, setTheme() {}, fit() {}, zoomBy() {}, panBy() {}, cytoscape: null };
   }
   const els = [
-    ...graph.nodi.map((n) => ({ data: { id: n.id, label: n.title, color: areaColor(n.area), shape: TIPO_SHAPE[n.tipo] } })),
+    ...graph.nodi.map((n) => {
+      const size = PRIO_SIZE[n.priorita?.livello] || PRIO_SIZE.media;
+      return { data: { id: n.id, label: n.title, color: areaColor(n.area), shape: TIPO_SHAPE[n.tipo], w: size, h: size } };
+    }),
     ...edges(graph.nodi).map((e) => ({ data: { id: `${e.source}->${e.target}`, source: e.source, target: e.target }, classes: e.forza })),
   ];
   let hasDagre = false;
@@ -19,29 +23,83 @@ export function createGraphView(container, graph, { onSelect }) {
     // Contenitore largo -> ranghi in righe (TB); stretto/alto (mobile) -> ranghi in colonne (LR).
     layout: hasDagre ? { name: 'dagre', rankDir: container.clientWidth > container.clientHeight ? 'TB' : 'LR', nodeSep: 30, rankSep: 70 } : { name: 'breadthfirst', directed: true },
     style: [
-      { selector: 'node', style: { 'background-color': 'data(color)', shape: 'data(shape)', label: 'data(label)', 'font-size': 11, 'min-zoomed-font-size': 7, 'text-wrap': 'wrap', 'text-max-width': 110, 'text-valign': 'bottom', 'text-margin-y': 4, width: 26, height: 26, color: '#1f2937', 'text-background-color': '#fff', 'text-background-opacity': 0.7 } },
-      { selector: 'node.done', style: { 'border-width': 4, 'border-color': '#16a34a' } },
-      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#111827', 'overlay-opacity': 0.08 } },
-      { selector: 'edge', style: { width: 1.6, 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },
+      { selector: 'node', style: { 'background-color': 'data(color)', shape: 'data(shape)', label: 'data(label)', 'font-size': 11, 'min-zoomed-font-size': 7, 'text-wrap': 'wrap', 'text-max-width': 110, 'text-valign': 'bottom', 'text-margin-y': 4, width: 'data(w)', height: 'data(h)', color: '#1c1917', 'text-background-color': '#fffcf7', 'text-background-opacity': 0.85 } },
+      { selector: 'node.done', style: { 'border-width': 4, 'border-color': '#15803d' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#1c1917', 'overlay-opacity': 0.08 } },
+      { selector: 'node.on-path', style: { opacity: 1, 'border-width': 4, 'border-color': '#1e3a8a', 'z-index': 10 } },
+      { selector: 'node.dim', style: { opacity: 0.22 } },
+      { selector: 'edge', style: { width: 1.6, 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#78716c', 'target-arrow-color': '#78716c' } },
       { selector: 'edge.soft', style: { 'line-style': 'dashed', 'line-dash-pattern': [6, 4] } },
+      { selector: 'edge.on-path', style: { width: 3.2, opacity: 1, 'line-color': '#1e3a8a', 'target-arrow-color': '#1e3a8a', 'z-index': 9 } },
+      { selector: 'edge.dim', style: { opacity: 0.15 } },
       { selector: '.faded', style: { opacity: 0.12 } },
     ],
   });
   g.on('tap', 'node', (ev) => onSelect(ev.target.id()));
-  return {
+  let currentId = null;
+  const api = {
     update({ visible, done, selected }) {
+      const path = selected ? prerequisitePath(graph.nodi, selected) : { nodeIds: new Set(), edgeIds: new Set() };
       g.batch(() => {
-        g.nodes().forEach((n) => { n.toggleClass('faded', !visible.has(n.id())); n.toggleClass('done', done.has(n.id())); });
-        g.edges().forEach((e) => e.toggleClass('faded', !(visible.has(e.source().id()) && visible.has(e.target().id()))));
+        g.nodes().forEach((n) => {
+          const on = path.nodeIds.has(n.id());
+          n.toggleClass('faded', !visible.has(n.id()) && !on);
+          n.toggleClass('done', done.has(n.id()));
+          n.toggleClass('on-path', on);
+          n.toggleClass('dim', Boolean(selected) && !on);
+        });
+        g.edges().forEach((e) => {
+          const on = path.edgeIds.has(e.id());
+          const shown = visible.has(e.source().id()) && visible.has(e.target().id());
+          e.toggleClass('faded', !shown && !on);
+          e.toggleClass('on-path', on);
+          e.toggleClass('dim', Boolean(selected) && !on);
+        });
       });
       this.select(selected);
     },
     select(id) {
+      currentId = id || null;
       g.$(':selected').unselect();
       if (!id) return;
       const n = g.getElementById(id);
       if (n.nonempty()) { n.select(); g.animate({ center: { eles: n } }, { duration: 200 }); }
     },
     resize() { g.resize(); g.fit(undefined, 20); },
+    fit() { g.resize(); g.fit(undefined, 28); },
+    zoomBy(factor) {
+      const level = Math.min(g.maxZoom(), Math.max(g.minZoom(), g.zoom() * factor));
+      g.zoom({ level, renderedPosition: { x: g.width() / 2, y: g.height() / 2 } });
+    },
+    panBy(dx, dy) {
+      const p = g.pan();
+      g.pan({ x: p.x + dx, y: p.y + dy });
+    },
+    cytoscape: g,
+    setTheme(theme) {
+      const dark = theme === 'dark';
+      g.style()
+        .selector('node').style({ color: dark ? '#f5f5f4' : '#1c1917', 'text-background-color': dark ? '#1c1f27' : '#fffcf7' })
+        .selector('node:selected').style({ 'border-color': dark ? '#f5f5f4' : '#1c1917' })
+        .selector('edge').style({ 'line-color': dark ? '#a8a29e' : '#78716c', 'target-arrow-color': dark ? '#a8a29e' : '#78716c' })
+        .selector('node.on-path').style({ 'border-color': dark ? '#fbbf24' : '#1e3a8a' })
+        .selector('edge.on-path').style({ 'line-color': dark ? '#fbbf24' : '#1e3a8a', 'target-arrow-color': dark ? '#fbbf24' : '#1e3a8a' })
+        .update();
+    },
   };
+  container.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target !== container) return;
+    const step = e.shiftKey ? 120 : 56;
+    if (e.key === 'ArrowLeft') api.panBy(step, 0);
+    else if (e.key === 'ArrowRight') api.panBy(-step, 0);
+    else if (e.key === 'ArrowUp') api.panBy(0, step);
+    else if (e.key === 'ArrowDown') api.panBy(0, -step);
+    else if (e.key === '+' || e.key === '=') api.zoomBy(1.25);
+    else if (e.key === '-' || e.key === '_') api.zoomBy(1 / 1.25);
+    else if (e.key === 'a' || e.key === 'A' || e.key === 'Home') api.fit();
+    else if (e.key === 'Enter' && currentId && onOpen) onOpen(currentId);
+    else return;
+    e.preventDefault();
+  });
+  return api;
 }

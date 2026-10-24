@@ -3,12 +3,16 @@ import { h, clear } from './dom.js';
 import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { formatMinuti } from '../core/progress.js';
 import { lessonNav, hasLesson, createStepper, nextToStudy } from '../core/lesson.js';
-import { mdElement, renderMermaid } from './markdown.js';
+import { mdElement, renderMermaid, resetMermaid, setMermaidTheme } from './markdown.js';
+import { enhanceCodeBlocks } from './code-block.js';
+import { frameDiagrams, fitDiagrams } from './diagram.js';
+import { bindSectionNav } from './toc.js';
+import { syncThemeButtons } from '../core/theme.js';
 
-export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, closeLabel = '← Percorso' }) {
+export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, onToggleTheme, closeLabel = '← Percorso' }) {
   const title = (id) => (graph.byId.get(id) || { title: id }).title;
   const lessonLink = (id, text) => h('button', { type: 'button', class: 'link', onclick: () => onOpen(id) }, text || title(id));
-  const block = (cls, heading, ...body) => h('section', { class: `ls ${cls}` }, h('h2', {}, heading), ...body);
+  const block = (cls, heading, ...body) => h('section', { class: `ls ${cls}`, id: `sec-${cls}` }, h('h2', {}, heading), ...body);
 
   function navBar(nav, where) {
     return h('nav', { class: `ls-nav ${where}`, 'aria-label': where === 'top' ? 'Navigazione lezione' : 'Navigazione percorso' },
@@ -32,7 +36,11 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, c
         list.append(li);
       }
       sol.hidden = !st.solutionShown;
-      if (!sol.hidden) renderMermaid(sol); // i diagrammi nascosti si disegnano solo quando visibili
+      if (!sol.hidden) {
+        frameDiagrams(sol);
+        enhanceCodeBlocks(sol);
+        renderMermaid(sol).then(() => fitDiagrams(sol)); // i diagrammi nascosti si disegnano solo quando visibili
+      }
       btn.textContent = st.label();
       btn.disabled = st.finished;
       allBtn.hidden = st.finished;
@@ -61,9 +69,14 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, c
       block('spiegazione', '📘 Spiegazione', mdElement(L.spiegazione)),
       block('esempi', '✍️ Esempi svolti', h('p', { class: 'muted' }, 'Prova a fare ogni passo da solo prima di rivelarlo.'), L.esempi_svolti.map(workedExample)),
       block('errori', '⚠️ Errori comuni', h('ul', {}, L.errori_comuni.map((e) => h('li', {}, mdElement(e, { inline: true, tag: 'span', className: 'md-inline' }))))),
-      block('autoverifica', '✅ Autoverifica', h('ol', { class: 'quiz' }, L.domande_autoverifica.map((q) => h('li', {},
-        h('p', { class: 'q' }, q.domanda),
-        h('details', {}, h('summary', {}, 'Mostra risposta'), mdElement(q.risposta)))))),
+      block('autoverifica', '✅ Autoverifica',
+        h('p', { class: 'muted' }, 'La risposta resta nascosta finché non la chiedi. Puoi farla sparire di nuovo.'),
+        h('ol', { class: 'quiz' }, L.domande_autoverifica.map((q) => h('li', {},
+          h('p', { class: 'q' }, q.domanda),
+          h('details', {},
+            h('summary', {}, 'Mostra risposta'),
+            h('div', { class: 'quiz-answer' }, mdElement(q.risposta)),
+            h('button', { type: 'button', class: 'btn', onclick: (e) => { e.target.closest('details').open = false; } }, 'Nascondi risposta')))))),
       block('riepilogo', '📌 Riepilogo', h('ul', {}, L.riepilogo.split('\n').filter((r) => r.trim()).map((r) => h('li', {}, r)))),
     ];
   }
@@ -99,8 +112,12 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, c
       target ? h('p', { class: 'muted' }, 'Prossima: ', h('strong', {}, title(target)), target !== nav.next ? ' (salta quelle già studiate)' : '') : h('p', { class: 'muted' }, 'Hai completato tutto il percorso 🎉'));
   }
 
+  let detachNav = () => {};
+  let mediaToken = 0;
   return {
     async render(id, done) {
+      detachNav();
+      detachNav = () => {};
       clear(root);
       const n = graph.byId.get(id);
       if (!n) {
@@ -108,22 +125,47 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, c
         return;
       }
       const nav = lessonNav(graph.order, id);
+      const toc = h('nav', { class: 'toc', 'aria-label': 'Indice della lezione' });
+      const progressLabel = h('p', { class: 'section-progress-label' });
+      const progressFill = h('span');
+      const progressBar = h('div', {
+        class: 'section-progress-track', role: 'progressbar',
+        'aria-valuemin': '1', 'aria-valuemax': '1', 'aria-valuenow': '1',
+        'aria-label': 'Avanzamento nelle sezioni della lezione',
+      }, progressFill);
+      const article = h('article', { class: 'lesson', 'data-node': n.id },
+        h('header', {},
+          h('h1', { id: 'lesson-title', tabindex: '-1' }, n.title),
+          h('p', { class: 'badges' }, areaBadge(n, graph.aree), tipoBadge(n), prioBadge(n), h('span', { class: 'badge' }, '⏱ ' + formatMinuti(n.tempo_studio_min)),
+            hasLesson(n) ? null : h('span', { class: 'badge warn' }, 'lezione TODO')),
+          h('label', { class: 'check big' }, h('input', { type: 'checkbox', checked: done.has(n.id), onchange: (e) => onToggleDone(n.id, e.target.checked) }), ' Ho capito: segna come completato')),
+        ...(hasLesson(n) ? lessonBody(n) : fallbackBody(n)),
+        ...commonTail(n));
       root.append(
         h('div', { class: 'ls-top' },
           h('button', { type: 'button', class: 'btn', onclick: onClose }, closeLabel),
+          onToggleTheme ? h('div', { class: 'ls-tools' }, h('button', { type: 'button', class: 'btn', 'data-theme-toggle': '1', onclick: onToggleTheme })) : null,
           navBar(nav, 'top')),
-        h('article', { class: 'lesson', 'data-node': n.id },
-          h('header', {},
-            h('h1', { id: 'lesson-title', tabindex: '-1' }, n.title),
-            h('p', { class: 'badges' }, areaBadge(n, graph.aree), tipoBadge(n), prioBadge(n), h('span', { class: 'badge' }, '⏱ ' + formatMinuti(n.tempo_studio_min)),
-              hasLesson(n) ? null : h('span', { class: 'badge warn' }, 'lezione TODO')),
-            h('label', { class: 'check big' }, h('input', { type: 'checkbox', checked: done.has(n.id), onchange: (e) => onToggleDone(n.id, e.target.checked) }), ' Ho capito: segna come completato')),
-          ...(hasLesson(n) ? lessonBody(n) : fallbackBody(n)),
-          ...commonTail(n)),
-        finishBar(n, nav, done),
-        navBar(nav, 'bottom'),
+        h('div', { class: 'section-progress' }, progressLabel, progressBar),
+        h('div', { class: 'lesson-frame' },
+          toc,
+          h('div', { class: 'lesson-col' }, article, finishBar(n, nav, done), navBar(nav, 'bottom'))),
       );
+      detachNav = bindSectionNav(toc, { label: progressLabel, bar: progressBar, fill: progressFill }, article);
+      syncThemeButtons(root.ownerDocument, root.ownerDocument.documentElement.dataset.theme || 'light');
+      frameDiagrams(root);
+      enhanceCodeBlocks(root);
+      const token = ++mediaToken;
       await renderMermaid(root);
+      if (token === mediaToken) fitDiagrams(root);
+    },
+    setTheme(name) { setMermaidTheme(name); },
+    async refreshDiagrams(name) {
+      const token = ++mediaToken;
+      setMermaidTheme(name);
+      resetMermaid(root);
+      await renderMermaid(root);
+      if (token === mediaToken) fitDiagrams(root);
     },
     focus() { root.querySelector('#lesson-title')?.focus({ preventScroll: true }); },
   };

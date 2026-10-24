@@ -50,22 +50,41 @@ export function mdElement(md, { inline = false, tag = 'div', className = 'md' } 
 }
 
 let mermaidPromise;
+let mermaidApi;
+let mermaidTheme = 'default';
+
+export function setMermaidTheme(uiTheme) {
+  mermaidTheme = uiTheme === 'dark' ? 'dark' : 'default';
+  mermaidApi?.initialize?.({ startOnLoad: false, securityLevel: 'strict', theme: mermaidTheme, fontFamily: 'inherit' });
+}
+
+export function rememberMermaidSource(root) {
+  root?.querySelectorAll?.('pre.mermaid').forEach((node) => {
+    if (!node.dataset.src && !node.querySelector('svg')) node.dataset.src = node.textContent;
+  });
+}
+
+/** Ripristina il sorgente così un cambio tema può ridisegnare il diagramma. */
+export function resetMermaid(root) {
+  root?.querySelectorAll?.('pre.mermaid').forEach((node) => {
+    if (node.dataset.src == null) return;
+    node.removeAttribute('data-processed');
+    node.textContent = node.dataset.src;
+    node.classList.remove('mermaid-off', 'wide');
+  });
+}
+
 export async function renderMermaid(root) {
+  rememberMermaidSource(root);
   // solo i blocchi visibili: mermaid in un contenitore nascosto produce SVG rotti (translate(NaN))
-  const nodes = [...root.querySelectorAll('pre.mermaid:not([data-processed])')].filter((n) => n.getClientRects().length > 0);
+  const nodes = [...root.querySelectorAll('pre.mermaid:not([data-processed])')].filter((n) => n.getClientRects().length > 0 && !n.querySelector('svg'));
   if (!nodes.length) return 0;
   try {
-    mermaidPromise ||= import(MERMAID_URL).then((m) => {
-      m.default.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'default', fontFamily: 'inherit' });
-      return m.default;
-    });
+    mermaidPromise ||= import(MERMAID_URL).then((m) => m.default);
     const mermaid = await mermaidPromise;
+    mermaidApi = mermaid;
+    mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: mermaidTheme, fontFamily: 'inherit' });
     await mermaid.run({ nodes, suppressErrors: true });
-    // diagrammi molto larghi (es. retta numerica): su schermi stretti si scorrono invece di rimpicciolirsi
-    nodes.forEach((n) => {
-      const vb = n.querySelector('svg')?.viewBox?.baseVal;
-      if (vb && vb.height && vb.width / vb.height > 2.5) n.classList.add('wide');
-    });
   } catch (e) {
     nodes.forEach((n) => n.classList.add('mermaid-off'));
     console.warn('mermaid non disponibile:', e.message);

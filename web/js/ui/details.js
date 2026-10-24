@@ -2,6 +2,7 @@
 import { h, clear } from './dom.js';
 import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { successors } from '../core/topo.js';
+import { prerequisitePath } from '../core/prereq-path.js';
 import { formatMinuti } from '../core/progress.js';
 import { hasLesson } from '../core/lesson.js';
 
@@ -11,6 +12,10 @@ export function createDetailsView(root, graph, { onSelect, onToggleDone, onClose
     return h('button', { type: 'button', class: 'link', onclick: () => onSelect(id) }, n ? n.title : id);
   };
   const section = (title, ...body) => h('section', {}, h('h3', {}, title), ...body);
+  const upstreamNote = (nodes, id) => {
+    const n = prerequisitePath(nodes, id).nodeIds.size - 1;
+    return n > 0 ? h('p', { class: 'muted' }, `Nel grafo è evidenziato il percorso dei prerequisiti: ${n} ${n === 1 ? 'nodo a monte' : 'nodi a monte'}.`) : null;
+  };
 
   return {
     render(id, done) {
@@ -28,7 +33,7 @@ export function createDetailsView(root, graph, { onSelect, onToggleDone, onClose
         h('label', { class: 'check big' }, h('input', { type: 'checkbox', checked: done.has(n.id), onchange: (e) => onToggleDone(n.id, e.target.checked) }), ' Completato'),
         section('Sapere', h('p', {}, n.sapere)),
         section('Saper fare', h('ul', {}, n.saper_fare.map((s) => h('li', {}, s)))),
-        section('Prerequisiti', n.prerequisiti.length
+        section('Prerequisiti', upstreamNote(graph.nodi, n.id), n.prerequisiti.length
           ? h('ul', {}, n.prerequisiti.map((p) => h('li', {}, link(p.id), ' ', h('span', { class: `badge forza-${p.forza}` }, p.forza === 'hard' ? 'indispensabile' : 'utile'), p.motivo ? h('div', { class: 'muted' }, p.motivo) : null)))
           : h('p', { class: 'muted' }, 'Nessuno: puoi partire da qui.')),
         succ.length ? section('Sblocca', h('ul', { class: 'inline' }, succ.map((s) => h('li', {}, link(s))))) : null,

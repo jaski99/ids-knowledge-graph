@@ -4,7 +4,9 @@ import { loadGraph } from './data.js';
 import { createState } from './core/state.js';
 import { createSetStore } from './core/store.js';
 import { emptyFilters, applyFilters } from './core/filters.js';
+import { eventShouldFocusSearch } from './core/search.js';
 import { createGraphView } from './ui/graph-view.js';
+import { createMinimap } from './ui/minimap.js';
 import { createDetailsView } from './ui/details.js';
 import { createPathView } from './ui/path.js';
 import { createProgressView } from './ui/progress-view.js';
@@ -14,6 +16,8 @@ import { initTabs } from './ui/tabs.js';
 import { createLessonView } from './ui/lesson-view.js';
 import { parseRoute, lessonHash, nextToStudy } from './core/lesson.js';
 import { h, clear } from './ui/dom.js';
+import { navigation } from '../modules/registry.js';
+import { createThemeController, syncThemeButtons } from './core/theme.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -39,15 +43,36 @@ async function main() {
     onOpen: openLesson,
     onClose: () => { location.hash = '#/percorso'; },
     onToggleDone: toggleDone,
+    onToggleTheme: () => theme.toggle(),
   });
   const views = [
-    createGraphView($('#cy'), graph, { onSelect: select }),
+    createGraphView($('#cy'), graph, { onSelect: select, onOpen: openLesson }),
     createPathView($('#path'), graph, { onSelect: select, onToggleDone: toggleDone, onOpenLesson: openLesson }),
     createProgressView($('#progress'), graph),
     createReviewView($('#review'), graph, reviewStore, { onSelect: select }),
   ];
   createFiltersView($('#filters'), graph, { initial: emptyFilters(), onChange: (filters) => state.set({ filters }) });
   const [graphView] = views;
+  const themeBtn = h('button', { type: 'button', class: 'btn', 'data-theme-toggle': '1' });
+  $('#theme').append(themeBtn);
+  const theme = createThemeController({
+    storage: localStorage,
+    prefersDark: matchMedia('(prefers-color-scheme: dark)').matches,
+    media: matchMedia('(prefers-color-scheme: dark)'),
+    apply(name) {
+      document.documentElement.dataset.theme = name;
+      syncThemeButtons(document, name);
+      graphView.setTheme(name);
+      if ($('#lesson').hidden) lesson.setTheme(name);
+      else lesson.refreshDiagrams(name);
+    },
+  });
+  themeBtn.addEventListener('click', () => theme.toggle());
+  const minimap = createMinimap(document.getElementById('minimap'), graphView.cytoscape);
+  theme.subscribe(() => minimap.redraw());
+  $('#zoom-in').addEventListener('click', () => graphView.zoomBy(1.25));
+  $('#zoom-out').addEventListener('click', () => graphView.zoomBy(1 / 1.25));
+  $('#zoom-fit').addEventListener('click', () => graphView.fit());
   const readLast = () => { try { return localStorage.getItem(STORAGE_KEYS.last); } catch { return null; } };
   const saveLast = (id) => { try { localStorage.setItem(STORAGE_KEYS.last, id); } catch { /* privacy mode */ } };
   // Barra "riprendi": ultima lezione aperta + prossima da studiare, sempre a un tocco dalla home.
@@ -62,13 +87,34 @@ async function main() {
     if (!next) box.append(h('p', { class: 'muted' }, 'Percorso completato 🎉 Usa la scheda Ripasso.'));
     box.hidden = !box.children.length;
   };
-  initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
+  const tabs = initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
+  // Viste extra: importano `navigation` e chiamano register({ id, title, mount }).
+  // Gli id grafo, percorso e ripasso sono già nel markup: un id nuovo diventa una scheda.
+  const extraViews = [];
+  const navCtx = { graph, getState: () => state.get(), subscribe: (fn) => state.subscribe(fn), openLesson, select, toggleDone, h, clear };
+  let lastVm = null;
+  navigation.subscribe((view) => {
+    if (document.getElementById(`tab-${view.id}`)) return;
+    const btn = h('button', {
+      type: 'button', role: 'tab', id: `tab-${view.id}`, 'data-tab': view.id,
+      'aria-controls': `view-${view.id}`, 'aria-selected': 'false', tabindex: '-1',
+    }, view.title);
+    const panel = h('section', { role: 'tabpanel', id: `view-${view.id}`, 'aria-labelledby': `tab-${view.id}`, hidden: true });
+    document.querySelector('[role="tablist"]').append(btn);
+    $('#main').append(panel);
+    tabs.bind(btn);
+    const api = view.mount ? view.mount(panel, navCtx) || {} : {};
+    extraViews.push(api);
+    if (lastVm && api.update) api.update(lastVm);
+  });
 
   let lastSel;
   const render = (s) => {
     const visible = new Set(applyFilters(graph.nodi, s.filters, s.done).map((n) => n.id));
     const vm = { visible, done: s.done, selected: s.selected };
+    lastVm = vm;
     views.forEach((v) => (v.update || v.render).call(v, vm));
+    extraViews.forEach((v) => v.update?.(vm));
     details.render(s.selected, s.done);
     renderResume(s.done);
     $('#count').textContent = `${visible.size}/${graph.nodi.length} nodi visibili`;
@@ -102,7 +148,13 @@ async function main() {
   addEventListener('hashchange', route);
   route();
   addEventListener('keydown', (e) => {
+    if (eventShouldFocusSearch(e) && !document.body.classList.contains('lesson-mode')) {
+      const input = document.getElementById('search');
+      if (input) { e.preventDefault(); input.focus(); input.select(); }
+      return;
+    }
     if (e.key !== 'Escape') return;
+    if (e.target && e.target.id === 'search') { e.target.blur(); return; }
     if (parseRoute(location.hash)) location.hash = '#/percorso';
     else if (state.get().selected) state.set({ selected: null });
   });

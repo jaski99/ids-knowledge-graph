@@ -7,6 +7,14 @@
   <meta name="description" content="Grafo delle conoscenze, percorso di studio e checklist di ripasso per Ingegneria del Software (UNIMORE).">
   <!-- Percorsi provati in ordine: copia generata da build.sh, poi sorgente nel repo. Override: ?graph=URL -->
   <meta name="kg-graph-url" content="graph.json ../graph/graph.json">
+  <!-- Stessa chiave di THEME_STORAGE_KEY in js/core/theme.js: evita il lampo del tema sbagliato. -->
+  <script>
+    try {
+      var t = localStorage.getItem('ids-kg:tema:v1');
+      if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  </script>
   <link rel="stylesheet" href="css/style.css">
   <script defer src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
   <script defer src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
@@ -20,7 +28,10 @@
 <body>
   <a class="skip" href="#main">Vai al contenuto</a>
   <header>
-    <h1>Ingegneria del Software · Knowledge graph</h1>
+    <div class="head-row">
+      <h1>Ingegneria del Software · Knowledge graph</h1>
+      <div id="theme"></div>
+    </div>
     <p id="course" class="muted"></p>
     <details class="note"><summary>Come sono state decise le priorità</summary><p id="exam-note"></p></details>
   </header>
@@ -38,8 +49,16 @@
         <button role="tab" id="tab-ripasso" data-tab="ripasso" aria-controls="view-ripasso" aria-selected="false" tabindex="-1">Ripasso</button>
       </div>
       <section role="tabpanel" id="view-grafo" aria-labelledby="tab-grafo">
-        <div id="cy" aria-label="Grafo dei concetti: clicca un nodo per i dettagli. Alternativa testuale nella scheda Percorso."></div>
-        <p class="legend muted">Ingrandisci (rotellina o pizzico) per leggere i nomi · colore = area · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato</p>
+        <div class="graph-wrap">
+          <div id="cy" tabindex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown + - a Enter" aria-label="Grafo dei concetti. Clicca un nodo per i dettagli. Con il grafo attivo: frecce per spostare, più e meno per lo zoom, A per adattare, Invio apre la lezione. Alternativa testuale nella scheda Percorso."></div>
+          <div class="graph-tools" role="toolbar" aria-label="Zoom del grafo">
+            <button type="button" id="zoom-in" class="btn" aria-label="Ingrandisci il grafo">+</button>
+            <button type="button" id="zoom-out" class="btn" aria-label="Riduci il grafo">−</button>
+            <button type="button" id="zoom-fit" class="btn" aria-label="Adatta il grafo allo schermo">Adatta</button>
+          </div>
+          <canvas id="minimap" class="minimap" aria-label="Minimappa del grafo. Clicca per spostare la vista."></canvas>
+        </div>
+        <p class="legend muted">Ingrandisci (rotellina o pizzico) per leggere i nomi · colore = area · dimensione = priorità, più grande vuol dire più alta · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato · al clic si illumina il percorso dei prerequisiti</p>
       </section>
       <section role="tabpanel" id="view-percorso" aria-labelledby="tab-percorso" hidden>
         <p class="muted">Ordine topologico: ogni nodo viene dopo i suoi prerequisiti; a parità di vincoli prima la priorità alta. Le spunte restano salvate in questo browser.</p>
