@@ -34,7 +34,58 @@
     "GOF": "E. Gamma, R. Helm, R. Johnson, J. Vlissides - Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley, 1994",
     "FOWLER": "M. Fowler - UML Distilled, Addison-Wesley",
     "MILES": "R. Miles, K. Hamilton - Learning UML 2.0, O'Reilly, 2006",
-    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015"
+    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015",
+    "MARTIN": "R. C. Martin - Clean Architecture: A Craftsman's Guide to Software Structure and Design, Prentice Hall, 2017 (riferimento extra, non tra i testi indicati dal prof)"
   },
-  "nota_esame": "Formato d'esame non ancora noto: le priorità sono motivate da programma ufficiale e testi di riferimento."
+  "nota_esame": "Priorità motivate dalle prove reali: fac-simile 2016/17 e prova del 5/11/2025 (testo completo), prove 9/6/2022 e 27/1/2023 (solo sintesi dell'utente, testo originale non disponibile). Formato: scritto 2h, Parte 1 Design (UML + pattern in Java), Parte 2 black box EC+BVA, Parte 3 domande.",
+  "trappole": [
+    {
+      "tema": "Es. 1.4 - pattern",
+      "fonte": "tutte le prove (2016/17, 2022, 2023, 2025)",
+      "trappola": "Il testo non nomina mai il pattern: descrive uno scenario.",
+      "risposta": "Riconosci lo scenario: gerarchia parte-tutto → Composite; accessori opzionali con costo → Decorator; algoritmo a passi fissi con varianti → Template Method; evento che notifica un insieme variabile di interessati → Observer. Motiva la scelta e indica i limiti."
+    },
+    {
+      "tema": "Ottimizzazione del codice",
+      "fonte": "prova 9/6/2022 (sintesi)",
+      "trappola": "Dire che la velocità va ottimizzata fin dall'inizio.",
+      "risposta": "Knuth: 'premature optimization is the root of all evil'. Make it work, make it right, make it fast: si ottimizza dopo il profiling, solo sui veri colli di bottiglia, senza sacrificare leggibilità."
+    },
+    {
+      "tema": "Errori nei requisiti",
+      "fonte": "prova 9/6/2022 (sintesi)",
+      "trappola": "Dire che gli errori di analisi si correggono facilmente in programmazione.",
+      "risposta": "Curva di Boehm: il costo di correzione cresce lungo il ciclo di vita (fino a ~100 volte in produzione). Prevenzione: review delle specifiche, prototipi, coinvolgimento degli stakeholder."
+    },
+    {
+      "tema": "Coesione dei componenti",
+      "fonte": "prove 9/6/2022 e 27/1/2023 (sintesi)",
+      "trappola": "Rispondere con la coesione delle classi invece che dei componenti.",
+      "risposta": "Enuncia REP (granulo di riuso = granulo di rilascio), CCP (classi che cambiano insieme stanno insieme, SRP sui componenti), CRP (non dipendere da ciò che non usi, ISP sui componenti) e la loro tensione."
+    },
+    {
+      "tema": "Black box a scaglioni",
+      "fonte": "Parte 2 di tutte le prove",
+      "trappola": "Dimenticare le classi non valide o fare la BVA su tutti i parametri quando ne è chiesto uno solo.",
+      "risposta": "Classi valide e non valide per ogni parametro; test minimi: una classe non valida per test, le valide combinate; BVA solo sui casi validi e solo sul parametro richiesto (es. 'numero' nel 5/11/2025)."
+    },
+    {
+      "tema": "Coerenza tra diagrammi",
+      "fonte": "2016/17 e 5/11/2025",
+      "trappola": "Sequence/activity/state con oggetti o metodi che non esistono nel class diagram.",
+      "risposta": "Ogni lifeline è un'istanza di una classe progettata; ogni messaggio è un'operazione di quella classe."
+    },
+    {
+      "tema": "Simple Factory e static",
+      "fonte": "prova 5/11/2025",
+      "trappola": "Chiamarla Factory Method o non discutere lo static.",
+      "risposta": "È una Simple Factory (non un pattern GoF). Static: comodo, senza istanza, ma non si può sottoclassare né sostituire nei test."
+    },
+    {
+      "tema": "White box",
+      "fonte": "2022, 2023, 5/11/2025",
+      "trappola": "Confondere statement coverage con decision coverage (un while va percorso sia vero sia falso).",
+      "risposta": "Disegna il CFG; statement = ogni nodo; decision = ogni ramo vero/falso di ogni if/while; MC/DC = ogni condizione influenza da sola l'esito."
+    }
+  ]
 }

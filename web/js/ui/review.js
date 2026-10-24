@@ -10,7 +10,12 @@ export function createReviewView(root, graph, reviewStore, { onSelect }) {
       clear(root);
       const ids = graph.order.filter((id) => visible.has(id) && (graph.byId.get(id).checklist_ripasso || []).length);
       if (!ids.length) { root.append(h('p', { class: 'muted' }, 'Nessun punto di ripasso per i filtri attuali.')); return; }
+      const traps = graph.trappole || [];
       root.append(
+        traps.length ? h('section', { class: 'review traps' }, h('h3', {}, '⚠ Trappole note dalle prove d\u2019esame'),
+          h('ul', {}, traps.map((t, i) => h('li', {}, h('label', { class: 'check' },
+            h('input', { type: 'checkbox', checked: reviewStore.has(`trappola#${i}`), onchange: (e) => reviewStore.toggle(`trappola#${i}`, e.target.checked) }), ' ',
+            h('span', {}, h('strong', {}, t.tema), h('span', { class: 'muted' }, ` (${t.fonte})`), h('br'), 'Trappola: ', t.trappola, h('br'), '→ ', t.risposta)))))) : null,
         h('p', {}, h('button', { type: 'button', onclick: () => { reviewStore.clear(); this.render({ visible }); } }, 'Azzera checklist di ripasso')),
         ...ids.map((id) => {
           const n = graph.byId.get(id);

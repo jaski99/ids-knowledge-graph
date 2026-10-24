@@ -42,6 +42,7 @@
 | FOWLER | Fowler — UML Distilled (citare solo il titolo, edizione non specificata) |
 | MILES | Miles, Hamilton — Learning UML 2.0, O'Reilly, 2006 |
 | UMLCLASS | Seidl, Scholz, Huemer, Kappel — UML @ Classroom, Springer, 2015 |
+| MARTIN | R.C. Martin — Clean Architecture, Prentice Hall, 2017 (**riferimento extra, NON tra i testi del prof**; usato solo per REP/CCP/CRP) |
 
 | area | testi | sezioni TSUI verificate (indice O'Reilly) |
 |---|---|---|

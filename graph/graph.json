@@ -34,9 +34,60 @@
     "GOF": "E. Gamma, R. Helm, R. Johnson, J. Vlissides - Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley, 1994",
     "FOWLER": "M. Fowler - UML Distilled, Addison-Wesley",
     "MILES": "R. Miles, K. Hamilton - Learning UML 2.0, O'Reilly, 2006",
-    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015"
+    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015",
+    "MARTIN": "R. C. Martin - Clean Architecture: A Craftsman's Guide to Software Structure and Design, Prentice Hall, 2017 (riferimento extra, non tra i testi indicati dal prof)"
   },
-  "nota_esame": "Formato d'esame non ancora noto: le priorità sono motivate da programma ufficiale e testi di riferimento.",
+  "nota_esame": "Priorità motivate dalle prove reali: fac-simile 2016/17 e prova del 5/11/2025 (testo completo), prove 9/6/2022 e 27/1/2023 (solo sintesi dell'utente, testo originale non disponibile). Formato: scritto 2h, Parte 1 Design (UML + pattern in Java), Parte 2 black box EC+BVA, Parte 3 domande.",
+  "trappole": [
+    {
+      "tema": "Es. 1.4 - pattern",
+      "fonte": "tutte le prove (2016/17, 2022, 2023, 2025)",
+      "trappola": "Il testo non nomina mai il pattern: descrive uno scenario.",
+      "risposta": "Riconosci lo scenario: gerarchia parte-tutto → Composite; accessori opzionali con costo → Decorator; algoritmo a passi fissi con varianti → Template Method; evento che notifica un insieme variabile di interessati → Observer. Motiva la scelta e indica i limiti."
+    },
+    {
+      "tema": "Ottimizzazione del codice",
+      "fonte": "prova 9/6/2022 (sintesi)",
+      "trappola": "Dire che la velocità va ottimizzata fin dall'inizio.",
+      "risposta": "Knuth: 'premature optimization is the root of all evil'. Make it work, make it right, make it fast: si ottimizza dopo il profiling, solo sui veri colli di bottiglia, senza sacrificare leggibilità."
+    },
+    {
+      "tema": "Errori nei requisiti",
+      "fonte": "prova 9/6/2022 (sintesi)",
+      "trappola": "Dire che gli errori di analisi si correggono facilmente in programmazione.",
+      "risposta": "Curva di Boehm: il costo di correzione cresce lungo il ciclo di vita (fino a ~100 volte in produzione). Prevenzione: review delle specifiche, prototipi, coinvolgimento degli stakeholder."
+    },
+    {
+      "tema": "Coesione dei componenti",
+      "fonte": "prove 9/6/2022 e 27/1/2023 (sintesi)",
+      "trappola": "Rispondere con la coesione delle classi invece che dei componenti.",
+      "risposta": "Enuncia REP (granulo di riuso = granulo di rilascio), CCP (classi che cambiano insieme stanno insieme, SRP sui componenti), CRP (non dipendere da ciò che non usi, ISP sui componenti) e la loro tensione."
+    },
+    {
+      "tema": "Black box a scaglioni",
+      "fonte": "Parte 2 di tutte le prove",
+      "trappola": "Dimenticare le classi non valide o fare la BVA su tutti i parametri quando ne è chiesto uno solo.",
+      "risposta": "Classi valide e non valide per ogni parametro; test minimi: una classe non valida per test, le valide combinate; BVA solo sui casi validi e solo sul parametro richiesto (es. 'numero' nel 5/11/2025)."
+    },
+    {
+      "tema": "Coerenza tra diagrammi",
+      "fonte": "2016/17 e 5/11/2025",
+      "trappola": "Sequence/activity/state con oggetti o metodi che non esistono nel class diagram.",
+      "risposta": "Ogni lifeline è un'istanza di una classe progettata; ogni messaggio è un'operazione di quella classe."
+    },
+    {
+      "tema": "Simple Factory e static",
+      "fonte": "prova 5/11/2025",
+      "trappola": "Chiamarla Factory Method o non discutere lo static.",
+      "risposta": "È una Simple Factory (non un pattern GoF). Static: comodo, senza istanza, ma non si può sottoclassare né sostituire nei test."
+    },
+    {
+      "tema": "White box",
+      "fonte": "2022, 2023, 5/11/2025",
+      "trappola": "Confondere statement coverage con decision coverage (un while va percorso sia vero sia falso).",
+      "risposta": "Disegna il CFG; statement = ogni nodo; decision = ogni ramo vero/falso di ogni if/while; MC/DC = ogni condizione influenza da sola l'esito."
+    }
+  ],
   "nodi": [
     {
       "id": "casi-uso-descrizione-testuale",
@@ -66,7 +117,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non richiesta esplicitamente, ma è il passaggio che rende coerenti use case, sequence e activity (valutati insieme nella Parte 1)."
+        "motivazione": "Mai chiesta da sola (2016/17, 5/11/2025), ma è il ponte che rende coerenti use case, sequence e activity, valutati insieme nella Parte 1."
       },
       "risorse": [
         {
@@ -131,7 +182,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda effettivamente presente nella Parte 3 del fac-simile 2016/17."
+        "motivazione": "Domanda di Parte 3 nel 2016/17 e nel 27/1/2023 (processo dei requisiti) (2022/2023: solo sintesi dell'utente); collegata alla domanda 9/6/2022 sugli errori nei requisiti."
       },
       "risorse": [
         {
@@ -202,7 +253,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): presente in entrambe le prove (2-3 pt); è il primo esercizio della Parte 1."
+        "motivazione": "Use case richiesto nel 2016/17 (es. 1.1, con class diagram, 3 pt) e nel 5/11/2025 (es. 1.3, 2 pt): punti quasi sicuri."
       },
       "risorse": [
         {
@@ -275,7 +326,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della prova 9/6/2022 (errori nei requisiti, review, prototipazione, stakeholder) e argomento chiave della domanda sul processo dei requisiti."
+        "motivazione": "Domanda 3.4 della prova 9/6/2022 (errori nei requisiti e costo di correzione, curva di Boehm) (2022/2023: solo sintesi dell'utente); argomento chiave anche per la domanda sul processo dei requisiti (2016/17, 2023)."
       },
       "risorse": [
         {
@@ -338,7 +389,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è richiesto da solo, ma è parte della risposta alla domanda sul processo di specifica (Parte 3)."
+        "motivazione": "Non chiesto da solo nelle prove 2016/17, 2022, 2023, 2025, ma fa parte della risposta sul processo di specifica (2016/17, 2023)."
       },
       "risorse": [
         {
@@ -396,7 +447,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): la Parte 3 chiede il processo di specifica dei requisiti; è il punto 1 del programma e la base per lo use case (2-3 pt nella Parte 1)."
+        "motivazione": "Base della domanda sul processo dei requisiti (2016/17, 27/1/2023) e dello use case (2016/17, 5/11/2025); punto 1 del programma."
       },
       "risorse": [
         {
@@ -470,7 +521,7 @@
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda teorica esplicita della Parte 3 ('processo di specifica dei requisiti'); punto 1 del programma."
+        "motivazione": "Domanda teorica di Parte 3 nel 2016/17 e nel 27/1/2023 (2022/2023: solo sintesi dell'utente); punto 1 del programma."
       },
       "risorse": [
         {
@@ -543,7 +594,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): utile per l'analisi del testo della Parte 1 e per la domanda sui requisiti; non è un esercizio a sé."
+        "motivazione": "Non è un esercizio a sé in nessuna prova nota; aiuta a leggere il testo della Parte 1 e a rispondere sui requisiti (2016/17, 2023)."
       },
       "risorse": [
         {
@@ -607,7 +658,7 @@
       "tempo_studio_min": 90,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): use case richiesto in entrambi i fac-simile (2-3 pt Parte 1); applicazione esplicita del punto 1 del programma."
+        "motivazione": "Use case diagram nel 2016/17 (es. 1.1) e nel 5/11/2025 (es. 1.3, 2 pt); applicazione diretta del punto 1 del programma."
       },
       "risorse": [
         {
@@ -697,7 +748,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della Parte 3 in 2 prove su 3 tra quelle con domande note (9/6/2022 e 27/1/2023)."
+        "motivazione": "Domanda 3.2 sia il 9/6/2022 sia il 27/1/2023 (coesione dei componenti: REP, CCP, CRP) (2022/2023: solo sintesi dell'utente): domanda ricorrente."
       },
       "risorse": [
         {
@@ -716,7 +767,12 @@
           "verificato": true
         }
       ],
-      "riferimenti_testo": [],
+      "riferimenti_testo": [
+        {
+          "libro": "MARTIN",
+          "capitolo_o_sezione": "Component Cohesion (REP, CCP, CRP) — riferimento extra, non tra i testi del prof"
+        }
+      ],
       "checklist_ripasso": [
         "REP = riuso/rilascio, CCP = cambiano insieme (SRP), CRP = usate insieme (ISP)",
         "Risposta attesa: citare la tensione (triangolo) tra i tre",
@@ -757,7 +813,7 @@
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): base per motivare i pattern nella Parte 1 (punto 1.4) e per le domande su metriche e Clean Architecture."
+        "motivazione": "Base per motivare il pattern dell'es. 1.4 (tutte le prove: 2016/17, 2022, 2023, 2025) e per le domande su metriche (2016/17) e REP/CCP/CRP (2022, 2023)."
       },
       "risorse": [
         {
@@ -821,7 +877,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non compare in nessuna prova nota; è nel programma ma di solito non è un esercizio d'esame."
+        "motivazione": "Non compare in nessuna prova nota (2016/17, 2022, 2023, 2025); è nel programma, va conosciuta a livello di definizione."
       },
       "risorse": [
         {
@@ -884,7 +940,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): incluso nelle priorità alte (Factory simple/method/abstract) per il confronto tra le tre varianti."
+        "motivazione": "Non chiesto direttamente; serve per il confronto Simple Factory / Factory Method / Abstract Factory, utile per la domanda 3.2 del 5/11/2025 sulla Simple Factory."
       },
       "risorse": [
         {
@@ -949,7 +1005,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): scenario plausibile per l'esercizio 1.4 (integrazione di servizi esterni) ma non presente nelle prove note."
+        "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note (2016/17 Composite, 2022 Decorator, 2023 Template Method, 2025 Observer); scenario plausibile (servizi esterni)."
       },
       "risorse": [
         {
@@ -1020,7 +1076,7 @@
       "tempo_studio_min": 50,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione ufficiale dell'esercizio 1.4 del 2016/17; citato tra le priorità alte."
+        "motivazione": "Soluzione ufficiale dell'es. 1.4 del 2016/17 (biblioteca: settori/scaffali/documenti, 5 pt)."
       },
       "risorse": [
         {
@@ -1097,7 +1153,7 @@
       "tempo_studio_min": 50,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova 9/6/2022 (accessori opzionali con costo)."
+        "motivazione": "Soluzione dell'es. 1.4 della prova 9/6/2022 (accessori opzionali delle piazzole con costo) (2022/2023: solo sintesi dell'utente)."
       },
       "risorse": [
         {
@@ -1169,7 +1225,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): citato tra le priorità alte (Factory simple/method/abstract) e richiesto come confronto nella domanda 2025."
+        "motivazione": "Variante da distinguere dalla Simple Factory chiesta nella domanda 3.2 del 5/11/2025 (codice SimpleSushiFactory e metodo static)."
       },
       "risorse": [
         {
@@ -1240,7 +1296,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): l'esercizio 1.4 (4-5 pt) chiede in ogni prova di scegliere, motivare e implementare un pattern."
+        "motivazione": "L'es. 1.4 (4-5 pt) chiede in ogni prova nota di scegliere, motivare e implementare un pattern: Composite 2016/17, Decorator 2022, Template Method 2023, Observer 2025."
       },
       "risorse": [
         {
@@ -1325,7 +1381,7 @@
       "tempo_studio_min": 50,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova più recente (5/11/2025, mailing list promozioni, 4 pt)."
+        "motivazione": "Soluzione dell'es. 1.4 della prova più recente, 5/11/2025 (mailing list e promozioni, 4 pt)."
       },
       "risorse": [
         {
@@ -1398,7 +1454,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della prova più recente (5/11/2025): riconoscere la Simple Factory dal codice e discutere il metodo static."
+        "motivazione": "Domanda 3.2 del 5/11/2025 (2 pt): riconoscere la Simple Factory dal codice e pro/contro del metodo static."
       },
       "risorse": [
         {
@@ -1464,7 +1520,7 @@
       "tempo_studio_min": 25,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): pattern semplice e noto, ma non è mai stato la soluzione dell'esercizio 1.4 nelle prove note; utile per domande sui limiti del 'static'."
+        "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note (2016/17, 2022, 2023, 2025); utile per discutere i limiti dello static (domanda 3.2 del 5/11/2025)."
       },
       "risorse": [
         {
@@ -1535,7 +1591,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è stato la soluzione 1.4 nelle prove note, ma si collega direttamente allo state diagram richiesto nel 2025."
+        "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note, ma è legato allo state diagram richiesto nel 5/11/2025 (stati di un acquisto)."
       },
       "risorse": [
         {
@@ -1606,7 +1662,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): pattern tra i più comuni nello scenario 'algoritmi alternativi' dell'esercizio 1.4; elencato tra i pattern da saper motivare."
+        "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note, ma è il pattern 'algoritmi alternativi' più vicino al Template Method (2023): va saputo distinguere."
       },
       "risorse": [
         {
@@ -1677,7 +1733,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova 27/1/2023 (algoritmo a passi con varianti)."
+        "motivazione": "Soluzione dell'es. 1.4 della prova 27/1/2023 (algoritmo a passi con varianti) (2022/2023: solo sintesi dell'utente)."
       },
       "risorse": [
         {
@@ -1749,7 +1805,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio presente in tutte le prove note (3 pt nel 2016/17, 5 pt nel 2025)."
+        "motivazione": "Class diagram nel 2016/17 (es. 1.1, 3 pt) e nel 5/11/2025 (es. 1.1, 5 pt, con direzione e molteplicità)."
       },
       "risorse": [
         {
@@ -1830,7 +1886,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio 1.2 (3 pt nel 2016/17, 5 pt nel 2025) esplicitamente valutato sulla coerenza con le classi."
+        "motivazione": "Es. 1.2 valutato sulla coerenza con le classi: 2016/17 (sequence 3 pt + activity 2 pt) e 5/11/2025 (sequence + activity + state, 5 pt)."
       },
       "risorse": [
         {
@@ -1896,7 +1952,7 @@
       "tempo_studio_min": 25,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda presente nel fac-simile 2016/17."
+        "motivazione": "Domanda di Parte 3 nel 2016/17 ('software metrics e una metrica a scelta'); non ripresa nelle prove 2022, 2023, 2025."
       },
       "risorse": [
         {
@@ -1965,7 +2021,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio 1.4 presente in tutte le prove note (5 pt nel 2016/17, 4 pt nel 2025)."
+        "motivazione": "Es. 1.4 in tutte le prove note: Composite 2016/17 (5 pt), Decorator 2022, Template Method 2023, Observer 5/11/2025 (4 pt)."
       },
       "risorse": [
         {
@@ -2041,7 +2097,7 @@
       "tempo_studio_min": 20,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): tipo di domanda presente nella prova più recente (5/11/2025, 2 pt)."
+        "motivazione": "Domanda 3.2 del 5/11/2025 (2 pt): riconoscere la Simple Factory dal codice e discutere lo static."
       },
       "risorse": [
         {
@@ -2103,7 +2159,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): è la 'metrica a scelta' più facile da presentare e si collega al grafo di flusso richiesto nella Parte 3 (white box) della prova 2025."
+        "motivazione": "La 'metrica a scelta' più facile per la domanda del 2016/17; si collega al diagramma di flusso richiesto nella domanda 3.3 del 5/11/2025."
       },
       "risorse": [
         {
@@ -2162,7 +2218,7 @@
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della Parte 3 del fac-simile 2016/17 ('software metrics e una metrica a scelta'); citate tra le priorità alte."
+        "motivazione": "Domanda di Parte 3 nel 2016/17 ('software metrics e una metrica a scelta'); base per coesione/accoppiamento e complessità."
       },
       "risorse": [
         {
@@ -2241,7 +2297,7 @@
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): nessuna delle prove note (2016/17, 2022, 2023, 2025) chiede ORM; è nel programma (teoria + JPA/Hibernate) quindi va conosciuto a livello di definizione."
+        "motivazione": "Nessuna prova nota (2016/17, 2022, 2023, 2025) chiede ORM; è nel programma (teoria + JPA/Hibernate), va conosciuto a livello di definizione."
       },
       "risorse": [
         {
@@ -2325,7 +2381,7 @@
       "tempo_studio_min": 50,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): usati per giustificare il pattern nell'esercizio 1.4 e legati a REP/CCP/CRP (domanda in 2 prove su 3); regole di codice richieste anche dall'utente."
+        "motivazione": "Servono a giustificare il pattern dell'es. 1.4 (tutte le prove) e sono la base di REP/CCP/CRP (domanda 9/6/2022 e 27/1/2023)."
       },
       "risorse": [
         {
@@ -2411,7 +2467,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è un esercizio a sé, ma fornisce il lessico per le domande di teoria e per motivare i diagrammi."
+        "motivazione": "Non chiesto da solo nelle prove 2016/17, 2022, 2023, 2025; fornisce il lessico per teoria e motivazione dei diagrammi."
       },
       "risorse": [
         {
@@ -2469,7 +2525,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): supporta la domanda sulle metriche (cosa misurano) senza essere chiesto da solo nelle prove note."
+        "motivazione": "Supporta la domanda sulle metriche del 2016/17 (cosa misurano); non chiesto da solo nelle prove note."
       },
       "risorse": [
         {
@@ -2573,7 +2629,7 @@
       "tempo_studio_min": 50,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): in tutte le prove note l'esercizio 1.4 (4-5 pt) parte da uno scenario: Composite (2016/17), Decorator (2022), Template Method (2023), Observer (2025)."
+        "motivazione": "In tutte le prove note l'es. 1.4 (4-5 pt) parte da uno scenario: Composite (2016/17), Decorator (9/6/2022), Template Method (27/1/2023), Observer (5/11/2025)."
       },
       "risorse": [
         {
@@ -2647,7 +2703,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "media",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non comparso nelle prove note; resta nel punto 2 del programma e può essere domanda di teoria."
+        "motivazione": "Non comparso nelle prove note (2016/17, 2022, 2023, 2025); resta nel punto 2 del programma come possibile domanda di teoria."
       },
       "risorse": [
         {
@@ -2726,7 +2782,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): la prova 2025 assegna 5 pt al class diagram chiedendo esplicitamente direzione e molteplicità delle associazioni."
+        "motivazione": "Il 5/11/2025 l'es. 1.1 (5 pt) chiede esplicitamente direzione e molteplicità delle associazioni."
       },
       "risorse": [
         {
@@ -2806,7 +2862,7 @@
       "tempo_studio_min": 25,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): mai richiesto nelle prove note (2016/17, 2022, 2023, 2025); utile solo come conoscenza di base dei diagrammi UML."
+        "motivazione": "Mai richiesto nelle prove note (2016/17, 2022, 2023, 2025); conoscenza di base dei diagrammi UML."
       },
       "risorse": [
         {
@@ -2889,7 +2945,7 @@
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove (2 pt nel 2016/17; intera app nel 2025)."
+        "motivazione": "Activity diagram nel 2016/17 (es. 1.3, 2 pt) e nel 5/11/2025 (intera applicazione, dentro l'es. 1.2 da 5 pt)."
       },
       "risorse": [
         {
@@ -2959,7 +3015,7 @@
       "tempo_studio_min": 90,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove: 3 pt (2016/17) e 5 pt (2025, con proprietà, operazioni, direzione e molteplicità)."
+        "motivazione": "Class diagram nel 2016/17 (3 pt con use case) e nel 5/11/2025 (5 pt, con proprietà, operazioni, direzione e molteplicità); serve anche per l'es. 1.4 di ogni prova."
       },
       "risorse": [
         {
@@ -3038,7 +3094,7 @@
       "tempo_studio_min": 75,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove (3 pt nel 2016/17, parte dei 5 pt 1.2 nel 2025) e valutato sulla coerenza con le classi."
+        "motivazione": "Sequence diagram nel 2016/17 (es. 1.2, 3 pt) e nel 5/11/2025 (ordine con tessera fedeltà, es. 1.2), valutato sulla coerenza con le classi."
       },
       "risorse": [
         {
@@ -3108,7 +3164,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto nella prova più recente (5/11/2025, stati di un acquisto) dentro l'esercizio 1.2 da 5 pt; base anche del pattern State."
+        "motivazione": "State diagram richiesto nella prova più recente, 5/11/2025 (stati di un acquisto, es. 1.2 da 5 pt); base del pattern State."
       },
       "risorse": [
         {
@@ -3182,7 +3238,7 @@
       "tempo_studio_min": 25,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): Parte 2 sempre in black box; domande sulla white box nelle prove 2016/17, 2022 e 2023."
+        "motivazione": "Parte 2 sempre black box (2016/17, 2022, 2023, 2025); white box nelle domande 2022 (statement/decision), 2023 (MC/DC) e 2025 (CFG + coperture)."
       },
       "risorse": [
         {
@@ -3246,7 +3302,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): le boundary conditions sui casi validi sono richieste nella Parte 2 di ogni prova. Tecnica citata esplicitamente nel programma (TSUI 10.3.2)."
+        "motivazione": "BVA richiesta nella Parte 2 di tutte le prove note: luggageCost 2016/17, costoPiazzola 2022, calcolaCostoAccessi 2023, calcolaCostoSpedizione 5/11/2025 (solo su 'numero'). TSUI 10.3.2."
       },
       "risorse": [
         {
@@ -3294,6 +3350,11 @@
           "id": "coesione-accoppiamento",
           "forza": "soft",
           "motivo": "Le buone pratiche servono a ottenere alta coesione e basso accoppiamento anche nel codice."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Le best practice di codice applicano i principi SOLID"
         }
       ],
       "esercizi": [
@@ -3306,7 +3367,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma ('buona programmazione e best practices'). Non compare nelle prove d'esame note (2016/17, 2022, 2023) come domanda a sé, ma è la base per le domande su refactoring e ottimizzazione."
+        "motivazione": "Nel programma; non chiesta da sola nelle prove note, ma è la base delle domande su refactoring (2016/17) e ottimizzazione (9/6/2022)."
       },
       "risorse": [
         {
@@ -3365,7 +3426,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): Parte 2 (7 punti) in tutte e tre le prove."
+        "motivazione": "Classi di equivalenza nella Parte 2 di tutte le prove note: 2016/17 (7 pt), 2022, 2023, 5/11/2025 (3 pt)."
       },
       "risorse": [
         {
@@ -3401,6 +3462,11 @@
           "id": "buone-pratiche-programmazione",
           "forza": "hard",
           "motivo": "Uno smell è una violazione delle buone pratiche."
+        },
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "soft",
+          "motivo": "Molti smell (God Class, Feature Envy) sono sintomi di bassa coesione o alto accoppiamento"
         }
       ],
       "esercizi": [
@@ -3413,7 +3479,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Strumento per argomentare la domanda sul refactoring (prova 2016/17). Da solo non è mai stato chiesto."
+        "motivazione": "Strumento per argomentare la domanda sul refactoring del 2016/17; mai chiesto da solo."
       },
       "risorse": [
         {
@@ -3456,6 +3522,11 @@
           "id": "grafo-flusso-controllo",
           "forza": "hard",
           "motivo": "V(G) si calcola sul CFG."
+        },
+        {
+          "id": "metrica-complessita-ciclomatica",
+          "forza": "soft",
+          "motivo": "V(G) è la stessa metrica vista in progettazione; qui si usa per contare i cammini"
         }
       ],
       "esercizi": [
@@ -3473,7 +3544,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "media",
-        "motivazione": "Path analysis è nel programma (TSUI 10.3.3), ma nelle prove note si chiedono le coperture e non V(G): utile soprattutto come metrica nella domanda sulle software metrics."
+        "motivazione": "Path analysis è nel programma (TSUI 10.3.3); nelle prove note si chiedono le coperture (2022, 2023, 2025) e non V(G), utile come metrica (domanda 2016/17)."
       },
       "risorse": [
         {
@@ -3532,7 +3603,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Domande nelle prove 2016/17 (decision coverage), 2022 (statement e decision) e 2023 (MC/DC)."
+        "motivazione": "Domande nel 9/6/2022 (statement e decision), 27/1/2023 (MC/DC) e 5/11/2025 (decision coverage, 2 pt + esercizio da 4 pt)."
       },
       "risorse": [
         {
@@ -3584,6 +3655,16 @@
           "id": "git-versionamento",
           "forza": "soft",
           "motivo": "git bisect localizza il commit che ha introdotto il difetto."
+        },
+        {
+          "id": "junit-5",
+          "forza": "soft",
+          "motivo": "Il bug si riproduce con un test automatico che diventa test di regressione"
+        },
+        {
+          "id": "classi-equivalenza",
+          "forza": "soft",
+          "motivo": "Le classi di equivalenza aiutano a isolare l'input minimo che causa il guasto"
         }
       ],
       "esercizi": [
@@ -3596,7 +3677,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Domanda nelle prove 2016/17 (3 punti) e 2023."
+        "motivazione": "Domanda di Parte 3 nel 27/1/2023 (processo di debugging) e nel 5/11/2025 (3.1, 3 pt)."
       },
       "risorse": [
         {
@@ -3642,6 +3723,11 @@
           "id": "code-smell",
           "forza": "soft",
           "motivo": "Gli smell motivano il 'quando'."
+        },
+        {
+          "id": "metriche-software",
+          "forza": "soft",
+          "motivo": "I benefici del refactoring si argomentano con metriche (complessità, accoppiamento)"
         }
       ],
       "esercizi": [
@@ -3659,7 +3745,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Domanda d'esame nel fac-simile 2016/17. La struttura in 6 punti serve per prendere tutti i punti."
+        "motivazione": "Domanda di Parte 3 nel 2016/17 (scopo e rischi del refactoring); la struttura in 6 punti serve per prendere tutti i punti."
       },
       "risorse": [
         {
@@ -3706,17 +3792,22 @@
           "id": "boundary-value-analysis",
           "forza": "hard",
           "motivo": "Passo 4 della procedura."
+        },
+        {
+          "id": "requisiti-scrittura-verificabile",
+          "forza": "soft",
+          "motivo": "Le classi si ricavano leggendo la specifica come requisito verificabile"
         }
       ],
       "esercizi": [
         {
           "tipo_esame": "scritto parte 2 (prova 2022): costoPiazzola",
-          "testo": "double costoPiazzola(double mq): superficie < 15 m² → errore (-1); 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; mq > 100 → errore (-1). Classi di equivalenza, test minimi e boundary conditions.",
+          "testo": "double costoPiazzola(double mq): superficie < 15 m² → errore (-1); 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; mq > 100 → errore (-1). Classi di equivalenza, test minimi e boundary conditions. (tariffe di esempio, testo originale non disponibile)",
           "soluzione": "Retta: (-∞,15) NV | [15,40) V | [40,100] V | (100,+∞) NV. Classi: C1 mq<15 NV; C2 15≤mq<40 V; C3 40≤mq≤100 V; C4 mq>100 NV. Test minimi: T1(10)=-1 [C1]; T2(25)=250 [C2]; T3(70)=560 [C3]; T4(150)=-1 [C4]. Boundary conditions (ε=0,1): TB(14.9)=-1; TB(15.0)=150; TB(15.1)=151; TB(39.9)=399; TB(40.0)=320; TB(40.1)=320.8; TB(99.9)=799.2; TB(100.0)=800; TB(100.1)=-1. Nota: 39,9 m² costano più di 40 m² (399 > 320). È un salto di prezzo da segnalare come possibile anomalia dei requisiti."
         },
         {
           "tipo_esame": "scritto parte 2 (stile prova 2023): calcolaCostoAccessi a 4 scaglioni",
-          "testo": "double calcolaCostoAccessi(int n): n ≤ 0 → -1; 1..10 accessi → 6 € ciascuno; 11..20 → 5 €; 21..50 → 4 €; ≥ 51 → 3 € (la tariffa vale per tutti gli accessi). Classi, test minimi, BVA.",
+          "testo": "double calcolaCostoAccessi(int n): n ≤ 0 → -1; 1..10 accessi → 6 € ciascuno; 11..20 → 5 €; 21..50 → 4 €; ≥ 51 → 3 € (la tariffa vale per tutti gli accessi). Classi, test minimi, BVA. (tariffe di esempio, testo originale non disponibile)",
           "soluzione": "Classi: C1 n≤0 NV; C2 1..10 V; C3 11..20 V; C4 21..50 V; C5 ≥51 V (nessun limite superiore). Test minimi: T1(-3)=-1; T2(5)=30; T3(15)=75; T4(30)=120; T5(80)=240. BVA (ε=1, interi): TB(0)=-1; TB(1)=6; TB(2)=12; TB(9)=54; TB(10)=60; TB(11)=55; TB(12)=60; TB(19)=95; TB(20)=100; TB(21)=84; TB(22)=88; TB(49)=196; TB(50)=200; TB(51)=153; TB(52)=156; in più un valore grande come TB(Integer.MAX_VALUE) per l'overflow, se il risultato fosse un int. Anomalia: 11 accessi costano meno di 10 (55 < 60)."
         },
         {
@@ -3728,7 +3819,7 @@
       "tempo_studio_min": 60,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Parte 2 dello scritto (7 punti su 30) in tutte e tre le prove note (2016/17 luggageCost, 2022 costoPiazzola, 2023 calcolaCostoAccessi). Ha il miglior rapporto tra punti e tempo di studio."
+        "motivazione": "Parte 2 in tutte le prove note: luggageCost (2016/17, 7 pt), costoPiazzola (9/6/2022), calcolaCostoAccessi (27/1/2023), calcolaCostoSpedizione (5/11/2025, 3 pt). Miglior rapporto punti/tempo."
       },
       "risorse": [
         {
@@ -3776,6 +3867,11 @@
           "id": "grafo-flusso-controllo",
           "forza": "hard",
           "motivo": "Il primo passo è il CFG."
+        },
+        {
+          "id": "complessita-ciclomatica",
+          "forza": "soft",
+          "motivo": "V(G) dà un limite superiore al numero di test per la copertura dei cammini base"
         }
       ],
       "esercizi": [
@@ -3793,7 +3889,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Esercizio da 4 punti nel fac-simile 2016/17; coperture richieste nel 2022 e 2023."
+        "motivazione": "Esercizio 3.3 del 5/11/2025 (CFG + test per statement e decision coverage, 4 pt); coperture chieste anche nel 2022 e 2023."
       },
       "risorse": [
         {
@@ -3841,7 +3937,7 @@
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma e alla base della gestione delle configurazioni (area 4). Non compare nelle prove d'esame note (2016/17, 2022, 2023): utile per il progetto."
+        "motivazione": "Nel programma e base della gestione delle configurazioni; non compare nelle prove note (2016/17, 2022, 2023, 2025)."
       },
       "risorse": [
         {
@@ -3899,7 +3995,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Prova 2016/17 (diagramma di flusso da codice) e domande sulla white box nel 2022 e 2023. Base della path analysis (TSUI 10.3.3)."
+        "motivazione": "Il 5/11/2025 chiede di disegnare il diagramma di flusso del metodo (es. 3.3, 4 pt); serve anche per le domande white box del 2022 e 2023. TSUI 10.3.3."
       },
       "risorse": [
         {
@@ -3936,6 +4032,11 @@
           "id": "buone-pratiche-programmazione",
           "forza": "soft",
           "motivo": "Le checklist di ispezione codificano le buone pratiche."
+        },
+        {
+          "id": "code-smell",
+          "forza": "soft",
+          "motivo": "Durante l'ispezione si cercano code smell con una checklist"
         }
       ],
       "esercizi": [
@@ -3948,7 +4049,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma ('ispezione del codice', TSUI 10.5). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica."
+        "motivazione": "Nel programma (TSUI 10.5); non compare nelle prove note (2016/17, 2022, 2023, 2025): possibile domanda teorica."
       },
       "risorse": [
         {
@@ -3995,19 +4096,24 @@
           "id": "testing-livelli-tipi",
           "forza": "hard",
           "motivo": "JUnit automatizza i test unitari."
+        },
+        {
+          "id": "programmazione-difensiva",
+          "forza": "soft",
+          "motivo": "Si testano anche le eccezioni e i valori di errore introdotti dalla programmazione difensiva"
         }
       ],
       "esercizi": [
         {
           "tipo_esame": "esercizio: JUnit da tabella BVA",
-          "testo": "Automatizza alcuni casi BVA di costoPiazzola(double mq).",
+          "testo": "Automatizza alcuni casi BVA di costoPiazzola(double mq). (tariffe di esempio, testo originale non disponibile)",
           "soluzione": "@ParameterizedTest @CsvSource({\"14.9,-1\",\"15.0,150\",\"39.9,399\",\"40.0,320\",\"100.0,800\",\"100.1,-1\"}) void costo(double mq, double atteso){ assertEquals(atteso, Piazzole.costoPiazzola(mq), 1e-9); }. Il delta 1e-9 evita i falsi negativi dovuti agli arrotondamenti dei double. Per un metodo che lancia eccezioni: assertThrows(IllegalArgumentException.class, () -> f(-1));"
         }
       ],
       "tempo_studio_min": 40,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma (JUnit, TSUI 1.4.3 e 10.3.5). Non compare nelle prove d'esame note (2016/17, 2022, 2023) come esercizio di codice: serve soprattutto nel progetto e per l'orale."
+        "motivazione": "Nel programma (TSUI 1.4.3, 10.3.5); nessuna prova nota (2016/17, 2022, 2023, 2025) chiede codice JUnit: serve per il progetto."
       },
       "risorse": [
         {
@@ -4066,7 +4172,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Nel programma, ma Non compare nelle prove d'esame note (2016/17, 2022, 2023): strumento pratico, utile per il progetto e al massimo per una domanda breve."
+        "motivazione": "Nel programma, ma assente dalle prove note (2016/17, 2022, 2023, 2025): strumento pratico, al massimo una domanda breve."
       },
       "risorse": [
         {
@@ -4124,6 +4230,11 @@
           "id": "refactoring",
           "forza": "soft",
           "motivo": "Il codice va prima ristrutturato e coperto da test; i test proteggono anche l'ottimizzazione."
+        },
+        {
+          "id": "qualita-progettazione",
+          "forza": "soft",
+          "motivo": "L'ottimizzazione prematura sacrifica leggibilità e manutenibilità, attributi di qualità"
         }
       ],
       "esercizi": [
@@ -4136,7 +4247,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Domanda teorica nella prova 2022. Collega le best practice del programma e il refactoring."
+        "motivazione": "Domanda 3.1 del 9/6/2022 (ottimizzazione per la velocità: Knuth, profiling) (2022/2023: solo sintesi dell'utente)."
       },
       "risorse": [
         {
@@ -4201,7 +4312,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma (TSUI 9.3.2). Non compare nelle prove d'esame note (2016/17, 2022, 2023): si collega ai casi non validi della Parte 2 (valore -1 di errore)."
+        "motivazione": "Nel programma (TSUI 9.3.2); non chiesta nelle prove note, ma spiega i casi non validi della Parte 2 (es. -1 in luggageCost 2016/17)."
       },
       "risorse": [
         {
@@ -4254,6 +4365,11 @@
           "id": "design-pattern-introduzione",
           "forza": "soft",
           "motivo": "Molti refactoring portano verso un design pattern."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Il refactoring verso un design migliore applica SRP/OCP/DIP"
         }
       ],
       "esercizi": [
@@ -4266,7 +4382,7 @@
       "tempo_studio_min": 45,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Domanda teorica nel fac-simile 2016/17 (cos'è, a cosa serve, rischi). Nel programma e in TSUI 9.3.4."
+        "motivazione": "Domanda teorica di Parte 3 nel 2016/17 (cos'è, a cosa serve, rischi); nel programma e in TSUI 9.3.4."
       },
       "risorse": [
         {
@@ -4325,7 +4441,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "alta",
-        "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): è la base delle Parti 2 e 3 (black box, white box, debugging). TSUI cap. 10."
+        "motivazione": "Base delle Parti 2 e 3 in tutte le prove note (2016/17, 2022, 2023, 2025): black box, white box, debugging. TSUI cap. 10."
       },
       "risorse": [
         {
@@ -4378,6 +4494,11 @@
           "id": "gestione-configurazioni",
           "forza": "hard",
           "motivo": "La CI automatizza il controllo delle configurazioni e delle build."
+        },
+        {
+          "id": "junit-5",
+          "forza": "soft",
+          "motivo": "La pipeline CI esegue i test automatici a ogni commit"
         }
       ],
       "esercizi": [
@@ -4390,7 +4511,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023). Completa la gestione delle configurazioni e la post-produzione del programma."
+        "motivazione": "Non compare nelle prove note (2016/17, 2022, 2023, 2025); completa gestione delle configurazioni e post-produzione."
       },
       "risorse": [
         {
@@ -4448,7 +4569,7 @@
       "tempo_studio_min": 25,
       "priorita": {
         "livello": "media",
-        "motivazione": "Il programma cita le licenze; Non compare nelle prove d'esame note (2016/17, 2022, 2023). Esercizio di ragionamento adatto a una domanda teorica."
+        "motivazione": "Licenze nel programma; assenti dalle prove note (2016/17, 2022, 2023, 2025). Ragionamento adatto a una domanda teorica."
       },
       "risorse": [
         {
@@ -4508,7 +4629,7 @@
       "tempo_studio_min": 35,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma ('gestione delle configurazioni', TSUI cap. 11). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica."
+        "motivazione": "Nel programma (TSUI cap. 11); assente dalle prove note (2016/17, 2022, 2023, 2025): possibile domanda teorica."
       },
       "risorse": [
         {
@@ -4556,7 +4677,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma ('licenze software'); Non compare nelle prove d'esame note (2016/17, 2022, 2023). TSUI non ha una sezione dedicata: si studia sulle fonti ufficiali (GNU, OSI, Apache)."
+        "motivazione": "Nel programma; assente dalle prove note (2016/17, 2022, 2023, 2025). TSUI non ha una sezione dedicata: fonti ufficiali (GNU, OSI, Apache)."
       },
       "risorse": [
         {
@@ -4630,7 +4751,7 @@
       "tempo_studio_min": 20,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023). Nel programma come 'post produzione' (TSUI cap. 11-12)."
+        "motivazione": "Assente dalle prove note (2016/17, 2022, 2023, 2025); nel programma come 'post produzione' (TSUI cap. 11-12)."
       },
       "risorse": [
         {
@@ -4676,6 +4797,11 @@
           "id": "refactoring",
           "forza": "soft",
           "motivo": "Il refactoring è manutenzione preventiva."
+        },
+        {
+          "id": "requisiti-costo-errori-boehm",
+          "forza": "soft",
+          "motivo": "La manutenzione correttiva costa di più se l'errore nasce nei requisiti (curva di Boehm)"
         }
       ],
       "esercizi": [
@@ -4688,7 +4814,7 @@
       "tempo_studio_min": 25,
       "priorita": {
         "livello": "media",
-        "motivazione": "Nel programma ('manutenzione', TSUI cap. 12). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica breve, collegata al costo degli errori nei requisiti (domanda 2022)."
+        "motivazione": "Nel programma (TSUI cap. 12); assente dalle prove note, ma collegato al costo degli errori nei requisiti (domanda 9/6/2022)."
       },
       "risorse": [
         {
@@ -4736,7 +4862,7 @@
       "tempo_studio_min": 15,
       "priorita": {
         "livello": "bassa",
-        "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023): argomento di contorno a gestione delle configurazioni e post-produzione."
+        "motivazione": "Assente dalle prove note (2016/17, 2022, 2023, 2025); contorno a gestione delle configurazioni e post-produzione."
       },
       "risorse": [
         {
@@ -4782,19 +4908,29 @@
           "id": "junit-5",
           "forza": "soft",
           "motivo": "I test generati sono in JUnit e vanno letti e corretti."
+        },
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "soft",
+          "motivo": "Per valutare un refactoring proposto dall'AI serve conoscere i pattern"
+        },
+        {
+          "id": "git-versionamento",
+          "forza": "soft",
+          "motivo": "Le modifiche dell'assistente vanno revisionate e versionate su branch"
         }
       ],
       "esercizi": [
         {
           "tipo_esame": "esercizio: prompt per i test",
-          "testo": "Scrivi un prompt per far generare i test di costoPiazzola e indica cosa controllare nell'output.",
+          "testo": "Scrivi un prompt per far generare i test di costoPiazzola e indica cosa controllare nell'output. (tariffe di esempio, testo originale non disponibile)",
           "soluzione": "Prompt: 'Scrivi un @ParameterizedTest JUnit 5 per double costoPiazzola(double mq) con specifica: mq<15 → -1; 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m²; mq>100 → -1. Includi un caso per classe di equivalenza e i limiti 14.9, 15, 15.1, 39.9, 40, 40.1, 99.9, 100, 100.1, con il valore atteso calcolato dalla specifica e un delta per i double.' Da controllare: valori attesi ricalcolati a mano (es. 40 → 320), presenza di tutti i limiti, uso di assertEquals con delta, nessun test che si limita a ripetere l'implementazione."
         }
       ],
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+        "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
       },
       "risorse": [
         {
@@ -4839,6 +4975,11 @@
           "id": "assistenti-ai-sviluppo",
           "forza": "soft",
           "motivo": "Fornisce gli esempi d'uso."
+        },
+        {
+          "id": "debugging",
+          "forza": "soft",
+          "motivo": "Il debugging del codice generato è uno dei limiti/rischi da discutere"
         }
       ],
       "esercizi": [
@@ -4851,7 +4992,7 @@
       "tempo_studio_min": 20,
       "priorita": {
         "livello": "media",
-        "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+        "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
       },
       "risorse": [
         {
@@ -4886,6 +5027,16 @@
           "id": "testing-livelli-tipi",
           "forza": "soft",
           "motivo": "Gli agenti usano i test come feedback per verificare le modifiche."
+        },
+        {
+          "id": "requisiti-processo-specifica",
+          "forza": "soft",
+          "motivo": "Gli LLM si usano lungo tutto il ciclo di vita, a partire dai requisiti"
+        },
+        {
+          "id": "gestione-configurazioni",
+          "forza": "soft",
+          "motivo": "Gli agenti lavorano su repository, branch e pull request"
         }
       ],
       "esercizi": [
@@ -4898,7 +5049,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+        "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
       },
       "risorse": [
         {
@@ -4944,6 +5095,11 @@
           "id": "licenze-software",
           "forza": "soft",
           "motivo": "Il rischio di licenza sul codice generato richiede la conoscenza delle licenze."
+        },
+        {
+          "id": "programmazione-difensiva",
+          "forza": "soft",
+          "motivo": "Il codice generato spesso omette validazione degli input e gestione degli errori"
         }
       ],
       "esercizi": [
@@ -4956,7 +5112,7 @@
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+        "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
       },
       "risorse": [
         {
@@ -5012,19 +5168,24 @@
           "id": "boundary-value-analysis",
           "forza": "soft",
           "motivo": "I casi limite sono il punto debole tipico del codice generato."
+        },
+        {
+          "id": "criteri-copertura",
+          "forza": "soft",
+          "motivo": "La verifica umana misura la copertura dei test sul codice generato"
         }
       ],
       "esercizi": [
         {
           "tipo_esame": "esercizio: verifica",
-          "testo": "Un assistente genera: double costoPiazzola(double mq){ if(mq<15||mq>100) return -1; return mq<=40 ? mq*10 : mq*8; }. La specifica dice 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m². Verificalo.",
+          "testo": "Un assistente genera: double costoPiazzola(double mq){ if(mq<15||mq>100) return -1; return mq<=40 ? mq*10 : mq*8; }. La specifica dice 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m². Verificalo. (tariffe di esempio, testo originale non disponibile)",
           "soluzione": "Si applica la BVA: TB(40.0) dovrebbe valere 320 (8 €/m²), mentre il codice restituisce 400 perché usa mq<=40. Il bug sta su un limite. Correzione: mq<40. Lezione: i test derivati dalla specifica scritti dall'umano (EC + BVA) trovano l'errore; un test generato dallo stesso modello avrebbe potuto confermare il comportamento sbagliato (problema dell'oracolo)."
         }
       ],
       "tempo_studio_min": 30,
       "priorita": {
         "livello": "media",
-        "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica. L'esercizio riusa la tecnica EC/BVA della Parte 2."
+        "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica. L'esercizio riusa la tecnica EC/BVA della Parte 2."
       },
       "risorse": [
         {

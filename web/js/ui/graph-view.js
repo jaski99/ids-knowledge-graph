@@ -15,10 +15,11 @@ export function createGraphView(container, graph, { onSelect }) {
   let hasDagre = false;
   try { hasDagre = !!cy('layout', 'dagre'); } catch { /* estensione assente */ }
   const g = cy({
-    container, elements: els, wheelSensitivity: 0.3, minZoom: 0.15, maxZoom: 2,
-    layout: hasDagre ? { name: 'dagre', rankDir: 'LR', nodeSep: 50, rankSep: 110 } : { name: 'breadthfirst', directed: true },
+    container, elements: els, wheelSensitivity: 0.3, textureOnViewport: true, hideEdgesOnViewport: true, minZoom: 0.15, maxZoom: 2,
+    // Contenitore largo -> ranghi in righe (TB); stretto/alto (mobile) -> ranghi in colonne (LR).
+    layout: hasDagre ? { name: 'dagre', rankDir: container.clientWidth > container.clientHeight ? 'TB' : 'LR', nodeSep: 30, rankSep: 70 } : { name: 'breadthfirst', directed: true },
     style: [
-      { selector: 'node', style: { 'background-color': 'data(color)', shape: 'data(shape)', label: 'data(label)', 'font-size': 10, 'text-wrap': 'wrap', 'text-max-width': 110, 'text-valign': 'bottom', 'text-margin-y': 4, width: 26, height: 26, color: '#1f2937', 'text-background-color': '#fff', 'text-background-opacity': 0.7 } },
+      { selector: 'node', style: { 'background-color': 'data(color)', shape: 'data(shape)', label: 'data(label)', 'font-size': 11, 'min-zoomed-font-size': 7, 'text-wrap': 'wrap', 'text-max-width': 110, 'text-valign': 'bottom', 'text-margin-y': 4, width: 26, height: 26, color: '#1f2937', 'text-background-color': '#fff', 'text-background-opacity': 0.7 } },
       { selector: 'node.done', style: { 'border-width': 4, 'border-color': '#16a34a' } },
       { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#111827', 'overlay-opacity': 0.08 } },
       { selector: 'edge', style: { width: 1.6, 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },

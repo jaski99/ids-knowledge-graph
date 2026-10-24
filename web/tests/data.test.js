@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 test('fixture valida, prepare calcola ordine e indice', () => {
   assert.deepEqual(validateGraph(graph()), []);
   const g = prepare(graph());
-  assert.equal(g.byId.get('d').area, 2); assert.equal(g.order[0], 'a');
+  assert.equal(g.byId.get('d').area, 2); assert.equal(g.order[0], 'b');
 });
 test('errori: versione, duplicati, area, prerequisito', () => {
   const g = graph(); g.versione = 1; g.nodi.push({ ...g.nodi[0] }); g.nodi[1].area = 9; g.nodi[2].prerequisiti = [{ id: 'x', forza: 'hard' }];

@@ -14,6 +14,16 @@
         "id": "testing-livelli-tipi",
         "forza": "soft",
         "motivo": "Gli agenti usano i test come feedback per verificare le modifiche."
+      },
+      {
+        "id": "requisiti-processo-specifica",
+        "forza": "soft",
+        "motivo": "Gli LLM si usano lungo tutto il ciclo di vita, a partire dai requisiti"
+      },
+      {
+        "id": "gestione-configurazioni",
+        "forza": "soft",
+        "motivo": "Gli agenti lavorano su repository, branch e pull request"
       }
     ],
     "esercizi": [
@@ -26,7 +36,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+      "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
     },
     "risorse": [
       {
@@ -72,6 +82,11 @@
         "id": "licenze-software",
         "forza": "soft",
         "motivo": "Il rischio di licenza sul codice generato richiede la conoscenza delle licenze."
+      },
+      {
+        "id": "programmazione-difensiva",
+        "forza": "soft",
+        "motivo": "Il codice generato spesso omette validazione degli input e gestione degli errori"
       }
     ],
     "esercizi": [
@@ -84,7 +99,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+      "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
     },
     "risorse": [
       {
@@ -140,19 +155,24 @@
         "id": "boundary-value-analysis",
         "forza": "soft",
         "motivo": "I casi limite sono il punto debole tipico del codice generato."
+      },
+      {
+        "id": "criteri-copertura",
+        "forza": "soft",
+        "motivo": "La verifica umana misura la copertura dei test sul codice generato"
       }
     ],
     "esercizi": [
       {
         "tipo_esame": "esercizio: verifica",
-        "testo": "Un assistente genera: double costoPiazzola(double mq){ if(mq<15||mq>100) return -1; return mq<=40 ? mq*10 : mq*8; }. La specifica dice 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m². Verificalo.",
+        "testo": "Un assistente genera: double costoPiazzola(double mq){ if(mq<15||mq>100) return -1; return mq<=40 ? mq*10 : mq*8; }. La specifica dice 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m². Verificalo. (tariffe di esempio, testo originale non disponibile)",
         "soluzione": "Si applica la BVA: TB(40.0) dovrebbe valere 320 (8 €/m²), mentre il codice restituisce 400 perché usa mq<=40. Il bug sta su un limite. Correzione: mq<40. Lezione: i test derivati dalla specifica scritti dall'umano (EC + BVA) trovano l'errore; un test generato dallo stesso modello avrebbe potuto confermare il comportamento sbagliato (problema dell'oracolo)."
       }
     ],
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica. L'esercizio riusa la tecnica EC/BVA della Parte 2."
+      "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica. L'esercizio riusa la tecnica EC/BVA della Parte 2."
     },
     "risorse": [
       {
@@ -205,19 +225,29 @@
         "id": "junit-5",
         "forza": "soft",
         "motivo": "I test generati sono in JUnit e vanno letti e corretti."
+      },
+      {
+        "id": "design-pattern-introduzione",
+        "forza": "soft",
+        "motivo": "Per valutare un refactoring proposto dall'AI serve conoscere i pattern"
+      },
+      {
+        "id": "git-versionamento",
+        "forza": "soft",
+        "motivo": "Le modifiche dell'assistente vanno revisionate e versionate su branch"
       }
     ],
     "esercizi": [
       {
         "tipo_esame": "esercizio: prompt per i test",
-        "testo": "Scrivi un prompt per far generare i test di costoPiazzola e indica cosa controllare nell'output.",
+        "testo": "Scrivi un prompt per far generare i test di costoPiazzola e indica cosa controllare nell'output. (tariffe di esempio, testo originale non disponibile)",
         "soluzione": "Prompt: 'Scrivi un @ParameterizedTest JUnit 5 per double costoPiazzola(double mq) con specifica: mq<15 → -1; 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m²; mq>100 → -1. Includi un caso per classe di equivalenza e i limiti 14.9, 15, 15.1, 39.9, 40, 40.1, 99.9, 100, 100.1, con il valore atteso calcolato dalla specifica e un delta per i double.' Da controllare: valori attesi ricalcolati a mano (es. 40 → 320), presenza di tutti i limiti, uso di assertEquals con delta, nessun test che si limita a ripetere l'implementazione."
       }
     ],
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+      "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
     },
     "risorse": [
       {
@@ -262,6 +292,11 @@
         "id": "assistenti-ai-sviluppo",
         "forza": "soft",
         "motivo": "Fornisce gli esempi d'uso."
+      },
+      {
+        "id": "debugging",
+        "forza": "soft",
+        "motivo": "Il debugging del codice generato è uno dei limiti/rischi da discutere"
       }
     ],
     "esercizi": [
@@ -274,7 +309,7 @@
     "tempo_studio_min": 20,
     "priorita": {
       "livello": "media",
-      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+      "motivazione": "Area 5 nel programma attuale ma assente da tutte le prove note (2016/17, 2022, 2023, 2025): priorità media come possibile domanda teorica."
     },
     "risorse": [
       {

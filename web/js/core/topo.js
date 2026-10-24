@@ -1,11 +1,13 @@
-// Ordine topologico deterministico (Kahn, chiave area poi id), coerente con scripts/kg.py.
+// Ordine topologico deterministico (Kahn): a parità di vincoli prima priorità alta, poi area e id. Coerente con scripts/kg.py.
 export function edges(nodes) {
   const out = [];
   for (const n of nodes) for (const p of n.prerequisiti || []) out.push({ source: p.id, target: n.id, forza: p.forza });
   return out;
 }
 
-const cmp = (byId) => (a, b) => (byId.get(a).area - byId.get(b).area) || (a < b ? -1 : a > b ? 1 : 0);
+const PRIO_RANK = { alta: 0, media: 1, bassa: 2 };
+const rank = (n) => PRIO_RANK[n.priorita?.livello] ?? 3;
+const cmp = (byId) => (a, b) => (rank(byId.get(a)) - rank(byId.get(b))) || (byId.get(a).area - byId.get(b).area) || (a < b ? -1 : a > b ? 1 : 0);
 
 export function topoOrder(nodes) {
   const byId = new Map(nodes.map((n) => [n.id, n]));

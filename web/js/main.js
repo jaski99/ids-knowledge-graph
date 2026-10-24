@@ -22,6 +22,7 @@ async function main() {
   $('#exam-note').textContent = graph.nota_esame || '';
   $('#course').textContent = `${graph.corso.nome} — prof. ${graph.corso.docente}`;
 
+  if (matchMedia('(max-width: 720px)').matches) document.querySelectorAll('.side details').forEach((d) => { d.open = false; });
   const doneStore = createSetStore(localStorage, STORAGE_KEYS.done);
   const reviewStore = createSetStore(localStorage, STORAGE_KEYS.review);
   const state = createState({ filters: emptyFilters(), done: doneStore.values(), selected: null });

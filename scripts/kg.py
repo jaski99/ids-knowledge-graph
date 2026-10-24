@@ -11,6 +11,9 @@ PARTS = ROOT / "graph" / "parts"
 SCHEMA = ROOT / "schema" / "node.schema.json"
 
 
+PRIO_RANK = {"alta": 0, "media": 1, "bassa": 2}
+
+
 def load_graph(path=GRAPH):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
@@ -25,7 +28,7 @@ def edges(nodes):
 
 
 def topo_order(nodes):
-    """Kahn deterministico (area, id). Solleva ValueError se c'e' un ciclo."""
+    """Kahn deterministico: a parita' di vincoli prima priorita' alta, poi (area, id). ValueError se c'e' un ciclo."""
     by_id = {n["id"]: n for n in nodes}
     indeg = {i: 0 for i in by_id}
     succ = {i: [] for i in by_id}
@@ -34,7 +37,7 @@ def topo_order(nodes):
             raise KeyError(f"prerequisito inesistente: {p} (in {c})")
         indeg[c] += 1
         succ[p].append(c)
-    key = lambda i: (by_id[i]["area"], i)
+    key = lambda i: (PRIO_RANK[by_id[i]["priorita"]["livello"]], by_id[i]["area"], i)
     ready = sorted([i for i, d in indeg.items() if d == 0], key=key)
     out = []
     while ready:

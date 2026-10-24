@@ -27,7 +27,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è un esercizio a sé, ma fornisce il lessico per le domande di teoria e per motivare i diagrammi."
+      "motivazione": "Non chiesto da solo nelle prove 2016/17, 2022, 2023, 2025; fornisce il lessico per teoria e motivazione dei diagrammi."
     },
     "risorse": [
       {
@@ -86,7 +86,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non comparso nelle prove note; resta nel punto 2 del programma e può essere domanda di teoria."
+      "motivazione": "Non comparso nelle prove note (2016/17, 2022, 2023, 2025); resta nel punto 2 del programma come possibile domanda di teoria."
     },
     "risorse": [
       {
@@ -159,7 +159,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "bassa",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non compare in nessuna prova nota; è nel programma ma di solito non è un esercizio d'esame."
+      "motivazione": "Non compare in nessuna prova nota (2016/17, 2022, 2023, 2025); è nel programma, va conosciuta a livello di definizione."
     },
     "risorse": [
       {
@@ -222,7 +222,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): base per motivare i pattern nella Parte 1 (punto 1.4) e per le domande su metriche e Clean Architecture."
+      "motivazione": "Base per motivare il pattern dell'es. 1.4 (tutte le prove: 2016/17, 2022, 2023, 2025) e per le domande su metriche (2016/17) e REP/CCP/CRP (2022, 2023)."
     },
     "risorse": [
       {
@@ -286,7 +286,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): supporta la domanda sulle metriche (cosa misurano) senza essere chiesto da solo nelle prove note."
+      "motivazione": "Supporta la domanda sulle metriche del 2016/17 (cosa misurano); non chiesto da solo nelle prove note."
     },
     "risorse": [
       {
@@ -355,7 +355,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della Parte 3 del fac-simile 2016/17 ('software metrics e una metrica a scelta'); citate tra le priorità alte."
+      "motivazione": "Domanda di Parte 3 nel 2016/17 ('software metrics e una metrica a scelta'); base per coesione/accoppiamento e complessità."
     },
     "risorse": [
       {
@@ -429,7 +429,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): è la 'metrica a scelta' più facile da presentare e si collega al grafo di flusso richiesto nella Parte 3 (white box) della prova 2025."
+      "motivazione": "La 'metrica a scelta' più facile per la domanda del 2016/17; si collega al diagramma di flusso richiesto nella domanda 3.3 del 5/11/2025."
     },
     "risorse": [
       {
@@ -487,7 +487,7 @@
     "tempo_studio_min": 25,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda presente nel fac-simile 2016/17."
+      "motivazione": "Domanda di Parte 3 nel 2016/17 ('software metrics e una metrica a scelta'); non ripresa nelle prove 2022, 2023, 2025."
     },
     "risorse": [
       {
@@ -551,7 +551,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "bassa",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): nessuna delle prove note (2016/17, 2022, 2023, 2025) chiede ORM; è nel programma (teoria + JPA/Hibernate) quindi va conosciuto a livello di definizione."
+      "motivazione": "Nessuna prova nota (2016/17, 2022, 2023, 2025) chiede ORM; è nel programma (teoria + JPA/Hibernate), va conosciuto a livello di definizione."
     },
     "risorse": [
       {
@@ -630,7 +630,7 @@
     "tempo_studio_min": 90,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove: 3 pt (2016/17) e 5 pt (2025, con proprietà, operazioni, direzione e molteplicità)."
+      "motivazione": "Class diagram nel 2016/17 (3 pt con use case) e nel 5/11/2025 (5 pt, con proprietà, operazioni, direzione e molteplicità); serve anche per l'es. 1.4 di ogni prova."
     },
     "risorse": [
       {
@@ -709,7 +709,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): la prova 2025 assegna 5 pt al class diagram chiedendo esplicitamente direzione e molteplicità delle associazioni."
+      "motivazione": "Il 5/11/2025 l'es. 1.1 (5 pt) chiede esplicitamente direzione e molteplicità delle associazioni."
     },
     "risorse": [
       {
@@ -790,7 +790,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio presente in tutte le prove note (3 pt nel 2016/17, 5 pt nel 2025)."
+      "motivazione": "Class diagram nel 2016/17 (es. 1.1, 3 pt) e nel 5/11/2025 (es. 1.1, 5 pt, con direzione e molteplicità)."
     },
     "risorse": [
       {
@@ -861,7 +861,7 @@
     "tempo_studio_min": 75,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove (3 pt nel 2016/17, parte dei 5 pt 1.2 nel 2025) e valutato sulla coerenza con le classi."
+      "motivazione": "Sequence diagram nel 2016/17 (es. 1.2, 3 pt) e nel 5/11/2025 (ordine con tessera fedeltà, es. 1.2), valutato sulla coerenza con le classi."
     },
     "risorse": [
       {
@@ -936,7 +936,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto in tutte le prove (2 pt nel 2016/17; intera app nel 2025)."
+      "motivazione": "Activity diagram nel 2016/17 (es. 1.3, 2 pt) e nel 5/11/2025 (intera applicazione, dentro l'es. 1.2 da 5 pt)."
     },
     "risorse": [
       {
@@ -1006,7 +1006,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): richiesto nella prova più recente (5/11/2025, stati di un acquisto) dentro l'esercizio 1.2 da 5 pt; base anche del pattern State."
+      "motivazione": "State diagram richiesto nella prova più recente, 5/11/2025 (stati di un acquisto, es. 1.2 da 5 pt); base del pattern State."
     },
     "risorse": [
       {
@@ -1085,7 +1085,7 @@
     "tempo_studio_min": 25,
     "priorita": {
       "livello": "bassa",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): mai richiesto nelle prove note (2016/17, 2022, 2023, 2025); utile solo come conoscenza di base dei diagrammi UML."
+      "motivazione": "Mai richiesto nelle prove note (2016/17, 2022, 2023, 2025); conoscenza di base dei diagrammi UML."
     },
     "risorse": [
       {
@@ -1178,7 +1178,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio 1.2 (3 pt nel 2016/17, 5 pt nel 2025) esplicitamente valutato sulla coerenza con le classi."
+      "motivazione": "Es. 1.2 valutato sulla coerenza con le classi: 2016/17 (sequence 3 pt + activity 2 pt) e 5/11/2025 (sequence + activity + state, 5 pt)."
     },
     "risorse": [
       {
@@ -1245,7 +1245,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): usati per giustificare il pattern nell'esercizio 1.4 e legati a REP/CCP/CRP (domanda in 2 prove su 3); regole di codice richieste anche dall'utente."
+      "motivazione": "Servono a giustificare il pattern dell'es. 1.4 (tutte le prove) e sono la base di REP/CCP/CRP (domanda 9/6/2022 e 27/1/2023)."
     },
     "risorse": [
       {
@@ -1342,7 +1342,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della Parte 3 in 2 prove su 3 tra quelle con domande note (9/6/2022 e 27/1/2023)."
+      "motivazione": "Domanda 3.2 sia il 9/6/2022 sia il 27/1/2023 (coesione dei componenti: REP, CCP, CRP) (2022/2023: solo sintesi dell'utente): domanda ricorrente."
     },
     "risorse": [
       {
@@ -1361,7 +1361,12 @@
         "verificato": true
       }
     ],
-    "riferimenti_testo": [],
+    "riferimenti_testo": [
+      {
+        "libro": "MARTIN",
+        "capitolo_o_sezione": "Component Cohesion (REP, CCP, CRP) — riferimento extra, non tra i testi del prof"
+      }
+    ],
     "checklist_ripasso": [
       "REP = riuso/rilascio, CCP = cambiano insieme (SRP), CRP = usate insieme (ISP)",
       "Risposta attesa: citare la tensione (triangolo) tra i tre",
@@ -1402,7 +1407,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): l'esercizio 1.4 (4-5 pt) chiede in ogni prova di scegliere, motivare e implementare un pattern."
+      "motivazione": "L'es. 1.4 (4-5 pt) chiede in ogni prova nota di scegliere, motivare e implementare un pattern: Composite 2016/17, Decorator 2022, Template Method 2023, Observer 2025."
     },
     "risorse": [
       {
@@ -1482,7 +1487,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione ufficiale dell'esercizio 1.4 del 2016/17; citato tra le priorità alte."
+      "motivazione": "Soluzione ufficiale dell'es. 1.4 del 2016/17 (biblioteca: settori/scaffali/documenti, 5 pt)."
     },
     "risorse": [
       {
@@ -1559,7 +1564,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova più recente (5/11/2025, mailing list promozioni, 4 pt)."
+      "motivazione": "Soluzione dell'es. 1.4 della prova più recente, 5/11/2025 (mailing list e promozioni, 4 pt)."
     },
     "risorse": [
       {
@@ -1632,7 +1637,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): pattern tra i più comuni nello scenario 'algoritmi alternativi' dell'esercizio 1.4; elencato tra i pattern da saper motivare."
+      "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note, ma è il pattern 'algoritmi alternativi' più vicino al Template Method (2023): va saputo distinguere."
     },
     "risorse": [
       {
@@ -1708,7 +1713,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova 9/6/2022 (accessori opzionali con costo)."
+      "motivazione": "Soluzione dell'es. 1.4 della prova 9/6/2022 (accessori opzionali delle piazzole con costo) (2022/2023: solo sintesi dell'utente)."
     },
     "risorse": [
       {
@@ -1780,7 +1785,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): soluzione dell'esercizio 1.4 della prova 27/1/2023 (algoritmo a passi con varianti)."
+      "motivazione": "Soluzione dell'es. 1.4 della prova 27/1/2023 (algoritmo a passi con varianti) (2022/2023: solo sintesi dell'utente)."
     },
     "risorse": [
       {
@@ -1852,7 +1857,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della prova più recente (5/11/2025): riconoscere la Simple Factory dal codice e discutere il metodo static."
+      "motivazione": "Domanda 3.2 del 5/11/2025 (2 pt): riconoscere la Simple Factory dal codice e pro/contro del metodo static."
     },
     "risorse": [
       {
@@ -1924,7 +1929,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): citato tra le priorità alte (Factory simple/method/abstract) e richiesto come confronto nella domanda 2025."
+      "motivazione": "Variante da distinguere dalla Simple Factory chiesta nella domanda 3.2 del 5/11/2025 (codice SimpleSushiFactory e metodo static)."
     },
     "risorse": [
       {
@@ -1995,7 +2000,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): incluso nelle priorità alte (Factory simple/method/abstract) per il confronto tra le tre varianti."
+      "motivazione": "Non chiesto direttamente; serve per il confronto Simple Factory / Factory Method / Abstract Factory, utile per la domanda 3.2 del 5/11/2025 sulla Simple Factory."
     },
     "risorse": [
       {
@@ -2060,7 +2065,7 @@
     "tempo_studio_min": 25,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): pattern semplice e noto, ma non è mai stato la soluzione dell'esercizio 1.4 nelle prove note; utile per domande sui limiti del 'static'."
+      "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note (2016/17, 2022, 2023, 2025); utile per discutere i limiti dello static (domanda 3.2 del 5/11/2025)."
     },
     "risorse": [
       {
@@ -2131,7 +2136,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è stato la soluzione 1.4 nelle prove note, ma si collega direttamente allo state diagram richiesto nel 2025."
+      "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note, ma è legato allo state diagram richiesto nel 5/11/2025 (stati di un acquisto)."
     },
     "risorse": [
       {
@@ -2196,7 +2201,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): scenario plausibile per l'esercizio 1.4 (integrazione di servizi esterni) ma non presente nelle prove note."
+      "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note (2016/17 Composite, 2022 Decorator, 2023 Template Method, 2025 Observer); scenario plausibile (servizi esterni)."
     },
     "risorse": [
       {
@@ -2302,7 +2307,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): in tutte le prove note l'esercizio 1.4 (4-5 pt) parte da uno scenario: Composite (2016/17), Decorator (2022), Template Method (2023), Observer (2025)."
+      "motivazione": "In tutte le prove note l'es. 1.4 (4-5 pt) parte da uno scenario: Composite (2016/17), Decorator (9/6/2022), Template Method (27/1/2023), Observer (5/11/2025)."
     },
     "risorse": [
       {
@@ -2386,7 +2391,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): esercizio 1.4 presente in tutte le prove note (5 pt nel 2016/17, 4 pt nel 2025)."
+      "motivazione": "Es. 1.4 in tutte le prove note: Composite 2016/17 (5 pt), Decorator 2022, Template Method 2023, Observer 5/11/2025 (4 pt)."
     },
     "risorse": [
       {
@@ -2462,7 +2467,7 @@
     "tempo_studio_min": 20,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): tipo di domanda presente nella prova più recente (5/11/2025, 2 pt)."
+      "motivazione": "Domanda 3.2 del 5/11/2025 (2 pt): riconoscere la Simple Factory dal codice e discutere lo static."
     },
     "risorse": [
       {

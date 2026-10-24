@@ -28,3 +28,11 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/pytest -q
 cd scripts && ../.venv/bin/python topo.py && ../.venv/bin/python check_urls.py
 ```
+
+## Fase 3 — 24/10/2026
+- Prerequisiti cross-area aggiunti (testing/refactoring → progettazione, debugging → testing, area 4-5 → testing/refactoring/requisiti), nessun ciclo.
+- Motivazioni di priorità riscritte sulle prove reali (2016/17, 9/6/2022, 27/1/2023, 5/11/2025); `nota_esame` e `trappole` in `meta.json`.
+- Chiave testo `MARTIN` (Clean Architecture, extra, non del prof) usata in `clean-architecture-coesione-componenti`.
+- Ordine topologico: a parità di vincoli priorità alta prima (Python e web app identici, testato).
+- `scripts/gen_docs.py` → `docs/PIANO_STUDIO.md`, `docs/CHECKLIST_RIPASSO.md` (test di aggiornamento).
+- UX da test Playwright 390x844 e 1280x800: pannelli compatti su mobile, layout grafo orientato al contenitore, nota esame richiudibile, trappole nella vista Ripasso.

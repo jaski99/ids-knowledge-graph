@@ -18,7 +18,7 @@
   <header>
     <h1>Ingegneria del Software · Knowledge graph</h1>
     <p id="course" class="muted"></p>
-    <p id="exam-note" class="note"></p>
+    <details class="note"><summary>Come sono state decise le priorità</summary><p id="exam-note"></p></details>
   </header>
   <div class="layout">
     <aside class="side" aria-label="Filtri e progresso">
@@ -34,10 +34,10 @@
       </div>
       <section role="tabpanel" id="view-grafo" aria-labelledby="tab-grafo">
         <div id="cy" aria-label="Grafo dei concetti: clicca un nodo per i dettagli. Alternativa testuale nella scheda Percorso."></div>
-        <p class="legend muted">Colore = area · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato</p>
+        <p class="legend muted">Ingrandisci (rotellina o pizzico) per leggere i nomi · colore = area · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato</p>
       </section>
       <section role="tabpanel" id="view-percorso" aria-labelledby="tab-percorso" hidden>
-        <p class="muted">Ordine topologico: ogni nodo viene dopo i suoi prerequisiti. Le spunte restano salvate in questo browser.</p>
+        <p class="muted">Ordine topologico: ogni nodo viene dopo i suoi prerequisiti; a parità di vincoli prima la priorità alta. Le spunte restano salvate in questo browser.</p>
         <div id="path"></div>
       </section>
       <section role="tabpanel" id="view-ripasso" aria-labelledby="tab-ripasso" hidden>

@@ -27,7 +27,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "media",
-      "motivazione": "Nel programma ('gestione delle configurazioni', TSUI cap. 11). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica."
+      "motivazione": "Nel programma (TSUI cap. 11); assente dalle prove note (2016/17, 2022, 2023, 2025): possibile domanda teorica."
     },
     "risorse": [
       {
@@ -80,7 +80,7 @@
     "tempo_studio_min": 15,
     "priorita": {
       "livello": "bassa",
-      "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023): argomento di contorno a gestione delle configurazioni e post-produzione."
+      "motivazione": "Assente dalle prove note (2016/17, 2022, 2023, 2025); contorno a gestione delle configurazioni e post-produzione."
     },
     "risorse": [
       {
@@ -121,6 +121,11 @@
         "id": "gestione-configurazioni",
         "forza": "hard",
         "motivo": "La CI automatizza il controllo delle configurazioni e delle build."
+      },
+      {
+        "id": "junit-5",
+        "forza": "soft",
+        "motivo": "La pipeline CI esegue i test automatici a ogni commit"
       }
     ],
     "esercizi": [
@@ -133,7 +138,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "bassa",
-      "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023). Completa la gestione delle configurazioni e la post-produzione del programma."
+      "motivazione": "Non compare nelle prove note (2016/17, 2022, 2023, 2025); completa gestione delle configurazioni e post-produzione."
     },
     "risorse": [
       {
@@ -191,7 +196,7 @@
     "tempo_studio_min": 20,
     "priorita": {
       "livello": "bassa",
-      "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023). Nel programma come 'post produzione' (TSUI cap. 11-12)."
+      "motivazione": "Assente dalle prove note (2016/17, 2022, 2023, 2025); nel programma come 'post produzione' (TSUI cap. 11-12)."
     },
     "risorse": [
       {
@@ -237,6 +242,11 @@
         "id": "refactoring",
         "forza": "soft",
         "motivo": "Il refactoring è manutenzione preventiva."
+      },
+      {
+        "id": "requisiti-costo-errori-boehm",
+        "forza": "soft",
+        "motivo": "La manutenzione correttiva costa di più se l'errore nasce nei requisiti (curva di Boehm)"
       }
     ],
     "esercizi": [
@@ -249,7 +259,7 @@
     "tempo_studio_min": 25,
     "priorita": {
       "livello": "media",
-      "motivazione": "Nel programma ('manutenzione', TSUI cap. 12). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica breve, collegata al costo degli errori nei requisiti (domanda 2022)."
+      "motivazione": "Nel programma (TSUI cap. 12); assente dalle prove note, ma collegato al costo degli errori nei requisiti (domanda 9/6/2022)."
     },
     "risorse": [
       {
@@ -292,7 +302,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Nel programma ('licenze software'); Non compare nelle prove d'esame note (2016/17, 2022, 2023). TSUI non ha una sezione dedicata: si studia sulle fonti ufficiali (GNU, OSI, Apache)."
+      "motivazione": "Nel programma; assente dalle prove note (2016/17, 2022, 2023, 2025). TSUI non ha una sezione dedicata: fonti ufficiali (GNU, OSI, Apache)."
     },
     "risorse": [
       {
@@ -366,7 +376,7 @@
     "tempo_studio_min": 25,
     "priorita": {
       "livello": "media",
-      "motivazione": "Il programma cita le licenze; Non compare nelle prove d'esame note (2016/17, 2022, 2023). Esercizio di ragionamento adatto a una domanda teorica."
+      "motivazione": "Licenze nel programma; assenti dalle prove note (2016/17, 2022, 2023, 2025). Ragionamento adatto a una domanda teorica."
     },
     "risorse": [
       {

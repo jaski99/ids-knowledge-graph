@@ -26,7 +26,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): la Parte 3 chiede il processo di specifica dei requisiti; è il punto 1 del programma e la base per lo use case (2-3 pt nella Parte 1)."
+      "motivazione": "Base della domanda sul processo dei requisiti (2016/17, 27/1/2023) e dello use case (2016/17, 5/11/2025); punto 1 del programma."
     },
     "risorse": [
       {
@@ -95,7 +95,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non è richiesto da solo, ma è parte della risposta alla domanda sul processo di specifica (Parte 3)."
+      "motivazione": "Non chiesto da solo nelle prove 2016/17, 2022, 2023, 2025, ma fa parte della risposta sul processo di specifica (2016/17, 2023)."
     },
     "risorse": [
       {
@@ -159,7 +159,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda teorica esplicita della Parte 3 ('processo di specifica dei requisiti'); punto 1 del programma."
+      "motivazione": "Domanda teorica di Parte 3 nel 2016/17 e nel 27/1/2023 (2022/2023: solo sintesi dell'utente); punto 1 del programma."
     },
     "risorse": [
       {
@@ -232,7 +232,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): utile per l'analisi del testo della Parte 1 e per la domanda sui requisiti; non è un esercizio a sé."
+      "motivazione": "Non è un esercizio a sé in nessuna prova nota; aiuta a leggere il testo della Parte 1 e a rispondere sui requisiti (2016/17, 2023)."
     },
     "risorse": [
       {
@@ -296,7 +296,7 @@
     "tempo_studio_min": 90,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): use case richiesto in entrambi i fac-simile (2-3 pt Parte 1); applicazione esplicita del punto 1 del programma."
+      "motivazione": "Use case diagram nel 2016/17 (es. 1.1) e nel 5/11/2025 (es. 1.3, 2 pt); applicazione diretta del punto 1 del programma."
     },
     "risorse": [
       {
@@ -375,7 +375,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "media",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): non richiesta esplicitamente, ma è il passaggio che rende coerenti use case, sequence e activity (valutati insieme nella Parte 1)."
+      "motivazione": "Mai chiesta da sola (2016/17, 5/11/2025), ma è il ponte che rende coerenti use case, sequence e activity, valutati insieme nella Parte 1."
     },
     "risorse": [
       {
@@ -445,7 +445,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): presente in entrambe le prove (2-3 pt); è il primo esercizio della Parte 1."
+      "motivazione": "Use case richiesto nel 2016/17 (es. 1.1, con class diagram, 3 pt) e nel 5/11/2025 (es. 1.3, 2 pt): punti quasi sicuri."
     },
     "risorse": [
       {
@@ -518,7 +518,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda effettivamente presente nella Parte 3 del fac-simile 2016/17."
+      "motivazione": "Domanda di Parte 3 nel 2016/17 e nel 27/1/2023 (processo dei requisiti) (2022/2023: solo sintesi dell'utente); collegata alla domanda 9/6/2022 sugli errori nei requisiti."
     },
     "risorse": [
       {
@@ -584,7 +584,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Fac-simile d'esame (scritto 2h, a.a. 2016/17): domanda della prova 9/6/2022 (errori nei requisiti, review, prototipazione, stakeholder) e argomento chiave della domanda sul processo dei requisiti."
+      "motivazione": "Domanda 3.4 della prova 9/6/2022 (errori nei requisiti e costo di correzione, curva di Boehm) (2022/2023: solo sintesi dell'utente); argomento chiave anche per la domanda sul processo dei requisiti (2016/17, 2023)."
     },
     "risorse": [
       {
