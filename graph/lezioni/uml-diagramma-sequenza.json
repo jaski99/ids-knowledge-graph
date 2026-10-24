@@ -1,0 +1,75 @@
+{
+  "intuizione": "Il sequence diagram è un fumetto delle chiamate di metodo: in alto gli oggetti, verso il basso il tempo, e ogni freccia è un messaggio (una chiamata) da un oggetto all'altro. Racconta un solo scenario alla volta, per esempio «un cliente con tessera compra un prodotto disponibile». Ogni freccia deve corrispondere a un'operazione che esiste nel class diagram, ed è proprio questa coerenza che l'esame valuta.",
+  "spiegazione": "## Gli elementi\n\n| elemento | notazione | significato |\n|---|---|---|\n| **Lifeline** | rettangolo `oggetto:Classe` con linea tratteggiata verticale | un partecipante (oggetto o attore) |\n| **Attivazione** | rettangolino sulla lifeline | il periodo in cui l'oggetto sta eseguendo un metodo |\n| **Messaggio sincrono** | freccia piena con punta piena | chiamata di metodo: il chiamante aspetta |\n| **Risposta** | freccia tratteggiata | ritorno di un valore (si può omettere se ovvio) |\n| **Messaggio asincrono** | freccia con punta aperta | invio senza attendere (notifiche, eventi) |\n| **Creazione** | freccia verso il rettangolo dell'oggetto | `new`: l'oggetto nasce lì |\n| **Distruzione** | X in fondo alla lifeline | l'oggetto termina |\n| **Self-call** | freccia che torna sulla stessa lifeline | l'oggetto chiama un proprio metodo |\n| **Frammenti combinati** | riquadro con operatore | `alt` (if/else), `opt` (if senza else), `loop` (ciclo), `par` (parallelo) con **guardie** `[condizione]` |\n\n## Il legame diretto con il codice Java\n\nQuesto codice:\n\n```java\nclass Documento {\n    private final boolean ammesso;\n    Documento(boolean ammesso) { this.ammesso = ammesso; }\n    boolean isAmmissibile() { return ammesso; }\n}\n\nclass Utente {\n    private int prestitiAttivi;\n    private boolean sospeso;\n    boolean puoPrendereInPrestito() { return !sospeso && prestitiAttivi < 5; }\n    void aggiungiPrestito(Prestito p) { prestitiAttivi++; }\n}\n\nclass Prestito {\n    Prestito(Utente u, Documento d) { }\n}\n\nclass Catalogo {\n    private final Documento unico = new Documento(true);\n    Documento cercaPerTitolo(String titolo) { return unico; }   // ipotesi del testo: esiste ed è unico\n}\n\nclass GestorePrestiti {\n    private final Catalogo catalogo = new Catalogo();\n    String richiediPrestito(Utente u, String titolo) {\n        Documento d = catalogo.cercaPerTitolo(titolo);\n        if (!d.isAmmissibile()) return \"documento non ammesso\";\n        if (!u.puoPrendereInPrestito()) return \"utente sospeso o limite raggiunto\";\n        Prestito p = new Prestito(u, d);\n        u.aggiungiPrestito(p);\n        return \"richiesta inviata al bibliotecario\";\n    }\n}\n```\n\nsi disegna così (biblioteca 2016/17, es. 1.2: «gestione del prestito descritta nel paragrafo 4»):\n\n```mermaid\nsequenceDiagram\n    actor U as Utente\n    participant G as :GestorePrestiti\n    participant C as :Catalogo\n    participant D as d:Documento\n    participant UT as u:Utente\n    U->>G: richiediPrestito(u, titolo)\n    activate G\n    G->>C: cercaPerTitolo(titolo)\n    activate C\n    C-->>G: d\n    deactivate C\n    G->>D: isAmmissibile()\n    D-->>G: esito\n    alt documento ammissibile\n        G->>UT: puoPrendereInPrestito()\n        UT-->>G: ok\n        alt utente può prendere in prestito\n            create participant P as p:Prestito\n            G->>P: new Prestito(u, d)\n            G->>UT: aggiungiPrestito(p)\n            G-->>U: richiesta inviata al bibliotecario\n        else sospeso o 5 prestiti attivi\n            G-->>U: rifiuto\n        end\n    else non ammissibile\n        G-->>U: documento non ammesso\n    end\n    deactivate G\n```\n\nOgni riga di codice che chiama un metodo su un altro oggetto è una freccia; ogni `if` è un `alt`/`opt`; ogni `for` è un `loop`; ogni `new` è una creazione.\n\n## Come costruirlo all'esame: 5 passi\n\n1. **Scegli lo scenario** esatto chiesto (es. «ordine di un cliente con tessera, prodotto disponibile»): non disegnare tutti i casi possibili se il testo semplifica.\n2. **Parti dalla descrizione testuale** del caso d'uso: ogni passo «il sistema…» diventa uno o più messaggi.\n3. **Scegli i partecipanti** tra le classi del class diagram (più l'attore a sinistra e, se serve, un controller che riceve la richiesta).\n4. **Per ogni messaggio controlla**: l'operazione esiste nella classe destinataria? Il mittente ha un'associazione navigabile (o un parametro, o l'ha appena creato) verso il destinatario? Se no, aggiorna il class diagram.\n5. **Aggiungi frammenti** solo dove il testo lo richiede (alt per gli errori, loop per le righe del carrello) con guardie in parentesi quadre.\n\n## Frammenti combinati in dettaglio\n\n```mermaid\nsequenceDiagram\n    participant V as v:Vendita\n    participant R as r:RigaCarrello\n    participant T as t:TesseraFedelta\n    V->>V: calcolaTotale()\n    loop per ogni riga del carrello\n        V->>R: subtotale()\n        R-->>V: importo\n    end\n    opt cliente con tessera\n        V->>T: haDirittoSconto()\n        T-->>V: true/false\n    end\n```\n\n- `loop [per ogni riga]`: si ripete.\n- `opt [condizione]`: eseguito solo se vera (if senza else).\n- `alt [c1] / else [c2]`: rami mutuamente esclusivi.\n- `par`: rami concorrenti (es. bibliotecario reperisce il documento mentre l'utente compila il questionario).\n\n## Messaggi asincroni\n\nUna notifica via email al cliente non blocca la vendita: si usa la freccia asincrona (in Mermaid `-)`). Nel codice corrisponde a un invio su una coda, un thread o un servizio esterno.",
+  "analogia": "È la trascrizione di una telefonata a catena in un ufficio: il cliente chiama il centralino, il centralino chiama il magazzino e aspetta la risposta, poi chiama la contabilità, e alla fine richiama il cliente. Il tempo scorre verso il basso, ogni freccia è una chiamata. L'analogia cede perché in ufficio chiunque può telefonare a chiunque, mentre un oggetto può chiamare solo chi conosce (associazione navigabile, parametro o oggetto creato).",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Chiamate di metodo, stack delle chiamate e return in Java",
+      "collegamento": "Messaggio sincrono = chiamata; attivazione = frame sullo stack; risposta tratteggiata = return."
+    },
+    {
+      "conoscenza": "if/else, for e new in Java",
+      "collegamento": "Diventano rispettivamente alt/opt, loop e messaggio di creazione."
+    },
+    {
+      "conoscenza": "Descrizione testuale dei casi d'uso",
+      "collegamento": "Ogni passo del sistema nello scenario diventa uno o più messaggi.",
+      "nodo": "casi-uso-descrizione-testuale"
+    },
+    {
+      "conoscenza": "Diagramma delle classi",
+      "collegamento": "Ogni messaggio deve essere un'operazione del destinatario e avere una via di navigazione.",
+      "nodo": "uml-diagramma-classi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Ordine di un cliente con tessera fedeltà (farmacia, prova 5/11/2025, es. 1.2)",
+      "problema": "Realizza il sequence diagram del processo di definizione di un ordine da parte di un cliente con tessera fedeltà, assumendo un solo prodotto disponibile. Usa le classi del class diagram: Farmacia, Vendita, RigaCarrello, Prodotto, Cliente, TesseraFedelta, RapportoGiornaliero.",
+      "passi": [
+        "Partecipanti: attore Operatore, :Farmacia (controller), v:Vendita (creata), p:Prodotto, r:RigaCarrello (creata), c:Cliente, t:TesseraFedelta, :RapportoGiornaliero.",
+        "Operatore → Farmacia: nuovaVendita(c); Farmacia crea v:Vendita.",
+        "Operatore → Farmacia: cercaProdotto(codice), poi Farmacia → v: aggiungi(p, qta); v → p: isDisponibile(qta) (prodotto disponibile per ipotesi); v crea r:RigaCarrello.",
+        "Conferma: v → v: calcolaTotale(); v → c: getTessera(); v → t: haDirittoSconto() per lo sconto (calcolato prima di aggiornare il cumulativo).",
+        "Dopo il pagamento: v → p: decrementa(qta); v → t: registraAcquisto(totale); Farmacia → RapportoGiornaliero: aggiorna(v).",
+        "Controllo di coerenza: tutte queste operazioni compaiono nel class diagram; Vendita → Cliente → TesseraFedelta e Vendita → RigaCarrello → Prodotto sono navigabili."
+      ],
+      "soluzione": "```mermaid\nsequenceDiagram\n    actor O as Operatore\n    participant F as :Farmacia\n    participant P as p:Prodotto\n    participant C as c:Cliente\n    participant T as t:TesseraFedelta\n    participant RG as :RapportoGiornaliero\n    O->>F: nuovaVendita(c)\n    activate F\n    create participant V as v:Vendita\n    F->>V: new Vendita(c)\n    F-->>O: v\n    deactivate F\n    O->>F: cercaProdotto(codice)\n    F-->>O: p\n    O->>V: aggiungi(p, qta)\n    activate V\n    V->>P: isDisponibile(qta)\n    P-->>V: true\n    create participant R as r:RigaCarrello\n    V->>R: new RigaCarrello(p, qta)\n    deactivate V\n    O->>V: conferma()\n    activate V\n    V->>V: calcolaTotale()\n    V->>R: subtotale()\n    R-->>V: importo\n    V->>C: getTessera()\n    C-->>V: t\n    V->>T: haDirittoSconto()\n    T-->>V: sconto sì/no\n    V->>P: decrementa(qta)\n    V->>T: registraAcquisto(totale)\n    V-->>O: totale\n    deactivate V\n    O->>F: chiudiVendita(v)\n    F->>RG: aggiorna(v)\n```\nNota: getTessera() e chiudiVendita(v) vanno aggiunte al class diagram (getter e operazione del controller) se non già presenti.",
+      "perche_funziona": "Ogni messaggio corrisponde a un'operazione delle classi progettate e segue un'associazione navigabile o un oggetto appena creato; l'ordine (sconto valutato prima di registraAcquisto) rispetta la regola «sconto sulle transazioni successive»."
+    },
+    {
+      "titolo": "Prenotazione di una piazzola (ambulanti, caso della prova 9/6/2022)",
+      "problema": "Scenario: l'ambulante chiede di prenotare una piazzola per una data; il sistema verifica che abbia meno di 5 prenotazioni attive e che la piazzola sia libera; se sì crea la prenotazione in attesa di approvazione, altrimenti rifiuta.",
+      "passi": [
+        "Partecipanti: attore Ambulante, :Mercato (controller), a:Ambulante (oggetto), pz:Piazzola, pr:Prenotazione (creata).",
+        "Mercato → a: contaPrenotazioniAttive(); Mercato → pz: isLibera(data).",
+        "alt [attive minore di 5 e libera]: creazione di pr, a.aggiungi(pr), pz.occupa(data); else: rifiuto.",
+        "Aggiorno il class diagram con le operazioni contaPrenotazioniAttive(), isLibera(data), occupa(data)."
+      ],
+      "soluzione": "```mermaid\nsequenceDiagram\n    actor AM as Ambulante\n    participant M as :Mercato\n    participant A as a:Ambulante\n    participant PZ as pz:Piazzola\n    AM->>M: prenota(a, pz, data)\n    activate M\n    M->>A: contaPrenotazioniAttive()\n    A-->>M: n\n    M->>PZ: isLibera(data)\n    PZ-->>M: libera\n    alt n minore di 5 e piazzola libera\n        create participant PR as pr:Prenotazione\n        M->>PR: new Prenotazione(a, pz, data)\n        M->>A: aggiungi(pr)\n        M->>PZ: occupa(data)\n        M-->>AM: prenotazione in attesa di approvazione\n    else limite raggiunto o piazzola occupata\n        M-->>AM: rifiuto con motivo\n    end\n    deactivate M\n```",
+      "perche_funziona": "Il frammento alt rende esplicite le due uscite dello scenario; la guardia è scritta a parole per evitare simboli ambigui; tutte le operazioni sono riportabili nel class diagram."
+    }
+  ],
+  "errori_comuni": [
+    "Messaggi verso oggetti non raggiungibili (nessuna associazione navigabile, nessun parametro).",
+    "Nomi di messaggi che non corrispondono a operazioni del class diagram (es. «controlla» nel sequence e verificaDisponibilita() nelle classi).",
+    "Disegnare tutti gli scenari possibili quando il testo chiede uno scenario semplificato.",
+    "Confondere sequence e activity: il sequence mostra chi chiama chi, non un flusso di attività senza oggetti.",
+    "Dimenticare la creazione degli oggetti nuovi (Vendita, Prestito) o farli comparire già esistenti."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra messaggio sincrono e asincrono?",
+      "risposta": "Nel sincrono (punta piena) il chiamante attende la fine dell'operazione, come una normale chiamata di metodo; nell'asincrono (punta aperta) il mittente prosegue senza attendere, come l'invio di una notifica o di un evento."
+    },
+    {
+      "domanda": "A cosa servono i frammenti alt, opt e loop?",
+      "risposta": "alt rappresenta alternative mutuamente esclusive con guardie (if/else), opt un comportamento eseguito solo se la guardia è vera (if senza else), loop un comportamento ripetuto (for/while)."
+    },
+    {
+      "domanda": "Quali controlli di coerenza fai tra sequence e class diagram?",
+      "risposta": "Ogni partecipante è istanza di una classe esistente; ogni messaggio è un'operazione della classe destinataria con parametri coerenti; il mittente può raggiungere il destinatario tramite associazione navigabile, parametro o creazione; i nomi sono identici."
+    }
+  ],
+  "riepilogo": "Lifeline in alto, tempo verso il basso, frecce = chiamate di metodo.\nSincrono (attende), asincrono (non attende), risposta tratteggiata, creazione con new.\nalt = if/else, opt = if, loop = ciclo, par = parallelo, con guardie.\nOgni messaggio = operazione esistente + via di navigazione nel class diagram."
+}

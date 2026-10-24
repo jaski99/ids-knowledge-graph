@@ -1,0 +1,74 @@
+{
+  "intuizione": "I diagrammi dei componenti e di deployment sono le «mappe» del progetto di alto livello. Il component diagram mostra i pezzi software sostituibili e le interfacce con cui si collegano (cosa offrono, cosa richiedono). Il deployment diagram mostra su quali macchine o ambienti (nodi) girano quei pezzi e come i nodi sono connessi. Uno è la struttura logica, l'altro la sua collocazione fisica.",
+  "spiegazione": "## Diagramma dei componenti\n\nUn **componente** è una parte modulare e sostituibile del sistema che incapsula il suo contenuto ed espone il comportamento tramite **interfacce**:\n\n- **interfaccia fornita** (*provided*), notazione a «lecca-lecca» (*lollipop*, cerchio): servizi che il componente offre;\n- **interfaccia richiesta** (*required*), notazione a «presa» (*socket*, semicerchio): servizi di cui ha bisogno;\n- **connettore di assemblaggio**: lollipop inserito nella socket = un componente soddisfa la richiesta di un altro;\n- **porte**: punti di interazione sul bordo del componente.\n\nIl componente si disegna come rettangolo con stereotipo «component» (o l'icona con due rettangolini). Mermaid non ha un tipo nativo per i component diagram: lo si rappresenta con un flowchart, con le interfacce come nodi circolari.\n\n```mermaid\nflowchart LR\n    subgraph CLIENT[\"«component» ClientBanco\"]\n        UI[\"UI Vendita\"]\n    end\n    IV((\"IVendite\"))\n    subgraph SERVER[\"«component» ServizioVendite\"]\n        BL[\"logica vendite\"]\n    end\n    IP((\"IRepositoryProdotti\"))\n    subgraph DATI[\"«component» AccessoDati\"]\n        DAO[\"repository JPA\"]\n    end\n    INOT((\"INotifiche\"))\n    subgraph NOT[\"«component» ServizioNotifiche\"]\n        MAIL[\"invio email\"]\n    end\n    UI -->|\"richiede\"| IV\n    BL -.->|\"fornisce\"| IV\n    BL -->|\"richiede\"| IP\n    DAO -.->|\"fornisce\"| IP\n    BL -->|\"richiede\"| INOT\n    MAIL -.->|\"fornisce\"| INOT\n```\n\nLeggi: il ServizioVendite **fornisce** IVendite (usata dal client) e **richiede** IRepositoryProdotti e INotifiche. Qualsiasi componente che fornisca IRepositoryProdotti può sostituire AccessoDati: è questa la **sostituibilità**.\n\nIn Java le interfacce fornite/richieste diventano letteralmente `interface`:\n\n```java\ninterface IVendite { double vendi(String codice, int qta); }               // fornita da ServizioVendite\ninterface IRepositoryProdotti { double prezzo(String codice); boolean scala(String codice, int qta); }\ninterface INotifiche { void notificaArrivo(String codice); }\n\n// Il componente dichiara nel costruttore le interfacce RICHIESTE e implementa quella FORNITA.\nclass ServizioVendite implements IVendite {\n    private final IRepositoryProdotti repo;\n    private final INotifiche notifiche;\n    ServizioVendite(IRepositoryProdotti repo, INotifiche notifiche) { this.repo = repo; this.notifiche = notifiche; }\n    public double vendi(String codice, int qta) {\n        if (!repo.scala(codice, qta)) throw new IllegalStateException(\"non disponibile\");\n        return repo.prezzo(codice) * qta;\n    }\n}\n```\n\n## Diagramma di deployment\n\nMostra l'**architettura fisica**:\n\n- **nodo**: risorsa computazionale, disegnata come parallelepipedo (cubo 3D). Due tipi: «device» (hardware: server, PC, tornello, smartphone) e «execution environment» (ambiente software: JVM, application server, DBMS, browser), annidabili;\n- **artefatto**: file concreto distribuito sul nodo (`.jar`, `.war`, script SQL, file di configurazione), stereotipo «artifact»; un artefatto **manifesta** uno o più componenti;\n- **percorso di comunicazione**: linea tra nodi, etichettata con il protocollo (HTTPS, JDBC/TCP, AMQP).\n\nEsempio a tre nodi per la catena di farmacie:\n\n```mermaid\nflowchart LR\n    subgraph PC[\"«device» PC Banco (x N)\"]\n        subgraph JVM1[\"«execution environment» JVM\"]\n            A1[\"«artifact» client-banco.jar\"]\n        end\n    end\n    subgraph SRV[\"«device» Server applicativo\"]\n        subgraph TOM[\"«execution environment» Application server\"]\n            A2[\"«artifact» farmacia-server.war\"]\n        end\n    end\n    subgraph DBS[\"«device» Server DB\"]\n        subgraph PG[\"«execution environment» DBMS relazionale\"]\n            A3[\"«artifact» schema-farmacia.sql\"]\n        end\n    end\n    PC <-->|\"HTTPS\"| SRV\n    SRV <-->|\"JDBC su TCP/IP\"| DBS\n```\n\nLe **molteplicità** si possono indicare sui percorsi (es. `*` PC banco per 1 server).\n\n## Quando usarli e come si collegano agli altri diagrammi\n\n| diagramma | domanda | livello |\n|---|---|---|\n| class diagram | quali classi, con quali relazioni? | dettaglio |\n| component diagram | quali parti sostituibili e con quali interfacce? | architettura logica |\n| deployment diagram | dove gira cosa, con quali canali? | architettura fisica |\n\nOgni componente è realizzato da un insieme di classi; ogni artefatto del deployment manifesta uno o più componenti. Il deployment è il diagramma in cui si vedono le scelte per requisiti NF come disponibilità (nodi replicati), sicurezza (HTTPS, DB non esposto) e prestazioni.",
+  "analogia": "Il component diagram è lo schema di un impianto hi-fi: amplificatore, lettore e casse con le prese e le spine (interfacce) per collegarli; qualsiasi cassa con la spina giusta funziona. Il deployment diagram è la piantina di casa che dice in quale stanza sta ogni apparecchio e quali cavi attraversano i muri. L'analogia cede perché una presa fisica ha una forma fissa, mentre un'interfaccia software è un contratto di operazioni che può evolvere per versioni.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Interfacce Java e dependency injection via costruttore",
+      "collegamento": "Interfaccia fornita = `implements`, interfaccia richiesta = parametro del costruttore di tipo interfaccia."
+    },
+    {
+      "conoscenza": "File .jar/.war, JVM, DBMS",
+      "collegamento": "Sono rispettivamente artefatti ed execution environment nel deployment diagram."
+    },
+    {
+      "conoscenza": "Stili architetturali",
+      "collegamento": "I due diagrammi documentano lo stile scelto (es. client-server a livelli).",
+      "nodo": "stili-architetturali"
+    },
+    {
+      "conoscenza": "Diagramma delle classi",
+      "collegamento": "Le classi realizzano i componenti; i componenti sono il livello di astrazione superiore.",
+      "nodo": "uml-diagramma-classi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Deployment del sistema piscine",
+      "problema": "Una società gestisce più piscine. In ogni piscina c'è un tornello con lettore di tessere e un PC alla reception; un server centrale ospita l'applicazione e un DB. I clienti prenotano i corsi da browser. Disegna il deployment diagram.",
+      "passi": [
+        "Nodi device: Tornello (per piscina), PC reception (per piscina), Server applicativo, Server DB, Dispositivo cliente.",
+        "Execution environment: browser sul dispositivo cliente e sul PC reception; application server; DBMS; firmware/JVM sul tornello.",
+        "Artefatti: piscine-server.war, tornello-agent.jar, schema.sql.",
+        "Percorsi: browser ↔ server HTTPS; tornello ↔ server HTTPS (o MQTT); server ↔ DB JDBC.",
+        "Molteplicità: molti tornelli e PC per un server."
+      ],
+      "soluzione": "```mermaid\nflowchart LR\n    subgraph CL[\"«device» Dispositivo cliente\"]\n        BR[\"«execution environment» Browser\"]\n    end\n    subgraph RC[\"«device» PC reception (x N)\"]\n        BR2[\"«execution environment» Browser\"]\n    end\n    subgraph TR[\"«device» Tornello (x N)\"]\n        AG[\"«artifact» tornello-agent.jar\"]\n    end\n    subgraph SV[\"«device» Server applicativo\"]\n        WAR[\"«artifact» piscine-server.war\"]\n    end\n    subgraph DB[\"«device» Server DB\"]\n        SQL[\"«artifact» schema.sql\"]\n    end\n    CL <-->|\"HTTPS\"| SV\n    RC <-->|\"HTTPS\"| SV\n    TR <-->|\"HTTPS\"| SV\n    SV <-->|\"JDBC\"| DB\n```",
+      "perche_funziona": "Mostra tutte le risorse fisiche, cosa vi è installato e con quale protocollo comunicano; il DB è raggiungibile solo dal server (scelta di sicurezza visibile nel diagramma)."
+    },
+    {
+      "titolo": "Interfacce fornite e richieste nella biblioteca",
+      "problema": "Componenti: Catalogo (ricerca documenti), GestionePrestiti, AnagraficaUtenti, Notifiche (email agli utenti sospesi). Individua per ciascuno interfacce fornite e richieste.",
+      "passi": [
+        "Catalogo fornisce ICatalogo (cerca, dettagli); non richiede altro.",
+        "AnagraficaUtenti fornisce IUtenti (stato, sospendi).",
+        "Notifiche fornisce INotifiche (invia).",
+        "GestionePrestiti fornisce IPrestiti (presta, restituisci) e richiede ICatalogo, IUtenti, INotifiche (per avvisare in caso di ritardo/sospensione).",
+        "Assemblaggio: ogni socket di GestionePrestiti si collega al lollipop del componente fornitore."
+      ],
+      "soluzione": "GestionePrestiti: fornisce IPrestiti; richiede ICatalogo (da Catalogo), IUtenti (da AnagraficaUtenti), INotifiche (da Notifiche). Gli altri tre forniscono la propria interfaccia e non richiedono nulla.",
+      "perche_funziona": "Le dipendenze passano solo per interfacce: si può sostituire Notifiche (email → SMS) senza toccare GestionePrestiti."
+    }
+  ],
+  "errori_comuni": [
+    "Confondere componenti (software logico) e nodi (risorse fisiche/ambienti).",
+    "Invertire lollipop e socket: il cerchio è l'interfaccia fornita, il semicerchio quella richiesta.",
+    "Dimenticare i protocolli sui percorsi di comunicazione.",
+    "Mettere classi nel deployment invece di artefatti."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cos'è un componente in UML e come si descrivono le sue dipendenze?",
+      "risposta": "Una parte modulare e sostituibile del sistema che incapsula il proprio contenuto; le dipendenze si descrivono con interfacce fornite (lollipop) e richieste (socket), collegate con connettori di assemblaggio."
+    },
+    {
+      "domanda": "Quali elementi compaiono in un deployment diagram?",
+      "risposta": "Nodi (device ed execution environment, annidabili), artefatti installati sui nodi che manifestano componenti, e percorsi di comunicazione tra nodi etichettati con il protocollo, eventualmente con molteplicità."
+    },
+    {
+      "domanda": "Che differenza c'è tra component diagram e deployment diagram?",
+      "risposta": "Il component diagram descrive l'architettura logica (parti software e interfacce); il deployment descrive l'architettura fisica (dove vengono eseguiti gli artefatti e come sono collegati i nodi)."
+    }
+  ],
+  "riepilogo": "Component: parti sostituibili + interfacce fornite (lollipop) e richieste (socket).\nDeployment: nodi (device, execution environment), artefatti, percorsi con protocollo.\nClassi → realizzano componenti → manifestati da artefatti → installati su nodi.\nIl deployment mostra le scelte per disponibilità, sicurezza, prestazioni."
+}

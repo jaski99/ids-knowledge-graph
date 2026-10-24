@@ -1,0 +1,70 @@
+{
+  "intuizione": "All'esame il testo del caso di studio contiene già tutto: chi fa qualcosa (i soggetti) sono gli attori, cosa fanno (i verbi rivolti al sistema) sono i casi d'uso, le condizioni «se…» e i comportamenti sempre ripetuti suggeriscono extend e include. Con una procedura fissa in 5 passi si produce in 10 minuti un diagramma completo, pulito e senza gli errori tipici che costano punti.",
+  "spiegazione": "## Che cosa chiede l'esercizio\n\nNelle prove disponibili lo use case diagram compare come:\n- **2016/17, es. 1.1** (3 punti, insieme al class diagram): «Rappresentare il problema (paragrafi 1-4) attraverso un Use Case e un Class diagram»;\n- **5/11/2025, es. 1.3** (2 punti): «Rappresentare attraverso uno use case diagram le specifiche dell'applicazione».\n\nSono punti relativamente «facili» se si segue un metodo e si evitano gli errori classici.\n\n## La procedura in 5 passi\n\n```mermaid\nflowchart TD\n    P1[\"Passo 1: sottolinea soggetti e ruoli: candidati attori\"] --> P2[\"Passo 2: sottolinea verbi rivolti al sistema: candidati casi d'uso\"]\n    P2 --> P3[\"Passo 3: filtra: tieni solo obiettivi di valore, scarta passi interni\"]\n    P3 --> P4[\"Passo 4: relazioni: include se sempre, extend se condizionale, generalizzazione tra attori\"]\n    P4 --> P5[\"Passo 5: disegna confine, attori fuori, ovali dentro, ricontrolla il caso di studio\"]\n```\n\n### Passo 1 — Attori\nCerca nel testo **chi** interagisce con il sistema: persone con ruoli («utente registrato», «operatore», «cliente con tessera»), **sistemi esterni** (sistema di pagamento, servizio email), **il tempo** («ogni giorno», «alla scadenza»). Chiediti: è *fuori* dal sistema? Interagisce *direttamente*?\n\n### Passo 2 — Casi d'uso\nCerca i **verbi** che descrivono un servizio richiesto o fornito: «prenotare», «cercare», «registrarsi», «stampare l'elenco», «inviare notifica». Riscrivili come **verbo all'infinito + oggetto**.\n\n### Passo 3 — Filtro\nElimina:\n- i passi interni («il sistema verifica che…» è spesso parte di un caso d'uso, al più un include se è riusato);\n- i dettagli tecnici («salvare nel database»);\n- le funzioni non richieste dal testo (non inventare «Modificare profilo» se non c'è).\n\n### Passo 4 — Relazioni\n| indizio nel testo | relazione |\n|---|---|\n| un comportamento ripetuto in più servizi, sempre eseguito (verifiche, autenticazione) | **include** (base → incluso) |\n| «se…», «qualora…», «in caso di…», «può anche…» | **extend** (estensione → base) |\n| «alcuni utenti, inoltre, possono…», un ruolo che ne specializza un altro | **generalizzazione tra attori** |\n\n### Passo 5 — Disegno e controllo\nRettangolo del sistema con nome; attori **fuori** (persone a sinistra, sistemi/tempo a destra); ovali dentro; linee pulite. Ripercorri il caso di studio paragrafo per paragrafo e spunta: ogni funzionalità ha il suo ovale?\n\n## Esempio guidato completo: la biblioteca (2016/17, paragrafi 1-4)\n\nFrasi chiave e cosa diventano:\n\n| frase del testo | elemento |\n|---|---|\n| «utenti registrati», «la registrazione è fatta su domanda dell'interessato» | attori Utente e Utente registrato; caso d'uso Registrarsi |\n| «Una funzione di visualizzazione permette di stampare l'elenco completo» | Stampare elenco (attore: Bibliotecario/Amministratore — ipotesi dichiarata) |\n| «prestiti … rinnovabili una sola volta» | Richiedere prestito, Rinnovare prestito |\n| «L'utente cerca il documento attraverso il titolo» | Cercare documento (incluso da Richiedere prestito) |\n| «L'applicazione verifica che il documento sia ammissibile… non abbia superato il limite… non sia sospeso» | Verificare ammissibilità (include) |\n| «Se il documento non viene restituito… viene inviato un sollecito» | attore Tempo; Inviare sollecito |\n| «Se questa azione non porta alla restituzione… l'utente viene sospeso» | Sospendere utente «extend» Inviare sollecito |\n\n```mermaid\nflowchart LR\n    U[\"🧍 Utente\"]\n    UR[\"🧍 Utente registrato\"]\n    AM[\"🧍 Bibliotecario\"]\n    T[\"⏰ Tempo\"]\n    subgraph SYS[\"Biblioteca multimediale\"]\n        REG([\"Registrarsi\"])\n        CER([\"Cercare documento per titolo\"])\n        PRE([\"Richiedere prestito\"])\n        VER([\"Verificare ammissibilità prestito\"])\n        RIN([\"Rinnovare prestito\"])\n        RES([\"Restituire documento\"])\n        STA([\"Stampare elenco settori, scaffali, documenti\"])\n        SOL([\"Inviare sollecito\"])\n        SOS([\"Sospendere utente\"])\n    end\n    U --- REG\n    UR -->|\"generalizzazione\"| U\n    UR --- CER\n    UR --- PRE\n    UR --- RIN\n    UR --- RES\n    PRE -.->|\"«include»\"| CER\n    PRE -.->|\"«include»\"| VER\n    RIN -.->|\"«include»\"| VER\n    AM --- STA\n    T --- SOL\n    SOS -.->|\"«extend»\"| SOL\n```\n\nIpotesi da scrivere sul foglio: «Si assume che la stampa dell'elenco sia usata dal bibliotecario; Restituire documento è implicito nel testo (scadenza dei prestiti).» Scrivere le ipotesi mostra che hai letto con attenzione e rende difendibili le scelte.\n\n## Checklist finale (30 secondi)\n\n- [ ] Ogni ovale è verbo + oggetto?\n- [ ] Nessun passo interno o tecnico?\n- [ ] Frecce include dal base, extend verso il base, etichettate «include»/«extend»?\n- [ ] Attori fuori dal confine, incluso il Tempo o i sistemi esterni se servono?\n- [ ] Ogni funzionalità del testo è coperta?\n- [ ] I nomi saranno gli stessi usati nella descrizione, nel sequence e nell'activity?",
+  "analogia": "È come fare l'evidenziazione di un testo di storia con due colori: giallo per i personaggi (attori), verde per le azioni (casi d'uso). Alla fine lo schema si disegna quasi da solo. L'analogia cede su un punto: non tutte le azioni evidenziate entrano nello schema, perché quelle interne al sistema (verifiche, salvataggi) non sono servizi per un attore.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Diagramma dei casi d'uso",
+      "collegamento": "Fornisce la notazione e le regole che qui si applicano a tempo.",
+      "nodo": "uml-casi-uso"
+    },
+    {
+      "conoscenza": "Descrizione testuale dei casi d'uso",
+      "collegamento": "Aiuta a decidere cosa è un passo interno e cosa un caso d'uso.",
+      "nodo": "casi-uso-descrizione-testuale"
+    },
+    {
+      "conoscenza": "Analisi dei requisiti in Basi di dati (sostantivi → entità)",
+      "collegamento": "Stessa tecnica di sottolineatura del testo, ma qui i verbi contano più dei sostantivi."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Mercato settimanale degli ambulanti (caso della prova 9/6/2022)",
+      "problema": "Testo (ricostruito dalla sintesi disponibile): gli ambulanti prenotano piazzole normali o premium per il mercato settimanale; possono avere al massimo 5 prenotazioni attive; ogni prenotazione deve essere approvata da un operatore; l'operatore registra le assenze e il sistema applica sanzioni agli ambulanti assenti; i clienti che acquistano partecipano a una lotteria. Disegna lo use case diagram.",
+      "passi": [
+        "Attori: Ambulante, Operatore, Cliente; Tempo per l'estrazione periodica della lotteria (ipotesi).",
+        "Casi d'uso: Prenotare piazzola, Annullare prenotazione (ipotesi ragionevole), Approvare prenotazione, Registrare assenza, Applicare sanzione, Registrare acquisto per lotteria, Estrarre vincitore lotteria.",
+        "Filtro: «controllare il contatore delle 5 prenotazioni» è una verifica sempre eseguita → include di Prenotare piazzola, non un caso d'uso dell'attore.",
+        "Relazioni: Prenotare piazzola «include» Verificare limite prenotazioni; Applicare sanzione «extend» Registrare assenza (solo se le condizioni per la sanzione sono soddisfatte).",
+        "Disegno e ipotesi scritte."
+      ],
+      "soluzione": "```mermaid\nflowchart LR\n    AMB[\"🧍 Ambulante\"]\n    OPE[\"🧍 Operatore\"]\n    CLI[\"🧍 Cliente\"]\n    T[\"⏰ Tempo\"]\n    subgraph SYS[\"Gestione mercato settimanale\"]\n        PRE([\"Prenotare piazzola\"])\n        LIM([\"Verificare limite 5 prenotazioni attive\"])\n        ANN([\"Annullare prenotazione\"])\n        APP([\"Approvare prenotazione\"])\n        ASS([\"Registrare assenza\"])\n        SAN([\"Applicare sanzione\"])\n        BIG([\"Registrare acquisto per lotteria\"])\n        EST([\"Estrarre vincitore lotteria\"])\n    end\n    AMB --- PRE\n    AMB --- ANN\n    PRE -.->|\"«include»\"| LIM\n    OPE --- APP\n    OPE --- ASS\n    SAN -.->|\"«extend»\"| ASS\n    CLI --- BIG\n    AMB --- BIG\n    T --- EST\n```\nIpotesi: annullamento e attore Tempo per l'estrazione non sono esplicitati nel testo sintetico.",
+      "perche_funziona": "Ogni requisito del testo ha un ovale; il contatore (sempre controllato) è un include, la sanzione (condizionata) un extend; le ipotesi dichiarate rendono la soluzione difendibile."
+    },
+    {
+      "titolo": "Piscine con badge (caso della prova 27/1/2023)",
+      "problema": "Testo (ricostruito dalla sintesi): gli iscritti entrano con un badge; possono acquistare servizi aggiuntivi (corsi, sauna); il sistema registra gli accessi e mostra la top 10 dei frequentatori; il gestore configura i servizi. Disegna lo use case diagram in 10 minuti.",
+      "passi": [
+        "Attori: Iscritto, Gestore, Tornello (sistema esterno/dispositivo che legge il badge).",
+        "Casi d'uso: Accedere alla piscina (attori Iscritto e Tornello), Acquistare servizio, Consultare top 10, Configurare servizi, Iscriversi (ipotesi: rilascio badge).",
+        "Include: Accedere alla piscina include Validare badge. Extend: Acquistare servizio può essere esteso da Applicare promozione solo se previsto (ipotesi; se il testo non lo cita, si omette).",
+        "Registrare accesso non è un obiettivo dell'iscritto ma un effetto di Accedere: non lo disegno come caso separato."
+      ],
+      "soluzione": "Confine «Gestione piscina»; Iscritto–Accedere alla piscina («include» Validare badge), Iscritto–Acquistare servizio, Iscritto–Consultare top 10; Tornello–Accedere alla piscina; Gestore–Configurare servizi, Gestore–Consultare top 10; Gestore–Iscrivere utente e rilasciare badge.",
+      "perche_funziona": "Il dispositivo che legge il badge è un attore (è fuori dal sistema software), la registrazione dell'accesso è interna al caso d'uso, e nessuna funzione è inventata senza dichiararla come ipotesi."
+    }
+  ],
+  "errori_comuni": [
+    "Modellare verifiche interne («Controllare 5 prenotazioni») come casi d'uso collegati direttamente all'attore.",
+    "Invertire le frecce di include/extend o non etichettarle.",
+    "Dimenticare attori non umani (tempo, dispositivi, sistemi esterni) quando il testo descrive azioni automatiche.",
+    "Inventare funzionalità non presenti nel testo senza dichiararle come ipotesi.",
+    "Usare nomi diversi da quelli che userai poi in sequence e activity."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali indizi nel testo suggeriscono un extend?",
+      "risposta": "Espressioni condizionali come «se», «qualora», «in caso di», «può anche»: indicano un comportamento che si aggiunge al caso base solo in certe condizioni."
+    },
+    {
+      "domanda": "Perché «Il sistema invia un sollecito se il libro non viene restituito» suggerisce un attore Tempo?",
+      "risposta": "Perché nessuna persona avvia l'azione: la fa scattare lo scadere di un termine. In UML si modella l'evento temporale come attore (Tempo/Timer) associato al caso d'uso Inviare sollecito."
+    },
+    {
+      "domanda": "Come gestisci un'informazione mancante nel testo?",
+      "risposta": "Faccio un'ipotesi ragionevole e la scrivo esplicitamente sul foglio, così la scelta di modellazione è motivata e il docente vede che l'ambiguità è stata notata."
+    }
+  ],
+  "riepilogo": "Procedura: soggetti → attori, verbi → casi d'uso, filtro, relazioni, disegno.\nInclude = sempre (base → incluso); extend = «se…» (estensione → base).\nAttori anche non umani: tempo, dispositivi, sistemi esterni.\nDichiara le ipotesi; ricontrolla il caso di studio paragrafo per paragrafo."
+}

@@ -1,0 +1,74 @@
+{
+  "intuizione": "Una volta progettate le classi, bisogna decidere come raggrupparle in componenti: i jar, i moduli o le librerie che si rilasciano e si riusano. Robert C. Martin (Clean Architecture) dà tre principi. REP: si raggruppa ciò che si rilascia e si riusa insieme. CCP: si raggruppa ciò che cambia insieme. CRP: non si raggruppa ciò che non viene usato insieme. I tre principi tirano in direzioni opposte, e il progettista cerca il punto di equilibrio adatto alla fase del progetto.",
+  "spiegazione": "## Componenti: l'unità di rilascio\n\nIn Clean Architecture un **componente** è la più piccola unità che si può rilasciare e distribuire in modo indipendente: un `.jar` in Java, una DLL, un pacchetto npm, un modulo Maven. La domanda è: **quali classi vanno nello stesso componente?** È una questione di **coesione a livello di componente** (Martin la affianca ai principi di *accoppiamento* tra componenti: ADP, SDP, SAP, che sono un argomento diverso).\n\n## REP: Reuse/Release Equivalence Principle\n\n> *L'unità di riuso è l'unità di rilascio.*\n\n- Chi riusa un componente vuole **rilasci numerati** (versioni), note di rilascio, la possibilità di decidere quando aggiornare.\n- Quindi le classi di un componente devono formare un **gruppo coerente** con uno scopo comune di riuso, ed essere **rilasciate e versionate insieme**.\n- Violazione tipica: un componente con classi scollegate («un po' di tutto»), oppure classi che si vorrebbero riusare insieme sparse in componenti con versioni diverse.\n\n## CCP: Common Closure Principle\n\n> *Raggruppa in un componente le classi che cambiano per le stesse ragioni e negli stessi momenti; separa in componenti diversi quelle che cambiano in momenti diversi e per ragioni diverse.*\n\n- È il **Single Responsibility Principle** applicato ai componenti: un componente dovrebbe avere un solo motivo per cambiare.\n- Obiettivo: una modifica ai requisiti tocca **un solo componente**, quindi un solo rilascio da rivalidare e ridistribuire.\n- È collegato anche all'**Open/Closed Principle**: si raccolgono insieme le classi «chiuse» rispetto agli stessi tipi di cambiamento.\n\n## CRP: Common Reuse Principle\n\n> *Non costringere gli utenti di un componente a dipendere da cose di cui non hanno bisogno.*\n\n- Le classi **usate insieme** stanno insieme; le classi che non sono usate insieme non devono stare nello stesso componente.\n- Se A dipende da un componente di cui usa una sola classe, ogni rilascio del componente (anche per classi che A non usa) costringe A a ricompilare, rivalidare e ridistribuire.\n- È l'**Interface Segregation Principle** applicato ai componenti.\n\n## La tensione: il triangolo\n\n```mermaid\nflowchart TD\n    REP[\"REP: raggruppa per il riuso\"]\n    CCP[\"CCP: raggruppa per la manutenzione\"]\n    CRP[\"CRP: separa per evitare rilasci inutili\"]\n    REP ---|\"trascuri CRP: troppi rilasci inutili\"| CCP\n    CCP ---|\"trascuri REP: difficile da riusare\"| CRP\n    CRP ---|\"trascuri CCP: troppi componenti cambiano insieme\"| REP\n```\n\n- **REP e CCP sono inclusivi**: tendono a rendere i componenti **più grandi**.\n- **CRP è esclusivo**: tende a renderli **più piccoli**.\n- Ogni lato del triangolo descrive il **costo di trascurare il principio opposto**:\n  - privilegiare REP e CCP trascurando CRP → componenti grandi, **troppi rilasci inutili** per i clienti;\n  - privilegiare CCP e CRP trascurando REP → componenti piccoli e mirati ai cambiamenti, ma **difficili da riusare**;\n  - privilegiare REP e CRP trascurando CCP → una modifica ai requisiti **tocca molti componenti**.\n- Secondo Martin i progetti **all'inizio** privilegiano la sviluppabilità (CCP, sacrificando il riuso) e, quando **maturano** e altri iniziano a dipendere da loro, si spostano verso REP. La suddivisione in componenti **evolve** nel tempo.\n\n## Corrispondenze da ricordare\n\n| principio di componente | equivalente per le classi | parola chiave |\n|---|---|---|\n| REP | (unità di riuso) | rilasciate insieme |\n| CCP | SRP (e OCP) | cambiano insieme |\n| CRP | ISP | usate insieme |\n\n## Esempio in Java (moduli Maven/jar)\n\n```java\n// Componente \"promozioni\" (farmacia-promozioni.jar): cambia a ogni campagna commerciale (CCP)\ninterface RegolaSconto { double applica(double totale, double importoCumulativo); }\nclass ScontoSoglia implements RegolaSconto {\n    private final double soglia, percentuale;\n    ScontoSoglia(double soglia, double percentuale) { this.soglia = soglia; this.percentuale = percentuale; }\n    public double applica(double tot, double cum) { return cum > soglia ? tot * (1 - percentuale) : tot; }\n}\n\n// Componente \"formati\" (common-formati.jar): stabile, usato da molti (Report, Fatture) (CRP + REP)\nfinal class FormatoValuta {\n    private FormatoValuta() {}\n    static String euro(double v) { return String.format(\"%.2f EUR\", v); }\n}\n```\n\nSe `FormatoValuta` stesse nel jar delle promozioni, il modulo Report (che usa solo il formato) verrebbe ridistribuito a ogni cambio degli sconti: violazione di CRP. Se `ScontoSoglia` e `RegolaSconto` stessero in jar diversi, ogni nuova promozione toccherebbe due componenti: violazione di CCP.\n\nIl riferimento per questi principi è *Clean Architecture* di R. C. Martin (parte IV, «Component Principles»), che è un testo esterno a quelli del corso. Le prove 2022 e 2023, ricostruite dalla sintesi dell'utente, chiedevano di descrivere i principi di coesione dei componenti.",
+  "analogia": "Organizzare gli attrezzi in cassette: CCP dice di mettere insieme ciò che serve per lo stesso tipo di lavoro (la cassetta dell'idraulico); CRP dice di non costringere chi deve solo appendere un quadro a portarsi dietro la cassetta con il saldatore; REP dice che una cassetta che presti ad altri deve avere un contenuto stabile ed etichettato, con un elenco aggiornato quando cambi qualcosa. L'analogia cede perché prestare una cassetta non obbliga nessuno a «ricompilare», mentre nel software ogni nuova versione di una dipendenza impone di ritestare e ridistribuire.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "File jar, dipendenze Maven e versioni",
+      "collegamento": "Un componente è un jar con un numero di versione; dipendere da un jar significa ridistribuire quando cambia."
+    },
+    {
+      "conoscenza": "Package Java",
+      "collegamento": "I package raggruppano classi; i principi dicono come scegliere i raggruppamenti quando diventano unità di rilascio."
+    },
+    {
+      "conoscenza": "Principi SOLID",
+      "collegamento": "CCP è SRP a livello di componente, CRP è ISP a livello di componente.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "REP, CCP e CRP sono criteri di coesione applicati ai componenti.",
+      "nodo": "coesione-accoppiamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Domanda teorica: descrivi i principi di coesione dei componenti",
+      "problema": "Domanda della parte 3 (prove 2022 e 2023, ricostruite dalla sintesi): «Descrivi i principi di coesione dei componenti di Clean Architecture».",
+      "passi": [
+        "Definisco componente: unità di rilascio e distribuzione (jar, DLL).",
+        "REP: l'unità di riuso è l'unità di rilascio; classi con scopo comune, versionate e rilasciate insieme.",
+        "CCP: classi che cambiano per le stesse ragioni nello stesso componente; è SRP per componenti; una modifica tocca un solo componente.",
+        "CRP: non costringere a dipendere da classi che non si usano; è ISP per componenti; evita rilasci e ridistribuzioni inutili.",
+        "Tensione: REP e CCP ingrandiscono, CRP rimpicciolisce; trascurare CRP → rilasci inutili, REP → difficile riuso, CCP → troppi componenti cambiano. Si parte privilegiando CCP e ci si sposta verso REP con la maturità."
+      ],
+      "soluzione": "Risposta strutturata in 5 punti come nei passi: definizione di componente, REP, CCP (↔ SRP), CRP (↔ ISP), triangolo delle tensioni con i costi e l'evoluzione nel tempo.",
+      "perche_funziona": "Copre i tre enunciati, le motivazioni, il legame con SOLID e la tensione, che è il punto che distingue una risposta completa da un elenco di definizioni."
+    },
+    {
+      "titolo": "Il componente utils della farmacia",
+      "problema": "Il componente farmacia-utils.jar contiene CalcoloSconti (cambia a ogni promozione), ParserCSV (per importare listini) e FormatoData. Il modulo Report usa solo FormatoData; il modulo Vendite usa CalcoloSconti; il modulo Import usa ParserCSV e FormatoData. Analizza e proponi una suddivisione.",
+      "passi": [
+        "CCP: CalcoloSconti cambia per ragioni commerciali, le altre per ragioni tecniche → ragioni diverse, violazione.",
+        "CRP: Report usa solo FormatoData ma viene ridistribuito a ogni promozione → violazione.",
+        "REP: «utils» non ha uno scopo comune di riuso → difficile da versionare in modo significativo.",
+        "Suddivisione: farmacia-promozioni.jar (CalcoloSconti e regole); common-formati.jar (FormatoData, ParserCSV) usato da Report e Import.",
+        "Verifica: una nuova promozione tocca solo farmacia-promozioni; Report dipende solo da common-formati."
+      ],
+      "soluzione": "Due componenti: farmacia-promozioni (CalcoloSconti) e common-formati (FormatoData, ParserCSV). Se ParserCSV evolvesse spesso per i nuovi listini, si potrebbe separarlo ancora (CRP per Report), al costo di un componente in più.",
+      "perche_funziona": "Si applica CCP per separare per ragioni di cambiamento e CRP per non imporre dipendenze inutili; il passo finale mostra la tensione: separare di più aiuta CRP ma aumenta i componenti da gestire."
+    }
+  ],
+  "errori_comuni": [
+    "Confondere i principi di coesione (REP, CCP, CRP) con quelli di accoppiamento tra componenti (ADP, SDP, SAP).",
+    "Invertire le corrispondenze: CCP ↔ SRP, CRP ↔ ISP (non viceversa).",
+    "Elencare i tre principi senza spiegare la tensione tra di essi.",
+    "Pensare che la suddivisione in componenti sia decisa una volta per tutte."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Enuncia il Common Closure Principle e il suo legame con SOLID.",
+      "risposta": "Le classi che cambiano per le stesse ragioni e negli stessi momenti vanno nello stesso componente, quelle che cambiano per ragioni diverse in componenti diversi; è il Single Responsibility Principle applicato ai componenti, così una modifica ai requisiti tocca un solo componente."
+    },
+    {
+      "domanda": "Perché il Common Reuse Principle spinge verso componenti piccoli?",
+      "risposta": "Perché chi dipende da un componente deve ricompilare, rivalidare e ridistribuire a ogni suo rilascio: se il componente contiene classi che il cliente non usa, il cliente subisce rilasci inutili. Separare le classi non usate insieme riduce queste dipendenze (ISP per componenti)."
+    },
+    {
+      "domanda": "Descrivi la tensione tra REP, CCP e CRP.",
+      "risposta": "REP e CCP sono inclusivi e ingrandiscono i componenti, CRP è esclusivo e li rimpicciolisce. Trascurare CRP porta a troppi rilasci inutili, trascurare REP rende i componenti difficili da riusare, trascurare CCP fa cambiare troppi componenti a ogni modifica. Il punto di equilibrio dipende dalla maturità del progetto: all'inizio si privilegia CCP, poi il riuso (REP)."
+    }
+  ],
+  "riepilogo": "Componente = unità di rilascio (jar). Quali classi metterci insieme?\nREP: riuso = rilascio; CCP: cambiano insieme (SRP); CRP: usate insieme (ISP).\nREP e CCP ingrandiscono, CRP rimpicciolisce: triangolo di tensione.\nAll'inizio si privilegia CCP, con la maturità REP. Non confondere con ADP/SDP/SAP."
+}

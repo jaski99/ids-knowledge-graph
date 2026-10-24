@@ -1,0 +1,75 @@
+{
+  "intuizione": "Prima di costruire qualcosa bisogna mettersi d'accordo su che cosa costruire. La specifica dei requisiti è quel patto scritto: dice COSA il sistema deve fare e con quali qualità, senza decidere ancora COME farlo. Tutto il resto del progetto (design, codice, test, collaudo) si misura contro questo documento.",
+  "spiegazione": "## Che cos'è un requisito\n\nUn **requisito** è una proprietà che il sistema deve avere per soddisfare un bisogno di qualcuno (committente, utente, normativa). La **specifica dei requisiti** è l'insieme organizzato di questi requisiti, scritto in modo che:\n\n- il **committente** possa dire «sì, è proprio quello che voglio» (*validazione*);\n- lo **sviluppatore** sappia cosa progettare e implementare;\n- il **tester** sappia cosa verificare (ogni requisito diventa uno o più casi di test);\n- in caso di disputa, ci sia un **contratto** a cui riferirsi.\n\n## Gli obiettivi della specifica\n\n| obiettivo | in pratica |\n|---|---|\n| **Capire il problema** | descrivere il dominio (biblioteca, farmacia…) e i bisogni, non la soluzione |\n| **Accordo tra le parti** | un unico documento letto e approvato da committente e team |\n| **Base per il progetto** | il design deve soddisfare tutti i requisiti funzionali e non funzionali |\n| **Base per il collaudo** | i test di accettazione si derivano dai requisiti |\n| **Stima e pianificazione** | tempi e costi si stimano su ciò che va fatto |\n| **Gestione delle modifiche** | sapere cosa cambia e cosa impatta (tracciabilità) |\n\n## COSA, non COME\n\nLa regola più importante: la specifica descrive il **comportamento osservabile** del sistema, non la sua struttura interna.\n\n- ✅ «Il sistema deve impedire il prestito a un utente sospeso.» → COSA\n- ❌ «La classe `Utente` deve avere un campo booleano `sospeso` controllato da un `if` in `PrestitoService`.» → COME (è una decisione di progetto)\n\nInserire soluzioni nei requisiti vincola inutilmente i progettisti e mescola due fasi diverse. Eccezione: i **vincoli** imposti davvero dal committente («deve girare sul server Linux esistente», «deve usare il DB Oracle aziendale») sono requisiti legittimi, perché vengono dal cliente e non dal progettista.\n\n## Tipi di requisito\n\n### Requisiti funzionali (F)\nDescrivono **servizi/funzioni**: cosa fa il sistema in risposta a input o eventi.\n*«Il sistema deve inviare un sollecito all'utente se un documento non è restituito entro 15 giorni.»*\n\n### Requisiti non funzionali (NF)\nDescrivono **qualità** e **vincoli** sul modo in cui le funzioni sono fornite: prestazioni, affidabilità, usabilità, sicurezza, portabilità, manutenibilità.\n*«La ricerca di un documento per titolo deve rispondere in meno di 2 secondi con 10.000 documenti in catalogo.»*\n\n### Vincoli (di progetto, di processo, normativi)\nLimitano lo spazio delle soluzioni: tecnologie obbligate, standard, leggi (GDPR), budget, scadenze.\n\nUn trucco per distinguerli: se togli il requisito **il sistema fa una cosa in meno** → è funzionale. Se lo togli e **il sistema fa le stesse cose ma peggio** (più lento, meno sicuro, meno usabile) → è non funzionale.\n\n```mermaid\nflowchart TD\n    R[\"Requisito\"] --> Q{\"Se lo tolgo il sistema fa una cosa in meno?\"}\n    Q -->|\"sì\"| F[\"Funzionale: servizio offerto\"]\n    Q -->|\"no, la fa peggio\"| NF[\"Non funzionale: qualità\"]\n    Q -->|\"no, ma cambia la tecnologia o il processo\"| V[\"Vincolo\"]\n```\n\n## Dove si colloca nel ciclo di vita\n\n```mermaid\nflowchart LR\n    A[\"Requisiti: COSA\"] --> B[\"Progettazione: COME\"]\n    B --> C[\"Implementazione\"]\n    C --> D[\"Testing\"]\n    D --> E[\"Rilascio e manutenzione\"]\n    A -.->|\"test di accettazione derivati\"| D\n```\n\nLa freccia tratteggiata è il motivo per cui la specifica conta tanto: alla fine il sistema viene **accettato** se soddisfa i requisiti. Un requisito sbagliato produce un sistema «corretto» che nessuno vuole; e più tardi lo scopri, più costa correggerlo (curva di Boehm, nodo dedicato).\n\n## Requisiti utente e requisiti di sistema\n\n- **Requisiti utente**: in linguaggio naturale, per il committente («gli utenti possono prendere in prestito fino a 5 documenti»).\n- **Requisiti di sistema**: più dettagliati e precisi, per gli sviluppatori («all'operazione di prestito il sistema verifica che il numero di prestiti attivi dell'utente sia < 5; altrimenti mostra il messaggio E-03»).\n\n## Come lo usi all'esame\n\nNella Parte 1 il testo del caso di studio **è** una specifica informale dei requisiti. Leggerlo come un analista (attori, funzioni, regole, vincoli) è il primo passo di use case e class diagram. Nella Parte 3 le domande sul processo dei requisiti partono dai concetti di questo nodo.",
+  "analogia": "È il capitolato che firmi con l'impresa prima di ristrutturare casa: «tre camere, bagno con doccia accessibile, classe energetica A». Non dice che marca di tubi usare (COME), ma dice cosa ti aspetti di trovare (COSA) e su quello verificherai il lavoro alla consegna. L'analogia smette di valere sulla stabilità: una casa raramente cambia requisiti durante i lavori, il software quasi sempre, per questo i requisiti vanno anche gestiti nel tempo.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Specifica di un metodo in Java (Javadoc: precondizioni, valore di ritorno)",
+      "collegamento": "Un Javadoc dice cosa fa il metodo senza mostrare il corpo: è la stessa idea COSA/COME applicata all'intero sistema."
+    },
+    {
+      "conoscenza": "Interfacce Java",
+      "collegamento": "Un'interfaccia separa il contratto dall'implementazione; la specifica dei requisiti è il contratto del sistema intero verso il committente."
+    },
+    {
+      "conoscenza": "Basi di dati: analisi dei requisiti prima del modello E-R",
+      "collegamento": "In Basi di dati si parte dal testo dei requisiti per estrarre entità e relazioni: qui il passo è identico, ma serve anche per funzioni e qualità, non solo per i dati."
+    },
+    {
+      "conoscenza": "Diagramma dei casi d'uso",
+      "collegamento": "È il modo grafico di rappresentare i requisiti funzionali visti dagli attori.",
+      "nodo": "uml-casi-uso"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Classificare i requisiti del testo della biblioteca",
+      "problema": "Dal testo della prova 2016/17 (biblioteca multimediale) classifica come F, NF o vincolo: (a) prestiti fino a 15 giorni rinnovabili una volta; (b) al massimo 5 documenti contemporaneamente; (c) la stampa dell'elenco di settori/scaffali/libri; (d) la ricerca deve essere fatta da una postazione informatica; (e) la registrazione è fatta automaticamente su domanda; (f) [aggiunto da noi] il sistema deve essere disponibile negli orari di apertura il 99% del tempo.",
+      "passi": [
+        "Applico il test «se lo tolgo il sistema fa una cosa in meno?».",
+        "(a) e (b) sono regole di business sul prestito: se le tolgo il sistema non controlla più durata e limite → F (regole che vincolano la funzione Presta documento).",
+        "(c) è un servizio di stampa → F. (e) è un servizio di registrazione → F.",
+        "(d) dice dove/con cosa si usa il sistema, non una funzione nuova → vincolo di ambiente operativo (NF).",
+        "(f) non aggiunge funzioni, chiede che funzionino in modo affidabile → NF di disponibilità, ed è già misurabile (99%)."
+      ],
+      "soluzione": "F: (a), (b), (c), (e). Vincolo/NF di ambiente: (d). NF di affidabilità/disponibilità: (f).",
+      "perche_funziona": "Il criterio separa il servizio offerto dalla qualità con cui è offerto; i casi dubbi (regole di business) sono funzionali perché cambiano il comportamento osservabile del sistema."
+    },
+    {
+      "titolo": "Riconoscere una soluzione travestita da requisito",
+      "problema": "Nel caso farmacia (prova 5/11/2025) un analista scrive: «La classe Prodotto ha un metodo aggiornaQuantita() chiamato dopo ogni vendita tramite un trigger SQL». Riscrivilo come requisito corretto.",
+      "passi": [
+        "Individuo le parti di COME: classe Prodotto, nome del metodo, trigger SQL: sono decisioni di progetto.",
+        "Individuo il bisogno reale nel testo d'esame: «il sistema deve aggiornare automaticamente le quantità in farmacia dopo ogni vendita».",
+        "Lo riscrivo dal punto di vista osservabile, aggiungendo un criterio verificabile."
+      ],
+      "soluzione": "«Al termine di ogni vendita, il sistema deve ridurre la quantità disponibile in farmacia di ciascun prodotto venduto della quantità acquistata; la nuova quantità deve essere visibile all'operatore immediatamente dopo la conferma della vendita.»",
+      "perche_funziona": "Il requisito riscritto è verificabile da un tester senza conoscere il codice e lascia al progettista la libertà di scegliere classi, metodi e tecnologia."
+    }
+  ],
+  "errori_comuni": [
+    "Scrivere il COME nella specifica (classi, tabelle, algoritmi): è progettazione, non requisito.",
+    "Dimenticare i requisiti non funzionali o lasciarli vaghi («veloce», «facile da usare»): non sono verificabili.",
+    "Confondere vincoli (imposti dal committente) con scelte del progettista.",
+    "Pensare che la specifica serva solo all'inizio: è anche la base del collaudo e della gestione delle modifiche."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono gli obiettivi della specifica dei requisiti?",
+      "risposta": "Descrivere COSA deve fare il sistema e con quali qualità, in modo che committente e sviluppatori concordino; fare da base per progettazione, stime, test di accettazione e gestione delle modifiche; fungere da contratto tra le parti."
+    },
+    {
+      "domanda": "Che differenza c'è tra requisito funzionale e non funzionale? Fai un esempio per ciascuno nel caso farmacia.",
+      "risposta": "Il funzionale descrive un servizio (es. «il sistema deve notificare al cliente l'arrivo di un prodotto prenotato»); il non funzionale una qualità o un vincolo su come i servizi sono forniti (es. «la notifica deve partire entro 5 minuti dalla registrazione dell'arrivo»)."
+    },
+    {
+      "domanda": "Perché la specifica non deve descrivere il COME?",
+      "risposta": "Perché le scelte implementative sono compito della progettazione: inserirle nei requisiti vincola inutilmente la soluzione, rende il documento illeggibile al committente e mescola fasi diverse. Fanno eccezione i vincoli reali imposti dal committente (tecnologie obbligate, normative)."
+    },
+    {
+      "domanda": "Che differenza c'è tra requisiti utente e requisiti di sistema?",
+      "risposta": "I requisiti utente sono in linguaggio naturale e ad alto livello, pensati per il committente; i requisiti di sistema li dettagliano in modo preciso e verificabile per gli sviluppatori."
+    }
+  ],
+  "riepilogo": "La specifica dice COSA deve fare il sistema, non COME.\nÈ il contratto tra committente e team e la base di progetto e collaudo.\nFunzionali = servizi; non funzionali = qualità misurabili; vincoli = limiti imposti.\nTest rapido: tolto il requisito, il sistema fa una cosa in meno (F) o la fa peggio (NF)?"
+}

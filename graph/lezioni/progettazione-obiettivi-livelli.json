@@ -1,0 +1,68 @@
+{
+  "intuizione": "Se i requisiti dicono COSA, la progettazione decide COME. Lo fa a due livelli: prima l'architettura (i grandi blocchi del sistema, cosa fa ciascuno e come si parlano), poi il dettaglio (classi, metodi, algoritmi, dati). È come progettare una città e poi i singoli edifici: le scelte di alto livello sono le più costose da cambiare e sono guidate soprattutto dai requisiti non funzionali.",
+  "spiegazione": "## Dalla specifica alla soluzione\n\nLa progettazione prende in ingresso l'**SRS** (requisiti funzionali, non funzionali, vincoli) e produce una **descrizione della soluzione** abbastanza precisa da poter essere implementata. Gli obiettivi sono:\n\n1. **Soddisfare i requisiti** funzionali e non funzionali (prestazioni, sicurezza, affidabilità…).\n2. **Gestire la complessità**: dividere il problema in parti comprensibili (*divide et impera*).\n3. **Facilitare manutenzione ed evoluzione**: il software cambia, il progetto deve renderlo facile.\n4. **Favorire il riuso** di componenti esistenti e la produzione di componenti riusabili.\n5. **Permettere il lavoro in parallelo**: moduli con interfacce chiare possono essere sviluppati da team diversi.\n6. **Rendere il sistema verificabile** (testabilità).\n\n## I due livelli\n\n| | progetto di **alto livello** (architetturale) | progetto di **dettaglio** |\n|---|---|---|\n| domanda | quali sono i grandi pezzi e come comunicano? | come è fatto dentro ciascun pezzo? |\n| decisioni | stile architetturale (a livelli, client-server, MVC…), componenti/sottosistemi, interfacce tra componenti, distribuzione su nodi, tecnologie principali, gestione dei dati persistenti | classi, attributi, metodi, algoritmi, strutture dati, schema del database, design pattern, gestione degli errori |\n| artefatti | diagramma a blocchi, component diagram, deployment diagram, descrizione delle interfacce | class diagram dettagliato, sequence/state diagram, pseudocodice, schema DB |\n| guidato soprattutto da | requisiti **non funzionali** e vincoli | requisiti **funzionali** e scelte locali |\n| costo del cambiamento | alto | più basso, locale |\n\n```mermaid\nflowchart TD\n    SRS[\"Specifica dei requisiti\"] --> ARC[\"Progetto di alto livello: architettura\"]\n    ARC --> C1[\"Componente Presentazione\"]\n    ARC --> C2[\"Componente Logica di business\"]\n    ARC --> C3[\"Componente Accesso ai dati\"]\n    C2 --> DET[\"Progetto di dettaglio: classi, metodi, algoritmi, pattern\"]\n    C3 --> DB[\"Progetto dei dati: schema DB, mapping ORM\"]\n    DET --> IMP[\"Implementazione\"]\n    DB --> IMP\n```\n\n## Perché i requisiti non funzionali guidano l'architettura\n\nLe funzioni (vendere, prenotare) si possono implementare con quasi ogni architettura; sono le **qualità** che fanno la differenza:\n\n| requisito NF | conseguenza architetturale |\n|---|---|\n| «il sistema deve servire 10 farmacie della catena con dati condivisi» | client-server con database centrale |\n| «disponibilità 99,9%» | ridondanza, nodi replicati |\n| «la logica degli sconti cambierà spesso» | logica di business isolata in uno strato o componente proprio |\n| «dati sanitari: riservatezza» | strato di sicurezza, cifratura, autenticazione centralizzata |\n| «deve funzionare anche se la rete cade» | cache locale e sincronizzazione |\n\n## I principi di progettazione che attraversano i due livelli\n\n- **Astrazione**: concentrarsi su ciò che conta a quel livello, nascondere i dettagli.\n- **Modularità e decomposizione**: dividere in parti con responsabilità chiare.\n- **Information hiding / incapsulamento**: ogni modulo nasconde le sue decisioni interne dietro un'interfaccia.\n- **Alta coesione, basso accoppiamento**: ogni modulo fa una cosa sola e dipende poco dagli altri.\n- **Separazione degli interessi** (*separation of concerns*): presentazione, logica e dati separati.\n\nIn Java il passaggio dal livello alto al dettaglio si vede bene: l'architettura definisce le **interfacce** tra componenti, il dettaglio le **implementa**.\n\n```java\n// Alto livello: il contratto tra il componente \"logica\" e il componente \"dati\".\ninterface RepositoryProdotti {\n    Prodotto trova(String codice);\n    void salva(Prodotto p);\n}\n\nrecord Prodotto(String codice, String nome, int quantita) { }\n\n// Dettaglio: una delle possibili implementazioni, sostituibile senza toccare la logica.\nclass RepositoryProdottiInMemoria implements RepositoryProdotti {\n    private final java.util.Map<String, Prodotto> dati = new java.util.HashMap<>();\n    public Prodotto trova(String codice) { return dati.get(codice); }\n    public void salva(Prodotto p) { dati.put(p.codice(), p); }\n}\n\nclass ServizioVendite {                         // componente logica di business\n    private final RepositoryProdotti repo;      // dipende dall'interfaccia, non dall'implementazione\n    ServizioVendite(RepositoryProdotti repo) { this.repo = repo; }\n    boolean vendi(String codice, int qta) {\n        Prodotto p = repo.trova(codice);\n        if (p == null || p.quantita() < qta) return false;\n        repo.salva(new Prodotto(p.codice(), p.nome(), p.quantita() - qta));\n        return true;\n    }\n}\n```\n\nDomani `RepositoryProdottiInMemoria` può diventare un'implementazione JPA su database senza cambiare `ServizioVendite`: la decisione di alto livello (separare logica e dati con un'interfaccia) ha reso economica una decisione di dettaglio.\n\n## Approcci alla progettazione\n\n- **Funzionale/strutturato** (top-down): si scompone il sistema in funzioni e sottofunzioni.\n- **Orientato agli oggetti**: si individuano oggetti del dominio con dati e comportamento, e le loro collaborazioni (UML).\n\nEntrambi hanno nodi dedicati; nel corso il riferimento principale è l'approccio a oggetti con UML e design pattern.",
+  "analogia": "Costruire un quartiere: l'urbanista decide dove passano strade, fognature e linee elettriche e dove vanno scuole e negozi (alto livello); l'architetto di ogni edificio decide stanze, impianti e materiali (dettaglio). Spostare una strada dopo aver costruito costa molto più che spostare una parete interna. L'analogia cede perché nel software anche le «strade» si possono spostare, a fronte di un costo, se le interfacce sono state progettate bene.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Interfacce e classi astratte Java",
+      "collegamento": "Sono lo strumento con cui il progetto di alto livello fissa i contratti tra componenti, lasciando libero il dettaglio."
+    },
+    {
+      "conoscenza": "Progettazione concettuale, logica e fisica (Basi di dati)",
+      "collegamento": "Stessa idea di livelli successivi di astrazione: prima il modello generale, poi i dettagli implementativi."
+    },
+    {
+      "conoscenza": "Obiettivi della specifica dei requisiti",
+      "collegamento": "I requisiti F e NF sono l'input della progettazione; gli NF guidano l'architettura.",
+      "nodo": "requisiti-obiettivi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Classificare le decisioni: alto livello o dettaglio?",
+      "problema": "Farmacia: (a) usare un'architettura client-server con DB centrale per più punti vendita; (b) memorizzare le righe del carrello in un ArrayList; (c) separare la logica degli sconti dalla interfaccia utente; (d) usare il pattern Observer per la mailing list; (e) installare il server in cloud e i client nei banchi; (f) calcolare il totale con uno stream.",
+      "passi": [
+        "Chiedo per ciascuna: riguarda i grandi pezzi e le loro interazioni, o l'interno di un pezzo?",
+        "(a) e (e): struttura e distribuzione del sistema → alto livello.",
+        "(c): separazione dei componenti (presentazione/logica) → alto livello.",
+        "(b), (f): strutture dati e algoritmi dentro una classe → dettaglio.",
+        "(d): un design pattern su poche classi → dettaglio (progettazione a oggetti)."
+      ],
+      "soluzione": "Alto livello: (a), (c), (e). Dettaglio: (b), (d), (f).",
+      "perche_funziona": "Il criterio è la portata della decisione: se cambiarla tocca molti componenti è architetturale, se resta confinata in un componente è di dettaglio."
+    },
+    {
+      "titolo": "Dal requisito NF alla scelta architetturale",
+      "problema": "Piscina: «gli accessi devono essere registrati anche se la connessione con il server centrale è assente per qualche minuto». Quale conseguenza ha sull'architettura?",
+      "passi": [
+        "Riconosco un NF di affidabilità/disponibilità.",
+        "Una semplice architettura client-server con tornello che scrive direttamente sul DB centrale fallirebbe senza rete.",
+        "Soluzione: il tornello (nodo locale) registra gli accessi in un archivio locale e un componente di sincronizzazione li invia al server quando la rete torna.",
+        "Documento la scelta in un deployment diagram con nodo Tornello (archivio locale) e nodo Server."
+      ],
+      "soluzione": "Architettura con buffer locale sul nodo del tornello e componente di sincronizzazione asincrona verso il server centrale.",
+      "perche_funziona": "Il requisito funzionale (registrare gli accessi) è lo stesso in entrambe le architetture; è il requisito non funzionale a scegliere quella giusta."
+    }
+  ],
+  "errori_comuni": [
+    "Saltare l'architettura e partire subito dalle classi: le qualità del sistema restano non progettate.",
+    "Confondere progettazione e implementazione (scrivere codice senza decisioni documentate).",
+    "Pensare che le scelte architetturali siano facili da cambiare dopo.",
+    "Ignorare i requisiti non funzionali nella scelta dell'architettura."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è la differenza tra progetto di alto livello e progetto di dettaglio?",
+      "risposta": "Il progetto di alto livello definisce l'architettura: componenti, responsabilità, interfacce, distribuzione, tecnologie principali, ed è guidato soprattutto dai requisiti non funzionali. Il progetto di dettaglio definisce l'interno dei componenti: classi, metodi, algoritmi, strutture dati, schema dei dati, design pattern."
+    },
+    {
+      "domanda": "Quali sono gli obiettivi della progettazione?",
+      "risposta": "Soddisfare requisiti funzionali e non funzionali, gestire la complessità con la decomposizione, facilitare manutenzione ed evoluzione, favorire il riuso, permettere lo sviluppo parallelo e rendere il sistema testabile."
+    },
+    {
+      "domanda": "Perché i requisiti non funzionali guidano l'architettura?",
+      "risposta": "Perché le funzioni si possono realizzare con molte architetture diverse, mentre qualità come prestazioni, disponibilità, sicurezza e modificabilità dipendono da come il sistema è diviso in componenti, distribuito e collegato."
+    }
+  ],
+  "riepilogo": "Progettazione = COME: dai requisiti a una soluzione implementabile.\nAlto livello: componenti, interfacce, stile, distribuzione (guidato dai NF).\nDettaglio: classi, metodi, algoritmi, dati, pattern.\nPrincipi: astrazione, modularità, information hiding, alta coesione e basso accoppiamento."
+}

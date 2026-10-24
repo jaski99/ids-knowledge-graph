@@ -1,0 +1,72 @@
+{
+  "intuizione": "Uno stile architetturale è una «ricetta» collaudata per organizzare i grandi pezzi di un sistema: dice che tipi di componenti ci sono, come possono comunicare e quali vincoli rispettare. A livelli, client-server, pipe and filter, MVC, a eventi, a repository: ognuno favorisce certe qualità e ne penalizza altre. Scegliere l'architettura significa scegliere lo stile (o la combinazione) che meglio soddisfa i requisiti non funzionali.",
+  "spiegazione": "## Cos'è uno stile architetturale\n\nUno stile (o pattern architetturale) definisce:\n- i **tipi di componenti** (strati, client, server, filtri, osservatori…);\n- i **connettori** ammessi (chiamata di procedura, messaggi, eventi, pipe, accesso a dati condivisi);\n- i **vincoli** sulla loro composizione (es. «uno strato usa solo quello sottostante»).\n\nÈ l'analogo dei design pattern, ma a livello di sistema invece che di poche classi.\n\n## 1. Architettura a livelli (layered)\n\nIl sistema è diviso in **strati** sovrapposti; ogni strato offre servizi a quello sopra e usa solo quello sotto.\n\n```mermaid\nflowchart TD\n    P[\"Presentazione: interfaccia utente\"] --> B[\"Logica di business: regole del dominio\"]\n    B --> D[\"Accesso ai dati: repository, ORM\"]\n    D --> DB[(\"Database\")]\n```\n\n- **Pro**: separazione degli interessi, sostituibilità di uno strato (cambi DB senza toccare la UI), testabilità.\n- **Contro**: overhead di attraversamento; le modifiche «verticali» (un campo nuovo) toccano tutti gli strati.\n- **Esempi**: applicazioni gestionali a 3 livelli, stack di protocolli ISO/OSI e TCP/IP.\n\n## 2. Client-server\n\n**Server** che offrono servizi, **client** che li richiedono via rete (richiesta/risposta).\n\n- **Pro**: dati e logica centralizzati, più client (banchi, app, web) sullo stesso server.\n- **Contro**: il server è un collo di bottiglia e un punto singolo di guasto; dipendenza dalla rete.\n- **Esempi**: web (browser/server HTTP), DBMS, la farmacia con più banchi e DB centrale.\n\n## 3. Pipe and filter\n\nUna catena di **filtri**, ciascuno trasforma i dati in ingresso e li passa al successivo tramite una **pipe**.\n\n```mermaid\nflowchart LR\n    I[\"Input ordini\"] --> F1[\"Valida\"] --> F2[\"Calcola prezzi\"] --> F3[\"Applica sconti\"] --> F4[\"Genera fattura\"] --> O[\"Output\"]\n```\n\n- **Pro**: filtri indipendenti, riusabili, ricombinabili; facile parallelizzare.\n- **Contro**: poco adatto all'interazione; formato dati comune obbligatorio.\n- **Esempi**: shell Unix (`cat f | grep x | sort`), compilatori (lexer → parser → generatore), stream Java.\n\n```java\nimport java.util.List;\nimport java.util.stream.Collectors;\n\nfinal class PipeAndFilter {\n    record Ordine(String cliente, double importo) { }\n    // Ogni passaggio dello stream è un filtro; lo stream stesso è la pipe.\n    static List<String> fatture(List<Ordine> ordini) {\n        return ordini.stream()\n            .filter(o -> o.importo() > 0)                                  // valida\n            .map(o -> new Ordine(o.cliente(), o.importo() * 1.22))        // IVA\n            .map(o -> o.cliente() + \": \" + String.format(\"%.2f\", o.importo())) // formatta\n            .collect(Collectors.toList());\n    }\n}\n```\n\n## 4. Model-View-Controller (MVC)\n\n- **Model**: dati e logica del dominio; notifica i cambiamenti.\n- **View**: presenta il modello all'utente.\n- **Controller**: riceve l'input dell'utente e lo traduce in operazioni sul modello.\n\n```mermaid\nflowchart LR\n    U[\"Utente\"] -->|\"input\"| C[\"Controller\"]\n    C -->|\"aggiorna\"| M[\"Model\"]\n    M -.->|\"notifica cambiamento\"| V[\"View\"]\n    V -->|\"legge stato\"| M\n    V -->|\"mostra\"| U\n```\n\n- **Pro**: più viste sullo stesso modello, UI sostituibile, logica testabile senza UI.\n- **Contro**: più complessità per interfacce semplici.\n- Il collegamento Model → View è tipicamente un **Observer**.\n\n## 5. Architettura basata su eventi (publish-subscribe)\n\nI componenti **pubblicano** eventi su un bus/broker; altri si **sottoscrivono** e reagiscono, senza conoscersi.\n\n- **Pro**: accoppiamento debolissimo, facile aggiungere nuovi reagenti, scalabilità.\n- **Contro**: flusso di controllo difficile da seguire e da testare; ordine e consegna degli eventi da gestire.\n- **Esempi**: GUI, notifiche (mailing list della farmacia), microservizi con message broker.\n\n## 6. Repository (dati condivisi)\n\nUn **archivio centrale** di dati condiviso; i componenti non comunicano direttamente ma leggono/scrivono nel repository.\n\n- **Pro**: dati coerenti in un punto, componenti indipendenti tra loro.\n- **Contro**: il repository diventa punto critico e vincola il formato dei dati; evoluzione del modello dati costosa.\n- **Esempi**: IDE (componenti che lavorano sull'albero sintattico comune), sistemi informativi su un unico DB.\n\n## Tabella riassuntiva\n\n| stile | connettore | qualità favorite | punti deboli |\n|---|---|---|---|\n| a livelli | chiamata allo strato sotto | manutenibilità, portabilità | prestazioni, modifiche verticali |\n| client-server | richiesta/risposta in rete | condivisione, centralizzazione | collo di bottiglia, rete |\n| pipe and filter | flusso di dati | riuso, parallelismo | interattività |\n| MVC | chiamate + notifica | separazione UI/logica | complessità |\n| a eventi | eventi su bus | estendibilità, disaccoppiamento | tracciabilità, test |\n| repository | dati condivisi | coerenza dei dati | punto singolo critico |\n\nNei sistemi reali gli stili si **combinano**: la farmacia è client-server, il server è a livelli, il client usa MVC, la mailing list usa eventi.",
+  "analogia": "Gli stili sono come le tipologie di organizzazione di un ristorante: la catena di montaggio di un fast food (pipe and filter), la gerarchia sala-cucina-dispensa (a livelli), il bancone dove i clienti ordinano (client-server), la lavagna degli ordini comune da cui ogni cuoco prende (repository), il campanello che avvisa i camerieri quando un piatto è pronto (eventi). L'analogia cede perché un ristorante si riorganizza in un giorno, mentre cambiare stile a un sistema software è costoso.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Stack TCP/IP (Reti)",
+      "collegamento": "È l'esempio classico di architettura a livelli: ogni livello usa i servizi di quello sotto."
+    },
+    {
+      "conoscenza": "Pipe della shell Unix e stream Java",
+      "collegamento": "Sono pipe and filter: ogni comando/operazione trasforma i dati e li passa al successivo."
+    },
+    {
+      "conoscenza": "Architettura client-server dei DBMS (Basi di dati)",
+      "collegamento": "Applicazioni client che inviano query SQL a un server centralizzato."
+    },
+    {
+      "conoscenza": "Obiettivi e livelli della progettazione",
+      "collegamento": "Lo stile è la prima decisione del progetto di alto livello.",
+      "nodo": "progettazione-obiettivi-livelli"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Scegliere lo stile per la catena di farmacie",
+      "problema": "Requisiti: 10 farmacie con disponibilità condivisa in tempo reale; la logica degli sconti cambia spesso; i clienti in mailing list vanno avvisati all'arrivo dei prodotti; in futuro un'app per i clienti. Proponi l'architettura motivando gli stili.",
+      "passi": [
+        "Dati condivisi tra sedi → client-server con server centrale e DB.",
+        "Logica sconti che cambia → sul server, architettura a livelli: presentazione/API, logica di business, accesso ai dati.",
+        "Notifiche agli iscritti → stile a eventi: «ProdottoArrivato» pubblicato, il servizio notifiche è sottoscrittore (Observer a livello di classi).",
+        "App futura → il server espone un'API; nuovo client senza toccare logica e dati.",
+        "Client del banco → MVC per separare l'interfaccia dalla logica locale."
+      ],
+      "soluzione": "Client-server; server a 3 livelli (API, business, dati); notifiche publish-subscribe; client del banco in MVC. Ogni scelta è giustificata da un requisito non funzionale.",
+      "perche_funziona": "Ogni stile è scelto per la qualità che favorisce (condivisione, modificabilità, disaccoppiamento, separazione UI), e combinarli è normale nei sistemi reali."
+    },
+    {
+      "titolo": "Riconoscere lo stile dalla descrizione",
+      "problema": "Indica lo stile: (a) un compilatore con analisi lessicale, sintattica, semantica e generazione del codice in sequenza; (b) un IDE in cui editor, compilatore e debugger lavorano su un modello comune del progetto; (c) una GUI in cui i pulsanti generano eventi gestiti da listener; (d) un'applicazione con UI, servizi e DAO dove la UI non accede mai al DB.",
+      "passi": [
+        "(a) dati trasformati in fasi successive → pipe and filter.",
+        "(b) componenti che comunicano tramite un archivio comune → repository.",
+        "(c) produttori e consumatori di eventi disaccoppiati → a eventi.",
+        "(d) vincolo «ogni strato usa solo quello sotto» → a livelli."
+      ],
+      "soluzione": "(a) pipe and filter; (b) repository; (c) a eventi; (d) a livelli.",
+      "perche_funziona": "Si riconosce lo stile dal connettore (flusso, dato condiviso, evento, chiamata allo strato sotto) più che dai componenti."
+    }
+  ],
+  "errori_comuni": [
+    "Confondere MVC (separazione UI) con l'architettura a 3 livelli (separazione presentazione/logica/dati di sistema).",
+    "Elencare gli stili senza i pro/contro: all'orale si chiede perché sceglierne uno.",
+    "Pensare che un sistema debba usare un solo stile.",
+    "Scambiare client-server per «a livelli»: il primo è distribuzione su nodi, il secondo organizzazione logica."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cos'è uno stile architetturale?",
+      "risposta": "Una soluzione ricorrente per l'organizzazione di alto livello di un sistema: definisce i tipi di componenti, i connettori tra loro e i vincoli di composizione, favorendo certe qualità e penalizzandone altre."
+    },
+    {
+      "domanda": "Descrivi l'architettura a livelli con vantaggi e svantaggi.",
+      "risposta": "Il sistema è diviso in strati sovrapposti, ognuno usa solo i servizi dello strato inferiore (es. presentazione, logica, dati). Vantaggi: separazione degli interessi, sostituibilità e testabilità degli strati. Svantaggi: overhead di prestazioni e modifiche che attraversano tutti gli strati."
+    },
+    {
+      "domanda": "Che differenza c'è tra pipe and filter e architettura a eventi?",
+      "risposta": "In pipe and filter i dati scorrono in una catena fissa di trasformazioni, ognuna dipende dal formato dell'output della precedente; nell'architettura a eventi i componenti pubblicano eventi e chi è interessato si sottoscrive, senza un ordine fisso e senza conoscersi."
+    }
+  ],
+  "riepilogo": "Stile = tipi di componenti + connettori + vincoli.\nA livelli, client-server, pipe and filter, MVC, a eventi, repository.\nOgnuno favorisce qualità diverse: si sceglie in base ai requisiti NF.\nNei sistemi reali gli stili si combinano."
+}

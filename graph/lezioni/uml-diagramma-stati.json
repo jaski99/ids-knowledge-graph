@@ -1,0 +1,73 @@
+{
+  "intuizione": "Alcuni oggetti hanno una «vita» fatta di fasi: un acquisto è prima in corso, poi pagato, poi magari annullato o reso. Lo state diagram disegna queste fasi (stati) e gli eventi che fanno passare da una all'altra, con eventuali condizioni (guardie) e azioni. Gli stati devono coincidere con i valori dell'attributo stato della classe e gli eventi con le sue operazioni: è un enum con le regole su come può cambiare.",
+  "spiegazione": "## Gli elementi\n\n| elemento | notazione | significato |\n|---|---|---|\n| **Stato** | rettangolo arrotondato con nome (aggettivo/participio: *Pagato*, *Sospeso*) | condizione stabile in cui l'oggetto attende eventi |\n| **Stato iniziale** | pallino nero | dove nasce l'oggetto |\n| **Stato finale** | occhio di bue | fine della vita dell'oggetto |\n| **Transizione** | freccia etichettata `evento [guardia] / azione` | cambio di stato |\n| **Evento** | chiamata di operazione, segnale, tempo (`after(15 giorni)`), cambiamento (`when(qta == 0)`) | cosa scatena la transizione |\n| **Guardia** | condizione booleana tra `[ ]` | la transizione scatta solo se vera |\n| **Azione** | dopo `/` | cosa si fa durante la transizione (istantanea) |\n| **Attività interne** | `entry /`, `exit /`, `do /` dentro lo stato | cosa si fa entrando, uscendo, o mentre si è nello stato |\n| **Stato composito** | stato con sotto-stati | raggruppa stati con transizioni comuni |\n\nTutte e tre le parti dell'etichetta sono opzionali: `paga()`, `[totale > 0]`, `/ inviaRicevuta()`.\n\n## Esempio: gli stati di un acquisto (farmacia, prova 5/11/2025, es. 1.2)\n\nIl testo chiede «uno state diagram che mostri gli stati che può assumere un acquisto». Dal testo: si crea un carrello, si aggiungono prodotti, si paga; un prodotto non disponibile può essere prenotato. Una modellazione ragionevole:\n\n```mermaid\nstateDiagram-v2\n    [*] --> InCorso : nuovaVendita()\n    InCorso --> InCorso : aggiungi(p, qta) [disponibile] / creaRiga()\n    InCorso --> InAttesaProdotto : prenota(p, qta) [non disponibile]\n    InAttesaProdotto --> InCorso : arrivoProdotto() / notificaCliente()\n    InCorso --> Confermato : conferma() [carrello non vuoto] / aggiornaQuantita()\n    InCorso --> Annullato : annulla()\n    InAttesaProdotto --> Annullato : annulla()\n    Confermato --> Chiuso : registraNelRapporto()\n    Annullato --> [*]\n    Chiuso --> [*]\n```\n\nLeggi una transizione così: «se l'acquisto è **InCorso** e arriva l'evento `conferma()` e la guardia *carrello non vuoto* è vera, allora esegue `aggiornaQuantita()` e passa in **Confermato**». Se la guardia è falsa, l'evento viene ignorato e lo stato non cambia.\n\nLa **self-transition** su InCorso (`aggiungi`) mostra che aggiungere prodotti non cambia lo stato.\n\n## Dal diagramma al codice Java\n\nGli stati diventano un **enum**, le transizioni diventano **operazioni** che controllano lo stato corrente:\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\n\nenum StatoAcquisto { IN_CORSO, IN_ATTESA_PRODOTTO, CONFERMATO, ANNULLATO, CHIUSO }\n\nclass Acquisto {\n    private StatoAcquisto stato = StatoAcquisto.IN_CORSO;    // [*] --> InCorso\n    private final List<String> righe = new ArrayList<>();\n\n    void aggiungi(String prodotto, boolean disponibile) {\n        richiedi(StatoAcquisto.IN_CORSO);\n        if (disponibile) righe.add(prodotto);                // self-transition\n        else stato = StatoAcquisto.IN_ATTESA_PRODOTTO;        // prenota [non disponibile]\n    }\n    void arrivoProdotto() {\n        richiedi(StatoAcquisto.IN_ATTESA_PRODOTTO);\n        System.out.println(\"notifica al cliente\");            // azione / notificaCliente()\n        stato = StatoAcquisto.IN_CORSO;\n    }\n    void conferma() {\n        richiedi(StatoAcquisto.IN_CORSO);\n        if (righe.isEmpty()) return;                          // guardia falsa: nessuna transizione\n        stato = StatoAcquisto.CONFERMATO;                     // / aggiornaQuantita() omessa\n    }\n    void annulla() {\n        if (stato != StatoAcquisto.IN_CORSO && stato != StatoAcquisto.IN_ATTESA_PRODOTTO)\n            throw new IllegalStateException(\"non annullabile in \" + stato);\n        stato = StatoAcquisto.ANNULLATO;\n    }\n    void registraNelRapporto() { richiedi(StatoAcquisto.CONFERMATO); stato = StatoAcquisto.CHIUSO; }\n\n    private void richiedi(StatoAcquisto atteso) {\n        if (stato != atteso) throw new IllegalStateException(\"operazione non valida in \" + stato);\n    }\n    StatoAcquisto getStato() { return stato; }\n}\n```\n\nQuando gli stati hanno **comportamenti molto diversi** e gli `if/switch` sullo stato si moltiplicano, si passa al **pattern State** (una classe per stato).\n\n## Come costruirlo all'esame\n\n1. **Quale oggetto?** Quello indicato dal testo (acquisto, prestito, prenotazione, utente).\n2. **Stati**: cerca aggettivi/participi nel testo (*registrato, sospeso, prenotato, approvato, scaduto, rinnovato*). Uno stato è una situazione in cui l'oggetto **aspetta** qualcosa.\n3. **Eventi**: le operazioni del class diagram che cambiano lo stato, più eventi temporali (`after(15 giorni)`).\n4. **Guardie** per le regole («rinnovabile una sola volta» → `[non già rinnovato]`).\n5. **Iniziale e finale**; controlla che da ogni stato si possa arrivare a una fine (niente stati morti involontari).\n6. **Coerenza**: stati = valori dell'enum `stato`; eventi = operazioni della classe.\n\n## Stati vs attività\n\nUno stato **non** è un'azione: «Calcolare totale» è un'azione (activity diagram), «Confermato» è uno stato. Se il nome è un verbo all'infinito, probabilmente stai disegnando un activity diagram.",
+  "analogia": "È come un semaforo o un ordine su un sito di e-commerce: «in preparazione», «spedito», «consegnato», «reso». Dallo stato «consegnato» non si torna a «in preparazione», e «reso» è possibile solo entro 30 giorni (guardia). Ogni stato descrive cosa può succedere dopo. L'analogia cede perché un semaforo cambia solo con il tempo, mentre gli oggetti software cambiano soprattutto per chiamate di operazioni.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Enum e switch in Java",
+      "collegamento": "Gli stati sono i valori di un enum; le transizioni sono metodi che controllano lo stato corrente e lo aggiornano."
+    },
+    {
+      "conoscenza": "Automi a stati finiti (Fondamenti/Calcolatori)",
+      "collegamento": "Lo state diagram è un automa: stati, ingressi (eventi), transizioni; in più ha guardie e azioni."
+    },
+    {
+      "conoscenza": "Diagramma delle classi",
+      "collegamento": "L'attributo stato e le operazioni della classe devono coincidere con stati ed eventi.",
+      "nodo": "uml-diagramma-classi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Ciclo di vita di un prestito (biblioteca 2016/17)",
+      "problema": "Modella gli stati di un prestito: dura 15 giorni, è rinnovabile una sola volta; se non restituito entro il termine si invia un sollecito; se nemmeno dopo il sollecito il documento torna, l'utente viene sospeso.",
+      "passi": [
+        "Oggetto: Prestito. Stati: Attivo, Rinnovato, Scaduto (sollecitato), Chiuso; la sospensione è un'azione sull'Utente.",
+        "Eventi: rinnova() con guardia [non già rinnovato], restituisci(), evento temporale after(15 giorni) per la scadenza, after(termine sollecito) per la sospensione (ipotesi: termine fissato dalla biblioteca).",
+        "Azioni: alla scadenza / inviaSollecito(); allo scadere del sollecito / utente.sospendi().",
+        "Il rinnovo è possibile una sola volta: dallo stato Rinnovato non esiste la transizione rinnova().",
+        "Controllo di coerenza: enum StatoPrestito {ATTIVO, RINNOVATO, SCADUTO, CHIUSO}; operazioni rinnova(), restituisci() in Prestito."
+      ],
+      "soluzione": "```mermaid\nstateDiagram-v2\n    [*] --> Attivo : registra()\n    Attivo --> Rinnovato : rinnova()\n    Attivo --> Scaduto : after(15 giorni) / inviaSollecito()\n    Rinnovato --> Scaduto : after(15 giorni) / inviaSollecito()\n    Attivo --> Chiuso : restituisci()\n    Rinnovato --> Chiuso : restituisci()\n    Scaduto --> Chiuso : restituisci()\n    Scaduto --> Scaduto : after(termine sollecito) / utente.sospendi()\n    Chiuso --> [*]\n```",
+      "perche_funziona": "Il vincolo «una sola volta» si esprime con l'assenza della transizione rinnova() da Rinnovato; gli eventi temporali modellano scadenze e sollecito; la sospensione è un'azione su un altro oggetto, coerente con Utente.sospendi()."
+    },
+    {
+      "titolo": "Prenotazione di una piazzola (ambulanti, caso della prova 9/6/2022)",
+      "problema": "Una prenotazione viene creata dall'ambulante, approvata o rifiutata dall'operatore; il giorno del mercato l'ambulante risulta presente o assente; può essere annullata prima dell'approvazione o prima della data.",
+      "passi": [
+        "Stati: InAttesa, Approvata, Rifiutata, Annullata, Utilizzata, Assenza.",
+        "Transizioni: approva() e rifiuta() da InAttesa; annulla() da InAttesa e da Approvata con guardia [prima della data].",
+        "Giorno di mercato: registraPresenza() → Utilizzata; registraAssenza() / incrementaAssenze() → Assenza.",
+        "Stati finali: Rifiutata, Annullata, Utilizzata, Assenza portano a [*]."
+      ],
+      "soluzione": "```mermaid\nstateDiagram-v2\n    [*] --> InAttesa : prenota()\n    InAttesa --> Approvata : approva()\n    InAttesa --> Rifiutata : rifiuta()\n    InAttesa --> Annullata : annulla()\n    Approvata --> Annullata : annulla() [prima della data]\n    Approvata --> Utilizzata : registraPresenza()\n    Approvata --> Assenza : registraAssenza() / ambulante.incrementaAssenze()\n    Rifiutata --> [*]\n    Annullata --> [*]\n    Utilizzata --> [*]\n    Assenza --> [*]\n```",
+      "perche_funziona": "Ogni stato è una situazione d'attesa nominata con un participio; ogni evento è un'operazione di Prenotazione; la guardia traduce la regola temporale; l'azione sul contatore delle assenze collega lo stato alla sanzione dell'ambulante."
+    }
+  ],
+  "errori_comuni": [
+    "Nominare gli stati con verbi all'infinito (sono azioni, non stati).",
+    "Transizioni senza evento né guardia (non si capisce quando scattano).",
+    "Stati che non corrispondono all'attributo stato della classe, o eventi non presenti come operazioni.",
+    "Dimenticare stato iniziale/finale o lasciare stati senza uscita non voluti.",
+    "Confondere guardia (condizione, tra parentesi quadre) e azione (dopo la barra)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Come si legge l'etichetta conferma() [carrello non vuoto] / aggiornaQuantita()?",
+      "risposta": "Quando arriva l'evento conferma(), se la guardia carrello non vuoto è vera, si esegue l'azione aggiornaQuantita() e si passa allo stato di destinazione; se la guardia è falsa la transizione non scatta."
+    },
+    {
+      "domanda": "Che differenza c'è tra entry/, exit/ e do/?",
+      "risposta": "entry/ è eseguita ogni volta che si entra nello stato, exit/ ogni volta che se ne esce, do/ è un'attività continua svolta mentre si resta nello stato (interrotta all'uscita)."
+    },
+    {
+      "domanda": "Come si rende coerente uno state diagram con il class diagram?",
+      "risposta": "Gli stati corrispondono ai valori di un attributo stato (tipicamente un enum) della classe, gli eventi alle sue operazioni (o a eventi temporali), le azioni a operazioni esistenti della classe o di classi associate."
+    },
+    {
+      "domanda": "Che tipi di evento esistono?",
+      "risposta": "Evento di chiamata (un'operazione invocata), segnale (messaggio asincrono), evento temporale (after/at), evento di cambiamento (when condizione diventa vera)."
+    }
+  ],
+  "riepilogo": "Stati (participi, situazioni d'attesa), transizioni evento [guardia] / azione.\nIniziale e finale; self-transition se lo stato non cambia.\nStati = valori dell'enum stato; eventi = operazioni della classe.\nEventi anche temporali: after(15 giorni)."
+}

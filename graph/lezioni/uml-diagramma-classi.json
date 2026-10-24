@@ -1,0 +1,77 @@
+{
+  "intuizione": "Il class diagram è la «pianta» statica del software: quali tipi di oggetti esistono, cosa sanno (attributi), cosa sanno fare (operazioni) e come sono collegati tra loro. Ogni rettangolo è una classe Java scritta in forma compatta, ogni linea è un riferimento o un'ereditarietà. È il diagramma su cui si appoggiano tutti gli altri, per questo all'esame la coerenza con il class diagram viene controllata in ogni esercizio.",
+  "spiegazione": "## La classe\n\nUn rettangolo a tre compartimenti: **nome**, **attributi**, **operazioni**.\n\n```text\nvisibilità nome : Tipo [molteplicità] = valoreIniziale\nvisibilità nome(parametro : Tipo, ...) : TipoRitorno\n```\n\n| simbolo | visibilità | Java |\n|---|---|---|\n| `+` | pubblica | `public` |\n| `-` | privata | `private` |\n| `#` | protetta | `protected` |\n| `~` | package | (nessun modificatore) |\n\nAltri ornamenti: **sottolineato** = statico (`static`); *corsivo* o `{abstract}` = astratto; stereotipi `«interface»`, `«enumeration»`, `«abstract»`.\n\nIl confronto diretto con Java chiarisce tutto:\n\n```java\npublic class Prodotto {\n    private final String codice;           // - codice : String\n    private String nome;                   // - nome : String\n    private Categoria categoria;           // - categoria : Categoria\n    private double prezzo;                 // - prezzo : double\n    private int quantitaFarmacia;          // - quantitaFarmacia : int\n\n    public Prodotto(String codice, String nome, Categoria categoria, double prezzo, int quantita) {\n        this.codice = codice; this.nome = nome; this.categoria = categoria;\n        this.prezzo = prezzo; this.quantitaFarmacia = quantita;\n    }\n\n    public boolean isDisponibile(int qta) { return quantitaFarmacia >= qta; }   // + isDisponibile(qta : int) : boolean\n    public void decrementa(int qta) {                                         // + decrementa(qta : int) : void\n        if (!isDisponibile(qta)) throw new IllegalStateException(\"quantità insufficiente\");\n        quantitaFarmacia -= qta;\n    }\n    public double getPrezzo() { return prezzo; }\n}\n\nenum Categoria { MEDICINALE, COSMETICO }   // «enumeration» Categoria\n```\n\nNel diagramma **non** si disegnano getter/setter banali (sono impliciti), né gli attributi che rappresentano associazioni (sono già le linee).\n\n## Le relazioni\n\n| relazione | notazione | significato | Java |\n|---|---|---|---|\n| **Associazione** | linea (con freccia se navigabile) | un oggetto «conosce» l'altro in modo duraturo | attributo riferimento o collezione |\n| **Aggregazione** | linea con rombo **vuoto** sul tutto | parte-tutto debole: la parte può esistere senza il tutto, può essere condivisa | come associazione |\n| **Composizione** | linea con rombo **pieno** sul tutto | parte-tutto forte: la parte appartiene a un solo tutto e muore con lui | il tutto crea e possiede le parti |\n| **Generalizzazione** | freccia con triangolo vuoto verso la superclasse | «è un» | `extends` |\n| **Realizzazione** | tratteggiata con triangolo vuoto verso l'interfaccia | implementa un contratto | `implements` |\n| **Dipendenza** | tratteggiata con freccia aperta | uso temporaneo (parametro, variabile locale, creazione) | parametro di metodo, `new` dentro un metodo |\n\n```mermaid\nclassDiagram\n    class Documento {\n        <<abstract>>\n        -String titolo\n        -String autore\n        -int anno\n        +isAmmissibile()* boolean\n    }\n    class Libro {\n        +isAmmissibile() boolean\n    }\n    class Rivista {\n        +isAmmissibile() boolean\n    }\n    class Video {\n        -int durataMin\n        +isAmmissibile() boolean\n    }\n    class Scaffale {\n        -int numero\n    }\n    class Settore {\n        -String argomento\n    }\n    class Notificabile {\n        <<interface>>\n        +notifica(String msg) void\n    }\n    class Utente {\n        -boolean sospeso\n        +puoPrendereInPrestito() boolean\n    }\n    class ServizioEmail\n    Documento <|-- Libro\n    Documento <|-- Rivista\n    Documento <|-- Video\n    Settore \"1\" *-- \"1..*\" Scaffale : contiene\n    Scaffale \"1\" o-- \"0..*\" Documento : colloca\n    Notificabile <|.. Utente\n    Utente ..> ServizioEmail : usa\n```\n\nLettura: un settore è **composto** da scaffali (se chiudo il settore spariscono i suoi scaffali); uno scaffale **aggrega** documenti (spostare un documento su un altro scaffale non lo distrugge); `Libro`, `Rivista`, `Video` **sono** documenti; `Utente` **implementa** `Notificabile`; `Utente` **usa** `ServizioEmail` in un metodo (dipendenza, non attributo).\n\n## Come scegliere la relazione giusta\n\n```mermaid\nflowchart TD\n    Q1{\"A è un tipo particolare di B?\"} -->|\"sì\"| G[\"Generalizzazione A extends B\"]\n    Q1 -->|\"no\"| Q2{\"A tiene un riferimento duraturo a B?\"}\n    Q2 -->|\"no, lo usa solo in un metodo\"| D[\"Dipendenza\"]\n    Q2 -->|\"sì\"| Q3{\"B è parte di A?\"}\n    Q3 -->|\"no\"| AS[\"Associazione\"]\n    Q3 -->|\"sì\"| Q4{\"B muore con A e appartiene solo ad A?\"}\n    Q4 -->|\"sì\"| C[\"Composizione\"]\n    Q4 -->|\"no\"| AG[\"Aggregazione\"]\n```\n\nRegola pratica: **nel dubbio, associazione semplice con molteplicità corrette**. Usare la composizione dove non c'è (es. Cliente *-- Prodotto) è un errore, mentre un'associazione corretta non lo è mai.\n\n## Ereditarietà o attributo?\n\nSi usa una sottoclasse quando i tipi hanno **attributi o comportamenti diversi** (il Video ha `durata`, la Rivista non è ammessa al prestito). Se cambia solo un valore (categoria MEDICINALE/COSMETICO senza comportamento diverso) basta un **attributo enum**. Troppe sottoclassi per combinazioni di caratteristiche (piazzola premium con luce con musica…) sono il segnale che serve un pattern (Decorator).\n\n## Dal testo al diagramma: la tecnica sostantivi/verbi\n\n1. **Sostantivi** del dominio → candidate **classi** (Biblioteca, Settore, Documento, Utente, Prestito).\n2. Sostantivi che descrivono un valore semplice → **attributi** (titolo, anno, durata).\n3. **Verbi** e responsabilità → **operazioni** (prestare, verificare, rinnovare).\n4. Frasi «ha», «contiene», «appartiene» → **associazioni/composizioni** con molteplicità.\n5. Frasi «è un tipo di» → **generalizzazione**.\n6. Eventi con dati propri (un prestito ha data e scadenza) → **classe** a sé (Prestito), non un attributo.",
+  "analogia": "È la pianta di un appartamento: mostra le stanze (classi), cosa c'è dentro (attributi), a cosa servono (operazioni) e quali porte collegano le stanze (associazioni). Non mostra le persone che si muovono in casa durante la giornata: quello è il sequence diagram. L'analogia cede perché le stanze non si ereditano tra loro, mentre le classi sì.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Classi, campi, metodi e modificatori di accesso in Java",
+      "collegamento": "Ogni rettangolo è una classe Java compatta: + - # ~ sono public, private, protected, package."
+    },
+    {
+      "conoscenza": "Ereditarietà, classi astratte e interfacce in Java",
+      "collegamento": "Generalizzazione = extends, realizzazione = implements, corsivo/abstract = abstract."
+    },
+    {
+      "conoscenza": "Modello E-R (Basi di dati)",
+      "collegamento": "Entità ≈ classi, relazioni con cardinalità ≈ associazioni con molteplicità; in più le classi hanno operazioni e la navigabilità."
+    },
+    {
+      "conoscenza": "Associazioni e molteplicità",
+      "collegamento": "Approfondimento su molteplicità, direzione e traduzione in Java.",
+      "nodo": "uml-associazioni-molteplicita"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Dalla frase alla notazione",
+      "problema": "Testo biblioteca: «I documenti sono descritti da titolo, autore, editore e anno. Il materiale video e audio ha una durata. Alcuni documenti non sono ammessi al prestito (ad esempio le riviste)». Modella con le classi.",
+      "passi": [
+        "Documento è un concetto con sottotipi → classe astratta Documento con titolo, autore, editore, anno.",
+        "Audio e Video hanno un attributo in più (durata) → sottoclassi con durata (o una classe intermedia Multimediale con durata, da cui ereditano Audio e Video).",
+        "«Non ammessi al prestito» dipende dal tipo → operazione astratta isAmmissibile(): boolean, ridefinita nelle sottoclassi (Rivista restituisce false).",
+        "Libro e Rivista sono sottoclassi senza attributi in più ma con comportamento diverso."
+      ],
+      "soluzione": "```mermaid\nclassDiagram\n    class Documento {\n        <<abstract>>\n        -String titolo\n        -String autore\n        -String editore\n        -int anno\n        +isAmmissibile()* boolean\n    }\n    class Multimediale {\n        <<abstract>>\n        -int durataMin\n    }\n    class Libro {\n        +isAmmissibile() boolean\n    }\n    class Rivista {\n        +isAmmissibile() boolean\n    }\n    class Audio {\n        +isAmmissibile() boolean\n    }\n    class Video {\n        +isAmmissibile() boolean\n    }\n    Documento <|-- Libro\n    Documento <|-- Rivista\n    Documento <|-- Multimediale\n    Multimediale <|-- Audio\n    Multimediale <|-- Video\n```",
+      "perche_funziona": "Le differenze di attributi (durata) e di comportamento (ammissibilità) giustificano le sottoclassi; l'operazione astratta evita if sul tipo e sarà chiamata nel sequence diagram del prestito."
+    },
+    {
+      "titolo": "Scegliere la relazione: farmacia",
+      "problema": "Decidi il tipo di relazione per: (a) Vendita–RigaCarrello; (b) RigaCarrello–Prodotto; (c) Cliente–TesseraFedelta; (d) Farmacia–Prodotto; (e) Vendita usa un ServizioPagamento passato come parametro di paga().",
+      "passi": [
+        "(a) Le righe esistono solo dentro quella vendita e muoiono con essa → composizione, rombo pieno su Vendita, molteplicità 1 a 1..*.",
+        "(b) La riga si riferisce a un prodotto che esiste indipendentemente e compare in molte righe → associazione navigabile RigaCarrello → Prodotto, * a 1.",
+        "(c) Il cliente conosce la sua tessera, che è opzionale → associazione Cliente → TesseraFedelta, 1 a 0..1.",
+        "(d) La farmacia contiene il catalogo, ma un prodotto non è «distrutto» se tolto da un catalogo → aggregazione (o associazione) 1 a 0..*.",
+        "(e) Uso temporaneo come parametro → dipendenza tratteggiata Vendita ..> ServizioPagamento."
+      ],
+      "soluzione": "(a) composizione; (b) associazione diretta; (c) associazione diretta 1 → 0..1; (d) aggregazione; (e) dipendenza.",
+      "perche_funziona": "Si applica l'albero di decisione: «è un?» → «riferimento duraturo?» → «è parte?» → «muore con il tutto ed è esclusiva?»."
+    }
+  ],
+  "errori_comuni": [
+    "Disegnare come attributo un riferimento che è già un'associazione (doppia rappresentazione), o viceversa usare attributi di tipo classe senza linee.",
+    "Usare la composizione dove la parte sopravvive al tutto o è condivisa.",
+    "Creare sottoclassi che differiscono solo per un valore (meglio un attributo enum).",
+    "Dimenticare le operazioni: all'esame il sequence diagram deve usare operazioni presenti nelle classi.",
+    "Invertire la freccia dell'ereditarietà: il triangolo punta alla superclasse."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra aggregazione e composizione?",
+      "risposta": "Entrambe sono relazioni parte-tutto. Nella composizione la parte appartiene a un solo tutto e il suo ciclo di vita dipende da esso (muore con il tutto), rombo pieno; nell'aggregazione la parte può esistere indipendentemente ed essere condivisa, rombo vuoto."
+    },
+    {
+      "domanda": "Come si rappresenta in UML un metodo astratto e un attributo statico?",
+      "risposta": "Il metodo astratto in corsivo (o con {abstract}; in Mermaid con * finale); l'attributo statico sottolineato (in Mermaid con $ finale). La classe con metodi astratti è anch'essa astratta (corsivo o «abstract»)."
+    },
+    {
+      "domanda": "Quando usare una dipendenza invece di un'associazione?",
+      "risposta": "Quando una classe usa l'altra solo temporaneamente (parametro di un metodo, variabile locale, oggetto creato e restituito) senza mantenerne un riferimento come attributo."
+    },
+    {
+      "domanda": "Quando preferire un attributo enum alle sottoclassi?",
+      "risposta": "Quando i tipi differiscono solo per un valore e non per attributi o comportamento; le sottoclassi servono se cambiano dati o metodi."
+    }
+  ],
+  "riepilogo": "Classe = nome, attributi (vis nome: Tipo), operazioni (vis nome(par): Ritorno).\n+ - # ~ = public, private, protected, package; corsivo = astratto; sottolineato = statico.\nRelazioni: associazione, aggregazione (rombo vuoto), composizione (pieno), ereditarietà, realizzazione, dipendenza.\nSostantivi → classi/attributi, verbi → operazioni, «ha/contiene» → associazioni."
+}

@@ -1,0 +1,76 @@
+{
+  "intuizione": "Coesione e accoppiamento sono le due misure con cui si giudica la divisione di un sistema in moduli. La coesione guarda dentro un modulo e chiede «i suoi elementi lavorano tutti per lo stesso scopo?». L'accoppiamento guarda tra i moduli e chiede «quanto ciascuno deve sapere degli altri?». La regola d'oro è alta coesione e basso accoppiamento: moduli che fanno una cosa sola e si parlano attraverso interfacce semplici, così una modifica resta locale.",
+  "spiegazione": "## Coesione: quanto un modulo è «uno»\n\nLa **coesione** misura quanto gli elementi di un modulo (metodi e dati di una classe, istruzioni di una funzione) concorrono a **un unico scopo ben definito**. La scala classica (Stevens, Myers, Constantine, ripresa dai testi di ingegneria del software) va dalla peggiore alla migliore:\n\n| livello | gli elementi stanno insieme perché… | esempio |\n|---|---|---|\n| 1. **coincidentale** | per caso, nessun legame | classe `Utils` con `formattaData`, `calcolaIva`, `inviaEmail` |\n| 2. **logica** | fanno cose della stessa «categoria», scelta con un flag | `gestisciInput(int tipo)`: tastiera, file o rete a seconda di `tipo` |\n| 3. **temporale** | vanno eseguiti nello stesso momento | `inizializza()` che apre il DB, azzera contatori, carica la configurazione |\n| 4. **procedurale** | seguono un ordine di esecuzione, ma su dati diversi | «leggi utente, poi stampa intestazione, poi controlla stampante» |\n| 5. **comunicativa** (comunicazionale) | operano sugli stessi dati | `Report` che sia stampa sia salva lo stesso elenco di vendite |\n| 6. **sequenziale** | l'output di uno è l'input del successivo | leggi righe → valida → calcola totale |\n| 7. **funzionale** | tutti e soli gli elementi necessari a **una** funzione | `calcolaTotaleConSconto()`, una classe `TesseraFedelta` |\n\nNell'OO l'idea corrisponde al **Single Responsibility Principle**: una classe dovrebbe avere un solo motivo per cambiare.\n\n## Accoppiamento: quanto un modulo dipende dagli altri\n\nL'**accoppiamento** misura il grado di interdipendenza tra moduli. Dal peggiore al migliore:\n\n| livello | il modulo A… | esempio |\n|---|---|---|\n| 1. **di contenuto** | accede o modifica i dati interni di B, o salta dentro il suo codice | `vendita.prodotto.quantita -= 2` su un campo pubblico |\n| 2. **comune** | condivide con B dati globali | variabili `static` pubbliche modificate da più classi |\n| 3. **di controllo** | passa a B un flag che decide il flusso interno di B | `spedizione.costo(tipo)` con `switch(tipo)` dentro |\n| 4. **stamp** (per struttura dati) | passa a B un'intera struttura di cui B usa solo una parte | `calcolaSconto(Cliente c)` che usa solo `c.getTessera().getImporto()` |\n| 5. **dei dati** | passa a B solo i dati elementari necessari | `calcolaSconto(double importoCumulativo)` |\n\nAlcuni testi inseriscono anche l'accoppiamento **esterno** (dipendenza da un formato o protocollo imposto dall'esterno) tra comune e di controllo. A livello di oggetti si aggiungono le dipendenze per **ereditarietà** (molto forte: la sottoclasse conosce l'implementazione della superclasse) e per **tipo concreto** (meglio dipendere da un'interfaccia).\n\n## Perché contano\n\n```mermaid\nflowchart LR\n    HC[\"Alta coesione\"] --> CM[\"Modifiche localizzate\"]\n    LC[\"Basso accoppiamento\"] --> CM\n    LC --> TS[\"Test in isolamento\"]\n    HC --> RU[\"Riuso\"]\n    LC --> RU\n    CM --> MA[\"Manutenibilità\"]\n    TS --> MA\n    HC --> CO[\"Comprensibilità\"]\n```\n\nLe due misure sono legate: se un modulo è poco coeso (fa troppe cose), tende ad accoppiarsi con molti altri.\n\n## Dal codice cattivo a quello buono\n\n```java\nimport java.util.List;\n\n// PRIMA: coesione coincidentale/logica + accoppiamento di controllo e di contenuto\nclass GestoreFarmacia {\n    public static int quantitaGlobale;                    // accoppiamento comune\n    double costoSpedizione(int tipo, double peso) {       // flag di controllo\n        switch (tipo) {\n            case 0: return 5;\n            case 1: return 5 + peso * 0.5;\n            default: return 0;\n        }\n    }\n    String formattaData(java.time.LocalDate d) { return d.toString(); } // nulla a che vedere\n}\n\n// DOPO: ogni responsabilità nella sua classe, il flag sostituito dal polimorfismo\ninterface Spedizione { double costo(double peso); }\nclass SpedizioneStandard implements Spedizione { public double costo(double peso) { return 5; } }\nclass SpedizioneCorriere implements Spedizione { public double costo(double peso) { return 5 + peso * 0.5; } }\n\nclass Ordine {\n    private final List<Double> pesi;\n    private final Spedizione spedizione;                  // dipende da un'interfaccia\n    Ordine(List<Double> pesi, Spedizione s) { this.pesi = pesi; this.spedizione = s; }\n    double costoSpedizione() {                            // coesione funzionale\n        double peso = pesi.stream().mapToDouble(Double::doubleValue).sum();\n        return spedizione.costo(peso);                     // accoppiamento dei dati\n    }\n}\n```\n\n## Coesione, accoppiamento e design pattern\n\nGran parte dei design pattern serve a ridurre l'accoppiamento mantenendo alta la coesione: **Strategy** elimina l'accoppiamento di controllo (il flag diventa un oggetto), **Observer** fa sì che il soggetto conosca solo un'interfaccia degli osservatori, le **factory** separano la creazione dall'uso, **Adapter** isola le dipendenze da interfacce esterne. Nell'es. 1.4 dell'esame la motivazione del pattern si scrive bene in questi termini.",
+  "analogia": "Una squadra di cucina ben organizzata: ogni postazione fa una cosa (pasticceria, griglia, antipasti), quindi è coesa; le postazioni si passano solo i piatti finiti attraverso il bancone (accoppiamento dei dati) e non vanno a prendere ingredienti dal frigo degli altri (accoppiamento di contenuto). Se il cuoco della griglia si ammala, lo sostituisci senza riorganizzare la pasticceria. L'analogia cede perché in cucina un minimo di coordinamento diretto è inevitabile e utile, mentre nel software ogni dipendenza va resa esplicita in un'interfaccia.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Incapsulamento e campi private (OOP)",
+      "collegamento": "Rendere privati i campi elimina l'accoppiamento di contenuto: gli altri passano per i metodi."
+    },
+    {
+      "conoscenza": "Variabili globali e static (Java/C)",
+      "collegamento": "Sono la fonte dell'accoppiamento comune."
+    },
+    {
+      "conoscenza": "Polimorfismo",
+      "collegamento": "Sostituisce i flag di controllo con oggetti di tipi diversi."
+    },
+    {
+      "conoscenza": "Normalizzazione (Basi di dati)",
+      "collegamento": "Come una tabella normalizzata contiene attributi che dipendono solo dalla chiave, un modulo coeso contiene solo ciò che serve al suo scopo."
+    },
+    {
+      "conoscenza": "Obiettivi e livelli della progettazione",
+      "collegamento": "Coesione e accoppiamento sono i criteri per valutare la decomposizione.",
+      "nodo": "progettazione-obiettivi-livelli"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "La classe Report tuttofare",
+      "problema": "La classe Report legge le vendite dal DB, calcola le statistiche giornaliere e le stampa in HTML. Quale coesione ha? Come la migliori?",
+      "passi": [
+        "Elenco le responsabilità: accesso ai dati, calcolo, presentazione. Sono tre motivi diversi di cambiamento.",
+        "Le tre parti operano sulle stesse vendite e in sequenza (lettura → calcolo → stampa): coesione al più sequenziale/comunicativa, non funzionale.",
+        "Divido: VenditeRepository (accesso dati), StatisticheGiornaliere (calcolo), ReportHtml (presentazione).",
+        "Collego: StatisticheGiornaliere riceve la lista di vendite; ReportHtml riceve l'oggetto statistiche. Ogni passaggio è di dati."
+      ],
+      "soluzione": "Coesione sequenziale/comunicativa. Ristrutturazione in tre classi con coesione funzionale, collegate da accoppiamento dei dati (meglio se tramite interfacce, es. VenditeRepository come interfaccia).",
+      "perche_funziona": "Ogni classe ha ora un solo motivo per cambiare: cambiare il DB non tocca il calcolo, cambiare il formato HTML in PDF non tocca né dati né calcolo."
+    },
+    {
+      "titolo": "Classificare l'accoppiamento",
+      "problema": "Classifica: (a) Vendita legge e modifica il campo pubblico prodotto.quantita; (b) Ordine chiama spedizione.calcola(tipo) e Spedizione fa uno switch su tipo; (c) Sconto.calcola(Cliente c) usa solo l'importo cumulativo della tessera; (d) Sconto.calcola(double importo); (e) tre classi leggono e scrivono la variabile statica Config.sogliaSconto.",
+      "passi": [
+        "(a) accesso diretto ai dati interni → contenuto.",
+        "(b) un flag decide il flusso interno → controllo. Rimedio: Strategy.",
+        "(c) passata una struttura intera, usata in parte → stamp.",
+        "(d) solo il dato necessario → dati.",
+        "(e) dati globali condivisi → comune."
+      ],
+      "soluzione": "(a) contenuto; (b) controllo; (c) stamp; (d) dati; (e) comune. Ordine dal peggiore al migliore: a, e, b, c, d.",
+      "perche_funziona": "Il criterio è quanto A deve sapere di B: tutto l'interno (contenuto), un dato globale (comune), la logica interna (controllo), una struttura (stamp), solo valori (dati)."
+    }
+  ],
+  "errori_comuni": [
+    "Invertire gli estremi delle scale: per la coesione il migliore è funzionale, per l'accoppiamento il migliore è dei dati.",
+    "Dire «zero accoppiamento»: i moduli devono collaborare; l'obiettivo è basso accoppiamento, non nullo.",
+    "Confondere coesione comunicativa (stessi dati) e sequenziale (output → input).",
+    "Classificare come stamp un passaggio in cui la struttura è usata tutta (allora è accettabile)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Definisci coesione e accoppiamento e indica l'obiettivo di progetto.",
+      "risposta": "La coesione misura quanto gli elementi di un modulo concorrono a un unico scopo; l'accoppiamento misura quanto un modulo dipende da altri. L'obiettivo è alta coesione e basso accoppiamento, per avere modifiche locali, test in isolamento e riuso."
+    },
+    {
+      "domanda": "Elenca i livelli di coesione dal peggiore al migliore.",
+      "risposta": "Coincidentale, logica, temporale, procedurale, comunicativa, sequenziale, funzionale."
+    },
+    {
+      "domanda": "Elenca i livelli di accoppiamento dal peggiore al migliore e come ridurre quello di controllo.",
+      "risposta": "Contenuto, comune, (esterno), controllo, stamp, dati. L'accoppiamento di controllo si riduce sostituendo il flag con il polimorfismo (es. pattern Strategy): il chiamante passa un oggetto che sa già cosa fare."
+    }
+  ],
+  "riepilogo": "Coesione = unità di scopo interna; accoppiamento = dipendenza tra moduli.\nCoesione: coincidentale < logica < temporale < procedurale < comunicativa < sequenziale < funzionale.\nAccoppiamento: contenuto > comune > controllo > stamp > dati (peggiore → migliore).\nObiettivo: alta coesione, basso accoppiamento; i pattern servono spesso a questo."
+}

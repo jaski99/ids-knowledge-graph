@@ -1,0 +1,77 @@
+{
+  "intuizione": "Il programma Java ragiona a oggetti (riferimenti, ereditarietà, collezioni), il database a tabelle (righe, chiavi primarie ed esterne, join). L'Object-Relational Mapping è lo strato che traduce tra i due mondi, così da salvare e caricare oggetti senza scrivere a mano tutto l'SQL. I due modelli però non coincidono (impedance mismatch): l'ORM deve fare delle scelte, e conoscerle evita errori come il problema N+1.",
+  "spiegazione": "## Il problema: impedance mismatch\n\n| aspetto | mondo a oggetti | mondo relazionale | come lo risolve l'ORM |\n|---|---|---|---|\n| **identità** | `==` (stesso oggetto) ed `equals` | chiave primaria | `@Id`; il persistence context garantisce un solo oggetto per riga |\n| **associazioni** | riferimenti, navigabili in una direzione | chiavi esterne, join (sempre bidirezionali) | `@ManyToOne`, `@OneToMany(mappedBy)`, `@JoinColumn` |\n| **molti-a-molti** | due collezioni | tabella di associazione | `@ManyToMany` + `@JoinTable` |\n| **ereditarietà** | `extends`, polimorfismo | non esiste | strategie SINGLE_TABLE, JOINED, TABLE_PER_CLASS |\n| **granularità** | molte classi piccole (Indirizzo, Importo) | poche tabelle larghe | `@Embeddable` / `@Embedded` |\n| **navigazione** | si segue un riferimento alla volta | si chiede tutto con una query | caricamento lazy/eager, fetch join |\n| **tipi** | `LocalDate`, enum, `BigDecimal` | DATE, VARCHAR, NUMERIC | conversioni, `@Enumerated` |\n\n## Dal class diagram allo schema\n\n```mermaid\nclassDiagram\n    class Cliente {\n        -Long id\n        -String nome\n    }\n    class Ordine {\n        -Long id\n        -LocalDate data\n    }\n    class RigaOrdine {\n        -int quantita\n    }\n    class Prodotto {\n        -String codice\n        -double prezzo\n    }\n    Cliente \"1\" <-- \"0..*\" Ordine : cliente\n    Ordine \"1\" *-- \"1..*\" RigaOrdine : righe\n    RigaOrdine \"0..*\" --> \"1\" Prodotto\n```\n\nRegole di traduzione:\n- ogni classe entità → una tabella, `id` → chiave primaria;\n- associazione **1 – 0..*** → **chiave esterna nella tabella del lato «molti»** (ORDINE.cliente_id);\n- associazione **molti-a-molti** → tabella di associazione con due FK;\n- la direzione di navigabilità UML non cambia lo schema (la FK si interroga in entrambe le direzioni), ma decide quali attributi esistono nelle classi.\n\n## JPA: lo standard Java\n\n**JPA** (Java Persistence API, oggi **Jakarta Persistence**, package `jakarta.persistence`) è la specifica; **Hibernate** è l'implementazione più diffusa (altre: EclipseLink).\n\n```java\nimport jakarta.persistence.*;\nimport java.time.LocalDate;\nimport java.util.ArrayList;\nimport java.util.List;\n\n@Entity\nclass Cliente {\n    @Id @GeneratedValue Long id;\n    String nome;\n    @OneToMany(mappedBy = \"cliente\")          // lato inverso: la FK è in ORDINE\n    List<Ordine> ordini = new ArrayList<>();\n}\n\n@Entity\nclass Ordine {\n    @Id @GeneratedValue Long id;\n    LocalDate data;\n    @ManyToOne(fetch = FetchType.LAZY)        // lato proprietario: colonna cliente_id\n    @JoinColumn(name = \"cliente_id\")\n    Cliente cliente;\n    @OneToMany(mappedBy = \"ordine\", cascade = CascadeType.ALL, orphanRemoval = true)\n    List<RigaOrdine> righe = new ArrayList<>(); // composizione: le righe vivono con l'ordine\n}\n\n@Entity\nclass RigaOrdine {\n    @Id @GeneratedValue Long id;\n    int quantita;\n    @ManyToOne Ordine ordine;\n    @ManyToOne Prodotto prodotto;\n}\n\n@Entity\nclass Prodotto {\n    @Id String codice;\n    double prezzo;\n}\n```\n\n- `@Entity` marca la classe persistente; `@Id` la chiave; `@GeneratedValue` la genera il DB.\n- Nelle associazioni bidirezionali il **lato proprietario** è quello con la FK (`@ManyToOne`); l'altro dichiara `mappedBy` (altrimenti JPA crea una tabella di join in più).\n- `cascade = ALL` + `orphanRemoval` traducono la **composizione** UML (ciclo di vita condiviso).\n\nUso con l'`EntityManager`:\n\n```java\nimport jakarta.persistence.*;\nimport java.util.List;\n\nclass OrdiniService {\n    private final EntityManager em;\n    OrdiniService(EntityManager em) { this.em = em; }\n\n    Long creaOrdine(Long clienteId) {\n        em.getTransaction().begin();\n        Ordine o = new Ordine();\n        o.cliente = em.find(Cliente.class, clienteId);   // SELECT per chiave\n        em.persist(o);                                    // INSERT al commit\n        em.getTransaction().commit();\n        return o.id;\n    }\n\n    List<Cliente> clientiConOrdini() {                    // fetch join: una sola query\n        return em.createQuery(\n            \"select distinct c from Cliente c left join fetch c.ordini\", Cliente.class)\n            .getResultList();\n    }\n}\n```\n\n## Ereditarietà: tre strategie\n\nCon `Documento` astratto e sottoclassi `Libro`, `Rivista` (biblioteca):\n\n| strategia (`@Inheritance`) | schema | pro | contro |\n|---|---|---|---|\n| `SINGLE_TABLE` (default) | una tabella DOCUMENTO con tutte le colonne + colonna discriminatore | query polimorfiche veloci, nessuna join | colonne nullable, tabella larga |\n| `JOINED` | DOCUMENTO + LIBRO + RIVISTA collegate per PK | schema normalizzato, vincoli NOT NULL | join per ogni lettura |\n| `TABLE_PER_CLASS` | una tabella completa per ogni classe concreta | nessuna join per la sottoclasse | query polimorfiche con UNION, id condivisi difficili |\n\n## Lazy, eager e il problema N+1\n\n- **EAGER**: l'associazione si carica subito con l'entità (default per `@ManyToOne` e `@OneToOne`).\n- **LAZY**: si carica al primo accesso tramite un proxy (default per `@OneToMany` e `@ManyToMany`).\n- **N+1**: con una query carico N clienti (1 query), poi per ciascuno accedo a `ordini` → N query in più. Con 100 clienti sono 101 query.\n- Rimedi: **fetch join** (`join fetch`), entity graph, batch fetching; evitare EAGER ovunque (carica troppo).\n\n## Vantaggi e svantaggi dell'ORM\n\n- **Pro**: meno codice ripetitivo (CRUD), modello a oggetti nel dominio, portabilità tra DBMS, cache e gestione delle transazioni.\n- **Contro**: astrazione che «perde» (bisogna comunque capire l'SQL generato), prestazioni da controllare (N+1, caricamenti eccessivi), curva di apprendimento, query complesse spesso più semplici in SQL nativo.",
+  "analogia": "L'ORM è un interprete tra due persone che parlano lingue con strutture diverse: una pensa per storie collegate (oggetti che si riferiscono l'uno all'altro), l'altra per elenchi e schedari (tabelle e codici). L'interprete traduce bene le frasi semplici, ma con i concetti senza equivalente diretto (ereditarietà, collezioni) deve scegliere una resa, e se gli chiedi una cosa alla volta (N+1) la conversazione diventa lentissima. L'analogia cede perché l'interprete umano capisce l'intenzione, mentre l'ORM esegue esattamente quello che gli chiedi: le query inefficienti le devi riconoscere tu.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Modello relazionale, chiavi primarie ed esterne, join (Basi di dati)",
+      "collegamento": "L'ORM genera proprio queste strutture e query; FK sul lato molti come nella traduzione dal modello ER."
+    },
+    {
+      "conoscenza": "Traduzione delle generalizzazioni ER (Basi di dati)",
+      "collegamento": "Accorpamento nel padre, nelle figlie o sostituzione con associazioni corrispondono a SINGLE_TABLE, TABLE_PER_CLASS e JOINED."
+    },
+    {
+      "conoscenza": "JDBC",
+      "collegamento": "L'ORM lavora sopra JDBC e scrive al posto tuo PreparedStatement e mapping dei ResultSet."
+    },
+    {
+      "conoscenza": "Associazioni e molteplicità UML",
+      "collegamento": "Le molteplicità decidono dove va la FK o se serve una tabella di associazione.",
+      "nodo": "uml-associazioni-molteplicita"
+    },
+    {
+      "conoscenza": "Obiettivi e livelli della progettazione",
+      "collegamento": "L'ORM è una scelta del livello di accesso ai dati.",
+      "nodo": "progettazione-obiettivi-livelli"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Mappare Cliente-Ordine della farmacia",
+      "problema": "Un Cliente ha molti Ordini, ogni Ordine un solo Cliente. Scrivi le entità JPA minime e dì dove sta la chiave esterna.",
+      "passi": [
+        "Molteplicità 1 – 0..*: la FK va nella tabella del lato molti, ORDINE.cliente_id.",
+        "Ordine ha @ManyToOne Cliente cliente: è il lato proprietario.",
+        "Se serve navigare da Cliente agli ordini: @OneToMany(mappedBy = \"cliente\") List<Ordine> ordini.",
+        "Senza mappedBy JPA creerebbe una tabella di join CLIENTE_ORDINI superflua."
+      ],
+      "soluzione": "```java\n@Entity class Cliente {\n    @Id @GeneratedValue Long id;\n    String nome;\n    @OneToMany(mappedBy = \"cliente\") List<Ordine> ordini;\n}\n@Entity class Ordine {\n    @Id @GeneratedValue Long id;\n    @ManyToOne @JoinColumn(name = \"cliente_id\") Cliente cliente;\n}\n```\nFK: ORDINE.cliente_id.",
+      "perche_funziona": "Si segue la stessa regola della traduzione ER → relazionale (FK sul lato molti), e mappedBy dice a JPA che l'associazione è già mappata dall'altro lato."
+    },
+    {
+      "titolo": "Riconoscere e correggere un N+1",
+      "problema": "Il report «clienti e numero di ordini» fa: List<Cliente> cs = em.createQuery(\"select c from Cliente c\", Cliente.class).getResultList(); for (Cliente c : cs) stampa(c.nome, c.ordini.size()). Con 500 clienti è lentissimo. Perché? Come lo correggi?",
+      "passi": [
+        "La prima query carica i 500 clienti: 1 query.",
+        "ordini è @OneToMany, quindi LAZY: ogni c.ordini.size() inizializza la collezione con una query.",
+        "Totale 1 + 500 = 501 query: problema N+1.",
+        "Correzione 1: select distinct c from Cliente c left join fetch c.ordini (1 query).",
+        "Correzione 2 (meglio per un conteggio): select c.nome, count(o) from Cliente c left join c.ordini o group by c.nome, che non carica le entità."
+      ],
+      "soluzione": "È un problema N+1 dovuto al caricamento lazy nel ciclo. Si risolve con un fetch join oppure, poiché serve solo il conteggio, con una query di aggregazione che restituisce direttamente nome e count.",
+      "perche_funziona": "Si sposta il lavoro in una sola query eseguita dal DBMS, che sa fare join e aggregazioni in modo efficiente, invece di fare 500 viaggi di andata e ritorno."
+    }
+  ],
+  "errori_comuni": [
+    "Mettere la FK sul lato «uno» o dimenticare mappedBy, generando una tabella di join inutile.",
+    "Rendere tutto EAGER per evitare errori di lazy loading: si carica mezzo database.",
+    "Non accorgersi dell'N+1 perché il codice Java sembra innocuo.",
+    "Confondere JPA (specifica) con Hibernate (implementazione)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cos'è l'impedance mismatch? Fai tre esempi.",
+      "risposta": "È la differenza tra modello a oggetti e modello relazionale che rende non banale la traduzione. Esempi: identità (== ed equals contro chiave primaria), ereditarietà (non esiste nelle tabelle, va simulata con strategie), associazioni (riferimenti navigabili e collezioni contro chiavi esterne e join); inoltre granularità e modalità di navigazione."
+    },
+    {
+      "domanda": "Quali strategie di mapping dell'ereditarietà esistono in JPA?",
+      "risposta": "SINGLE_TABLE (una tabella con discriminatore, veloce ma con colonne nullable), JOINED (una tabella per classe collegate per chiave, normalizzata ma con join) e TABLE_PER_CLASS (una tabella completa per classe concreta, senza join per la singola classe ma con UNION nelle query polimorfiche)."
+    },
+    {
+      "domanda": "Che cos'è il problema N+1 e come si evita?",
+      "risposta": "Si carica una lista di N entità con una query e poi, accedendo a un'associazione lazy di ciascuna, si eseguono altre N query. Si evita con fetch join, entity graph o batch fetching, oppure con query di proiezione/aggregazione quando non servono le entità."
+    }
+  ],
+  "riepilogo": "ORM: traduce classi e associazioni in tabelle e FK (impedance mismatch).\nJPA/Jakarta Persistence = specifica, Hibernate = implementazione; @Entity, @Id, @ManyToOne, @OneToMany(mappedBy).\nFK sul lato molti; ereditarietà SINGLE_TABLE, JOINED, TABLE_PER_CLASS.\nLAZY/EAGER; N+1 → fetch join."
+}

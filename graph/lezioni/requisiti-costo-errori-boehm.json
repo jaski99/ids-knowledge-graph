@@ -1,0 +1,70 @@
+{
+  "intuizione": "Un errore nei requisiti è come un errore nelle fondamenta: finché sei sulla carta lo correggi con una gomma, quando la casa è costruita devi demolire. Barry Boehm misurò che correggere un difetto scoperto in esercizio può costare fino a circa 100 volte di più che correggerlo durante requisiti e progetto (nei sistemi grandi). Per questo conviene investire per trovare gli errori presto: revisioni, prototipi, coinvolgimento degli stakeholder.",
+  "spiegazione": "## Il fenomeno\n\nUn difetto introdotto in una fase si propaga in tutte le successive: un requisito sbagliato produce un progetto sbagliato, codice sbagliato, test scritti sul requisito sbagliato (che quindi *passano*), documentazione sbagliata. Quando finalmente il difetto emerge — spesso dal cliente, in esercizio — bisogna rifare **tutti** quei prodotti, più il costo del rilascio correttivo, dei dati da sistemare e del danno al cliente.\n\n## La curva di Boehm\n\nBarry Boehm (*Software Engineering Economics*, 1981) raccolse dati da progetti reali: il costo relativo per correggere un difetto cresce di fase in fase. Nella revisione con Basili (*Software Defect Reduction Top 10 List*, 2001) il risultato è riassunto così: trovare e correggere un problema **dopo la consegna** costa spesso **circa 100 volte** di più che trovarlo durante **requisiti e progetto**, per sistemi grandi; per sistemi piccoli e non critici il rapporto è più basso (circa 5:1). I numeri esatti dipendono dal progetto: ciò che conta è **l'andamento fortemente crescente**.\n\n```mermaid\nflowchart LR\n    R[\"Requisiti: costo 1x\"] --> P[\"Progetto: costo maggiore\"]\n    P --> C[\"Codifica: costo ancora maggiore\"]\n    C --> T[\"Test: molto maggiore\"]\n    T --> E[\"Esercizio: fino a circa 100x\"]\n```\n\n| fase in cui il difetto è scoperto | cosa bisogna rifare (difetto nato nei requisiti) |\n|---|---|\n| requisiti | una riga dell'SRS |\n| progetto | SRS + diagrammi |\n| codifica | SRS + diagrammi + codice |\n| test | tutto il precedente + test + nuovo ciclo di test |\n| esercizio | tutto + rilascio correttivo + migrazione dati + assistenza + danno d'immagine |\n\n## Perché gli errori nei requisiti sono frequenti\n\n- **Ambiguità** del linguaggio naturale («fino a 15 giorni» incluso o no?).\n- **Requisiti impliciti**: lo stakeholder dà per scontato qualcosa.\n- **Stakeholder mancanti**: chi non è stato ascoltato porta requisiti tardi.\n- **Requisiti che cambiano** durante lo sviluppo.\n- **Incomprensione del dominio** da parte degli analisti.\n- **Incoerenze** tra requisiti scritti da persone diverse.\n\nMolte statistiche industriali indicano i requisiti come una delle principali cause di fallimento dei progetti; il punto da ricordare è che sono **difetti costosi perché scoperti tardi**.\n\n## Contromisure: spostare la scoperta a sinistra\n\n| tecnica | come aiuta |\n|---|---|\n| **Coinvolgimento continuo degli stakeholder** | meno requisiti mancanti o fraintesi |\n| **Revisioni e ispezioni dell'SRS** con checklist | trovano ambiguità, incoerenze, incompletezze sulla carta |\n| **Prototipazione** | il cliente vede il sistema e corregge subito i fraintendimenti |\n| **Scrittura anticipata dei test di accettazione** | un requisito non testabile si scopre subito |\n| **Modellazione** (casi d'uso, modello del dominio) | rende visibili lacune e contraddizioni |\n| **Tracciabilità** | analisi d'impatto delle modifiche, nessun requisito dimenticato |\n| **Sviluppo iterativo/incrementale** | feedback frequente: il difetto vive al più un'iterazione |\n\n## Il legame con i processi agili\n\nI metodi agili rispondono allo stesso problema in un altro modo: invece di cercare di congelare requisiti perfetti all'inizio, **accorciano il ciclo** (iterazioni brevi, cliente presente, rilasci frequenti) così che un difetto di requisito venga scoperto dopo giorni, non dopo mesi. La conclusione di Boehm resta valida: *prima scopri, meno paghi*.\n\n## Come rispondere all'esame (domanda 3.4 del 9/6/2022, secondo la sintesi disponibile)\n\nUna risposta completa: (1) gli errori nei requisiti sono frequenti e le cause sono…; (2) il costo di correzione cresce lungo il ciclo di vita (curva di Boehm, fino a circa 100x in esercizio per sistemi grandi) perché il difetto si propaga in tutti gli artefatti successivi; (3) quindi bisogna scoprirli presto con revisioni, prototipi, stakeholder coinvolti, test di accettazione anticipati, tracciabilità; (4) un esempio concreto.\n\n*Trappola*: rispondere che gli errori di analisi «si sistemano facilmente in fase di programmazione». È l'opposto di ciò che i dati mostrano.",
+  "analogia": "Sbagliare l'indirizzo sulla lettera: se te ne accorgi mentre scrivi la busta basta riscriverla; se te ne accorgi dopo che è stata spedita, devi rintracciarla, farla tornare, riscriverla, rispedirla e scusarti con chi l'ha aspettata invano. L'analogia cede sulla scala: nel software l'errore non resta in una busta, si copia in decine di artefatti (diagrammi, codice, test, manuali).",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Debug di un esercizio di programmazione",
+      "collegamento": "Hai già visto che un bug trovato subito dopo aver scritto il metodo si corregge in un minuto, mentre uno trovato giorni dopo in un programma grande richiede ore: è la curva di Boehm in piccolo."
+    },
+    {
+      "conoscenza": "Processo dei requisiti e validazione",
+      "collegamento": "Le contromisure (revisioni, prototipi, tracciabilità) sono le attività di validazione e gestione di quel processo.",
+      "nodo": "requisiti-processo-specifica"
+    },
+    {
+      "conoscenza": "Stakeholder ed elicitazione",
+      "collegamento": "Gli stakeholder mancanti sono una delle cause principali di errori scoperti tardi.",
+      "nodo": "requisiti-input-stakeholder"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Calcolare l'impatto di un requisito sbagliato (farmacia)",
+      "problema": "Nella farmacia l'SRS dice «lo sconto si applica alla transazione in cui si supera la soglia», mentre il titolare voleva «sulle transazioni successive». Descrivi cosa costa correggere l'errore se scoperto (a) in revisione dell'SRS, (b) in esercizio dopo 3 mesi.",
+      "passi": [
+        "(a) In revisione: si modifica una frase dell'SRS e il relativo criterio di accettazione. Costo: minuti.",
+        "(b) In esercizio: bisogna modificare SRS, class diagram/sequence (dove si calcola lo sconto), codice del calcolo, test automatici che verificavano il comportamento sbagliato.",
+        "Poi: nuovo ciclo di test di regressione, nuovo rilascio, installazione in farmacia.",
+        "Infine i dati: 3 mesi di scontrini con sconti applicati in eccesso, da ricostruire per la contabilità, e clienti a cui spiegare il cambio.",
+        "Confronto: (b) costa ordini di grandezza in più di (a), coerente con la curva di Boehm."
+      ],
+      "soluzione": "(a) correzione locale di un documento; (b) correzione di requisiti, progetto, codice, test, rilascio, dati storici e rapporto con il cliente: costo di ordini di grandezza superiore.",
+      "perche_funziona": "L'esempio mostra concretamente perché il costo cresce: non è solo «più tempo», è il numero di artefatti e persone coinvolti che si moltiplica."
+    },
+    {
+      "titolo": "Risposta modello alla domanda d'esame",
+      "problema": "«Quali sono gli errori che si possono commettere nella fase di analisi dei requisiti? Perché sono rilevanti e quanto costa correggerli lungo il ciclo di vita?» Scrivi una risposta da 10-12 righe.",
+      "passi": [
+        "Definisco: errori di requisiti = requisiti mancanti, ambigui, incoerenti, non verificabili, sbagliati (non rispondono al bisogno reale).",
+        "Cause: linguaggio naturale, requisiti impliciti, stakeholder non coinvolti, requisiti instabili.",
+        "Rilevanza: tutto ciò che segue (progetto, codice, test) è costruito sui requisiti; i test basati su requisiti sbagliati passano lo stesso.",
+        "Costo: curva di Boehm, crescita lungo le fasi fino a circa 100 volte in esercizio per sistemi grandi.",
+        "Contromisure: ispezioni dell'SRS, prototipi, coinvolgimento degli stakeholder, test di accettazione scritti presto, tracciabilità, iterazioni brevi."
+      ],
+      "soluzione": "Risposta: definizione e tipi di errore → cause → propagazione negli artefatti → curva di Boehm con l'ordine di grandezza → contromisure → esempio (lo sconto della farmacia).",
+      "perche_funziona": "Copre il «cosa», il «perché» e il «quanto» richiesti dalla domanda e chiude con il «come prevenirli», che dimostra comprensione e non solo memoria."
+    }
+  ],
+  "errori_comuni": [
+    "Sostenere che gli errori di requisiti si correggono facilmente in fase di codifica: è la trappola classica.",
+    "Citare numeri inventati o troppo precisi come legge universale: l'ordine di grandezza (fino a circa 100x per sistemi grandi) e l'andamento crescente sono ciò che conta.",
+    "Elencare il problema senza contromisure concrete.",
+    "Dimenticare che i test derivati da un requisito sbagliato non trovano il difetto."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa afferma la curva dei costi di Boehm?",
+      "risposta": "Che il costo per correggere un difetto cresce fortemente quanto più tardi nel ciclo di vita viene scoperto: correggerlo in esercizio può costare circa 100 volte di più che correggerlo durante requisiti e progetto (sistemi grandi; il rapporto è minore per sistemi piccoli)."
+    },
+    {
+      "domanda": "Perché un errore nei requisiti costa così tanto se scoperto tardi?",
+      "risposta": "Perché si propaga in tutti gli artefatti successivi (progetto, codice, test, documentazione) che vanno rifatti, i test basati sul requisito sbagliato non lo rilevano, e in esercizio si aggiungono rilascio correttivo, correzione dei dati e danno al cliente."
+    },
+    {
+      "domanda": "Indica tre tecniche per scoprire presto gli errori nei requisiti.",
+      "risposta": "Revisioni/ispezioni dell'SRS con checklist, prototipazione con il committente, scrittura anticipata dei test di accettazione; inoltre coinvolgimento continuo degli stakeholder, modellazione con casi d'uso, tracciabilità e iterazioni brevi."
+    }
+  ],
+  "riepilogo": "Il costo di correzione cresce lungo il ciclo di vita (curva di Boehm).\nIn esercizio fino a circa 100x rispetto a requisiti/progetto nei sistemi grandi.\nCausa: il difetto si propaga in progetto, codice, test, documentazione e dati.\nContromisure: ispezioni, prototipi, stakeholder coinvolti, test anticipati, tracciabilità, iterazioni brevi."
+}

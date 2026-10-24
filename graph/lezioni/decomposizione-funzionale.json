@@ -1,0 +1,67 @@
+{
+  "intuizione": "La decomposizione funzionale affronta un problema grande chiedendosi «quali passi servono per farlo?» e ripetendo la domanda su ogni passo, finché ogni pezzo è abbastanza semplice da diventare una procedura. Il risultato è un albero di funzioni, con i dati che scorrono tra di esse. È l'approccio dei programmi strutturati in C; la progettazione a oggetti invece parte dalle cose del dominio e assegna loro le responsabilità.",
+  "spiegazione": "## L'idea: top-down per raffinamenti successivi\n\n1. Si parte dalla **funzione principale** del sistema («Gestire le vendite della farmacia»).\n2. La si scompone in **sottofunzioni** che, eseguite in un certo ordine, la realizzano.\n3. Si ripete su ogni sottofunzione (**raffinamento per passi successivi**, *stepwise refinement*, Wirth) finché ogni foglia è semplice: una procedura di poche righe.\n4. Si documentano i **flussi di dati** tra le funzioni: cosa entra, cosa esce.\n\n```mermaid\nflowchart TD\n    V[\"Gestire vendita\"] --> A[\"Acquisire prodotti\"]\n    V --> C[\"Calcolare totale\"]\n    V --> R[\"Registrare vendita\"]\n    A --> A1[\"Leggere codice prodotto\"]\n    A --> A2[\"Verificare disponibilità\"]\n    C --> C1[\"Sommare subtotali\"]\n    C --> C2[\"Applicare sconto fedeltà\"]\n    R --> R1[\"Aggiornare quantità\"]\n    R --> R2[\"Aggiornare tessera\"]\n    R --> R3[\"Aggiornare rapporto giornaliero\"]\n```\n\nOgni nodo è un **verbo** (una funzione), le foglie diventano procedure. Nell'approccio strutturato classico si usano anche i **diagrammi di flusso dei dati** (DFD) per mostrare quali dati passano tra le funzioni e gli archivi (tabelle, file).\n\n## In codice: procedure che si chiamano\n\n```java\nimport java.util.List;\nimport java.util.Map;\n\nfinal class VenditaProcedurale {\n    private VenditaProcedurale() {}\n\n    // Funzione principale: chiama le sottofunzioni nell'ordine dell'albero\n    static double gestireVendita(Map<String, Integer> magazzino, Map<String, Double> prezzi,\n                                 List<String> codici, boolean scontoFedelta) {\n        acquisireProdotti(magazzino, codici);\n        double totale = calcolareTotale(prezzi, codici, scontoFedelta);\n        registrareVendita(magazzino, codici);\n        return totale;\n    }\n\n    static void acquisireProdotti(Map<String, Integer> magazzino, List<String> codici) {\n        for (String c : codici)\n            if (magazzino.getOrDefault(c, 0) <= 0) throw new IllegalStateException(\"non disponibile: \" + c);\n    }\n\n    static double calcolareTotale(Map<String, Double> prezzi, List<String> codici, boolean sconto) {\n        double somma = codici.stream().mapToDouble(prezzi::get).sum();\n        return sconto ? somma * 0.9 : somma;\n    }\n\n    static void registrareVendita(Map<String, Integer> magazzino, List<String> codici) {\n        for (String c : codici) magazzino.merge(c, -1, Integer::sum);\n    }\n}\n```\n\nNota: i **dati** (magazzino, prezzi) sono strutture condivise passate a tutte le funzioni. È proprio questo il punto debole quando il sistema cresce.\n\n## Decomposizione funzionale vs orientata agli oggetti\n\n| aspetto | funzionale | a oggetti |\n|---|---|---|\n| domanda guida | cosa deve fare il sistema? (verbi) | quali cose esistono e di cosa sono responsabili? (sostantivi) |\n| unità | funzione/procedura | classe (dati + operazioni) |\n| dati | separati dalle funzioni, spesso condivisi | incapsulati negli oggetti |\n| cambiamento dei dati | impatta tutte le funzioni che li usano | impatta la classe che li possiede |\n| cambiamento delle funzioni | locale all'albero | può toccare più classi |\n| modelli | albero funzionale, DFD | class, sequence, state diagram (UML) |\n| adatta a | elaborazioni a pipeline, calcolo, sistemi piccoli e stabili | sistemi con dominio ricco e in evoluzione |\n\nIl problema principale dell'approccio funzionale nei sistemi grandi è l'**accoppiamento sui dati**: se cambia la struttura del magazzino (es. si aggiunge la quantità in farmacia distinta da quella in magazzino), tutte le funzioni che la usano vanno modificate. Gli oggetti nascondono i dati dietro operazioni (`prodotto.decrementa(qta)`), limitando l'impatto.\n\nLa decomposizione funzionale resta utile **anche** nella progettazione a oggetti: per scomporre un metodo complesso in metodi privati più semplici (refactoring *Extract Method*), e per descrivere i passi di un caso d'uso.\n\n## Linee guida per una buona decomposizione\n\n- Ogni funzione fa **una cosa** (coesione funzionale) ed è nominata con un verbo preciso.\n- Livelli di astrazione omogenei: allo stesso livello dell'albero, funzioni di dettaglio simile.\n- Interfacce minime: passare solo i dati necessari (accoppiamento sui dati, non sul contenuto).\n- Fermarsi quando la funzione è implementabile in modo ovvio.",
+  "analogia": "È come organizzare un trasloco con una lista di cose da fare: «traslocare» → «impacchettare», «trasportare», «sistemare»; «impacchettare» → «comprare scatoloni», «svuotare armadi»… fino a compiti che sai fare subito. L'approccio a oggetti invece partirebbe dalle cose (scatoloni, mobili, furgone) chiedendosi di cosa è responsabile ciascuna. L'analogia cede perché nel trasloco gli oggetti non hanno comportamenti propri, mentre nel software sì.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Programmazione strutturata in C (funzioni, top-down)",
+      "collegamento": "È esattamente la decomposizione funzionale: main che chiama funzioni che chiamano funzioni."
+    },
+    {
+      "conoscenza": "Metodi statici in Java",
+      "collegamento": "Una classe di soli metodi statici che si passano strutture dati è codice funzionale scritto in Java."
+    },
+    {
+      "conoscenza": "Obiettivi e livelli della progettazione",
+      "collegamento": "La decomposizione è uno dei due approcci con cui si passa dai requisiti al progetto.",
+      "nodo": "progettazione-obiettivi-livelli"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Albero funzionale per la gestione dei prestiti (biblioteca)",
+      "problema": "Scomponi la funzione «Gestire prestito» del bibliotecario elettronico (prova 2016/17, paragrafi 4-5) fino a 3 livelli.",
+      "passi": [
+        "Livello 1: Gestire prestito.",
+        "Livello 2: Cercare documento; Verificare condizioni; Avviare reperimento; Registrare prestito.",
+        "Livello 3: Verificare condizioni → Verificare ammissibilità del documento, Verificare sospensione utente, Contare prestiti attivi. Avviare reperimento → Inviare richiesta al bibliotecario, Mostrare informazioni e questionario. Registrare prestito → Calcolare scadenza (15 giorni), Incrementare prestiti attivi.",
+        "Flussi di dati: titolo → Cercare documento → documento; utente + documento → Verificare condizioni → esito."
+      ],
+      "soluzione": "```mermaid\nflowchart TD\n    G[\"Gestire prestito\"] --> C[\"Cercare documento\"]\n    G --> V[\"Verificare condizioni\"]\n    G --> A[\"Avviare reperimento\"]\n    G --> R[\"Registrare prestito\"]\n    V --> V1[\"Verificare ammissibilità\"]\n    V --> V2[\"Verificare sospensione\"]\n    V --> V3[\"Contare prestiti attivi\"]\n    A --> A1[\"Inviare richiesta al bibliotecario\"]\n    A --> A2[\"Mostrare informazioni e questionario\"]\n    R --> R1[\"Calcolare scadenza a 15 giorni\"]\n    R --> R2[\"Incrementare prestiti attivi\"]\n```",
+      "perche_funziona": "Ogni livello risponde a «come si fa la funzione sopra?», con funzioni nominate da verbi e di dettaglio omogeneo; le foglie sono direttamente implementabili."
+    },
+    {
+      "titolo": "Confronto con la soluzione a oggetti",
+      "problema": "Le stesse foglie dell'albero precedente: a quali classi le assegneresti in un progetto a oggetti, e cosa si guadagna?",
+      "passi": [
+        "Verificare ammissibilità → Documento.isAmmissibile() (il documento conosce il proprio tipo).",
+        "Verificare sospensione e Contare prestiti attivi → Utente.puoPrendereInPrestito() (l'utente conosce stato e prestiti).",
+        "Calcolare scadenza → costruttore di Prestito (il prestito conosce la propria data).",
+        "Guadagno: se cambia la regola dei prestiti (es. 7 invece di 5) si modifica solo Utente, non tutte le funzioni che leggevano la struttura dati condivisa."
+      ],
+      "soluzione": "Documento.isAmmissibile(), Utente.puoPrendereInPrestito(), new Prestito(utente, documento) con scadenza calcolata, Catalogo.cercaPerTitolo(): le funzioni diventano operazioni delle classi che possiedono i dati.",
+      "perche_funziona": "Spostare ogni funzione vicino ai dati che usa (information expert) riduce l'accoppiamento e localizza i cambiamenti: è il vantaggio principale dell'approccio a oggetti."
+    }
+  ],
+  "errori_comuni": [
+    "Mescolare livelli di astrazione diversi tra nodi fratelli (es. «Gestire pagamento» accanto a «Incrementare contatore»).",
+    "Nominare le funzioni con sostantivi invece che con verbi.",
+    "Credere che la decomposizione funzionale sia «sbagliata»: è adatta a sistemi di elaborazione e utile dentro i metodi.",
+    "Dimenticare i flussi di dati tra le funzioni."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cos'è la decomposizione funzionale?",
+      "risposta": "Un approccio di progettazione top-down che scompone la funzione principale del sistema in sottofunzioni sempre più semplici (raffinamento per passi successivi) fino a moduli implementabili, documentando i flussi di dati tra di esse."
+    },
+    {
+      "domanda": "Qual è la differenza principale rispetto alla progettazione a oggetti?",
+      "risposta": "La decomposizione funzionale organizza il sistema attorno alle funzioni, con dati separati e spesso condivisi; quella a oggetti lo organizza attorno a oggetti del dominio che incapsulano dati e operazioni, così le modifiche ai dati restano locali."
+    },
+    {
+      "domanda": "Qual è il punto debole della decomposizione funzionale nei sistemi grandi?",
+      "risposta": "L'accoppiamento sui dati condivisi: un cambiamento nella struttura dei dati si propaga a tutte le funzioni che li usano, rendendo costosa la manutenzione."
+    }
+  ],
+  "riepilogo": "Top-down: funzione principale → sottofunzioni → foglie implementabili.\nAlbero di verbi + flussi di dati (DFD).\nContro: dati condivisi e accoppiati; gli oggetti li incapsulano.\nResta utile per scomporre metodi complessi e descrivere processi."
+}

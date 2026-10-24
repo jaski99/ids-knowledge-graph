@@ -1,0 +1,68 @@
+{
+  "intuizione": "Un ovale nel diagramma dei casi d'uso dice solo il nome del servizio; la descrizione testuale racconta cosa succede davvero, passo per passo, nel caso normale e quando qualcosa va storto. È una piccola sceneggiatura a due voci, attore e sistema. Da questa sceneggiatura si ricavano quasi meccanicamente il sequence diagram, l'activity diagram e le operazioni delle classi.",
+  "spiegazione": "## Il modello (template) della descrizione\n\n| campo | contenuto |\n|---|---|\n| **Nome** | verbo + oggetto, uguale all'ovale del diagramma |\n| **Attore primario** | chi avvia il caso d'uso per raggiungere un obiettivo |\n| **Attori secondari** | altri partecipanti (sistemi esterni, bibliotecario reale…) |\n| **Precondizioni** | ciò che deve essere vero prima di iniziare |\n| **Trigger** | l'evento che fa partire il caso d'uso |\n| **Scenario principale** (*main success scenario*) | passi numerati, alternando attore e sistema, nel caso in cui tutto va bene |\n| **Scenari alternativi / estensioni** | varianti e errori, agganciati a un passo (es. *3a*) |\n| **Postcondizioni** | ciò che è vero alla fine (garanzie di successo; garanzie minime in caso di fallimento) |\n| **Include / extend** | riferimenti ad altri casi d'uso |\n\n## Regole di scrittura dei passi\n\n1. Ogni passo ha un **soggetto chiaro**: «L'utente…» oppure «Il sistema…».\n2. Un passo = **un'azione** osservabile (niente dettagli di interfaccia come «clicca il pulsante verde»).\n3. Lo scenario principale è **lineare**: niente `if` dentro; le alternative vanno nelle estensioni.\n4. Le estensioni si numerano con il passo da cui partono: *4a* = alternativa al passo 4. Indicano la **condizione**, cosa fa il sistema e **dove si riprende** (torna al passo X, oppure il caso d'uso termina).\n\n## Esempio completo: «Richiedere prestito» (biblioteca, prova 2016/17, paragrafi 4-5)\n\n**Attore primario**: Utente registrato. **Attore secondario**: Bibliotecario (reale).\n**Precondizioni**: l'utente è registrato ed è alla postazione del bibliotecario elettronico.\n**Trigger**: l'utente sceglie di prendere in prestito un documento.\n\n**Scenario principale**\n1. L'utente inserisce il titolo del documento.\n2. Il sistema cerca il documento e lo mostra (si suppone che esista e sia unico).\n3. L'utente conferma la richiesta di prestito.\n4. Il sistema verifica che il documento sia ammissibile al prestito.\n5. Il sistema verifica che l'utente non sia sospeso e abbia meno di 5 prestiti attivi.\n6. Il sistema invia la richiesta di reperimento al bibliotecario.\n7. Il sistema mostra informazioni aggiuntive e il questionario sul servizio.\n8. L'utente compila il questionario.\n9. Il bibliotecario consegna il documento; il sistema registra il prestito con scadenza a 15 giorni.\n10. L'utente lascia la postazione.\n\n**Estensioni**\n- *4a* Documento non ammesso al prestito (es. rivista): il sistema mostra il motivo; il caso d'uso termina.\n- *5a* Utente sospeso: il sistema rifiuta la richiesta; termina.\n- *5b* Utente con 5 prestiti attivi: il sistema rifiuta e mostra i prestiti in corso; termina.\n- *8a* L'utente non completa il questionario: (assunzione da concordare) il prestito viene comunque registrato.\n\n**Postcondizioni**: in caso di successo esiste un nuovo prestito attivo associato a utente e documento, con data di scadenza; il numero di prestiti attivi dell'utente è aumentato di 1. In caso di fallimento nessun prestito è registrato.\n\nNota: i passi 7-9 avvengono *in parallelo* nel testo (mentre il bibliotecario reperisce il documento, l'utente compila il questionario): la descrizione testuale lo dice a parole; l'**activity diagram** lo renderà con fork/join.\n\n## Dalla descrizione ai diagrammi\n\n```mermaid\nflowchart LR\n    D[\"Descrizione testuale\"] -->|\"ogni passo Sistema diventa un messaggio\"| S[\"Sequence diagram\"]\n    D -->|\"passi = azioni, estensioni = decisioni\"| A[\"Activity diagram\"]\n    D -->|\"sostantivi = classi, verifiche = operazioni\"| C[\"Class diagram\"]\n    D -->|\"postcondizioni = cambi di stato\"| ST[\"State diagram\"]\n```\n\nPer esempio i passi 4-5 diventano, nel sequence diagram, i messaggi `documento.isAmmissibile()` e `utente.puoPrendereInPrestito()`, quindi due **operazioni** che dovranno comparire nel class diagram. È così che i diagrammi restano **coerenti**, cosa su cui l'esame insiste.\n\nLo stesso controllo, in Java, è il cuore del caso d'uso:\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\n\nclass Documento {\n    private final String titolo;\n    private final boolean ammessoAlPrestito;\n    Documento(String titolo, boolean ammessoAlPrestito) { this.titolo = titolo; this.ammessoAlPrestito = ammessoAlPrestito; }\n    boolean isAmmissibile() { return ammessoAlPrestito; }          // passo 4\n}\n\nclass Utente {\n    static final int MAX_PRESTITI = 5;\n    private boolean sospeso;\n    private final List<Documento> prestitiAttivi = new ArrayList<>();\n    boolean puoPrendereInPrestito() {                                // passo 5\n        return !sospeso && prestitiAttivi.size() < MAX_PRESTITI;\n    }\n    void aggiungiPrestito(Documento d) { prestitiAttivi.add(d); }   // passo 9\n}\n\nclass BibliotecarioElettronico {\n    /** Passi 4-6: restituisce false negli scenari alternativi 4a, 5a, 5b. */\n    boolean richiediPrestito(Utente u, Documento d) {\n        if (!d.isAmmissibile()) return false;            // 4a\n        if (!u.puoPrendereInPrestito()) return false;    // 5a, 5b\n        u.aggiungiPrestito(d);\n        return true;\n    }\n}\n```",
+  "analogia": "È una ricetta scritta bene: ingredienti già in dispensa (precondizioni), passi numerati (scenario principale), note a margine tipo «se l'impasto è troppo duro, al passo 4 aggiungi acqua e torna al passo 3» (estensioni), e la foto del piatto finito (postcondizioni). L'analogia cede perché la ricetta ha un solo attore, il cuoco; il caso d'uso è un dialogo tra attore e sistema, e ogni passo deve dire chi lo compie.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Diagramma dei casi d'uso",
+      "collegamento": "Ogni ovale si espande in una descrizione testuale; include/extend diventano riferimenti nei passi o nelle estensioni.",
+      "nodo": "uml-casi-uso"
+    },
+    {
+      "conoscenza": "Precondizioni e postcondizioni di un metodo (contratti, assert)",
+      "collegamento": "Sono le stesse idee applicate a un'interazione intera: cosa deve valere prima e cosa è garantito dopo."
+    },
+    {
+      "conoscenza": "Pseudocodice e flussi if/else",
+      "collegamento": "Lo scenario principale è il percorso senza if; le estensioni sono i rami else, scritti a parte per non perdere la leggibilità."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Descrizione di «Effettuare acquisto con tessera» (farmacia, prova 5/11/2025)",
+      "problema": "Scrivi la descrizione testuale del caso d'uso in cui un cliente con tessera fedeltà acquista un prodotto disponibile (lo stesso scenario richiesto per il sequence diagram dell'es. 1.2).",
+      "passi": [
+        "Attori: primario Operatore (usa il sistema al banco), il Cliente con tessera è coinvolto. Precondizioni: operatore autenticato, prodotto presente in farmacia.",
+        "Scenario: 1 L'operatore avvia una nuova vendita. 2 Il sistema crea un carrello vuoto. 3 L'operatore inserisce il codice del prodotto e la quantità. 4 Il sistema verifica la disponibilità e aggiunge la riga al carrello. 5 L'operatore inserisce il numero di tessera. 6 Il sistema calcola il totale applicando lo sconto se la tessera ha già superato la soglia. 7 L'operatore conferma il pagamento. 8 Il sistema aggiorna le quantità in farmacia, aggiunge l'importo alla tessera, verifica se ora la soglia è superata e aggiorna il rapporto giornaliero.",
+        "Estensioni: 4a Quantità insufficiente: il sistema mostra la disponibilità in magazzino; l'operatore può registrare una prenotazione (extend Registrare prenotazione). 5a Tessera non valida: il sistema procede senza sconto.",
+        "Postcondizioni: vendita registrata, quantità decrementate, cumulativo della tessera aggiornato, rapporto giornaliero aggiornato."
+      ],
+      "soluzione": "Descrizione con attori, precondizioni, 8 passi alternati operatore/sistema, estensioni 4a e 5a, postcondizioni come sopra. Messaggi ricavabili per il sequence: creaCarrello(), aggiungi(prodotto, qta), calcolaTotale(tessera), conferma(), decrementaQuantita(qta), registraAcquisto(importo), aggiornaRapporto(vendita).",
+      "perche_funziona": "Ogni passo «Il sistema…» corrisponde a una responsabilità che diventerà un'operazione di una classe: la descrizione prepara la coerenza tra sequence e class diagram."
+    },
+    {
+      "titolo": "Trovare i difetti di una descrizione",
+      "problema": "Descrizione scritta da uno studente per «Prenotare piazzola» (ambulanti): «1. Clicca su prenota. 2. Se ha meno di 5 prenotazioni il sistema salva su DB altrimenti errore. 3. L'operatore approva.» Correggila.",
+      "passi": [
+        "Passo 1 senza soggetto e con dettaglio di interfaccia → «L'ambulante sceglie data e piazzola da prenotare».",
+        "Passo 2 contiene un if → lo scenario principale assume il caso di successo; l'«altrimenti» diventa un'estensione 2a.",
+        "«Salva su DB» è implementazione → «Il sistema registra la prenotazione in stato In attesa di approvazione».",
+        "Passo 3: l'approvazione dell'operatore è un altro caso d'uso (avviene in un altro momento, avviato da un altro attore) → si toglie e si cita nelle postcondizioni.",
+        "Aggiungo precondizioni (ambulante registrato e non sospeso) e postcondizioni."
+      ],
+      "soluzione": "1 L'ambulante sceglie data e piazzola. 2 Il sistema verifica che abbia meno di 5 prenotazioni attive. 3 Il sistema registra la prenotazione in stato In attesa e lo conferma. Estensione 2a: 5 prenotazioni attive → rifiuto con motivo, fine. Postcondizione: prenotazione in attesa, visibile all'operatore per «Approvare prenotazione».",
+      "perche_funziona": "Soggetti espliciti, niente if nello scenario principale, niente dettagli tecnici, un caso d'uso per obiettivo."
+    }
+  ],
+  "errori_comuni": [
+    "Mettere if/else nello scenario principale invece di usare le estensioni.",
+    "Passi senza soggetto o con dettagli di interfaccia grafica («clicca», «pulsante»).",
+    "Dimenticare pre e postcondizioni: sono la base degli stati e dei test.",
+    "Fondere più casi d'uso (con attori e momenti diversi) in un'unica descrizione."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i campi di una descrizione testuale di un caso d'uso?",
+      "risposta": "Nome, attore primario e secondari, precondizioni, trigger, scenario principale (passi numerati), scenari alternativi/estensioni agganciati ai passi, postcondizioni, eventuali relazioni include/extend."
+    },
+    {
+      "domanda": "Come si scrive un'estensione?",
+      "risposta": "Con il numero del passo da cui parte e una lettera (es. 4a), la condizione che la attiva, le azioni del sistema/attore e dove riprende il flusso (ritorno a un passo o fine del caso d'uso)."
+    },
+    {
+      "domanda": "Come aiuta la descrizione testuale a disegnare il sequence diagram?",
+      "risposta": "Ogni passo in cui il sistema fa qualcosa diventa uno o più messaggi tra oggetti; le verifiche diventano chiamate a operazioni (es. puoPrendereInPrestito()), le estensioni diventano frammenti alt/opt. Così i messaggi corrispondono a operazioni del class diagram."
+    }
+  ],
+  "riepilogo": "Template: nome, attori, precondizioni, trigger, scenario principale, estensioni, postcondizioni.\nPassi numerati con soggetto (attore o sistema), un'azione ciascuno, niente if.\nEstensioni agganciate al passo (4a): condizione, azioni, dove si riprende.\nÈ il ponte verso sequence (messaggi), activity (flusso) e class diagram (operazioni)."
+}

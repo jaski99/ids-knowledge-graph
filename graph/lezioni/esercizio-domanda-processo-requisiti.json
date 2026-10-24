@@ -1,0 +1,71 @@
+{
+  "intuizione": "La domanda teorica sui requisiti premia chi risponde con una struttura chiara, non chi scrive di più. Uno schema fisso (definizione, fasi numerate con output, documento SRS, qualità, esempio, perché conta) si adatta a tutte le varianti: processo dei requisiti, errori nei requisiti, tipi di requisito. In 10 minuti si scrivono 12-15 righe dense che coprono tutto ciò che un correttore cerca.",
+  "spiegazione": "## Dove compare\n\nSecondo il materiale disponibile, una domanda di Parte 3 sui requisiti compare nella prova 2016/17 (processo di specifica dei requisiti, secondo la sintesi del formato) e nella prova del 27/1/2023 (processo dei requisiti, secondo la sintesi dell'utente); il 9/6/2022 la domanda riguardava gli errori nei requisiti e il loro costo. Il punteggio per domanda nelle prove note è nell'ordine di 2-3 punti, con circa 30-40 minuti totali per la Parte 3: circa **8-10 minuti** per una domanda.\n\n## Lo schema di risposta (da memorizzare)\n\n```mermaid\nflowchart TD\n    A[\"Definizione in una frase\"] --> B[\"Fasi numerate con il loro output\"]\n    B --> C[\"Il documento SRS e le sue sezioni\"]\n    C --> D[\"Qualità di un buon requisito\"]\n    D --> E[\"Esempio concreto F e NF\"]\n    E --> F[\"Perché conta: costo degli errori, Boehm\"]\n```\n\n### Mattone 1 — Definizione\n«L'ingegneria dei requisiti è il processo con cui si scoprono, analizzano, documentano, validano e gestiscono i servizi che il sistema deve fornire e i vincoli sotto cui deve operare.»\n\n### Mattone 2 — Fasi con output\n1. **Elicitazione** (interviste, questionari, osservazione, workshop, prototipi) → requisiti grezzi.\n2. **Analisi** (classificazione F/NF/vincoli, conflitti, priorità, modelli come casi d'uso) → requisiti organizzati.\n3. **Specifica** → documento SRS.\n4. **Validazione** (revisioni, prototipi, test di accettazione) → SRS approvato (baseline).\n5. **Gestione** (change control, tracciabilità) → modifiche controllate.\nCon la frase: «il processo è iterativo».\n\n### Mattone 3 — SRS\nIntroduzione (scopo, ambito, definizioni) · Descrizione generale (contesto, utenti, vincoli, assunzioni) · Requisiti specifici (funzionali, interfacce, non funzionali) · Appendici.\n\n### Mattone 4 — Qualità\nCorretti, non ambigui, completi, coerenti, verificabili, tracciabili, prioritizzati.\n\n### Mattone 5 — Esempio\nUsa un dominio d'esame: «RF: quando un prodotto prenotato arriva, il sistema deve notificare il cliente. RNF: la notifica deve essere inviata entro 5 minuti dalla registrazione dell'arrivo.»\n\n### Mattone 6 — Perché conta\n«Gli errori nei requisiti scoperti tardi costano molto di più (curva di Boehm, fino a circa 100 volte in esercizio per sistemi grandi): per questo la validazione è essenziale.»\n\n## Varianti della domanda e come adattare lo schema\n\n| variante | mattoni da espandere |\n|---|---|\n| «Descrivere il processo di specifica dei requisiti» | 1, 2 (dettagliato), 3, 4 |\n| «Requisiti funzionali e non funzionali» | 1, definizione F/NF con test «tolgo il requisito», esempi, NF quantificati |\n| «Errori nei requisiti e costo di correzione» | cause degli errori, 6 (Boehm) dettagliato, contromisure (validazione) |\n| «Tecniche di elicitazione» | 2 (solo elicitazione) con pro/contro per tecnica |\n| «Che cos'è un SRS» | 3 e 4 dettagliati + tracciabilità |\n\n## Gestione del tempo e della forma\n\n- Scrivi **elenchi numerati**, non un tema: il correttore trova subito le fasi.\n- Una riga per fase, con l'**output** dopo la freccia.\n- Un **esempio** concreto vale più di tre righe di definizioni generiche.\n- Chiudi con una frase sul **perché**: dimostra comprensione.\n- Non inventare nomi di standard o numeri che non ricordi con certezza: meglio «standard IEEE per l'SRS» che una sigla sbagliata.",
+  "analogia": "È come una presentazione di 2 minuti a un colloquio: hai una scaletta fissa (chi sei, cosa sai fare, un esempio concreto, perché sei utile) che adatti alla domanda. Chi improvvisa si perde, chi ha la scaletta copre tutto e sta nei tempi. L'analogia cede perché all'esame il correttore cerca parole chiave tecniche precise (elicitazione, validazione, tracciabilità), non solo una buona impressione.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Processo di specifica e SRS",
+      "collegamento": "È il contenuto teorico che qui viene organizzato in risposta d'esame.",
+      "nodo": "requisiti-processo-specifica"
+    },
+    {
+      "conoscenza": "Requisiti verificabili",
+      "collegamento": "Fornisce gli esempi di requisiti ben scritti da inserire nella risposta.",
+      "nodo": "requisiti-scrittura-verificabile"
+    },
+    {
+      "conoscenza": "Curva di Boehm",
+      "collegamento": "È il mattone «perché conta» e la base della variante sugli errori nei requisiti.",
+      "nodo": "requisiti-costo-errori-boehm"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Risposta modello: «Descrivere il processo di specifica dei requisiti» (3 punti)",
+      "problema": "Scrivi la risposta in circa 15 righe.",
+      "passi": [
+        "Definizione: processo con cui si scoprono, analizzano, documentano, validano e gestiscono i requisiti (servizi e vincoli) di un sistema.",
+        "Fasi numerate con output: elicitazione → requisiti grezzi; analisi → requisiti classificati e prioritizzati; specifica → SRS; validazione → baseline approvata; gestione → modifiche controllate e tracciate. Processo iterativo.",
+        "SRS: introduzione, descrizione generale, requisiti specifici F/NF, appendici; ogni requisito con id.",
+        "Qualità: corretto, non ambiguo, completo, coerente, verificabile, tracciabile.",
+        "Esempio farmacia F + NF; chiusura sul costo degli errori."
+      ],
+      "soluzione": "«L'ingegneria dei requisiti è il processo iterativo con cui si individuano e documentano i servizi che il sistema deve offrire e i vincoli a cui è soggetto. Fasi: (1) elicitazione: raccolta da stakeholder, documenti e normative con interviste, questionari, osservazione, prototipi → requisiti grezzi; (2) analisi: classificazione in funzionali, non funzionali e vincoli, risoluzione dei conflitti, priorità, modelli (casi d'uso) → requisiti organizzati; (3) specifica: stesura dell'SRS (introduzione, descrizione generale, requisiti specifici, appendici) con requisiti identificati; (4) validazione: revisioni con il committente, prototipi, definizione dei test di accettazione → SRS approvato; (5) gestione: controllo delle modifiche e tracciabilità verso progetto e test. Ogni requisito deve essere corretto, non ambiguo, completo, coerente, verificabile e tracciabile. Es. RF: «all'arrivo di un prodotto prenotato il sistema notifica il cliente»; RNF: «la notifica parte entro 5 minuti». La cura di questo processo è essenziale perché un errore nei requisiti scoperto tardi costa fino a ordini di grandezza in più (curva di Boehm).»",
+      "perche_funziona": "Copre definizione, fasi con output, documento, qualità, esempio e motivazione in meno di 15 righe; è facile da correggere perché numerata."
+    },
+    {
+      "titolo": "Variante: «Requisiti funzionali e non funzionali: differenze ed esempi» (2 punti)",
+      "problema": "Adatta lo schema alla variante in circa 8 righe.",
+      "passi": [
+        "Definizioni: F = servizi/funzioni del sistema; NF = qualità e vincoli sul modo in cui sono forniti.",
+        "Criterio pratico: togliendo un F il sistema fa una cosa in meno, togliendo un NF la fa peggio.",
+        "Categorie NF: prestazioni, affidabilità, usabilità, sicurezza, portabilità, manutenibilità; vincoli di progetto/normativi.",
+        "Esempi dal caso piscina e osservazione che gli NF vanno quantificati per essere verificabili."
+      ],
+      "soluzione": "«I requisiti funzionali descrivono i servizi che il sistema fornisce (es. ‹il sistema registra l'ingresso al passaggio del badge›); i non funzionali descrivono qualità e vincoli con cui i servizi sono offerti: prestazioni, affidabilità, usabilità, sicurezza, portabilità (es. ‹il tornello si sblocca entro 1 s nel 99% dei casi›). Se si elimina un requisito funzionale il sistema perde una funzione, se si elimina un non funzionale la svolge peggio. I non funzionali spesso riguardano il sistema nel suo complesso e guidano le scelte architetturali; devono essere quantificati per poter essere verificati.»",
+      "perche_funziona": "Definizione, criterio distintivo, categorie, esempi e verificabilità: tutti gli elementi attesi, nello spazio di 2 punti."
+    }
+  ],
+  "errori_comuni": [
+    "Scrivere un tema discorsivo senza fasi numerate: il correttore fatica a trovare i concetti.",
+    "Elencare le fasi senza output o senza dire che il processo è iterativo.",
+    "Nessun esempio concreto: la risposta sembra imparata a memoria.",
+    "Sforare il tempo: 3 punti valgono circa 8-10 minuti, non 20.",
+    "Citare numeri o sigle di standard inventati."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i sei «mattoni» della risposta sul processo dei requisiti?",
+      "risposta": "Definizione; fasi numerate con output (elicitazione, analisi, specifica, validazione, gestione); struttura dell'SRS; qualità dei requisiti; esempio concreto F e NF; motivazione (costo degli errori, curva di Boehm)."
+    },
+    {
+      "domanda": "Che differenza c'è tra validazione e verifica dei requisiti?",
+      "risposta": "La validazione controlla che i requisiti descrivano davvero ciò che il committente vuole (stiamo costruendo il sistema giusto?); la verifica controlla che un prodotto sia conforme alla sua specifica (stiamo costruendo il sistema nel modo giusto?)."
+    },
+    {
+      "domanda": "Come adatti lo schema alla domanda sugli errori nei requisiti?",
+      "risposta": "Espando le cause degli errori (ambiguità, requisiti impliciti, stakeholder mancanti, instabilità), la curva di Boehm con l'ordine di grandezza dei costi e le contromisure (revisioni, prototipi, stakeholder coinvolti, test di accettazione anticipati, tracciabilità)."
+    }
+  ],
+  "riepilogo": "Schema: definizione → fasi con output → SRS → qualità → esempio → perché conta.\nFasi: elicitazione, analisi, specifica, validazione, gestione; processo iterativo.\nElenchi numerati, un esempio dal dominio d'esame, 8-10 minuti per 3 punti.\nAdatta i mattoni alla variante (F/NF, errori e Boehm, elicitazione, SRS)."
+}

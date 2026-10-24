@@ -1,0 +1,77 @@
+{
+  "intuizione": "Un'associazione risponde a due domande: «quanti?» e «chi conosce chi?». La molteplicità dice quanti oggetti dell'altra classe possono essere collegati a uno di questa (esattamente 1, al più 1, molti…); la navigabilità (la freccia) dice quale classe ha il riferimento all'altra e quindi può mandarle messaggi. In Java la freccia diventa un attributo nella classe di partenza, e la molteplicità decide se è un riferimento singolo o una collezione.",
+  "spiegazione": "## Molteplicità\n\nSi scrive **a ciascun estremo** dell'associazione e si legge così: *«un oggetto dall'altra parte è collegato a [molteplicità] oggetti da questa parte»*.\n\n| molteplicità | significato | parole nel testo |\n|---|---|---|\n| `1` | esattamente uno | «ogni X ha un Y», «appartiene a un» |\n| `0..1` | al più uno (opzionale) | «può avere un», «se disponibile», «eventualmente» |\n| `*` oppure `0..*` | zero o più | «può avere molti», «un elenco di» |\n| `1..*` | almeno uno | «contiene uno o più», «almeno un» |\n| `0..5` | da zero a cinque | «fino a 5», «al massimo 5» |\n| `2..4` | intervallo preciso | «da 2 a 4» |\n\n### Come si legge (il punto dove si sbaglia di più)\n\n```mermaid\nclassDiagram\n    class Cliente\n    class Prenotazione\n    Cliente \"1\" --> \"0..*\" Prenotazione : effettua\n```\n\n- Partendo da **un Cliente**, guardo il numero **vicino a Prenotazione**: un cliente effettua `0..*` prenotazioni.\n- Partendo da **una Prenotazione**, guardo il numero **vicino a Cliente**: una prenotazione è di esattamente `1` cliente.\n\nIl numero si scrive **vicino alla classe che si conta**, non vicino a chi «possiede».\n\n## Navigabilità (direzione)\n\nLa freccia aperta indica che la classe sorgente **conosce** la destinazione: ha un riferimento e può invocarne le operazioni. Senza frecce l'associazione è bidirezionale o non specificata.\n\n```mermaid\nclassDiagram\n    class Vendita {\n        +calcolaTotale() double\n    }\n    class RigaCarrello {\n        -int quantita\n        +subtotale() double\n    }\n    class Prodotto {\n        -double prezzo\n        +getPrezzo() double\n    }\n    Vendita \"1\" *-- \"1..*\" RigaCarrello : righe\n    RigaCarrello \"0..*\" --> \"1\" Prodotto : prodotto\n```\n\n`RigaCarrello → Prodotto`: la riga conosce il prodotto (per leggerne il prezzo), il prodotto **non** conosce le righe in cui compare (non gli serve, e sarebbe accoppiamento inutile).\n\n### Come decidere la direzione\nGuarda il **sequence diagram** (o lo scenario): se `Vendita` manda il messaggio `subtotale()` a `RigaCarrello`, serve una navigabilità `Vendita → RigaCarrello`. **Ogni messaggio richiede una via di navigazione** (associazione navigabile, parametro o oggetto creato). Le associazioni bidirezionali raddoppiano l'accoppiamento e vanno tenute sincronizzate: usale solo se entrambe le direzioni servono davvero.\n\n## Dalla molteplicità al codice Java\n\n| molteplicità verso B (in A) | attributo in A |\n|---|---|\n| `1` | `private final B b;` inizializzato nel costruttore (mai null) |\n| `0..1` | `private B b;` può essere null (o `Optional<B>` in lettura) |\n| `0..*` | `private final List<B> bs = new ArrayList<>();` |\n| `1..*` | collezione + controllo nel costruttore che non sia vuota |\n| `0..5` | collezione + controllo del limite nell'operazione che aggiunge |\n\n```java\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\nimport java.util.Optional;\n\nclass Prodotto {\n    private final double prezzo;\n    Prodotto(double prezzo) { this.prezzo = prezzo; }\n    double getPrezzo() { return prezzo; }\n}\n\nclass RigaCarrello {\n    private final Prodotto prodotto;          // \"*\" --> \"1\" : riferimento obbligatorio\n    private final int quantita;\n    RigaCarrello(Prodotto prodotto, int quantita) {\n        if (prodotto == null) throw new IllegalArgumentException(\"molteplicità 1: prodotto obbligatorio\");\n        this.prodotto = prodotto; this.quantita = quantita;\n    }\n    double subtotale() { return prodotto.getPrezzo() * quantita; }\n}\n\nclass TesseraFedelta { }\n\nclass Cliente {\n    private TesseraFedelta tessera;           // \"1\" --> \"0..1\" : può mancare\n    Optional<TesseraFedelta> getTessera() { return Optional.ofNullable(tessera); }\n    void assegnaTessera(TesseraFedelta t) { this.tessera = t; }\n}\n\nclass Ambulante {\n    static final int MAX_PRENOTAZIONI_ATTIVE = 5;\n    private final List<String> prenotazioniAttive = new ArrayList<>();   // \"1\" --> \"0..5\"\n    void prenota(String piazzola) {\n        if (prenotazioniAttive.size() >= MAX_PRENOTAZIONI_ATTIVE)\n            throw new IllegalStateException(\"massimo 5 prenotazioni attive\");\n        prenotazioniAttive.add(piazzola);\n    }\n    List<String> getPrenotazioniAttive() { return Collections.unmodifiableList(prenotazioniAttive); }\n}\n\nclass Vendita {\n    private final List<RigaCarrello> righe = new ArrayList<>();   // composizione \"1\" *-- \"1..*\"\n    void aggiungi(Prodotto p, int qta) { righe.add(new RigaCarrello(p, qta)); } // il tutto crea le parti\n    double calcolaTotale() {\n        if (righe.isEmpty()) throw new IllegalStateException(\"1..*: carrello vuoto\");\n        return righe.stream().mapToDouble(RigaCarrello::subtotale).sum();\n    }\n}\n```\n\nNota la composizione: `Vendita` **crea** le `RigaCarrello` e non le espone a nessun altro; quando la vendita sparisce, spariscono anche le righe.\n\n## Associazioni molti-a-molti e classi associazione\n\nSe l'associazione ha **dati propri** (quantità, data, prezzo applicato), va trasformata in una classe: `Cliente * -- * Prodotto` con la quantità prenotata diventa `Cliente 1 → * Prenotazione * → 1 Prodotto`, con `Prenotazione {data, quantita, stato}`. È la stessa idea della tabella ponte in Basi di dati.\n\n## Nomi di ruolo e nome dell'associazione\n\nSi può etichettare l'associazione con un **verbo** (`effettua`) o gli estremi con un **ruolo** (`titolare`, `righe`): il nome di ruolo diventa naturalmente il nome dell'attributo Java. All'esame aiuta a far capire il significato quando ci sono due associazioni tra le stesse classi (es. `Ambulante` come `titolare` e come `sostituto` di una piazzola).",
+  "analogia": "È la rubrica del telefono: io ho il tuo numero (navigabilità io → te), ma tu potresti non avere il mio; posso avere zero o tanti contatti (0..*), ma un solo numero di emergenza preferito (0..1). Per chiamarti devo avere il tuo numero: allo stesso modo un oggetto può mandare un messaggio solo a chi può raggiungere. L'analogia cede perché in rubrica non esistono vincoli tipo «almeno uno» o «al massimo 5» che il sistema deve far rispettare.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Cardinalità nel modello E-R (Basi di dati)",
+      "collegamento": "Le molteplicità sono le cardinalità, ma attenzione: in UML il numero si scrive dall'altra parte rispetto alla notazione (min,max) usata in molti corsi di Basi di dati, cioè vicino alla classe contata."
+    },
+    {
+      "conoscenza": "Riferimenti e collezioni in Java (List, ArrayList, null)",
+      "collegamento": "1 = riferimento obbligatorio, 0..1 = riferimento che può essere null, * = collezione."
+    },
+    {
+      "conoscenza": "Tabella ponte per relazioni molti-a-molti",
+      "collegamento": "Corrisponde alla classe intermedia quando l'associazione ha attributi propri."
+    },
+    {
+      "conoscenza": "Diagramma delle classi",
+      "collegamento": "Questo nodo approfondisce le linee del class diagram.",
+      "nodo": "uml-diagramma-classi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Molteplicità e direzioni dal testo della farmacia (prova 5/11/2025)",
+      "problema": "Ricava molteplicità e direzione per: cliente–tessera; vendita–prodotti nel carrello; prenotazione–cliente–prodotto; rapporto giornaliero–vendite. Il testo chiede espressamente «direzione e molteplicità».",
+      "passi": [
+        "«I clienti possono essere titolari di una tessera»: un cliente ha 0..1 tessere; una tessera ha esattamente 1 titolare. Chi deve conoscere chi? Durante la vendita si parte dal cliente per trovare la tessera → Cliente \"1\" --> \"0..1\" TesseraFedelta.",
+        "«Una vendita consiste in un carrello che contiene i prodotti nella quantità desiderata»: la quantità è un dato dell'associazione → classe RigaCarrello. Vendita \"1\" *-- \"1..*\" RigaCarrello (composizione), RigaCarrello \"0..*\" --> \"1\" Prodotto.",
+        "«Il cliente può effettuarne la prenotazione… il sistema invia una notifica al cliente»: Prenotazione \"0..*\" --> \"1\" Cliente (per notificarlo) e Prenotazione \"0..*\" --> \"1\" Prodotto.",
+        "«Rapporto giornaliero che riepiloga tutti i prodotti venduti»: RapportoGiornaliero \"1\" --> \"0..*\" Vendita (il rapporto legge le vendite del giorno).",
+        "Controllo: ogni freccia corrisponde a un messaggio che servirà nel sequence (calcolare il totale, notificare, aggiornare il rapporto)."
+      ],
+      "soluzione": "```mermaid\nclassDiagram\n    class Cliente\n    class TesseraFedelta\n    class Vendita\n    class RigaCarrello {\n        -int quantita\n    }\n    class Prodotto\n    class Prenotazione {\n        -int quantita\n    }\n    class RapportoGiornaliero\n    Cliente \"1\" --> \"0..1\" TesseraFedelta : tessera\n    Vendita \"1\" *-- \"1..*\" RigaCarrello : righe\n    RigaCarrello \"0..*\" --> \"1\" Prodotto : prodotto\n    Vendita \"0..*\" --> \"0..1\" Cliente : acquirente\n    Prenotazione \"0..*\" --> \"1\" Cliente : richiedente\n    Prenotazione \"0..*\" --> \"1\" Prodotto : prodotto\n    RapportoGiornaliero \"1\" --> \"0..*\" Vendita : vendite\n```",
+      "perche_funziona": "Ogni molteplicità viene da una parola del testo («possono essere», «contiene»), ogni direzione da chi deve inviare messaggi a chi; la quantità come dato dell'associazione impone la classe RigaCarrello."
+    },
+    {
+      "titolo": "Leggere un diagramma e trovare l'errore",
+      "problema": "Uno studente scrive per la biblioteca: Utente \"0..5\" --> \"1\" Prestito, con la motivazione «un utente può avere fino a 5 prestiti». È corretto?",
+      "passi": [
+        "Leggo dal lato Utente: un Utente è collegato a \"1\" Prestito (il numero vicino a Prestito) → dice che ogni utente ha esattamente un prestito: sbagliato.",
+        "Leggo dal lato Prestito: un Prestito è collegato a \"0..5\" Utenti → assurdo, un prestito è di un utente.",
+        "I numeri sono invertiti: vanno scritti vicino alla classe contata.",
+        "Correggo e aggiungo la direzione: l'utente deve contare i suoi prestiti attivi (puoPrendereInPrestito) → navigabile Utente → Prestito."
+      ],
+      "soluzione": "Utente \"1\" --> \"0..5\" Prestito : prestitiAttivi (in Java: List di Prestito con controllo del limite 5). Se servono anche i prestiti storici, si usa \"0..*\" e il limite 5 si verifica sui soli attivi.",
+      "perche_funziona": "Applicare la regola «parto da un oggetto di questa classe, leggo il numero vicino all'altra» smaschera subito l'inversione."
+    }
+  ],
+  "errori_comuni": [
+    "Scrivere la molteplicità dal lato sbagliato (vicino a chi possiede invece che vicino alla classe contata).",
+    "Mettere frecce bidirezionali ovunque: aumenta l'accoppiamento e non è richiesto dallo scenario.",
+    "Mandare messaggi nel sequence verso oggetti non raggiungibili da nessuna associazione navigabile.",
+    "Lasciare un molti-a-molti con dati propri (quantità, data) senza classe intermedia.",
+    "Dimenticare la molteplicità su uno dei due estremi: il testo del 5/11/2025 chiede espressamente direzione e molteplicità."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Come si legge A \"1\" --> \"0..*\" B?",
+      "risposta": "Ogni oggetto A è collegato a zero o più oggetti B; ogni B è collegato a esattamente un A; A conosce B (navigabilità da A a B), quindi in Java A ha una collezione di B, mentre B non ha un riferimento ad A."
+    },
+    {
+      "domanda": "Come si decide la direzione di un'associazione?",
+      "risposta": "In base a chi deve inviare messaggi a chi negli scenari (sequence diagram): la classe che invoca operazioni dell'altra deve poterla raggiungere. Si evita la bidirezionalità se non serve, per ridurre l'accoppiamento."
+    },
+    {
+      "domanda": "Come traduci in Java le molteplicità 1, 0..1, 0..* e 0..5?",
+      "risposta": "1: attributo riferimento obbligatorio inizializzato nel costruttore; 0..1: riferimento che può essere null (Optional in lettura); 0..*: collezione (List); 0..5: collezione con controllo del limite nel metodo che aggiunge."
+    },
+    {
+      "domanda": "Quando un'associazione molti-a-molti va trasformata in classe?",
+      "risposta": "Quando ha attributi propri (quantità, data, prezzo, stato): si introduce una classe intermedia (es. RigaCarrello, Prenotazione) con due associazioni uno-a-molti."
+    }
+  ],
+  "riepilogo": "Molteplicità: 1, 0..1, *, 1..*, n..m, scritta vicino alla classe che si conta.\nNavigabilità: freccia = chi conosce chi; ogni messaggio del sequence richiede una via.\nJava: 1 → riferimento obbligatorio; 0..1 → può essere null; * → collezione; limiti → controlli.\nMolti-a-molti con dati propri → classe intermedia (RigaCarrello, Prenotazione)."
+}
