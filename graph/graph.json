@@ -1,0 +1,287 @@
+{
+  "versione": 1,
+  "corso": {
+    "nome": "Ingegneria del Software (INF-36)",
+    "ateneo": "UNIMORE - Dipartimento di Ingegneria \"Enzo Ferrari\"",
+    "docente": "Francesco Guerra",
+    "fonte_programma": "https://fguerra73.github.io/teaching/"
+  },
+  "aree": [
+    {
+      "id": 1,
+      "titolo": "Specifica dei requisiti"
+    },
+    {
+      "id": 2,
+      "titolo": "Progettazione"
+    },
+    {
+      "id": 3,
+      "titolo": "Implementazione e testing"
+    },
+    {
+      "id": 4,
+      "titolo": "Distribuzione e manutenzione"
+    },
+    {
+      "id": 5,
+      "titolo": "Ingegneria del software AI-native"
+    }
+  ],
+  "nodi": [
+    {
+      "id": "requisiti-obiettivi",
+      "title": "Obiettivi della specifica dei requisiti",
+      "area": 1,
+      "tipo": "concetto",
+      "sapere": "La specifica dei requisiti descrive COSA deve fare il sistema (non COME): obiettivi, input attesi, requisiti funzionali e non funzionali, vincoli. È il contratto tra committente e sviluppatori e la base per progettazione e collaudo.",
+      "saper_fare": [
+        "Distinguere requisiti funzionali da non funzionali",
+        "Riconoscere un requisito ambiguo, non verificabile o che descrive una soluzione"
+      ],
+      "prerequisiti": [],
+      "esercizi": [
+        {
+          "testo": "Data una breve descrizione di un sistema di prenotazione aule, elenca 5 requisiti funzionali e 3 non funzionali.",
+          "svolto": false
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Punto 1 del programma ufficiale; base per i diagrammi dei casi d'uso."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "1.1.2-1.1.3 Functional/Nonfunctional Requirements"
+        },
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 6 Requirements Engineering"
+        }
+      ]
+    },
+    {
+      "id": "uml-casi-uso",
+      "title": "Diagramma UML dei casi d'uso",
+      "area": 1,
+      "tipo": "abilita",
+      "sapere": "Il diagramma dei casi d'uso rappresenta attori, casi d'uso, confine del sistema e relazioni (associazione, include, extend, generalizzazione). Ogni caso d'uso va accompagnato da una descrizione testuale (scenario principale e alternativi).",
+      "saper_fare": [
+        "Disegnare un diagramma dei casi d'uso a partire da requisiti testuali",
+        "Usare correttamente include ed extend",
+        "Scrivere lo scenario principale e gli scenari alternativi di un caso d'uso"
+      ],
+      "prerequisiti": [
+        "requisiti-obiettivi"
+      ],
+      "esercizi": [
+        {
+          "testo": "Modella con un diagramma dei casi d'uso un sistema di e-commerce con attori Cliente, Amministratore e Sistema di pagamento.",
+          "svolto": false
+        }
+      ],
+      "tempo_studio_min": 90,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Parte applicativa esplicita del punto 1 del programma."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "OMG UML 2.5.1 Specification",
+          "url": "https://www.omg.org/spec/UML/2.5.1/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "6.3.2 Requirements Analysis and Clustering with Object-Oriented Use Cases"
+        },
+        {
+          "libro": "UMLCLASS"
+        },
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "MILES"
+        }
+      ]
+    },
+    {
+      "id": "coesione-accoppiamento",
+      "title": "Coesione e accoppiamento dei moduli",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "La coesione misura quanto gli elementi di un modulo concorrono a un unico scopo; l'accoppiamento misura quanto un modulo dipende da altri. Un buon progetto punta ad alta coesione e basso accoppiamento, favorendo manutenibilità, riuso e testabilità.",
+      "saper_fare": [
+        "Classificare i livelli di coesione e accoppiamento in un esempio di codice",
+        "Proporre una ristrutturazione che riduca l'accoppiamento"
+      ],
+      "prerequisiti": [],
+      "esercizi": [
+        {
+          "testo": "Data una classe che gestisce input utente, logica di calcolo e salvataggio su file, indica il tipo di coesione e proponi una scomposizione.",
+          "svolto": false
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Esplicitamente nel programma (qualità del progetto); prerequisito dei design pattern."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "8.3 \"Good\" Design Attributes (8.3.1 Cohesion, 8.3.2 Coupling)"
+        }
+      ]
+    },
+    {
+      "id": "design-pattern-introduzione",
+      "title": "Design pattern: concetto e classificazione",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "Un design pattern è una soluzione riusabile a un problema ricorrente di progettazione. Il catalogo GoF li divide in creazionali, strutturali e comportamentali; ogni pattern ha nome, problema, soluzione e conseguenze.",
+      "saper_fare": [
+        "Classificare un pattern GoF nella sua categoria",
+        "Spiegare quale problema di accoppiamento risolve un pattern dato"
+      ],
+      "prerequisiti": [
+        "coesione-accoppiamento"
+      ],
+      "esercizi": [
+        {
+          "testo": "Per Singleton, Adapter e Observer indica categoria, problema risolto e una conseguenza negativa.",
+          "svolto": false
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Parte applicativa del punto 2 del programma (uso dei design pattern)."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru - Design Patterns",
+          "url": "https://refactoring.guru/design-patterns",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF"
+        },
+        {
+          "libro": "HFDP"
+        },
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "7.2.3 Meta-Architectural Knowledge: Styles, Patterns, Tactics, and Reference Architectures"
+        }
+      ]
+    },
+    {
+      "id": "boundary-value-analysis",
+      "title": "Analisi dei valori limite (Boundary Value Analysis)",
+      "area": 3,
+      "tipo": "abilita",
+      "sapere": "Tecnica di test black-box: gli errori si concentrano ai bordi delle classi di equivalenza dell'input, quindi si scelgono casi di test sui valori minimo, appena sotto/sopra il minimo, nominale, appena sotto/sopra il massimo e massimo.",
+      "saper_fare": [
+        "Derivare i casi di test ai limiti per un intervallo di input",
+        "Tradurre i casi di test in test JUnit"
+      ],
+      "prerequisiti": [
+        "requisiti-obiettivi"
+      ],
+      "esercizi": [
+        {
+          "testo": "Una funzione accetta un'età tra 18 e 65 inclusi: elenca i casi di test con BVA e il risultato atteso.",
+          "svolto": false
+        }
+      ],
+      "tempo_studio_min": 45,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Tecnica di testing citata esplicitamente nel programma."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "JUnit 5 User Guide",
+          "url": "https://junit.org/junit5/docs/current/user-guide/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "10.3.2 Boundary Value Analysis"
+        }
+      ]
+    }
+  ],
+  "testi": {
+    "TSUI": "F. Tsui, O. Karam, B. Bernal - Essentials of Software Engineering, 5th ed., Jones & Bartlett Learning, 2022",
+    "HFDP": "E. Freeman, E. Robson, B. Bates, K. Sierra - Head First Design Patterns, 2nd ed., O'Reilly, 2020",
+    "GOF": "E. Gamma, R. Helm, R. Johnson, J. Vlissides - Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley, 1994",
+    "FOWLER": "M. Fowler - UML Distilled, Addison-Wesley",
+    "MILES": "R. Miles, K. Hamilton - Learning UML 2.0, O'Reilly, 2006",
+    "UMLCLASS": "M. Seidl, M. Scholz, C. Huemer, G. Kappel - UML @ Classroom, Springer, 2015"
+  }
+}

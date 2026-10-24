@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/ids-kg/node.schema.json",
+  "title": "Nodo del knowledge graph IdS",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "area",
+    "tipo",
+    "sapere",
+    "saper_fare",
+    "prerequisiti",
+    "esercizi",
+    "tempo_studio_min",
+    "priorita",
+    "risorse",
+    "riferimenti_testo"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "area": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "tipo": {
+      "enum": [
+        "concetto",
+        "abilita",
+        "tipo_esercizio"
+      ]
+    },
+    "sapere": {
+      "type": "string",
+      "minLength": 10
+    },
+    "saper_fare": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "prerequisiti": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "esercizi": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "testo",
+          "svolto"
+        ],
+        "properties": {
+          "testo": {
+            "type": "string",
+            "minLength": 5
+          },
+          "svolto": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "tempo_studio_min": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 600
+    },
+    "priorita": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "livello",
+        "motivazione"
+      ],
+      "properties": {
+        "livello": {
+          "enum": [
+            "alta",
+            "media",
+            "bassa"
+          ]
+        },
+        "motivazione": {
+          "type": "string",
+          "minLength": 5
+        }
+      }
+    },
+    "risorse": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "titolo",
+          "url",
+          "verificato"
+        ],
+        "properties": {
+          "titolo": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "verificato": {
+            "const": true
+          }
+        }
+      }
+    },
+    "riferimenti_testo": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "libro"
+        ],
+        "properties": {
+          "libro": {
+            "enum": [
+              "TSUI",
+              "HFDP",
+              "GOF",
+              "FOWLER",
+              "MILES",
+              "UMLCLASS"
+            ]
+          },
+          "capitolo_o_sezione": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
