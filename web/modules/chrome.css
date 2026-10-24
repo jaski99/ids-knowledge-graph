@@ -1,10 +1,12 @@
-.module-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .55rem; }
+.module-common-header { position: sticky; top: 0; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .65rem 1rem; border-bottom: 1px solid var(--line); background: var(--card); color: var(--fg); }
+.module-home { color: var(--fg); font-weight: 700; text-decoration: none; }
+.module-nav { display: flex; flex-wrap: wrap; gap: .5rem; padding: .5rem 1rem; background: var(--bg); }
 .module-link {
   display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
-  padding: .35rem .9rem; border-radius: 999px; border: 1px solid var(--acc, #2563eb);
-  color: var(--acc, #2563eb); background: #fff; text-decoration: none; font-weight: 600;
+  padding: .35rem .9rem; border-radius: 999px; border: 1px solid var(--acc);
+  color: var(--acc); background: var(--card); text-decoration: none; font-weight: 600;
 }
-.module-link:hover { background: #eff6ff; }
+.module-link:hover { background: var(--chip-bg); color: var(--chip-fg); }
 body.module-mode > header,
 body.module-mode > .layout,
 body.module-mode > .skip { display: none; }

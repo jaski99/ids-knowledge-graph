@@ -89,7 +89,8 @@ async function main() {
   };
   initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
   // Le viste aggiuntive usano il registry condiviso e le route #/<id>.
-  const moduli = avviaModuli({ document, graph, storage: localStorage });
+  const moduli = avviaModuli({ document, graph, storage: localStorage, toggleTheme: () => theme.toggle() });
+  syncThemeButtons(document, theme.get());
 
   let lastSel;
   const render = (s) => {
