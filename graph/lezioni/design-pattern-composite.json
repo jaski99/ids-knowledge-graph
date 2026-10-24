@@ -1,0 +1,87 @@
+{
+  "intuizione": "Una biblioteca contiene settori, i settori contengono scaffali, gli scaffali contengono documenti: è un albero. Se il codice deve distinguere ogni volta 'è un contenitore o un oggetto singolo?', si riempie di if e instanceof. Composite dà a foglie e contenitori la stessa interfaccia: il contenitore implementa ogni operazione chiamandola sui propri figli, e il client tratta allo stesso modo un singolo libro e l'intera biblioteca.",
+  "spiegazione": "## Il problema\n\nDal fac-simile 2016/17 (biblioteca multimediale, paragrafo 2): *la biblioteca è organizzata in settori; i settori contengono documenti collocati in scaffali; una funzione di visualizzazione stampa l'elenco completo di settori / scaffali / libri.*\n\nSenza pattern ogni livello ha una classe diversa e la stampa diventa:\n\n```java\nfor (Settore s : biblioteca.getSettori()) {\n    System.out.println(s.getNome());\n    for (Scaffale sc : s.getScaffali()) {\n        System.out.println(\"  \" + sc.getNome());\n        for (Documento d : sc.getDocumenti()) System.out.println(\"    \" + d.getTitolo());\n    }\n}\n```\n\nIl client conosce **tutti** i livelli e la loro profondità; se domani uno scaffale può contenere *ripiani*, o un settore contenere *sottosettori*, va riscritto ogni ciclo.\n\n## La soluzione\n\n**Composite** (GoF, *strutturale*): *compone oggetti in strutture ad albero per rappresentare gerarchie parte-tutto e permette ai client di trattare in modo uniforme oggetti singoli e composizioni di oggetti.*\n\nRuoli:\n- **Component**: astrazione comune (classe astratta o interfaccia) con le operazioni valide per tutti (`print()`) e, nella variante \"trasparente\", anche quelle di gestione figli (`add`, `remove`).\n- **Leaf**: elemento senza figli (`Documento`), implementa l'operazione direttamente.\n- **Composite**: elemento con figli (`Biblioteca`, `Settore`, `Scaffale`): contiene una collezione di **Component** e implementa l'operazione **delegandola ricorsivamente** ai figli.\n- **Client**: lavora solo con `Component`.\n\n```mermaid\nclassDiagram\n    class BibliotecaComponent {\n        <<abstract>>\n        -String nome\n        -String descrizione\n        +getNome() String\n        +getDescrizione() String\n        +print() void\n    }\n    class Documento {\n        -String autore\n        -String editore\n        -String anno\n        +print() void\n    }\n    class Scaffale {\n        -List~BibliotecaComponent~ elements\n        +add(BibliotecaComponent c) void\n        +remove(BibliotecaComponent c) void\n        +print() void\n    }\n    class Settore {\n        -List~BibliotecaComponent~ elements\n        +add(BibliotecaComponent c) void\n        +print() void\n    }\n    class Biblioteca {\n        -List~BibliotecaComponent~ elements\n        +add(BibliotecaComponent c) void\n        +print() void\n    }\n    BibliotecaComponent <|-- Documento\n    BibliotecaComponent <|-- Scaffale\n    BibliotecaComponent <|-- Settore\n    BibliotecaComponent <|-- Biblioteca\n    Scaffale o-- \"0..*\" BibliotecaComponent : elements\n    Settore o-- \"0..*\" BibliotecaComponent : elements\n    Biblioteca o-- \"0..*\" BibliotecaComponent : elements\n```\n\nIl segno distintivo nel diagramma: **il Composite aggrega il Component** (la sua stessa superclasse), con molteplicità `0..*`. È questa associazione \"verso l'alto\" che rende possibile l'albero di profondità qualsiasi.\n\n## Codice Java (nello stile della soluzione ufficiale 2016/17)\n\nLa soluzione del fac-simile usa `BibliotecaComponent` astratta con nome e descrizione, `Scaffale` con `ArrayList elements`, `add`, `remove` e `print` che itera sui figli; `Biblioteca` e `Settore` analoghe; `Documento` foglia. Qui la versione completa e compilabile con i generics:\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic abstract class BibliotecaComponent {\n    private String nome;\n    private String descrizione;\n    protected BibliotecaComponent(String nome, String descrizione) {\n        this.nome = nome; this.descrizione = descrizione;\n    }\n    public String getNome() { return nome; }\n    public String getDescrizione() { return descrizione; }\n    public abstract void print(String rientro);\n    public void print() { print(\"\"); }\n}\n\npublic class Documento extends BibliotecaComponent {          // Leaf\n    private final String autore, editore, anno;\n    public Documento(String nome, String descrizione, String autore, String editore, String anno) {\n        super(nome, descrizione);\n        this.autore = autore; this.editore = editore; this.anno = anno;\n    }\n    @Override public void print(String rientro) {\n        System.out.println(rientro + \"Documento \" + getNome() + \" (\" + autore + \", \" + anno + \")\");\n    }\n}\n\npublic abstract class Contenitore extends BibliotecaComponent {  // Composite comune\n    private final List<BibliotecaComponent> elements = new ArrayList<>();\n    protected Contenitore(String nome, String descrizione) { super(nome, descrizione); }\n    public void add(BibliotecaComponent c)    { elements.add(c); }\n    public void remove(BibliotecaComponent c) { elements.remove(c); }\n    @Override public void print(String rientro) {\n        System.out.println(rientro + \"|--- \" + getDescrizione() + \" \" + getNome());\n        for (BibliotecaComponent c : elements) {\n            c.print(rientro + \"    \");                     // delega ricorsiva\n        }\n    }\n}\npublic class Biblioteca extends Contenitore { public Biblioteca(String n, String d) { super(n, d); } }\npublic class Settore    extends Contenitore { public Settore(String n, String d)    { super(n, d); } }\npublic class Scaffale   extends Contenitore { public Scaffale(String n, String d)   { super(n, d); } }\n\npublic class Manager {\n    public static void main(String[] args) {\n        Biblioteca biblioteca = new Biblioteca(\"Biblioteca\", \"biblioteca\");\n        Settore fantascienza = new Settore(\"Fantascienza\", \"settore\");\n        Scaffale fanta1 = new Scaffale(\"FantaScaffale1\", \"scaffale\");\n        Documento d = new Documento(\"Dune\", \"libro\", \"Herbert\", \"Chilton\", \"1965\");\n        biblioteca.add(fantascienza);\n        fantascienza.add(fanta1);\n        fanta1.add(d);\n        biblioteca.print();                                // stampa tutto l'albero\n    }\n}\n```\n\nOutput:\n```text\n|--- biblioteca Biblioteca\n    |--- settore Fantascienza\n        |--- scaffale FantaScaffale1\n            Documento Dune (Herbert, 1965)\n```\n\nLa classe intermedia `Contenitore` evita di duplicare `add/remove/print` in tre classi (nella soluzione ufficiale si dice che Biblioteca e Settore sono \"del tutto analoghe\" a Scaffale).\n\n## Operazioni ricorsive tipiche\n\nIl potere del pattern si vede con operazioni che *aggregano* sui figli:\n\n```java\n// in BibliotecaComponent\npublic abstract int contaDocumenti();\n// in Documento\n@Override public int contaDocumenti() { return 1; }\n// in Contenitore\n@Override public int contaDocumenti() {\n    int tot = 0;\n    for (BibliotecaComponent c : elements) tot += c.contaDocumenti();\n    return tot;\n}\n```\n\nStesso schema per prezzo totale, durata totale (audio/video), dimensione di una cartella, ecc.\n\n## Trasparenza vs sicurezza\n\n- **Trasparente**: `add/remove` dichiarati nel Component → il client tratta tutto allo stesso modo, ma su una foglia `add` non ha senso (lancia `UnsupportedOperationException`). È la scelta di GoF e di Head First.\n- **Sicura**: `add/remove` solo nel Composite (come nel codice sopra) → errori a compile time, ma il client a volte deve sapere se ha un composite.\n\n## Conseguenze\n\n**Vantaggi**\n- il client tratta **uniformemente** foglie e composizioni (niente `instanceof`);\n- aggiungere nuovi tipi di componente è facile (OCP);\n- profondità dell'albero arbitraria; operazioni ricorsive naturali.\n\n**Limiti**\n- il design diventa **troppo generico**: è difficile imporre vincoli strutturali. La soluzione ufficiale lo dice esplicitamente: il limite è la *criticità nella fase di instanziazione della struttura*, in cui si possono modellare scenari non coerenti con la realtà, *ad esempio scaffali che contengono settori*. Per evitarlo servono controlli a runtime (o tipi più specifici, perdendo uniformità).\n- nella variante trasparente operazioni senza senso sulle foglie.\n\n## Confronto con pattern simili\n\n- **Decorator**: anche lui ha un riferimento al Component, ma ne avvolge **uno solo** per aggiungere comportamento; Composite ne contiene **molti** per formare un albero.\n- **Iterator** e **Visitor** si usano spesso *sopra* un Composite per scorrerlo o aggiungere operazioni.\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"è organizzato in… che contengono… che contengono\"*, *\"parte-tutto\"*, *\"gerarchia\"*, *\"cartelle e file\"*, *\"menu e sottomenu\"*, *\"stampare/calcolare l'intera struttura\"*, *\"prodotti e confezioni che contengono altri prodotti\"*. Mascheramento d'esame: biblioteca → settori → scaffali → documenti (2016/17).\n",
+  "analogia": "È il file system del tuo computer: una cartella può contenere file e altre cartelle, e quando chiedi 'quanto spazio occupa questa cartella?' il sistema somma le dimensioni dei file e chiede la stessa cosa alle sottocartelle, ricorsivamente; a te non interessa se stai interrogando un file o una cartella. Dove l'analogia cede: il file system impedisce da solo di mettere una cartella dentro un file, mentre nel Composite 'trasparente' devi gestire tu queste operazioni senza senso, e nessuno ti impedisce di mettere un settore dentro uno scaffale.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Ricorsione (Fondamenti di Informatica)",
+      "collegamento": "print() del Composite chiama print() sui figli: è una ricorsione su un albero, con la foglia come caso base. Se sai fare la visita di un albero binario, sai implementare un Composite."
+    },
+    {
+      "conoscenza": "Alberi come strutture dati (Algoritmi e strutture dati)",
+      "collegamento": "Composite è un albero n-ario di oggetti: nodi interni = Composite, foglie = Leaf; contare i documenti è una visita in profondità."
+    },
+    {
+      "conoscenza": "Ereditarietà e classi astratte in Java",
+      "collegamento": "BibliotecaComponent è astratta, Documento e Contenitore la estendono; il polimorfismo fa eseguire la print giusta per ogni nodo."
+    },
+    {
+      "conoscenza": "Aggregazione e molteplicità UML",
+      "collegamento": "L'associazione Composite o-- 0..* Component è il cuore del diagramma: va disegnata con la molteplicità corretta.",
+      "nodo": "uml-associazioni-molteplicita"
+    },
+    {
+      "conoscenza": "Relazioni ricorsive nelle basi di dati",
+      "collegamento": "Una tabella Categoria con una colonna padre_id che riferisce la stessa tabella modella un albero allo stesso modo in cui il Composite riferisce il proprio supertipo."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Fac-simile 2016/17, esercizio 1.4: struttura della biblioteca",
+      "problema": "Progettare attraverso un design pattern una soluzione per il paragrafo 2 (biblioteca organizzata in settori, scaffali e documenti, con funzione di stampa dell'intera struttura), spiegando motivazioni ed eventuali limiti, con class diagram e classi minime (5 punti).",
+      "passi": [
+        "Riconosco la struttura parte-tutto annidata (biblioteca → settori → scaffali → documenti) e l'operazione da eseguire sull'intera struttura (stampa): Composite.",
+        "Mappo i ruoli: Component = BibliotecaComponent (nome, descrizione, print); Leaf = Documento (autore, editore, anno); Composite = Biblioteca, Settore, Scaffale (lista di BibliotecaComponent, add, remove, print che itera sui figli).",
+        "Class diagram: generalizzazioni verso BibliotecaComponent e aggregazione 0..* da ciascun Composite verso BibliotecaComponent.",
+        "Codice minimo: classe astratta, Scaffale con ArrayList, add/remove/print ricorsiva, Documento, un main che istanzia biblioteca, due settori, scaffali e documenti e chiama biblioteca.print().",
+        "Motivazione: stessa rappresentazione per tutti gli oggetti, stampa uniforme, struttura estendibile. Limite: istanziazione critica, si possono costruire strutture incoerenti (scaffali che contengono settori)."
+      ],
+      "soluzione": "Composite. BibliotecaComponent (Component), Documento (Leaf), Biblioteca/Settore/Scaffale (Composite con List<BibliotecaComponent> e print ricorsiva). Vantaggio: rappresentazione uniforme e stampa dell'intera struttura con una chiamata. Limite: nulla impedisce strutture incoerenti in fase di instanziazione.",
+      "perche_funziona": "È la struttura della soluzione ufficiale: ogni requisito del paragrafo è mappato su un ruolo e il limite citato è proprio quello indicato nella soluzione del prof."
+    },
+    {
+      "titolo": "Durata totale dei materiali multimediali",
+      "problema": "Nella stessa biblioteca audio e video hanno una durata in minuti (i libri no). Aggiungi al Composite un'operazione che calcola la durata totale di uno scaffale, di un settore o dell'intera biblioteca. Calcola il risultato per: Settore Musica con Scaffale A (CD da 45 min, libro) e Scaffale B (video da 120 min, CD da 30 min).",
+      "passi": [
+        "Dichiaro in BibliotecaComponent: public abstract int durataTotale();",
+        "Foglie: Documento restituisce 0; introduco Audio e Video (sottoclassi di Documento con campo durata) che restituiscono la propria durata.",
+        "Composite: in Contenitore int tot = 0; for (BibliotecaComponent c : elements) tot += c.durataTotale(); return tot;",
+        "Calcolo: Scaffale A = 45 + 0 = 45; Scaffale B = 120 + 30 = 150; Settore Musica = 45 + 150 = 195 minuti.",
+        "Il client chiama musica.durataTotale() senza sapere quanti livelli ci sono sotto."
+      ],
+      "soluzione": "durataTotale() astratta nel Component, valore proprio nelle foglie (0 per i libri), somma ricorsiva nel Composite. Risultato: 195 minuti per il settore (45 + 150).",
+      "perche_funziona": "L'operazione aggregata si scrive una sola volta nel Composite e funziona per qualunque profondità: è il vantaggio di trattare in modo uniforme foglie e contenitori."
+    }
+  ],
+  "errori_comuni": [
+    "Far contenere al Composite una lista di Leaf (List<Documento>) invece che di Component: così non si possono annidare contenitori.",
+    "Dimenticare la delega ricorsiva: il print del Composite deve chiamare print sui figli, non stampare solo il proprio nome.",
+    "Disegnare l'aggregazione dal Component verso il Composite (direzione sbagliata) o senza molteplicità 0..*.",
+    "Usare instanceof nel client per distinguere foglie e contenitori: annulla il vantaggio del pattern.",
+    "Non citare il limite: il design generico permette strutture incoerenti (scaffali che contengono settori).",
+    "Confondere Composite e Decorator: entrambi riferiscono il Component, ma il Composite ha molti figli, il Decorator ne avvolge uno."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Composite?",
+      "risposta": "Comporre oggetti in strutture ad albero parte-tutto e permettere ai client di trattare in modo uniforme oggetti singoli e composizioni."
+    },
+    {
+      "domanda": "Quali sono i ruoli e come si riconosce il Composite in un class diagram?",
+      "risposta": "Component (astrazione comune), Leaf (senza figli), Composite (contiene figli), Client. Nel diagramma il Composite estende il Component e lo aggrega con molteplicità 0..*."
+    },
+    {
+      "domanda": "Differenza tra Composite trasparente e sicuro?",
+      "risposta": "Trasparente: add/remove nel Component, uniformità massima ma operazioni senza senso sulle foglie. Sicuro: add/remove solo nel Composite, errori a compile time ma meno uniformità."
+    },
+    {
+      "domanda": "Quale limite indica la soluzione ufficiale del fac-simile per la biblioteca?",
+      "risposta": "La criticità della fase di instanziazione: si possono creare strutture incoerenti con la realtà, ad esempio scaffali che contengono settori."
+    },
+    {
+      "domanda": "Come si implementa un'operazione aggregata, ad esempio il conteggio dei documenti?",
+      "risposta": "Metodo astratto nel Component; la foglia restituisce 1; il Composite somma i risultati dei figli chiamando ricorsivamente lo stesso metodo."
+    }
+  ],
+  "riepilogo": "Composite (strutturale): alberi parte-tutto, foglie e contenitori trattati in modo uniforme.\nComponent astratto; Leaf; Composite con List<Component> e operazioni che delegano ricorsivamente.\nDiagramma: Composite estende e aggrega 0..* il Component.\nLimite: struttura troppo generica, possibili istanziazioni incoerenti.\nEsame: biblioteca → settori → scaffali → documenti (2016/17)."
+}
