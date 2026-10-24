@@ -1,0 +1,73 @@
+{
+  "intuizione": "Un requisito è scritto bene se un tester, senza chiederti nulla, può dire «superato» o «non superato». Parole come «veloce», «facile», «sicuro», «ecc.» rendono impossibile questa decisione. Si scrive quindi un'affermazione per volta, con soggetto, «deve», azione, condizione e un numero o un criterio di accettazione.",
+  "spiegazione": "## Lo schema di un requisito ben formato\n\n```text\n[ID] [Condizione/evento], il sistema deve [azione] [oggetto] [vincolo misurabile].\nCriterio di accettazione: [come si verifica, con dati concreti]\n```\n\nEsempio: **RF-08** *Quando un cliente con tessera conclude un acquisto, il sistema deve aggiungere l'importo pagato all'importo cumulativo della tessera.* Criterio: tessera a 120 €, acquisto da 30 € → dopo la conferma la tessera mostra 150 €.\n\n## Le cinque regole\n\n### Regola 1 — Atomico: un requisito, una cosa\nLe congiunzioni «e», «o», «inoltre» sono un campanello d'allarme. «Il sistema deve registrare la vendita e stampare lo scontrino e aggiornare il magazzino» diventa tre requisiti: se ne fallisce uno solo, il test deve dire quale.\n\n### Regola 2 — Verificabile: niente parole vaghe\n| parola vaga | riscrittura misurabile |\n|---|---|\n| veloce | risposta in meno di 2 s nel 95% delle richieste con 50 utenti concorrenti |\n| facile da usare | un nuovo operatore completa una vendita dopo 30 minuti di formazione, con al più 1 errore su 10 vendite |\n| sicuro | password di almeno 10 caratteri; account bloccato dopo 5 tentativi falliti in 10 minuti |\n| affidabile | disponibilità del 99,5% nell'orario di apertura su base mensile |\n| ecc., e così via | elenco chiuso di valori |\n\n### Regola 3 — Non ambiguo: una sola interpretazione\n«Fino a 15 giorni»: il 15° giorno è incluso? «Superiore a 500 €»: 500 € esatti attivano lo sconto? Scrivi **sempre** se gli estremi sono inclusi: è esattamente ciò che servirà nella Parte 2 (black box), dove i bordi decidono le classi di equivalenza.\n\n### Regola 4 — Il COSA, non il COME\nEvita nomi di classi, tabelle, algoritmi. Il soggetto è *il sistema*, l'oggetto è un concetto del dominio.\n\n### Regola 5 — Coerente e tracciabile\nId univoco, fonte (chi l'ha chiesto), nessuna contraddizione con altri requisiti.\n\n## Requisiti non funzionali: quantificare con una metrica\n\n| qualità | metrica tipica |\n|---|---|\n| prestazioni | tempo di risposta, throughput (transazioni/s) |\n| affidabilità | MTBF, tasso di guasto, disponibilità % |\n| usabilità | tempo di apprendimento, errori per sessione |\n| portabilità | numero di piattaforme supportate, % di codice dipendente dalla piattaforma |\n| sicurezza | requisiti specifici (cifratura, blocco account, log degli accessi) |\n\n## Il collegamento con il testing\n\nUn requisito verificabile si traduce quasi meccanicamente in un test. Ecco RF-08 come test di accettazione automatizzato:\n\n```java\npublic class Tessera {\n    private double importoCumulativo;\n\n    public Tessera(double importoIniziale) { this.importoCumulativo = importoIniziale; }\n\n    /** RF-08: aggiunge l'importo pagato al cumulativo. */\n    public void registraAcquisto(double importoPagato) {\n        if (importoPagato <= 0) throw new IllegalArgumentException(\"importo non positivo\");\n        importoCumulativo += importoPagato;\n    }\n\n    public double getImportoCumulativo() { return importoCumulativo; }\n}\n\nclass TesseraAcceptanceCheck {\n    public static void main(String[] args) {\n        Tessera t = new Tessera(120.0);\n        t.registraAcquisto(30.0);\n        // criterio di accettazione di RF-08\n        if (Math.abs(t.getImportoCumulativo() - 150.0) > 1e-9)\n            throw new AssertionError(\"RF-08 non soddisfatto\");\n        System.out.println(\"RF-08 OK\");\n    }\n}\n```\n\nSe non riesci a scrivere un controllo così, il requisito non è verificabile: torna a riscriverlo.\n\n```mermaid\nflowchart TD\n    R[\"Requisito scritto\"] --> A{\"Atomico?\"}\n    A -->|\"no\"| D[\"Dividi in più requisiti\"]\n    A -->|\"sì\"| V{\"Contiene parole vaghe?\"}\n    V -->|\"sì\"| Q[\"Quantifica con una metrica\"]\n    V -->|\"no\"| T{\"Riesco a scrivere un test sì/no?\"}\n    T -->|\"no\"| Q\n    T -->|\"sì\"| OK[\"Requisito pronto: assegna id e fonte\"]\n    D --> A\n    Q --> T\n```",
+  "analogia": "È la differenza tra dire al meccanico «la macchina fa un rumore strano» e «a 80 km/h, in quinta, si sente un fischio dalla ruota anteriore destra che sparisce frenando». Con la seconda frase il meccanico può riprodurre il problema e dire se l'ha risolto. L'analogia cede perché il meccanico può comunque indagare da solo, mentre un requisito vago porta spesso a costruire la cosa sbagliata senza che nessuno se ne accorga.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Asserzioni e test in Java (assert, JUnit assertEquals)",
+      "collegamento": "Un requisito verificabile è quello che puoi trasformare in un'asserzione con valore atteso preciso."
+    },
+    {
+      "conoscenza": "Intervalli aperti e chiusi (Analisi I)",
+      "collegamento": "Specificare se gli estremi sono inclusi elimina l'ambiguità e prepara le classi di equivalenza."
+    },
+    {
+      "conoscenza": "Processo e qualità dei requisiti",
+      "collegamento": "Questo nodo è la pratica delle qualità «non ambiguo, verificabile, atomico».",
+      "nodo": "requisiti-processo-specifica"
+    },
+    {
+      "conoscenza": "Black box a scaglioni",
+      "collegamento": "Le soglie scritte con precisione nei requisiti diventano i bordi della BVA.",
+      "nodo": "esercizio-black-box-scaglioni"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Riscrivere un requisito vago e composto (piscina)",
+      "problema": "«Il sistema deve gestire in modo rapido gli ingressi con badge e mostrare le statistiche e la top 10 ecc.» Riscrivilo secondo le regole.",
+      "passi": [
+        "Divido sulle congiunzioni: (a) ingressi con badge, (b) statistiche, (c) top 10; «ecc.» va eliminato o reso elenco chiuso.",
+        "(a) Funzione: al passaggio del badge il sistema registra l'ingresso. «Rapido» → metrica: apertura del tornello entro 1 s.",
+        "(c) Chiarisco il criterio di classifica: numero di ingressi nel mese solare corrente, a parità ordine alfabetico.",
+        "(b) Statistiche: chiedo al committente quali; ipotesi: ingressi per giorno della settimana.",
+        "Aggiungo un criterio di accettazione a ciascuno."
+      ],
+      "soluzione": "RF-20 Al passaggio di un badge valido il sistema deve registrare data e ora dell'ingresso e sbloccare il tornello. RNF-05 Lo sblocco deve avvenire entro 1 s dal passaggio del badge nel 99% dei casi. RF-21 Il sistema deve mostrare la classifica dei 10 utenti con più ingressi nel mese solare corrente, a parità di ingressi in ordine alfabetico di cognome. RF-22 Il sistema deve mostrare il numero di ingressi per ciascun giorno della settimana nel mese corrente. Criterio RF-21: con 12 utenti di ingressi noti, la lista mostra esattamente i 10 attesi nell'ordine atteso.",
+      "perche_funziona": "Ogni requisito ora fa una cosa sola, ha un criterio misurabile e un test che dà esito sì/no."
+    },
+    {
+      "titolo": "Eliminare l'ambiguità sui bordi (ambulanti)",
+      "problema": "«Ogni ambulante può avere fino a 5 prenotazioni attive; le piazzole sotto i 40 m² costano 10 €/m², sopra 8 €/m².» Che problemi ci sono e come li correggi?",
+      "passi": [
+        "«Fino a 5»: 5 è incluso? Sì nel linguaggio comune, ma lo scrivo: al più 5.",
+        "«Attive»: definisco cosa vuol dire (prenotazione approvata e con data futura).",
+        "«Sotto i 40 / sopra»: 40 esatti non è coperto → incompletezza. Scelgo con il committente: 40 rientra nella fascia a 8 €/m².",
+        "Cosa succede alla 6ª prenotazione? Aggiungo il comportamento d'errore."
+      ],
+      "soluzione": "RF-30 Il sistema deve rifiutare una nuova prenotazione se l'ambulante ha già 5 prenotazioni attive (approvate e con data futura), mostrando il motivo. RF-31 Il costo di una piazzola è 10 €/m² se la superficie è minore di 40 m², 8 €/m² se è maggiore o uguale a 40 m².",
+      "perche_funziona": "I bordi esplicitati (≤5, <40, ≥40) non lasciano casi scoperti e diventano direttamente i casi limite dei test."
+    }
+  ],
+  "errori_comuni": [
+    "Lasciare aggettivi vaghi nei requisiti non funzionali (veloce, intuitivo, robusto).",
+    "Scrivere requisiti composti con «e/o»: un test fallito non dice quale parte non funziona.",
+    "Non dire se gli estremi delle soglie sono inclusi: genera interpretazioni diverse tra sviluppatore e tester.",
+    "Dimenticare il comportamento negli errori (cosa fa il sistema se la condizione non è rispettata)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quando un requisito si dice verificabile?",
+      "risposta": "Quando esiste un procedimento finito e oggettivo (un test, un'ispezione, una misura) che stabilisce se il sistema lo soddisfa o no; in pratica quando contiene criteri misurabili e nessun termine vago."
+    },
+    {
+      "domanda": "Riscrivi «il sistema deve essere facile da usare» in forma verificabile.",
+      "risposta": "Ad esempio: «un nuovo operatore, dopo 30 minuti di formazione, deve completare una vendita con 3 prodotti in meno di 2 minuti con al più un errore», da verificare con un test su un campione di operatori."
+    },
+    {
+      "domanda": "Perché un requisito deve essere atomico?",
+      "risposta": "Perché così ha un solo criterio di accettazione: se il test fallisce si sa esattamente cosa non funziona, si può tracciare e modificare singolarmente e assegnargli una priorità propria."
+    }
+  ],
+  "riepilogo": "Schema: [ID] condizione, il sistema deve azione + vincolo misurabile + criterio di accettazione.\nAtomico (niente «e/o»), verificabile (niente parole vaghe), non ambiguo (estremi dichiarati).\nI NF si quantificano con una metrica (tempo, %, numero di errori).\nTest della verità: se non riesci a scrivere il test, riscrivi il requisito."
+}

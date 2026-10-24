@@ -1,0 +1,79 @@
+{
+  "intuizione": "Il diagramma dei casi d'uso è la «vetrina» del sistema: mostra chi lo usa (attori) e quali servizi ottiene (casi d'uso), senza dire nulla di come funziona dentro. Ogni caso d'uso è un obiettivo completo che un attore vuole raggiungere, come «Prendere in prestito un documento». Le relazioni include, extend e generalizzazione servono a fattorizzare i comportamenti comuni o opzionali.",
+  "spiegazione": "## Gli elementi\n\n| elemento | notazione UML | significato |\n|---|---|---|\n| **Attore** | omino stilizzato con nome | un **ruolo** esterno che interagisce con il sistema: persona, altro sistema, dispositivo, tempo |\n| **Caso d'uso** | ellisse con un verbo + oggetto | un servizio che produce un risultato di valore per un attore |\n| **Confine del sistema** | rettangolo con il nome del sistema | separa ciò che è dentro (casi d'uso) da ciò che è fuori (attori) |\n| **Associazione** | linea continua attore–caso d'uso | l'attore partecipa al caso d'uso |\n| **Include** | freccia tratteggiata «include» dal caso base al caso incluso | il comportamento incluso è **sempre** eseguito |\n| **Extend** | freccia tratteggiata «extend» dal caso estendente al caso base | comportamento **opzionale/condizionale** che si aggiunge al caso base in un punto di estensione |\n| **Generalizzazione** | freccia con triangolo vuoto verso il generale | tra attori (un Bibliotecario è un Utente specializzato) o tra casi d'uso |\n\nMermaid non ha un tipo di diagramma per i casi d'uso: nelle lezioni lo disegniamo con un `flowchart` (attori come rettangoli con l'omino, casi d'uso come ovali, il confine come riquadro). All'esame si disegna a mano con la notazione UML standard della tabella.\n\n## Un esempio completo: la biblioteca (prova 2016/17)\n\n```mermaid\nflowchart LR\n    U[\"🧍 Utente\"]\n    UR[\"🧍 Utente registrato\"]\n    B[\"🧍 Bibliotecario\"]\n    T[\"⏰ Tempo\"]\n    subgraph SYS[\"Sistema Biblioteca\"]\n        REG([\"Registrarsi\"])\n        CERCA([\"Cercare documento per titolo\"])\n        PRESTA([\"Richiedere prestito\"])\n        VERIF([\"Verificare ammissibilità\"])\n        RINN([\"Rinnovare prestito\"])\n        QUEST([\"Compilare questionario\"])\n        REP([\"Reperire documento\"])\n        SOLL([\"Inviare sollecito\"])\n        SOSP([\"Sospendere utente\"])\n        STAMPA([\"Stampare elenco settori, scaffali, documenti\"])\n    end\n    U --- REG\n    UR -->|\"generalizzazione\"| U\n    UR --- PRESTA\n    UR --- RINN\n    UR --- QUEST\n    PRESTA -.->|\"«include»\"| CERCA\n    PRESTA -.->|\"«include»\"| VERIF\n    B --- REP\n    B --- STAMPA\n    PRESTA --- REP\n    T --- SOLL\n    SOSP -.->|\"«extend»\"| SOLL\n```\n\nLettura: un **Utente registrato** è un Utente (generalizzazione: eredita «Registrarsi»… anche se in pratica si registra solo chi non lo è ancora). Ogni richiesta di prestito **include** sempre la ricerca e la verifica di ammissibilità. La sospensione **estende** il sollecito: avviene solo se il sollecito non porta alla restituzione. Il **Tempo** è un attore: il sollecito parte allo scadere del termine, non per azione di una persona.\n\n## Include ed extend senza confondersi\n\n```mermaid\nflowchart LR\n    subgraph INC[\"include: sempre\"]\n        A([\"Richiedere prestito\"]) -.->|\"«include»\"| B([\"Verificare ammissibilità\"])\n    end\n    subgraph EXT[\"extend: a volte\"]\n        C([\"Applicare sconto fedeltà\"]) -.->|\"«extend»\"| D([\"Effettuare acquisto\"])\n    end\n```\n\n- **Include**: la freccia parte dal caso **base** e punta al caso **incluso**. Il base *non è completo* senza l'incluso. Si usa per fattorizzare un comportamento **comune a più casi d'uso** (es. «Autenticarsi» incluso da molti).\n- **Extend**: la freccia parte dal caso **estendente** e punta al caso **base**. Il base *è completo anche senza* l'estensione, che si attiva solo a una condizione (punto di estensione: «se il cliente ha la tessera e ha superato la soglia»).\n\nTrucco mnemonico: **include** = «io (base) uso sempre te» → la freccia parte dal base; **extend** = «io (estensione) mi aggancio a te, a volte» → la freccia parte dall'estensione. In entrambi i casi la freccia parte da chi «conosce» l'altro: il base conosce ciò che include, l'estensione conosce il base che estende (il base invece non sa nulla delle sue estensioni).\n\n## Regole di buona modellazione\n\n1. **Nome = verbo all'infinito + oggetto** dal punto di vista dell'attore: «Prenotare piazzola», non «Gestione prenotazioni» né «Salvataggio su DB».\n2. Un caso d'uso è un **obiettivo completo** che dà valore all'attore, non un passo interno («Cliccare OK», «Leggere dal database» sono passi, non casi d'uso).\n3. Gli **attori sono ruoli**, non persone: la stessa persona può essere Cliente e Operatore.\n4. Attori fuori dal confine, casi d'uso dentro.\n5. Non usare il diagramma per mostrare l'**ordine** delle operazioni: quello è compito di activity e sequence diagram.\n6. Include/extend con moderazione: servono solo se il comportamento è davvero riusato o davvero opzionale.\n\n## Come si collega agli altri diagrammi\n\nOgni caso d'uso si dettaglia con una **descrizione testuale** (scenari), da cui derivano il **sequence diagram** (messaggi tra oggetti) e l'**activity diagram** (flusso). I sostantivi incontrati nei casi d'uso diventano candidate classi del **class diagram**.",
+  "analogia": "È il menù di un ristorante: elenca i piatti (casi d'uso) e per chi sono (menù bambini, menù vegetariano = attori), non la ricetta né l'ordine in cui il cuoco lavora. «Contorno incluso» è un include (arriva sempre con il piatto); «aggiunta di tartufo su richiesta» è un extend (opzionale, si aggancia al piatto base). L'analogia cede perché nel menù non c'è un attore «Tempo», mentre nei sistemi gli eventi temporali sono attori legittimi.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Requisiti funzionali",
+      "collegamento": "Ogni caso d'uso raggruppa uno o più requisiti funzionali visti dall'attore.",
+      "nodo": "requisiti-obiettivi"
+    },
+    {
+      "conoscenza": "Ereditarietà in Java (extends)",
+      "collegamento": "La generalizzazione tra attori funziona come l'ereditarietà: l'attore specializzato può fare tutto ciò che fa il generale, più altro."
+    },
+    {
+      "conoscenza": "Chiamata di metodo",
+      "collegamento": "Include è come un metodo che chiama sempre un sotto-metodo comune; extend è come un hook/callback eseguito solo se una condizione è vera."
+    },
+    {
+      "conoscenza": "Descrizione testuale del caso d'uso",
+      "collegamento": "Il passo successivo: ogni ovale si dettaglia in scenari.",
+      "nodo": "casi-uso-descrizione-testuale"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Use case della farmacia (prova 5/11/2025, es. 1.3)",
+      "problema": "Rappresenta con uno use case diagram le specifiche della farmacia: vendita con carrello, aggiornamento quantità, verifica magazzino, prenotazione con notifica all'arrivo, tessera fedeltà con sconto oltre soglia, rapporto giornaliero, iscrizione alla mailing list delle promozioni.",
+      "passi": [
+        "Attori: Operatore (farmacista al banco), Cliente, Cliente con tessera (specializza Cliente), Magazziniere (registra gli arrivi), Tempo (fine giornata) — attore secondario per le notifiche: il cliente le riceve.",
+        "Casi d'uso dell'Operatore: Effettuare vendita, Verificare disponibilità in magazzino, Registrare prenotazione, Consultare rapporto giornaliero.",
+        "Include: Effettuare vendita include Aggiornare quantità (sempre). Extend: Applicare sconto fedeltà estende Effettuare vendita (solo con tessera oltre soglia); Registrare prenotazione estende Effettuare vendita (solo se il prodotto non è disponibile).",
+        "Magazziniere: Registrare arrivo prodotto, che include Notificare cliente prenotato.",
+        "Cliente con tessera: Iscriversi alla mailing list e Scegliere categorie di interesse; Ricevere comunicazione promozione."
+      ],
+      "soluzione": "```mermaid\nflowchart LR\n    OP[\"🧍 Operatore\"]\n    CL[\"🧍 Cliente\"]\n    CT[\"🧍 Cliente con tessera\"]\n    MA[\"🧍 Magazziniere\"]\n    subgraph SYS[\"Sistema Farmacia\"]\n        VEN([\"Effettuare vendita\"])\n        AGG([\"Aggiornare quantità\"])\n        MAG([\"Verificare disponibilità in magazzino\"])\n        PRE([\"Registrare prenotazione\"])\n        SCO([\"Applicare sconto fedeltà\"])\n        ARR([\"Registrare arrivo prodotto\"])\n        NOT([\"Notificare cliente prenotato\"])\n        RAP([\"Consultare rapporto giornaliero\"])\n        ISC([\"Iscriversi alla mailing list\"])\n    end\n    OP --- VEN\n    CL --- VEN\n    CT -->|\"generalizzazione\"| CL\n    VEN -.->|\"«include»\"| AGG\n    SCO -.->|\"«extend»\"| VEN\n    PRE -.->|\"«extend»\"| VEN\n    OP --- MAG\n    OP --- RAP\n    MA --- ARR\n    ARR -.->|\"«include»\"| NOT\n    NOT --- CL\n    CT --- ISC\n```",
+      "perche_funziona": "Ogni frase del testo che descrive un servizio diventa un ovale; i comportamenti sempre presenti sono include, quelli condizionati (tessera, prodotto non disponibile) sono extend; il cliente con tessera eredita tutto dal cliente."
+    },
+    {
+      "titolo": "Correggere un diagramma sbagliato",
+      "problema": "Uno studente, per il mercato degli ambulanti, disegna: attore Ambulante collegato a «Login», «Clic su Prenota», «Salvare prenotazione nel DB», «Prenotazione» e una freccia «include» da «Verificare max 5 prenotazioni» verso «Prenotare piazzola». Trova gli errori.",
+      "passi": [
+        "«Clic su Prenota» e «Salvare prenotazione nel DB» sono passi interni/di interfaccia, non obiettivi dell'attore: vanno eliminati.",
+        "«Prenotazione» è un sostantivo: diventa «Prenotare piazzola».",
+        "La freccia include è invertita: deve partire dal caso base «Prenotare piazzola» verso «Verificare max 5 prenotazioni attive».",
+        "«Login» non è un obiettivo di valore: si può tenere come «Autenticarsi» incluso dai casi che lo richiedono, oppure ometterlo.",
+        "Manca l'Operatore con «Approvare prenotazione» e «Registrare assenza», e l'extend «Applicare sanzione» su «Registrare assenza»."
+      ],
+      "soluzione": "Ambulante: Prenotare piazzola (include Verificare max 5 prenotazioni attive). Operatore: Approvare prenotazione, Registrare assenza (esteso da Applicare sanzione, se si supera il numero di assenze previsto). Eliminati i passi interni.",
+      "perche_funziona": "Si applicano le regole: nome verbo+oggetto, solo obiettivi di valore, direzione corretta di include (base → incluso) ed extend (estensione → base)."
+    }
+  ],
+  "errori_comuni": [
+    "Invertire le frecce: include va dal caso base all'incluso, extend dall'estensione al base.",
+    "Modellare passi interni o operazioni tecniche («Salvare nel DB», «Premere OK») come casi d'uso.",
+    "Usare il diagramma per mostrare la sequenza temporale delle azioni.",
+    "Mettere gli attori dentro il confine del sistema, o dimenticare attori non umani (sistemi esterni, Tempo).",
+    "Nominare i casi d'uso con sostantivi («Gestione prestiti») invece che con verbo+oggetto."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra include ed extend?",
+      "risposta": "Include indica un comportamento sempre eseguito come parte del caso base (freccia dal base all'incluso), usato per fattorizzare parti comuni. Extend indica un comportamento opzionale che si aggiunge al caso base solo se una condizione è vera in un punto di estensione (freccia dall'estensione al base); il caso base è completo anche senza."
+    },
+    {
+      "domanda": "Che cos'è un attore? Può essere un sistema?",
+      "risposta": "È un ruolo esterno al sistema che interagisce con esso; può essere una persona, un altro sistema software, un dispositivo o anche il tempo (eventi temporali). Uno stesso individuo può ricoprire più ruoli."
+    },
+    {
+      "domanda": "Quando si usa la generalizzazione tra attori?",
+      "risposta": "Quando un attore può fare tutto ciò che fa un altro più qualcosa in più, ad esempio Cliente con tessera rispetto a Cliente: il figlio eredita le associazioni con i casi d'uso del padre."
+    },
+    {
+      "domanda": "Perché «Salvare l'ordine nel database» non è un buon caso d'uso?",
+      "risposta": "Perché non è un obiettivo di valore per un attore ma un dettaglio interno di implementazione: il diagramma dei casi d'uso mostra i servizi visibili dall'esterno."
+    }
+  ],
+  "riepilogo": "Attori (ruoli esterni, anche sistemi e tempo) + casi d'uso (verbo+oggetto) + confine.\nInclude: sempre, freccia dal base all'incluso. Extend: condizionale, freccia dall'estensione al base.\nGeneralizzazione tra attori come extends in Java.\nNiente passi interni, niente ordine temporale: quello va in sequence e activity."
+}

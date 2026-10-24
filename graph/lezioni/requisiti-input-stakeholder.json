@@ -1,0 +1,73 @@
+{
+  "intuizione": "I requisiti non si inventano: stanno nella testa delle persone coinvolte, nei documenti, nelle leggi e nei sistemi già esistenti. L'elicitazione è il lavoro da investigatore che li fa emergere, scegliendo la tecnica giusta (intervista, osservazione, prototipo…) per ogni fonte. Il pericolo maggiore è dimenticare uno stakeholder: i suoi requisiti emergeranno tardi, quando costano molto.",
+  "spiegazione": "## Gli input della specifica\n\nLa specifica dei requisiti si costruisce a partire da **fonti** diverse:\n\n| fonte | esempi (caso farmacia) |\n|---|---|\n| **Stakeholder** | titolare, farmacisti al banco, magazziniere, clienti con tessera, commercialista |\n| **Documenti esistenti** | moduli cartacei di prenotazione, listini, report giornalieri attuali |\n| **Normative e standard** | GDPR per i dati dei clienti, norme sulla vendita dei medicinali, fiscalità degli scontrini |\n| **Sistemi esistenti** | il vecchio gestionale da sostituire, il registratore di cassa da integrare |\n| **Dominio** | conoscenza del settore: cosa sono medicinali da banco, lotti, scadenze |\n\n## Chi sono gli stakeholder\n\nUno **stakeholder** è chiunque abbia un interesse nel sistema o ne sia influenzato. Non solo chi lo usa:\n\n- **committente/cliente**: paga e decide le priorità;\n- **utenti finali**: usano il sistema ogni giorno (spesso più tipi, con bisogni diversi);\n- **esperti di dominio**: conoscono le regole del business;\n- **operatori/manutentori/IT**: installano, gestiscono e fanno evolvere il sistema;\n- **enti regolatori**: impongono vincoli normativi;\n- **sviluppatori e tester**: hanno bisogno di requisiti chiari e verificabili.\n\nMolti stakeholder diventano **attori** nel diagramma dei casi d'uso, ma non tutti: il commercialista ha requisiti (un export contabile) pur non usando mai il sistema.\n\n## Tecniche di elicitazione\n\n| tecnica | quando è adatta | limite |\n|---|---|---|\n| **Intervista** (strutturata o aperta) | pochi stakeholder chiave, bisogni da esplorare | l'intervistato dice ciò che pensa di fare, non ciò che fa |\n| **Questionario** | molti utenti distribuiti, dati quantitativi | niente approfondimento, domande da progettare bene |\n| **Osservazione / etnografia** | processi operativi (il banco della farmacia) | costosa, l'osservatore può alterare il comportamento |\n| **Workshop / brainstorming** | allineare stakeholder diversi, risolvere conflitti | richiede un buon facilitatore |\n| **Prototipazione** | interfacce, requisiti incerti («lo riconosco quando lo vedo») | il cliente può scambiare il prototipo per il prodotto |\n| **Analisi di documenti e sistemi esistenti** | sostituzione di un sistema, regole già formalizzate | si rischia di copiare anche i difetti del vecchio sistema |\n| **Scenari e casi d'uso** | descrivere interazioni concrete | non coprono bene i requisiti non funzionali |\n\nNella pratica si **combinano**: interviste per capire, osservazione per verificare, prototipo per validare.\n\n```mermaid\nflowchart LR\n    S[\"Stakeholder\"] -->|\"interviste, workshop\"| E[\"Elicitazione\"]\n    D[\"Documenti e normative\"] -->|\"analisi\"| E\n    X[\"Sistema esistente\"] -->|\"osservazione, analisi\"| E\n    E --> R[\"Requisiti grezzi\"]\n    R --> A[\"Analisi: conflitti e priorità\"]\n```\n\n## Conflitti tra stakeholder\n\nStakeholder diversi vogliono cose diverse. Nella farmacia:\n\n- il **titolare** vuole lo sconto fedeltà solo sopra una soglia alta (meno sconti, più margine);\n- il **responsabile marketing** vuole una soglia bassa (più clienti fidelizzati);\n- il **farmacista al banco** vuole che il calcolo dello sconto sia automatico e non rallenti la cassa.\n\nIl conflitto non si risolve scegliendo a caso: si rende **esplicito**, si negozia con il committente (che ha l'ultima parola) e si documenta la decisione. Strumenti: priorità MoSCoW (Must, Should, Could, Won't), workshop, prototipi per confrontare alternative.\n\n## Problemi tipici dell'elicitazione\n\n1. **Requisiti impliciti**: ciò che per l'esperto è ovvio non viene detto («ovviamente un medicinale scaduto non si vende»).\n2. **Linguaggio diverso**: gli stakeholder parlano il linguaggio del dominio, gli sviluppatori quello tecnico.\n3. **Requisiti instabili**: cambiano mentre li raccogli.\n4. **Stakeholder mancanti**: chi non è stato consultato porta requisiti tardi (e costosi).\n\nPer questo l'elicitazione è iterativa e si conclude con la **validazione** dei requisiti scritti.",
+  "analogia": "È come organizzare un matrimonio: gli sposi (committenti) hanno un'idea, ma devi sentire anche il catering, il fotografo, il comune, i genitori e controllare le regole della location. Se ti dimentichi che la nonna non può fare le scale lo scopri il giorno stesso, quando è troppo tardi. L'analogia cede su un punto: nel software molti stakeholder non sanno descrivere ciò che vogliono finché non vedono qualcosa di concreto, per questo esistono i prototipi.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Basi di dati: raccolta dei requisiti prima della progettazione concettuale",
+      "collegamento": "In Basi di dati hai analizzato un testo per trovare entità e relazioni; qui il testo stesso va prima prodotto, intervistando le persone giuste."
+    },
+    {
+      "conoscenza": "Obiettivi della specifica",
+      "collegamento": "Gli input raccolti qui diventano requisiti F, NF e vincoli secondo le categorie di quel nodo.",
+      "nodo": "requisiti-obiettivi"
+    },
+    {
+      "conoscenza": "Attori dei casi d'uso",
+      "collegamento": "Gli stakeholder che interagiscono con il sistema diventano attori nel diagramma dei casi d'uso.",
+      "nodo": "uml-casi-uso"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Stakeholder e tecniche per il mercato degli ambulanti",
+      "problema": "Caso della prova 9/6/2022 (mercato settimanale: piazzole normali e premium, prenotazioni, approvazione dell'operatore, sanzioni per le assenze, lotteria). Elenca gli stakeholder e scegli una tecnica di elicitazione motivata per ciascuno.",
+      "passi": [
+        "Chi paga e decide: il Comune (ufficio commercio) → committente.",
+        "Chi usa il sistema: ambulanti (prenotano), operatore comunale (approva, registra assenze), clienti del mercato (partecipano alla lotteria).",
+        "Chi impone regole: polizia locale/normativa sul commercio ambulante (sanzioni), GDPR per i dati degli ambulanti.",
+        "Scelgo le tecniche: intervista con l'ufficio commercio (regole, priorità); questionario agli ambulanti (sono tanti); osservazione dell'operatore in una giornata di mercato (processo reale di assegnazione); analisi dei regolamenti comunali (sanzioni).",
+        "Prevedo un prototipo dell'interfaccia di prenotazione da mostrare agli ambulanti per validare."
+      ],
+      "soluzione": "Stakeholder: Comune (committente), operatore, ambulanti, clienti, polizia locale/normativa, IT comunale. Tecniche: intervista (Comune), questionario (ambulanti), osservazione (operatore), analisi documenti (regolamenti), prototipo (validazione con gli ambulanti).",
+      "perche_funziona": "Ogni tecnica è scelta in base alla fonte: poche persone chiave → intervista; molti utenti → questionario; processo operativo → osservazione; regole scritte → analisi documentale."
+    },
+    {
+      "titolo": "Far emergere un conflitto",
+      "problema": "Nella piscina (prova 27/1/2023: badge, accessi, servizi, top 10) il gestore vuole pubblicare la classifica top 10 dei frequentatori con nome e cognome; un utente intervistato non vuole comparire. Come lo tratti?",
+      "passi": [
+        "Riconosco il conflitto: requisito di marketing contro riservatezza (e vincolo GDPR).",
+        "Lo documento esplicitamente con le due posizioni.",
+        "Propongo alternative al committente: classifica con pseudonimo, oppure consenso esplicito (opt-in).",
+        "Il committente decide; scrivo il requisito risultante in forma verificabile."
+      ],
+      "soluzione": "Requisito concordato: «Il sistema deve mostrare nella top 10 solo gli utenti che hanno dato il consenso; gli altri compaiono con il numero di tessera mascherato.»",
+      "perche_funziona": "Un conflitto reso esplicito e negoziato diventa un requisito unico, coerente e tracciabile alla decisione presa, invece di emergere come difetto dopo il rilascio."
+    }
+  ],
+  "errori_comuni": [
+    "Considerare stakeholder solo gli utenti che usano l'interfaccia, dimenticando committente, enti normativi, chi manutiene.",
+    "Usare una sola tecnica (es. solo interviste): si perdono i requisiti impliciti che emergono osservando il lavoro reale.",
+    "Risolvere i conflitti da sviluppatore, senza coinvolgere il committente.",
+    "Copiare il sistema esistente con tutti i suoi difetti."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono gli input del processo di specifica dei requisiti?",
+      "risposta": "Gli stakeholder (committente, utenti, esperti di dominio, manutentori), i documenti esistenti, le normative e gli standard, i sistemi da sostituire o integrare e la conoscenza del dominio."
+    },
+    {
+      "domanda": "Elenca quattro tecniche di elicitazione con un pregio e un limite ciascuna.",
+      "risposta": "Intervista: approfondisce, ma l'intervistato descrive ciò che crede di fare. Questionario: raggiunge molti utenti, ma non approfondisce. Osservazione: mostra il lavoro reale e i requisiti impliciti, ma è costosa. Prototipo: chiarisce requisiti incerti e di interfaccia, ma può essere scambiato per il prodotto finito."
+    },
+    {
+      "domanda": "Che cos'è un requisito implicito e perché è pericoloso?",
+      "risposta": "È un requisito che lo stakeholder dà per scontato e non esprime. È pericoloso perché non entra nella specifica, il sistema non lo soddisfa e il difetto emerge tardi, quando correggerlo costa molto."
+    },
+    {
+      "domanda": "Come si gestisce un conflitto tra requisiti di stakeholder diversi?",
+      "risposta": "Si rende esplicito, si analizzano le alternative (anche con prototipi o workshop), si fa decidere al committente secondo le priorità (es. MoSCoW) e si documenta il requisito risultante e la motivazione."
+    }
+  ],
+  "riepilogo": "Input: stakeholder, documenti, normative, sistemi esistenti, dominio.\nStakeholder = chiunque abbia interesse nel sistema, non solo gli utenti.\nTecniche: intervista, questionario, osservazione, workshop, prototipo, analisi documenti; si combinano.\nConflitti e requisiti impliciti vanno resi espliciti e decisi con il committente."
+}
