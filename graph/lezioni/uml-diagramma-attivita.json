@@ -1,0 +1,78 @@
+{
+  "intuizione": "L'activity diagram è un diagramma di flusso «potenziato»: mostra in che ordine si svolgono le attività di un processo, dove si prendono decisioni, cosa si ripete e cosa avviene in parallelo. Le swimlane (corsie) dicono chi fa cosa: utente, sistema, bibliotecario. A differenza del sequence diagram non mostra le chiamate tra oggetti, ma il flusso del lavoro.",
+  "spiegazione": "## Gli elementi\n\n| elemento | notazione UML | significato |\n|---|---|---|\n| **Nodo iniziale** | pallino nero pieno | inizio del flusso |\n| **Nodo finale di attività** | pallino nero cerchiato (occhio di bue) | termina **tutta** l'attività |\n| **Nodo finale di flusso** | cerchio con X | termina solo quel ramo |\n| **Azione** | rettangolo arrotondato con verbo | un passo del processo |\n| **Decisione** | rombo con un ingresso e più uscite con **guardie** `[condizione]` | scelta di un ramo |\n| **Merge** | rombo con più ingressi e un'uscita | ricongiunge rami alternativi |\n| **Fork** | barra spessa con un ingresso e più uscite | avvia attività **parallele** |\n| **Join** | barra spessa con più ingressi e un'uscita | aspetta che **tutti** i rami paralleli finiscano |\n| **Partizione (swimlane)** | corsia con nome | chi esegue le azioni |\n| **Nodo oggetto** | rettangolo con nome oggetto | un dato prodotto/consumato (es. Documento, Ricevuta) |\n| **Evento temporale** | clessidra | attesa di un tempo («15 giorni») |\n\nDecisione/merge riguardano **alternative** (uno solo dei rami); fork/join riguardano **concorrenza** (tutti i rami). È la distinzione più chiesta.\n\nIn Mermaid non esiste un tipo «activity»: nelle lezioni lo rendiamo con un `flowchart` (inizio/fine come cerchi, decisioni come rombi, fork e join come barre etichettate, swimlane come `subgraph`). All'esame usa la notazione UML della tabella.\n\n## Esempio completo: procedura di prestito (biblioteca 2016/17, es. 1.3, paragrafi 4-5)\n\nTesto: l'utente cerca il documento per titolo; l'applicazione verifica ammissibilità, limite e sospensione; la richiesta va al bibliotecario reale che reperisce il documento; **durante il reperimento** l'utente riceve informazioni e compila un questionario; l'utente se ne va quando **ha ricevuto il documento e terminato il questionario**.\n\n```mermaid\nflowchart TD\n    subgraph UT[\"Utente\"]\n        START((\"inizio\")) --> A1[\"Inserire titolo\"]\n        Q1[\"Leggere informazioni aggiuntive\"] --> Q2[\"Compilare questionario\"]\n        RIT[\"Ritirare documento\"]\n        FINE((\"fine\"))\n    end\n    subgraph SIS[\"Bibliotecario elettronico\"]\n        A2[\"Cercare documento per titolo\"] --> D1{\"ammissibile al prestito?\"}\n        D1 -->|\"sì\"| D2{\"utente non sospeso e meno di 5 prestiti?\"}\n        D1 -->|\"no\"| RIF[\"Mostrare rifiuto\"]\n        D2 -->|\"no\"| RIF\n        D2 -->|\"sì\"| A3[\"Inviare richiesta al bibliotecario\"]\n        A3 --> FORK[\"fork\"]\n        JOIN[\"join\"] --> A5[\"Registrare prestito con scadenza a 15 giorni\"]\n        RIF --> M((\"fine rifiuto\"))\n    end\n    subgraph BIB[\"Bibliotecario\"]\n        B1[\"Reperire documento\"] --> B2[\"Consegnare documento\"]\n    end\n    A1 --> A2\n    FORK --> Q1\n    FORK --> B1\n    Q2 --> JOIN\n    B2 --> JOIN\n    A5 --> RIT\n    RIT --> FINE\n```\n\nPunti chiave:\n- Le **due verifiche** sono decisioni con guardie complete (`sì`/`no`), e i rami di rifiuto si ricongiungono.\n- «Durante il reperimento l'utente… compila il questionario» = **fork**: due rami paralleli in corsie diverse.\n- «Abbandona la postazione quando ha ricevuto il documento **e** terminato il questionario» = **join**: si prosegue solo quando entrambi i rami sono finiti.\n\n## Activity dell'intera applicazione (come nel 5/11/2025)\n\nQuando il testo chiede «un activity diagram che mostri il funzionamento dell'intera applicazione», si modella il **ciclo principale** del sistema ad alto livello: le azioni sono i casi d'uso principali, collegati dalle decisioni che li attivano. Non si scende al dettaglio di ogni verifica.\n\n```mermaid\nflowchart TD\n    I((\"inizio\")) --> V[\"Avviare vendita e creare carrello\"]\n    V --> AG[\"Aggiungere prodotto al carrello\"]\n    AG --> D1{\"prodotto disponibile in farmacia?\"}\n    D1 -->|\"sì\"| ALT{\"altri prodotti?\"}\n    D1 -->|\"no\"| D2{\"disponibile in magazzino?\"}\n    D2 -->|\"sì\"| PREL[\"Prelevare dal magazzino\"] --> ALT\n    D2 -->|\"no\"| PREN[\"Registrare prenotazione\"] --> ALT\n    ALT -->|\"sì\"| AG\n    ALT -->|\"no\"| D3{\"cliente con tessera e soglia superata?\"}\n    D3 -->|\"sì\"| SC[\"Applicare sconto\"] --> PAG[\"Registrare pagamento\"]\n    D3 -->|\"no\"| PAG\n    PAG --> FK[\"fork\"]\n    FK --> Q[\"Aggiornare quantità\"]\n    FK --> TS[\"Aggiornare importo tessera\"]\n    FK --> RP[\"Aggiornare rapporto giornaliero\"]\n    Q --> JN[\"join\"]\n    TS --> JN\n    RP --> JN\n    JN --> F((\"fine\"))\n```\n\nIl **loop** (aggiungere altri prodotti) si rappresenta con una decisione che riporta indietro; gli aggiornamenti dopo il pagamento sono indipendenti, quindi possono stare in un fork/join (in alternativa, in sequenza: entrambe le scelte sono accettabili se motivate).\n\n## Coerenza con gli altri diagrammi\n\n- Le **azioni** usano lo stesso lessico dei casi d'uso e delle operazioni (Aggiornare quantità ↔ `decrementa()`, Applicare sconto ↔ `haDirittoSconto()`).\n- Le **decisioni** corrispondono alle estensioni della descrizione testuale e agli `alt` del sequence.\n- Le **swimlane** corrispondono agli attori dello use case (più il sistema).",
+  "analogia": "È la procedura per preparare una cena con un amico: tu cuoci la pasta mentre lui apparecchia (fork), si mangia solo quando entrambe le cose sono pronte (join); se manca il sugo si decide se comprarlo o fare aglio e olio (decisione), poi si va comunque a tavola (merge). Le corsie sono «io» e «l'amico». L'analogia cede sui dati: in cucina non serve tracciare gli oggetti scambiati, mentre nell'activity diagram i nodi oggetto mostrano documenti e dati che passano tra le attività.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Diagrammi di flusso (flowchart) di Fondamenti di Informatica",
+      "collegamento": "Azioni, decisioni e cicli sono identici; l'activity aggiunge parallelismo (fork/join), corsie e oggetti."
+    },
+    {
+      "conoscenza": "Thread in Java (start/join)",
+      "collegamento": "Fork = avvio di attività concorrenti; join = come Thread.join(): si prosegue solo quando tutti hanno finito."
+    },
+    {
+      "conoscenza": "Descrizione testuale dei casi d'uso",
+      "collegamento": "Passi → azioni, estensioni → decisioni; i passi «durante…» → fork.",
+      "nodo": "casi-uso-descrizione-testuale"
+    },
+    {
+      "conoscenza": "Diagramma delle classi",
+      "collegamento": "Le azioni del sistema devono corrispondere alle operazioni progettate.",
+      "nodo": "uml-diagramma-classi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Approvazione delle prenotazioni e sanzioni (ambulanti, caso della prova 9/6/2022)",
+      "problema": "Modella il processo: l'ambulante invia una prenotazione; il sistema verifica il limite di 5 prenotazioni attive; l'operatore approva o rifiuta; il giorno del mercato l'operatore registra la presenza; in caso di assenza viene registrata e, superato un numero di assenze (ipotesi: 3), si applica una sanzione.",
+      "passi": [
+        "Corsie: Ambulante, Sistema, Operatore.",
+        "Ambulante: Inviare prenotazione → Sistema: decisione [meno di 5 attive]; no → Notificare rifiuto → fine.",
+        "Sì → Operatore: decisione [approva?]; no → Sistema: Notificare rifiuto; sì → Sistema: Registrare prenotazione approvata.",
+        "Evento temporale «giorno del mercato» → Operatore: decisione [ambulante presente?]; sì → fine; no → Sistema: Registrare assenza → decisione [assenze ≥ 3?] → sì: Applicare sanzione.",
+        "Merge dei rami e fine."
+      ],
+      "soluzione": "```mermaid\nflowchart TD\n    subgraph AMB[\"Ambulante\"]\n        S((\"inizio\")) --> P1[\"Inviare prenotazione\"]\n    end\n    subgraph SIS[\"Sistema\"]\n        D1{\"meno di 5 prenotazioni attive?\"}\n        RIF[\"Notificare rifiuto\"]\n        REG[\"Registrare prenotazione approvata\"]\n        ASS[\"Registrare assenza\"] --> D4{\"assenze almeno 3?\"}\n        D4 -->|\"sì\"| SAN[\"Applicare sanzione\"]\n        D4 -->|\"no\"| MRG{\" \"}\n        SAN --> MRG\n    end\n    subgraph OPE[\"Operatore\"]\n        D2{\"approva?\"}\n        T[\"Attendere giorno del mercato\"] --> D3{\"ambulante presente?\"}\n    end\n    P1 --> D1\n    D1 -->|\"no\"| RIF\n    D1 -->|\"sì\"| D2\n    D2 -->|\"no\"| RIF\n    D2 -->|\"sì\"| REG\n    REG --> T\n    D3 -->|\"no\"| ASS\n    D3 -->|\"sì\"| MRG\n    RIF --> F1((\"fine\"))\n    MRG --> F2((\"fine\"))\n```\nIpotesi dichiarata: soglia di 3 assenze per la sanzione (il valore non è nella sintesi disponibile).",
+      "perche_funziona": "Ogni scelta del testo è una decisione con guardie complete; l'attesa del giorno di mercato è un evento temporale; il merge (rombo senza etichetta) ricongiunge i rami prima della fine."
+    },
+    {
+      "titolo": "Riconoscere fork e decisione nel testo",
+      "problema": "Per ciascuna frase indica se serve una decisione o un fork: (a) «se il prodotto non è disponibile il cliente può prenotarlo»; (b) «mentre il bibliotecario cerca il libro, l'utente compila il questionario»; (c) «dopo ogni vendita il sistema aggiorna le quantità e il rapporto giornaliero»; (d) «il cliente paga in contanti o con carta».",
+      "passi": [
+        "(a) «se» → alternativa: decisione con guardie [disponibile]/[non disponibile].",
+        "(b) «mentre» → contemporaneità: fork in due corsie, poi join.",
+        "(c) due aggiornamenti indipendenti: possono essere sequenziali o in fork/join; senza un vincolo di ordine il fork è legittimo.",
+        "(d) «o» esclusivo → decisione [contanti]/[carta] e merge."
+      ],
+      "soluzione": "(a) decisione; (b) fork/join; (c) sequenza o fork/join (scelta motivata); (d) decisione + merge.",
+      "perche_funziona": "Parole come «se», «oppure» indicano alternative; «mentre», «contemporaneamente», «e intanto» indicano parallelismo."
+    }
+  ],
+  "errori_comuni": [
+    "Usare un fork dove i rami sono alternativi (o una decisione dove sono paralleli).",
+    "Decisioni senza guardie o con guardie che non coprono tutti i casi.",
+    "Dimenticare il join: il flusso prosegue senza aspettare entrambi i rami.",
+    "Mettere nell'activity messaggi tra oggetti (getX(), new ...): è roba da sequence diagram.",
+    "Usare nomi delle azioni diversi da quelli dei casi d'uso e delle operazioni."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra decision/merge e fork/join?",
+      "risposta": "Decision/merge gestiscono alternative: solo uno dei rami viene percorso, scelto dalle guardie, e il merge li ricongiunge. Fork/join gestiscono la concorrenza: tutti i rami vengono eseguiti in parallelo e il join aspetta che siano tutti terminati."
+    },
+    {
+      "domanda": "A cosa servono le partizioni (swimlane)?",
+      "risposta": "A indicare chi è responsabile di ciascuna azione (attore, sistema, ufficio), rendendo visibili i passaggi di responsabilità nel processo."
+    },
+    {
+      "domanda": "Che differenza c'è tra nodo finale di attività e nodo finale di flusso?",
+      "risposta": "Il finale di attività termina l'intera attività, interrompendo anche eventuali altri rami paralleli; il finale di flusso termina solo il ramo in cui si trova."
+    },
+    {
+      "domanda": "Quando usare un activity diagram invece di un sequence diagram?",
+      "risposta": "Quando interessa il flusso di lavoro di un processo (ordine, decisioni, parallelismo, responsabilità), anche coinvolgendo persone; il sequence serve a mostrare l'interazione tra oggetti specifici in uno scenario."
+    }
+  ],
+  "riepilogo": "Azioni, decisioni con guardie, merge, fork/join, swimlane, inizio/fine.\nDecisione = alternative («se», «oppure»); fork/join = parallelo («mentre», «e intanto»).\nJoin: si prosegue solo quando tutti i rami paralleli sono finiti.\nLessico coerente con casi d'uso e operazioni del class diagram."
+}
