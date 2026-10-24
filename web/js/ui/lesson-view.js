@@ -4,6 +4,7 @@ import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { formatMinuti } from '../core/progress.js';
 import { lessonNav, hasLesson, createStepper, nextToStudy } from '../core/lesson.js';
 import { mdElement, renderMermaid } from './markdown.js';
+import { enhanceCodeBlocks } from './code-block.js';
 
 export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, closeLabel = '← Percorso' }) {
   const title = (id) => (graph.byId.get(id) || { title: id }).title;
@@ -32,7 +33,7 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, c
         list.append(li);
       }
       sol.hidden = !st.solutionShown;
-      if (!sol.hidden) renderMermaid(sol); // i diagrammi nascosti si disegnano solo quando visibili
+      if (!sol.hidden) { enhanceCodeBlocks(sol); renderMermaid(sol); } // i diagrammi nascosti si disegnano solo quando visibili
       btn.textContent = st.label();
       btn.disabled = st.finished;
       allBtn.hidden = st.finished;
@@ -123,6 +124,7 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, c
         finishBar(n, nav, done),
         navBar(nav, 'bottom'),
       );
+      enhanceCodeBlocks(root);
       await renderMermaid(root);
     },
     focus() { root.querySelector('#lesson-title')?.focus({ preventScroll: true }); },
