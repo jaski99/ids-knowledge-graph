@@ -1,0 +1,67 @@
+{
+  "intuizione": "Un LLM (Large Language Model) è un modello addestrato su enormi quantità di testo e codice a prevedere il pezzo di testo successivo: per questo scrive codice plausibile, ma non garantisce che sia corretto. Un agente di coding mette l'LLM dentro un ciclo con degli strumenti (leggere e scrivere file, eseguire comandi e test, usare Git): pianifica, agisce, osserva il risultato e riprova. Entrambi si possono usare in tutte le fasi del ciclo di vita, dai requisiti alla manutenzione, sempre con un umano che verifica.",
+  "spiegazione": "> Nota: quest'area è la parte più recente del programma; i testi di riferimento classici del corso non la trattano. La lezione presenta concetti generali e consolidati, non posizioni attribuite al docente.\n\n## Come funziona un LLM (a livello concettuale)\n\n1. Il testo viene spezzato in **token** (pezzi di parole, simboli, parti di codice).\n2. Il modello (una rete neurale di tipo *transformer*) riceve la sequenza di token e calcola una **distribuzione di probabilità** sul token successivo.\n3. Si sceglie un token (più o meno casualmente, a seconda di un parametro detto *temperatura*), lo si aggiunge alla sequenza e si ripete.\n\nConseguenze importanti per un ingegnere del software:\n- **Plausibile ≠ corretto**: il modello produce ciò che è statisticamente probabile dato il contesto; se il contesto è ambiguo, «indovina». Quando inventa API, librerie o fatti si parla di **allucinazione**.\n- **Non determinismo**: la stessa richiesta può dare risposte diverse.\n- **Finestra di contesto** limitata: il modello «vede» solo ciò che gli viene passato (prompt, file aperti, risultati degli strumenti); non conosce il resto del progetto se nessuno glielo mostra.\n- **Conoscenza ferma a una data**: librerie uscite dopo l'addestramento possono essere ignorate o descritte in modo sbagliato.\n\n## Dall'assistente all'agente\n\n| | Assistente (completamento o chat) | Agente di coding |\n|---|---|---|\n| interazione | suggerisce codice o risponde; l'umano copia e applica | esegue in autonomia più passi verso un obiettivo |\n| strumenti | nessuno o pochi | file system, terminale, compilatore, test, Git, ricerca |\n| feedback | lo dà l'umano | lo legge da solo (errori di compilazione, test falliti) |\n| rischio | suggerimento sbagliato | azioni sbagliate sul repository o sull'ambiente |\n\n```mermaid\nflowchart LR\n    OB[\"Obiettivo: issue o richiesta\"] --> PL[\"Pianifica\"]\n    PL --> AG[\"Agisci: modifica file, esegui comandi\"]\n    AG --> OS[\"Osserva: output, errori, esito dei test\"]\n    OS --> DEC{\"Obiettivo raggiunto?\"}\n    DEC -- \"no\" --> PL\n    DEC -- \"sì\" --> PRQ[\"Propone diff o pull request\"]\n    PRQ --> REV[\"Revisione umana e merge\"]\n```\n\nIl ciclo pianifica → agisci → osserva funziona bene proprio quando esistono **segnali oggettivi**: un compilatore, una suite di test, una pipeline CI. Per questo le pratiche classiche (test automatici, piccoli commit, branch e pull request) diventano ancora più importanti con gli agenti.\n\nLo stesso ciclo, scritto come interfaccia Java didattica:\n\n```java\ninterface Strumento { String esegui(String comando); }   // es. terminale, test, git\n\nclass AgenteCoding {\n    private final Llm llm;\n    private final Strumento terminale;\n    AgenteCoding(Llm llm, Strumento terminale) { this.llm = llm; this.terminale = terminale; }\n\n    String risolvi(String obiettivo, int maxPassi) {\n        String contesto = obiettivo;\n        for (int i = 0; i < maxPassi; i++) {\n            String azione = llm.prossimaAzione(contesto);        // pianifica\n            if (azione.equals(\"FINE\")) return \"pronto per la review\";\n            String esito = terminale.esegui(azione);            // agisci\n            contesto += \"\\n\" + azione + \" -> \" + esito;          // osserva\n        }\n        return \"limite di passi raggiunto: serve un umano\";\n    }\n}\ninterface Llm { String prossimaAzione(String contesto); }\n```\n\nIl limite di passi e la revisione finale sono salvaguardie: l'agente non deve poter girare all'infinito né fare merge da solo.\n\n## Usi lungo il ciclo di vita\n\n| fase | uso tipico | che cosa resta all'umano |\n|---|---|---|\n| Requisiti | bozze di user story e casi d'uso da trascrizioni di interviste, domande di chiarimento, controllo di ambiguità | validare con gli stakeholder; il modello non conosce il dominio reale |\n| Progettazione | proporre alternative architetturali, diagrammi UML in formato testuale, discutere pattern | scegliere e motivare in base ai requisiti di qualità |\n| Implementazione | completamento, generazione da commenti o firme, traduzione tra linguaggi | comprendere ogni riga, programmazione difensiva |\n| Testing | generare casi di test e scheletri JUnit, dati di prova | oracolo: valori attesi derivati dalla specifica, copertura |\n| Manutenzione | spiegare codice legacy, refactoring guidato, migrazioni di versione | test di regressione prima e dopo, review del diff |\n| Documentazione | Javadoc, README, note di rilascio | verificare che descriva il comportamento reale |\n\n## Il messaggio di fondo\nGli LLM spostano il collo di bottiglia dalla **scrittura** del codice alla sua **specifica e verifica**. Un requisito ambiguo produce codice ambiguo più in fretta; una buona specifica, buoni test e una buona review rendono l'AI uno strumento potente. Le tecniche del corso non diventano obsolete: diventano il modo per controllare ciò che la macchina produce.",
+  "analogia": "Un LLM è come un collega che ha letto milioni di programmi ma non ne ha mai eseguito uno: completa le frasi in modo convincente perché ha visto molti esempi simili, non perché abbia verificato che funzionino. Un agente è lo stesso collega a cui dai anche la tastiera, il terminale e la possibilità di lanciare i test: ora può accorgersi da solo di alcuni errori, ma può anche fare danni più grossi. L'analogia cede perché un collega umano sa quando non sa e lo dice, mentre un LLM tende a rispondere con la stessa sicurezza sia quando ha ragione sia quando inventa.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Probabilità e distribuzioni (Statistica)",
+      "collegamento": "Un LLM sceglie il token successivo campionando da una distribuzione di probabilità: per questo l'output è plausibile ma non garantito e può variare."
+    },
+    {
+      "conoscenza": "Livelli e tipi di test",
+      "collegamento": "I test automatici sono il segnale oggettivo che permette a un agente di capire se una modifica funziona.",
+      "nodo": "testing-livelli-tipi"
+    },
+    {
+      "conoscenza": "Processo dei requisiti",
+      "collegamento": "Gli LLM aiutano a produrre bozze di requisiti, che però vanno validate con gli stakeholder.",
+      "nodo": "requisiti-processo-specifica"
+    },
+    {
+      "conoscenza": "Gestione delle configurazioni",
+      "collegamento": "Gli agenti lavorano su branch e pull request, sotto change control come ogni altro contributore.",
+      "nodo": "gestione-configurazioni"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Domanda: AI nelle fasi del ciclo di vita",
+      "problema": "«Come si possono usare LLM e agenti nelle fasi del ciclo di vita del software?»",
+      "passi": [
+        "Definizione: LLM = modello che genera testo/codice prevedendo il token successivo, senza garanzia di correttezza; agente = LLM + strumenti + ciclo pianifica-agisci-osserva.",
+        "Requisiti: bozze di user story e casi d'uso, individuazione di ambiguità; validazione con gli stakeholder.",
+        "Progettazione: alternative architetturali e pattern, da valutare rispetto ai requisiti di qualità.",
+        "Implementazione e testing: generazione di codice e di test JUnit; i valori attesi vanno derivati dalla specifica.",
+        "Manutenzione: spiegazione di codice legacy, refactoring e migrazioni con test di regressione; documentazione.",
+        "Conclusione: in ogni fase l'umano mantiene responsabilità e verifica."
+      ],
+      "soluzione": "Una tabella fase → uso → ruolo umano, preceduta dalla distinzione LLM/agente.",
+      "perche_funziona": "Mostra di conoscere sia le capacità sia i limiti, e lega ogni uso a una verifica concreta."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che un LLM «capisca» o esegua il codice: ne genera una continuazione plausibile.",
+    "Confondere assistente e agente: l'agente agisce con strumenti in un ciclo autonomo.",
+    "Credere che l'AI renda superflui requisiti, test e review: li rende più importanti.",
+    "Dare per scontato che il modello conosca tutto il progetto o le ultime versioni delle librerie."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Perché il codice generato da un LLM può essere sbagliato anche se sembra corretto?",
+      "risposta": "Perché il modello produce la continuazione statisticamente più plausibile del contesto, senza eseguire né verificare il codice; può quindi inventare API (allucinazioni) o sbagliare casi limite."
+    },
+    {
+      "domanda": "Che cosa distingue un agente di coding da un assistente?",
+      "risposta": "L'agente combina l'LLM con strumenti (file, terminale, test, Git) e lavora in un ciclo pianifica-agisci-osserva verso un obiettivo, leggendo da solo il feedback; l'assistente si limita a suggerire."
+    },
+    {
+      "domanda": "Perché test e CI sono importanti per gli agenti?",
+      "risposta": "Forniscono un segnale oggettivo di successo o fallimento che l'agente può osservare per correggersi, e un controllo indipendente per l'umano."
+    },
+    {
+      "domanda": "In quale fase l'AI aiuta con i requisiti e qual è il limite?",
+      "risposta": "Nell'analisi: bozze di user story e casi d'uso, ricerca di ambiguità; il limite è che il modello non conosce il dominio e gli obiettivi reali, quindi tutto va validato con gli stakeholder."
+    }
+  ],
+  "riepilogo": "LLM: prevede il token successivo; output plausibile, non garantito, non deterministico.\nAgente: LLM + strumenti + ciclo pianifica-agisci-osserva, con limiti e review umana.\nUsi in tutte le fasi: requisiti, progettazione, codice, test, manutenzione, documentazione.\nIl collo di bottiglia passa dalla scrittura a specifica e verifica."
+}

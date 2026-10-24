@@ -1,0 +1,61 @@
+{
+  "intuizione": "Il codice è protetto dal diritto d'autore fin dal momento in cui viene scritto: senza una licenza nessuno può copiarlo, modificarlo o ridistribuirlo. La licenza è il permesso che l'autore concede, con delle condizioni. Le licenze open source si dividono in due famiglie: permissive (MIT, BSD, Apache: fai quasi tutto, basta mantenere l'avviso di copyright) e copyleft (GPL e simili: puoi fare tutto, ma se distribuisci il software derivato devi farlo con la stessa licenza e con il sorgente).",
+  "spiegazione": "## Diritto d'autore e licenza\n\n- Chi scrive il codice ne è **titolare** (o lo è il datore di lavoro, se scritto per lavoro).\n- «Codice pubblico su GitHub» **non** significa libero: senza un file `LICENSE` tutti i diritti sono riservati.\n- La **licenza** è un contratto unilaterale che concede diritti (usare, copiare, modificare, distribuire) a certe condizioni.\n- **Proprietaria**: di solito concede solo l'uso (EULA), vieta modifica e redistribuzione, il sorgente resta segreto.\n- **Open source / software libero**: concede le quattro libertà (usare per qualsiasi scopo, studiare e modificare, ridistribuire copie, distribuire versioni modificate), con accesso al sorgente.\n\n## Le famiglie open source\n\n```mermaid\nflowchart TD\n    OS[\"Licenze open source\"] --> P[\"Permissive\"]\n    OS --> C[\"Copyleft\"]\n    P --> MIT[\"MIT\"]\n    P --> BSD[\"BSD 2 e 3 clausole\"]\n    P --> AP[\"Apache 2.0: + concessione di brevetti\"]\n    C --> W[\"Copyleft debole\"]\n    C --> S[\"Copyleft forte\"]\n    W --> LG[\"LGPL: a livello di libreria\"]\n    W --> MP[\"MPL 2.0: a livello di file\"]\n    S --> GP[\"GPL v2 e v3\"]\n    S --> AG[\"AGPL v3: anche uso in rete\"]\n```\n\n| licenza (identificatore SPDX) | tipo | condizioni principali |\n|---|---|---|\n| `MIT` | permissiva | mantenere l'avviso di copyright e il testo della licenza |\n| `BSD-3-Clause` | permissiva | come MIT + divieto di usare il nome degli autori per promuovere i derivati |\n| `Apache-2.0` | permissiva | avviso di copyright, file NOTICE, indicare le modifiche; **concessione esplicita dei brevetti** (che decade se fai causa per brevetti) |\n| `LGPL-2.1-or-later`, `LGPL-3.0-only` | copyleft debole | le modifiche alla libreria vanno rilasciate in LGPL; il programma che la **usa** (collegandola) può avere qualsiasi licenza |\n| `MPL-2.0` | copyleft debole | copyleft sui **file** modificati; gli altri file del progetto possono essere proprietari |\n| `GPL-2.0-only`, `GPL-3.0-or-later` | copyleft forte | se **distribuisci** il programma o un'opera derivata, tutta l'opera va in GPL con il sorgente |\n| `AGPL-3.0-only` | copyleft forte di rete | come GPLv3, ma l'obbligo scatta anche se offri il programma modificato **come servizio in rete** |\n\n## Il copyleft spiegato bene\n\nIl copyleft usa il diritto d'autore «al contrario»: invece di limitare le libertà, impone che **restino** a chi riceve il software. Tre punti spesso fraintesi:\n\n1. **L'obbligo scatta con la distribuzione**, non con l'uso o la modifica privata. Usare software GPL in azienda internamente non obbliga a pubblicare nulla. (Eccezione: l'AGPL per i servizi in rete.)\n2. **Non vieta di vendere**: puoi vendere software GPL, ma devi dare il sorgente e gli stessi diritti a chi lo compra.\n3. **«Contagio» per opera derivata**: se il tuo programma incorpora o si collega strettamente a codice GPL e lo distribuisci, l'intero programma va sotto GPL. Le versioni «-only» e «-or-later» contano: `GPL-2.0-only` non può essere combinata con codice `GPL-3.0`, mentre `GPL-2.0-or-later` sì.\n\n## Come si dichiara una licenza in pratica\n\n- File `LICENSE` nella radice del repository con il testo integrale.\n- Intestazione nei sorgenti con identificatore SPDX:\n\n```java\n// SPDX-License-Identifier: Apache-2.0\n// Copyright 2026 Mario Rossi\npackage it.unimore.farmacia;\n\npublic class Magazzino {\n    // ...\n}\n```\n\n- In Maven, la sezione `<licenses>` del `pom.xml`; strumenti automatici (plugin di licenza, scanner SBOM) elencano le licenze di tutte le dipendenze, anche transitive.\n\n## Perché interessa all'ingegnere del software\nUn progetto moderno include decine o centinaia di dipendenze: ognuna porta una licenza con obblighi. Scegliere una dipendenza GPL per un prodotto proprietario distribuito può costringere a rilasciare il sorgente o a riscrivere il componente. La verifica delle licenze fa parte della gestione delle dipendenze e della gestione delle configurazioni, esattamente come la verifica delle versioni. Lo stesso problema si ripresenta con il codice generato dagli assistenti AI, che può riprodurre frammenti di codice con licenza.",
+  "analogia": "Una licenza è come le condizioni con cui un amico ti presta la sua ricetta segreta. Licenza permissiva: «Fanne quello che vuoi, anche vendere i biscotti, basta che scrivi che la ricetta è mia». Copyleft: «Puoi usarla e modificarla, ma se distribuisci la tua versione della ricetta devi condividerla con le stesse regole». Proprietaria: «Puoi mangiare i biscotti, ma la ricetta non te la do». L'analogia cede perché una ricetta in sé non è protetta dal diritto d'autore come il codice, e perché nel software le combinazioni di licenze diverse nello stesso programma creano vincoli legali precisi che una ricetta non ha.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Diritto d'autore su libri e musica",
+      "collegamento": "Il codice è protetto come un'opera letteraria: copiarlo senza permesso è una violazione."
+    },
+    {
+      "conoscenza": "Gestione delle configurazioni e dipendenze Maven",
+      "collegamento": "Ogni dipendenza dichiarata nel pom porta con sé una licenza da verificare.",
+      "nodo": "maven"
+    },
+    {
+      "conoscenza": "Git e GitHub",
+      "collegamento": "Un repository pubblico senza file LICENSE non è automaticamente riutilizzabile.",
+      "nodo": "git-versionamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Distinguere permissiva e copyleft",
+      "problema": "Per ciascuna situazione indica se è consentita: (a) uso una libreria MIT in un'app proprietaria venduta; (b) modifico un programma GPL e lo uso solo internamente in azienda; (c) modifico un programma GPL e vendo la versione modificata senza sorgente; (d) uso una libreria LGPL collegandola alla mia app proprietaria.",
+      "passi": [
+        "(a) Consentito: MIT è permissiva, basta includere avviso di copyright e testo della licenza.",
+        "(b) Consentito: l'obbligo GPL scatta con la distribuzione, l'uso interno non è distribuzione.",
+        "(c) Non consentito: distribuendo l'opera derivata devo fornire il sorgente sotto GPL (la vendita è lecita, il sorgente negato no).",
+        "(d) Consentito: LGPL permette di collegare la libreria a software con altra licenza; se modifico la libreria stessa, le modifiche vanno rilasciate in LGPL."
+      ],
+      "soluzione": "(a) sì, (b) sì, (c) no, (d) sì con le condizioni LGPL.",
+      "perche_funziona": "Il discriminante è il tipo di licenza (permissiva o copyleft, forte o debole) e se c'è distribuzione."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che il codice pubblico su GitHub sia liberamente riutilizzabile anche senza licenza.",
+    "Credere che la GPL vieti di vendere il software.",
+    "Credere che usare internamente software GPL obblighi a pubblicare il proprio codice.",
+    "Ignorare le dipendenze transitive e le loro licenze.",
+    "Dimenticare l'avviso di copyright richiesto anche dalle licenze permissive."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra licenza permissiva e copyleft?",
+      "risposta": "La permissiva consente di riutilizzare il codice anche in software proprietario, chiedendo solo di mantenere l'avviso di copyright; il copyleft richiede che le opere derivate distribuite siano rilasciate con la stessa licenza e con il sorgente."
+    },
+    {
+      "domanda": "Quando scattano gli obblighi della GPL?",
+      "risposta": "Quando si distribuisce il programma o un'opera derivata; l'uso e la modifica privata non li attivano. L'AGPL estende l'obbligo all'offerta del programma come servizio in rete."
+    },
+    {
+      "domanda": "Che cosa aggiunge Apache 2.0 rispetto a MIT?",
+      "risposta": "Una concessione esplicita dei diritti di brevetto da parte dei contributori (che decade per chi avvia cause brevettuali), oltre all'obbligo di indicare le modifiche e mantenere il file NOTICE."
+    },
+    {
+      "domanda": "Che cos'è il copyleft debole?",
+      "risposta": "Un copyleft limitato alla libreria (LGPL) o ai singoli file (MPL): le modifiche a quel codice restano libere, ma il programma che lo usa può avere una licenza diversa."
+    }
+  ],
+  "riepilogo": "Senza licenza: tutti i diritti riservati.\nPermissive (MIT, BSD, Apache-2.0): riuso libero, anche proprietario, mantenendo il copyright.\nCopyleft forte (GPL, AGPL): opere derivate distribuite sotto la stessa licenza con sorgente.\nCopyleft debole (LGPL, MPL): vincolo solo su libreria o file.\nObblighi GPL legati alla distribuzione; dichiarare con LICENSE e SPDX."
+}

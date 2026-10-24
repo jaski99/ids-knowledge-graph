@@ -1,0 +1,87 @@
+{
+  "intuizione": "JUnit 5 trasforma i casi di test che scriveresti su carta in codice Java eseguibile in un secondo: ogni metodo annotato con @Test prepara i dati, chiama il metodo da provare e controlla il risultato con un'asserzione. Le tabelle di classi di equivalenza e valori limite diventano test parametrici con una riga per caso. Così i test si ripetono a ogni modifica (regressione) senza fatica.",
+  "spiegazione": "## Anatomia di una classe di test\n\n```java\nimport static org.junit.jupiter.api.Assertions.*;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.DisplayName;\nimport org.junit.jupiter.api.Test;\n\nclass CarrelloTest {\n    private Carrello carrello;                       // fixture\n\n    @BeforeEach                                      // eseguito prima di OGNI test\n    void setUp() {\n        carrello = new Carrello();\n    }\n\n    @Test\n    @DisplayName(\"un carrello nuovo ha totale zero\")\n    void carrelloNuovoVuoto() {\n        assertEquals(0.0, carrello.totale(), 1e-9);\n    }\n\n    @Test\n    void aggiungereProdottoAumentaIlTotale() {\n        // Arrange\n        Prodotto p = new Prodotto(\"P01\", \"Crema\", 12.50);\n        // Act\n        carrello.aggiungi(p, 2);\n        // Assert\n        assertEquals(25.0, carrello.totale(), 1e-9);\n    }\n\n    @Test\n    void quantitaNegativaRifiutata() {\n        Prodotto p = new Prodotto(\"P01\", \"Crema\", 12.50);\n        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,\n                () -> carrello.aggiungi(p, -1));\n        assertTrue(e.getMessage().contains(\"quantità\"));\n    }\n}\n```\n\n- **@Test** marca un metodo di test (in JUnit 5 la classe e i metodi possono essere *package-private*).\n- Schema **Arrange-Act-Assert**: prepara, esegui, verifica. Un test = un comportamento.\n- **Ciclo di vita**: `@BeforeEach`/`@AfterEach` prima/dopo ogni test (JUnit crea una **nuova istanza** della classe per ogni test, quindi i test sono indipendenti); `@BeforeAll`/`@AfterAll` una volta sola (metodi `static`).\n- **@Disabled** salta un test; **@DisplayName** dà un nome leggibile.\n\n## Le asserzioni principali (`org.junit.jupiter.api.Assertions`)\n\n| asserzione | uso |\n|---|---|\n| `assertEquals(atteso, ottenuto)` | uguaglianza (con `equals`); **l'atteso va per primo** |\n| `assertEquals(atteso, ottenuto, delta)` | per `double`: tolleranza obbligatoria in pratica |\n| `assertTrue / assertFalse(cond)` | condizioni booleane |\n| `assertNull / assertNotNull(x)` | riferimenti |\n| `assertThrows(Tipo.class, () -> ...)` | il codice deve lanciare quell'eccezione; restituisce l'eccezione per altri controlli |\n| `assertAll(() -> ..., () -> ...)` | esegue tutte le asserzioni e riporta tutti i fallimenti insieme |\n| `assertTimeout(Duration.ofMillis(100), () -> ...)` | requisito di tempo |\n\n## Test parametrici: la tabella EC/BVA diventa codice\n\nServe la dipendenza `junit-jupiter-params` (inclusa nell'artefatto aggregato `junit-jupiter`).\n\n```java\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.CsvSource;\nimport org.junit.jupiter.params.provider.ValueSource;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nclass SpedizioniParamTest {\n    @ParameterizedTest(name = \"[{index}] numero={0}, peso={1}, tariffa={2} -> {3}\")\n    @CsvSource({\n        \"25, 2, 10, 2.0\",       // C2 valida\n        \"100, 2, 10, 20.0\",     // C3 valida\n        \"300, 2, 10, 2700.0\",   // C4 valida\n        \"-5, 2, 10, -1\",        // C1 non valida\n        \"700, 2, 10, -1\"        // C5 non valida\n    })\n    void classiDiEquivalenza(int numero, int peso, int tariffa, double atteso) {\n        assertEquals(atteso, Spedizioni.calcolaCostoSpedizione(numero, peso, tariffa), 1e-9);\n    }\n\n    @ParameterizedTest\n    @ValueSource(ints = {1, 2, 49, 50})\n    void primaFasciaSempreDueEuro(int numero) {\n        assertEquals(2.0, Spedizioni.calcolaCostoSpedizione(numero, 2, 10), 1e-9);\n    }\n}\n```\n\nAltre sorgenti: `@MethodSource` (un metodo che restituisce uno `Stream<Arguments>`), `@EnumSource`, `@CsvFileSource`.\n\n## TDD: red → green → refactor\n\n```mermaid\nflowchart LR\n    R[\"RED: scrivi un test che fallisce\"] --> G[\"GREEN: scrivi il codice minimo per farlo passare\"]\n    G --> F[\"REFACTOR: migliora il codice con i test verdi\"]\n    F --> R\n```\n\nNel **Test-Driven Development** il test si scrive **prima** del codice: obbliga a chiarire la specifica, produce codice testabile (piccole unità, dipendenze iniettabili) e lascia una suite di regressione completa. Il refactoring è sicuro perché i test dicono subito se il comportamento è cambiato.\n\n## Buone pratiche (proprietà FIRST)\n- **Fast**: millisecondi; niente rete o database reale negli unit test (si usano stub o mock, ad esempio con Mockito).\n- **Independent**: nessun test dipende dall'ordine o dallo stato lasciato da un altro.\n- **Repeatable**: stesso risultato ovunque (niente orari o casualità non controllati).\n- **Self-validating**: passa o fallisce da solo, niente controllo «a occhio» delle stampe.\n- **Timely**: scritto insieme (o prima) del codice.\n\n## Dove stanno e come si eseguono\nCon Maven: i test stanno in `src/test/java`, nello stesso package della classe testata; `mvn test` li esegue tutti (plugin Surefire) e la build fallisce se un test fallisce.",
+  "analogia": "Una suite JUnit è come la checklist di un pilota prima del decollo: una serie di controlli precisi, sempre uguali, ognuno con un esito sì/no, ripetuti a ogni volo. Non si fida della memoria né dell'impressione generale. Il test parametrico è la stessa voce della checklist ripetuta per ogni motore. L'analogia cede su un punto: la checklist del pilota controlla lo stato dell'aereo, mentre un test controlla un comportamento (dato questo input, mi aspetto questo output), e se l'aspettativa è sbagliata il test può essere verde su codice sbagliato.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Annotazioni Java (@Override) e lambda",
+      "collegamento": "@Test è un'annotazione letta dal framework; assertThrows riceve una lambda con il codice che deve lanciare l'eccezione."
+    },
+    {
+      "conoscenza": "Eccezioni checked e unchecked",
+      "collegamento": "assertThrows verifica il contratto «lancia IllegalArgumentException se l'input non è valido»."
+    },
+    {
+      "conoscenza": "Analisi dei valori limite",
+      "collegamento": "Ogni riga della tabella BVA è una riga di @CsvSource.",
+      "nodo": "boundary-value-analysis"
+    },
+    {
+      "conoscenza": "Livelli di test",
+      "collegamento": "JUnit è lo strumento degli unit test (e, con altri strumenti, anche di integrazione).",
+      "nodo": "testing-livelli-tipi"
+    },
+    {
+      "conoscenza": "Programmazione difensiva",
+      "collegamento": "I controlli delle precondizioni si verificano con assertThrows.",
+      "nodo": "programmazione-difensiva"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Da una specifica a una classe di test",
+      "problema": "Specifica: `int punti(double spesa)` restituisce 1 punto ogni 10 € interi spesi; spesa negativa → IllegalArgumentException. Scrivi i test JUnit 5.",
+      "passi": [
+        "Classi: spesa < 0 (NV, eccezione), spesa ≥ 0 (V). Bordi: -0,01; 0; 9,99; 10; 10,01; 19,99; 20.",
+        "Test dell'eccezione: `assertThrows(IllegalArgumentException.class, () -> Fedelta.punti(-0.01));`.",
+        "Test parametrico sui valori validi con @CsvSource: \"0, 0\", \"9.99, 0\", \"10, 1\", \"10.01, 1\", \"19.99, 1\", \"20, 2\", \"155.5, 15\".",
+        "Implementazione minima che passa (green): `if (spesa < 0) throw new IllegalArgumentException(\"spesa negativa\"); return (int) (spesa / 10);`."
+      ],
+      "soluzione": "Un test con assertThrows per la classe non valida e un @ParameterizedTest con 7 righe per i bordi e un caso centrale.",
+      "perche_funziona": "Classi e bordi decidono quali righe servono; JUnit le rende eseguibili e ripetibili a ogni modifica."
+    },
+    {
+      "titolo": "Ciclo TDD su un requisito nuovo",
+      "problema": "Requisito: «sopra i 500 € di spesa cumulativa il cliente con tessera ha il 5% di sconto». Applica red-green-refactor.",
+      "passi": [
+        "RED: test `scontoSopraSoglia`: tessera con cumulato 500,01 → sconto(100) = 5,0; e `nessunoScontoAllaSoglia`: cumulato 500,00 → 0,0. Falliscono: il metodo non esiste.",
+        "GREEN: implemento `double sconto(double importo) { return cumulato > 500 ? importo * 0.05 : 0; }`. I test passano.",
+        "REFACTOR: estraggo le costanti SOGLIA = 500 e PERCENTUALE = 0.05, rinomino variabili; rieseguo i test: ancora verdi.",
+        "Il test sul bordo 500,00 protegge dal confondere > con >=."
+      ],
+      "soluzione": "Due test scritti prima del codice, implementazione minima, refactoring con test verdi.",
+      "perche_funziona": "Scrivere prima il test obbliga a decidere il comportamento sul bordo (500 escluso) prima di programmare."
+    }
+  ],
+  "errori_comuni": [
+    "Invertire atteso e ottenuto in assertEquals: il messaggio di errore diventa fuorviante.",
+    "Confrontare double senza delta.",
+    "Test che dipendono dall'ordine di esecuzione o da uno stato condiviso static.",
+    "Test senza asserzioni (eseguono il codice ma non verificano niente).",
+    "Catturare l'eccezione con try/catch e fail() invece di usare assertThrows.",
+    "Mettere molti comportamenti in un solo test: quando fallisce non si capisce quale."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra @BeforeEach e @BeforeAll?",
+      "risposta": "@BeforeEach viene eseguito prima di ogni metodo di test (fixture nuova ogni volta); @BeforeAll una sola volta prima di tutti i test della classe e deve essere static (salvo configurazioni particolari del ciclo di vita)."
+    },
+    {
+      "domanda": "Come verifichi che un metodo lanci un'eccezione?",
+      "risposta": "Con `assertThrows(TipoEccezione.class, () -> chiamata())`, che fallisce se l'eccezione non viene lanciata (o ne viene lanciata un'altra) e restituisce l'eccezione per controllarne il messaggio."
+    },
+    {
+      "domanda": "Perché assertEquals con i double richiede un delta?",
+      "risposta": "Perché i double sono rappresentati in binario in modo approssimato: 0.1 + 0.2 non è esattamente 0.3. Il delta stabilisce la tolleranza accettata."
+    },
+    {
+      "domanda": "Che cosa sono le fasi red, green e refactor del TDD?",
+      "risposta": "Red: si scrive un test per il nuovo comportamento e lo si vede fallire. Green: si scrive il codice minimo per farlo passare. Refactor: si migliora la struttura del codice mantenendo tutti i test verdi."
+    },
+    {
+      "domanda": "Cosa significa che un test deve essere indipendente?",
+      "risposta": "Il suo esito non deve dipendere da altri test o dal loro ordine: prepara da sé il proprio stato (fixture) e non lascia effetti collaterali."
+    }
+  ],
+  "riepilogo": "@Test + Arrange-Act-Assert; assertEquals(atteso, ottenuto[, delta]), assertThrows, assertAll.\n@BeforeEach/@AfterEach per test, @BeforeAll/@AfterAll una volta (static).\n@ParameterizedTest + @CsvSource = tabella EC/BVA eseguibile.\nTDD: red → green → refactor. FIRST: fast, independent, repeatable, self-validating, timely.\nCon Maven: src/test/java e mvn test."
+}

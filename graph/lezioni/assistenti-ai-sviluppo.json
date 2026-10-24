@@ -1,0 +1,81 @@
+{
+  "intuizione": "Un assistente AI si usa bene come un collaboratore a cui si danno compiti piccoli e ben specificati: generare codice o test da una firma e una specifica, spiegare codice sconosciuto, fare una modifica mirata o un refactoring che non cambia il comportamento. La qualità della risposta dipende dalla qualità della richiesta (contesto, vincoli, casi limite) e il risultato si accetta solo dopo test e revisione del diff.",
+  "spiegazione": "> Nota: argomento della parte più recente del programma, non coperto dai testi di riferimento classici; gli strumenti citati sono esempi e cambiano rapidamente.\n\n## Le forme degli assistenti\n\n| forma | come si usa | esempio di uso |\n|---|---|---|\n| **Completamento nell'IDE** | suggerisce le righe successive mentre scrivi (es. GitHub Copilot) | completare un metodo dalla firma e dal Javadoc |\n| **Chat nell'IDE** | domande sul codice selezionato o sul progetto | «spiegami questo metodo», «perché questo test fallisce?» |\n| **Agente** | esegue un compito in più passi modificando file ed eseguendo test | «aggiungi la validazione e fai passare i test» |\n\n## Quattro usi principali\n\n### Generazione\nDa firma + specifica + esempi. Più la specifica è precisa (limiti inclusi/esclusi, comportamento sugli input non validi), meno l'assistente deve indovinare.\n\n### Comprensione di codice legacy\nChiedere una spiegazione, un diagramma di sequenza testuale, l'elenco dei casi gestiti. **La spiegazione va verificata**: si scrive un test di caratterizzazione che fissa il comportamento attuale e si controlla che corrisponda a quanto spiegato.\n\n### Modifica mirata e refactoring\nRichiesta esplicita del tipo di refactoring e del vincolo «il comportamento non deve cambiare». I test devono passare **prima** e **dopo**.\n\n### Testing\nGenerazione di casi di test e scheletri JUnit, a partire dalla **specifica** (non dall'implementazione), indicando classi di equivalenza e valori limite. Gli attesi si ricontrollano a mano.\n\n## Anatomia di un buon prompt\n\n| elemento | esempio |\n|---|---|\n| ruolo e contesto | «Progetto Java 17, Maven, JUnit 5, classe Spedizioni» |\n| compito preciso e piccolo | «Scrivi un test parametrizzato per calcolaCostoSpedizione» |\n| specifica e vincoli | fasce, limiti inclusi/esclusi, comportamento su input non validi |\n| casi richiesti | «un caso per classe di equivalenza e i valori limite 0, 1, 50, 51, 150, 151, 500, 501» |\n| formato dell'output | «solo il codice della classe di test, assertEquals con delta 1e-9» |\n| che cosa NON fare | «non modificare la classe sotto test; non inventare dipendenze» |\n\n## Il flusso di lavoro sicuro\n\n```mermaid\nflowchart LR\n    B[\"Nuovo branch\"] --> T0[\"Test esistenti verdi\"]\n    T0 --> P[\"Prompt piccolo e preciso\"]\n    P --> D[\"Diff proposto\"]\n    D --> RV[\"Leggo e capisco il diff\"]\n    RV --> T1[\"Rieseguo i test e ne aggiungo\"]\n    T1 --> OK{\"Tutto verde e capito?\"}\n    OK -- \"sì\" --> C[\"Commit piccolo e pull request\"]\n    OK -- \"no\" --> P\n```\n\n## Esempio: refactoring guidato verificato\n\nPrompt: «Applica Extract Method a `totale` separando subtotale, sconto fedeltà e spedizione. Il comportamento non deve cambiare; non toccare la firma pubblica.»\n\n```java\n// PRIMA\nstatic double totale(double[] prezzi, boolean fedelta) {\n    double t = 0;\n    for (double p : prezzi) t += p;\n    if (fedelta && t > 100) t = t * 0.95;\n    if (t < 50) t = t + 5.90;\n    return t;\n}\n\n// DOPO (proposto dall'assistente)\nstatic double totale(double[] prezzi, boolean fedelta) {\n    double t = subtotale(prezzi);\n    t = applicaScontoFedelta(t, fedelta);\n    return aggiungiSpedizione(t);\n}\nstatic double subtotale(double[] prezzi) { double t = 0; for (double p : prezzi) t += p; return t; }\nstatic double applicaScontoFedelta(double t, boolean fedelta) { return (fedelta && t > 100) ? t * 0.95 : t; }\nstatic double aggiungiSpedizione(double t) { return t < 50 ? t + 5.90 : t; }\n```\n\nVerifica: confrontando le due versioni sugli stessi input (eseguito davvero) i risultati coincidono, per esempio {20, 10} → 35.9; {60, 50} con fedeltà → 104.5; {120} con fedeltà → 114.0; {100} con fedeltà → 100.0 (lo sconto richiede > 100); {49.99} → 55.89; {50} → 50.0. Sono i casi limite delle due condizioni (100 e 50) che conviene fissare in test **prima** di chiedere il refactoring.\n\n## Buone pratiche in sintesi\n- Compiti piccoli, uno per volta; un commit per modifica.\n- Dare contesto (firma, specifica, convenzioni del progetto) invece di sperare che il modello indovini.\n- Test prima della modifica, revisione del diff, test dopo.\n- Non incollare segreti o dati personali nei prompt; usare gli strumenti approvati.\n- Se la risposta non è chiara, chiedere di semplificare o spiegare, non accettare «sulla fiducia».",
+  "analogia": "Un assistente AI è come un navigatore satellitare: ti fa risparmiare tempo e conosce strade che tu non conosci, ma funziona bene solo se gli dai la destinazione esatta (il prompt preciso) e se tu continui a guardare la strada (test e review). Se ti dice di svoltare in un fiume, non lo fai. L'analogia cede perché il navigatore lavora su una mappa verificata e dà sempre la stessa risposta alla stessa domanda, mentre l'assistente genera ogni volta una risposta nuova e può inventare «strade» che non esistono.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "LLM e agenti",
+      "collegamento": "Sapere che l'assistente genera testo plausibile spiega perché servono contesto preciso e verifica.",
+      "nodo": "llm-agenti-ciclo-vita"
+    },
+    {
+      "conoscenza": "Refactoring",
+      "collegamento": "Per chiedere e valutare un refactoring bisogna sapere che cosa significa cambiare la struttura senza cambiare il comportamento.",
+      "nodo": "refactoring"
+    },
+    {
+      "conoscenza": "JUnit 5",
+      "collegamento": "I test generati sono JUnit: vanno letti, corretti e completati.",
+      "nodo": "junit-5"
+    },
+    {
+      "conoscenza": "Git e branch",
+      "collegamento": "Le modifiche dell'assistente si fanno su un branch e si revisionano come diff.",
+      "nodo": "git-versionamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Prompt per generare i test di costoPiazzola",
+      "problema": "Scrivi un prompt per far generare i test JUnit di `double costoPiazzola(double mq)` (specifica: mq < 15 → −1; 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; mq > 100 → −1) e indica che cosa controllare nell'output.",
+      "passi": [
+        "Contesto: «Java 17, JUnit 5 (junit-jupiter-params). Classe Piazzola con metodo statico costoPiazzola(double mq).»",
+        "Specifica completa con i limiti inclusi/esclusi, copiata dal testo dei requisiti.",
+        "Casi richiesti: «un @ParameterizedTest con @CsvSource; un caso per ciascuna delle 4 classi di equivalenza e i valori limite 14.9, 15, 15.1, 39.9, 40, 40.1, 99.9, 100, 100.1; attesi calcolati dalla specifica, non dal codice; assertEquals con delta 1e-9».",
+        "Vincoli: «non modificare Piazzola; nessuna dipendenza oltre JUnit 5».",
+        "Controllo dell'output: ricalcolare a mano gli attesi (40 → 320, 39.9 → 399, 100 → 800, 100.1 → −1); verificare che ci siano tutti i limiti; delta per i double; nessun test che ripete l'implementazione."
+      ],
+      "soluzione": "Prompt con contesto, specifica, casi EC + BVA, formato e vincoli; poi verifica manuale degli attesi, in particolare 40 → 320.",
+      "perche_funziona": "Il prompt sposta il lavoro difficile (scegliere i casi) sulla tecnica EC + BVA e chiede un oracolo basato sulla specifica; il controllo finale protegge dal problema dell'oracolo."
+    },
+    {
+      "titolo": "Capire un metodo legacy con l'assistente",
+      "problema": "In un progetto ereditato trovi `int f(int[] a){int r=0;for(int i=0;i<a.length;i++) if(a[i]%2==0) r++; return r;}`. L'assistente spiega: «conta gli elementi pari dell'array». Come verifichi la spiegazione prima di rinominare il metodo in contaPari?",
+      "passi": [
+        "Scrivo test di caratterizzazione che fissano il comportamento attuale: {2} → 1; {2, 3} → 1; {} → 0; {-2, -3} → 1 (in Java −3 % 2 vale −1, quindi non è pari; −2 % 2 vale 0).",
+        "Eseguo i test sul codice attuale: confermano la spiegazione.",
+        "Noto un caso non menzionato: con a == null il metodo lancia NullPointerException; lo annoto (comportamento da decidere con la specifica, non da cambiare durante il refactoring).",
+        "Applico il refactoring Rename Method (f → contaPari), rieseguo i test: verdi.",
+        "Commit separato con messaggio chiaro."
+      ],
+      "soluzione": "Spiegazione confermata da test di caratterizzazione; rinomina eseguita in sicurezza; segnalato il caso null.",
+      "perche_funziona": "La spiegazione dell'AI diventa un'ipotesi verificata da test eseguibili, che poi proteggono anche il refactoring."
+    }
+  ],
+  "errori_comuni": [
+    "Prompt vaghi («scrivi i test») senza specifica né casi limite.",
+    "Chiedere modifiche grandi e accettarle in blocco.",
+    "Far generare i test a partire dall'implementazione invece che dalla specifica.",
+    "Accettare la spiegazione di codice legacy senza verificarla con test.",
+    "Incollare nel prompt password, chiavi o dati personali."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali elementi rendono efficace un prompt per generare codice o test?",
+      "risposta": "Contesto del progetto, compito piccolo e preciso, specifica con limiti e comportamento sugli input non validi, casi richiesti (EC e BVA), formato dell'output e vincoli su ciò che non va fatto."
+    },
+    {
+      "domanda": "Come si usa in sicurezza un assistente per un refactoring?",
+      "risposta": "Si fissano prima test che passano, si chiede esplicitamente il refactoring con il vincolo di non cambiare il comportamento, si legge il diff, si rieseguono i test e si fa un commit piccolo su un branch."
+    },
+    {
+      "domanda": "Perché la spiegazione di codice legacy fornita dall'AI va verificata?",
+      "risposta": "Perché può essere plausibile ma sbagliata o incompleta; test di caratterizzazione che fissano il comportamento attuale la confermano o la smentiscono."
+    },
+    {
+      "domanda": "Che differenza c'è tra completamento, chat e agente?",
+      "risposta": "Il completamento suggerisce righe mentre si scrive; la chat risponde a domande sul codice; l'agente esegue in autonomia un compito in più passi modificando file ed eseguendo comandi."
+    }
+  ],
+  "riepilogo": "Usi: generazione, comprensione di codice legacy, modifiche e refactoring, test.\nPrompt efficace: contesto, compito piccolo, specifica con limiti, casi EC + BVA, formato, vincoli.\nFlusso: branch, test verdi, prompt, lettura del diff, test, commit piccolo.\nVerifica sempre: attesi dalla specifica, spiegazioni confermate da test."
+}

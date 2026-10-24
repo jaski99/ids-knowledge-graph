@@ -1,0 +1,88 @@
+{
+  "intuizione": "Una domanda teorica sull'ingegneria del software AI-native si affronta con uno schema fisso in sei blocchi: che cosa sono LLM e agenti, dove si usano nel ciclo di vita, opportunità, rischi, verifica umana con le tecniche del corso, conclusione. Il punto che distingue una risposta da esame da un'opinione generica è collegare ogni rischio a una tecnica concreta: EC e BVA, copertura, ispezione, refactoring, CI, gestione delle configurazioni.",
+  "spiegazione": "> Nota: le prove d'esame disponibili non contengono ancora domande su quest'area; la lezione prepara a una domanda **ipotetica** della parte teorica, costruita sul programma aggiornato del corso. Nessuna formulazione qui è attribuita al docente.\n\n## Lo schema della risposta (circa 10 minuti)\n\n```mermaid\nflowchart TD\n    A[\"Definizioni: LLM e agente\"] --> B[\"Usi nel ciclo di vita\"]\n    B --> C[\"Opportunità\"]\n    C --> D[\"Rischi e limiti\"]\n    D --> E[\"Verifica umana con tecniche del corso\"]\n    E --> F[\"Conclusione: responsabilità e ruolo dell'ingegnere\"]\n```\n\n| blocco | contenuto minimo | tempo indicativo |\n|---|---|---|\n| **Definizioni** | LLM: genera testo/codice prevedendo il token successivo, output plausibile non garantito; agente: LLM + strumenti + ciclo pianifica-agisci-osserva | 1 min |\n| **Usi** | requisiti, progettazione, codice, test, manutenzione, documentazione (un esempio ciascuno) | 2 min |\n| **Opportunità** | produttività sul ripetitivo, prototipi, API nuove, comprensione di codice legacy | 1 min |\n| **Rischi** | allucinazioni, casi limite, sicurezza e prompt injection, licenze, debito tecnico, eccesso di fiducia, riservatezza | 2–3 min |\n| **Verifica** | test dalla specifica (EC + BVA), copertura, review con checklist, analisi statica, piccoli commit e CI | 2–3 min |\n| **Conclusione** | l'AI accelera la scrittura; specifica e verifica diventano il collo di bottiglia; la responsabilità resta dello sviluppatore | 30 s |\n\n## Come trasformare un'opinione in una risposta da esame\n\nUna risposta debole dice: «L'AI è utile ma può sbagliare, quindi bisogna controllare». Una risposta forte dice **che cosa** può sbagliare e **con quale tecnica** si controlla:\n\n| frase debole | frase forte |\n|---|---|\n| «può sbagliare» | «sbaglia spesso sui confini delle fasce (`<=` invece di `<`), che si trovano con la BVA» |\n| «bisogna controllare» | «gli attesi dei test vanno calcolati dalla specifica, non dal codice generato (problema dell'oracolo)» |\n| «ci sono problemi di sicurezza» | «può concatenare input in una query SQL; si mitiga con PreparedStatement, analisi statica e review» |\n| «può copiare codice» | «può riprodurre codice copyleft; se il prodotto è proprietario e distribuito, la licenza è incompatibile» |\n| «gli agenti sono pericolosi» | «un agente con accesso al terminale è esposto a prompt injection: permessi minimi, sandbox, merge solo dopo review» |\n\n## Un esempio da citare nella risposta\n\nUn esempio concreto e breve vale più di un elenco astratto. Specifica: 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m². Codice generato:\n\n```java\nreturn mq <= 40 ? mq * 10 : mq * 8;   // per mq = 40 restituisce 400 invece di 320\n```\n\nIl test di BVA sul valore 40 (atteso 320, calcolato dalla specifica) fallisce e rivela il difetto; un test generato dallo stesso modello a partire dal codice avrebbe atteso 400 e sarebbe passato.\n\n## Collegamenti da sfruttare (mostrano padronanza del corso)\n- **Costo degli errori**: un difetto accettato senza verifica e trovato in produzione costa molto di più.\n- **Requisiti verificabili**: una specifica ambigua produce codice ambiguo più in fretta.\n- **Gestione delle configurazioni e CI**: gli agenti lavorano su branch e pull request; la pipeline è il quality gate.\n- **Refactoring e manutenzione**: il codice generato può aumentare duplicazione e debito tecnico; refactoring con test prima e dopo.\n- **Licenze**: compatibilità tra il codice suggerito e la licenza del prodotto.",
+  "analogia": "Rispondere a questa domanda è come scrivere la recensione di un nuovo strumento di lavoro, per esempio una sega elettrica per un falegname: che cos'è, a che cosa serve, quanto fa risparmiare, quali incidenti può causare e quali protezioni si usano. Una recensione seria non dice solo «è utile ma pericolosa»: indica gli incidenti tipici e le protezioni specifiche. L'analogia cede perché gli errori di una sega sono evidenti subito, mentre quelli del codice generato possono restare nascosti fino alla produzione: per questo le «protezioni» del software sono tecniche di verifica sistematiche.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Rischi del codice generato",
+      "collegamento": "Costituiscono il nucleo della risposta.",
+      "nodo": "rischi-codice-generato"
+    },
+    {
+      "conoscenza": "Verifica umana del codice generato",
+      "collegamento": "Fornisce la parte sulle contromisure con tecniche concrete.",
+      "nodo": "verifica-umana-codice-ai"
+    },
+    {
+      "conoscenza": "Assistenti AI nello sviluppo",
+      "collegamento": "Fornisce gli esempi d'uso da citare.",
+      "nodo": "assistenti-ai-sviluppo"
+    },
+    {
+      "conoscenza": "Debugging",
+      "collegamento": "Il debugging del codice generato, che non si è scritto, è più difficile: va citato tra i limiti.",
+      "nodo": "debugging"
+    },
+    {
+      "conoscenza": "Domande aperte delle altre aree (es. processo dei requisiti)",
+      "collegamento": "Stessa tecnica di risposta: struttura a blocchi, definizioni, esempi, collegamenti.",
+      "nodo": "esercizio-domanda-processo-requisiti"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Risposta modello: opportunità, rischi e verifica umana",
+      "problema": "«Si discutano opportunità e rischi dell'uso di LLM e agenti nello sviluppo software e il ruolo della verifica umana.»",
+      "passi": [
+        "Definizioni: un LLM genera codice prevedendo il token successivo; il risultato è plausibile ma non garantito. Un agente combina l'LLM con strumenti (file, terminale, test, Git) in un ciclo pianifica-agisci-osserva.",
+        "Usi: bozze di user story nei requisiti; alternative di progetto; generazione di codice e test JUnit; spiegazione e refactoring di codice legacy; documentazione.",
+        "Opportunità: produttività sul codice ripetitivo, prototipi rapidi, apprendimento di API nuove.",
+        "Rischi: allucinazioni (API inesistenti), errori sui casi limite, vulnerabilità (SQL injection), prompt injection per gli agenti, codice con licenze incompatibili, debito tecnico, eccesso di fiducia, invio di dati riservati.",
+        "Verifica umana: test dalla specifica con EC e BVA e attesi calcolati a mano (esempio: costoPiazzola con mq = 40), misura della copertura, review con checklist, analisi statica, piccoli commit su branch con CI verde.",
+        "Conclusione: l'AI sposta il lavoro dalla scrittura alla specifica e verifica; la responsabilità resta dello sviluppatore e le tecniche di IdS diventano più importanti."
+      ],
+      "soluzione": "Sei blocchi nell'ordine definizioni → usi → opportunità → rischi → verifica → conclusione, con un esempio concreto di bug su un limite.",
+      "perche_funziona": "La struttura copre tutto ciò che la domanda chiede e ogni rischio ha una contromisura del corso: il correttore vede padronanza, non opinioni."
+    },
+    {
+      "titolo": "Variante: un agente che corregge i bug in automatico",
+      "problema": "«Un'azienda vuole che un agente AI legga le issue e corregga i bug aprendo pull request in autonomia. Quali precauzioni di processo suggerisci?»",
+      "passi": [
+        "Requisiti: ogni issue deve contenere passi per riprodurre e comportamento atteso, così l'agente (e il revisore) hanno un oracolo.",
+        "Test: l'agente deve prima aggiungere un test che riproduce il bug (rosso), poi correggere (verde); la suite completa gira in CI.",
+        "Permessi minimi: l'agente lavora su branch, in sandbox, senza accesso a segreti né alla produzione; niente merge automatico su main.",
+        "Prompt injection: il testo delle issue è input non fidato; l'agente non deve eseguire istruzioni contenute nelle issue al di fuori del compito.",
+        "Review umana obbligatoria del diff, analisi statica e controllo delle dipendenze e licenze aggiunte.",
+        "Tracciabilità: ogni pull request collegata all'issue (gestione delle configurazioni), metriche su quante patch vengono accettate o annullate."
+      ],
+      "soluzione": "Specifiche riproducibili, test che riproducono il bug, sandbox e permessi minimi, difesa da prompt injection, review umana e CI, tracciabilità.",
+      "perche_funziona": "Applica alla nuova situazione le stesse categorie: specifica, test, sicurezza, review, configurazioni. È ciò che rende la risposta trasferibile a qualsiasi variante."
+    }
+  ],
+  "errori_comuni": [
+    "Rispondere con opinioni generiche senza tecniche concrete.",
+    "Elencare solo opportunità o solo rischi: la domanda chiede il bilanciamento.",
+    "Dimenticare la definizione di LLM e agente all'inizio.",
+    "Non citare nessun esempio concreto (un caso di BVA o di SQL injection basta).",
+    "Attribuire all'AI la responsabilità degli errori."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i sei blocchi della risposta?",
+      "risposta": "Definizioni di LLM e agente, usi nel ciclo di vita, opportunità, rischi, verifica umana con tecniche del corso, conclusione sulla responsabilità."
+    },
+    {
+      "domanda": "Come rendi «forte» l'affermazione che il codice generato va controllato?",
+      "risposta": "Indicando il tipo di errore (es. confini delle fasce) e la tecnica che lo trova (BVA con attesi dalla specifica), o il rischio di sicurezza e la sua mitigazione."
+    },
+    {
+      "domanda": "Quali argomenti delle altre aree del corso si possono collegare?",
+      "risposta": "Costo degli errori, requisiti verificabili, testing black e white box, ispezione, refactoring e manutenzione, gestione delle configurazioni e CI, licenze."
+    },
+    {
+      "domanda": "Qual è la conclusione di fondo da dare?",
+      "risposta": "L'AI accelera la scrittura del codice ma sposta il lavoro su specifica e verifica; la responsabilità resta dello sviluppatore e le tecniche dell'ingegneria del software diventano ancora più importanti."
+    }
+  ],
+  "riepilogo": "Schema: definizioni → usi → opportunità → rischi → verifica → conclusione.\nOgni rischio con la sua contromisura del corso (BVA, copertura, review, CI, licenze).\nAlmeno un esempio concreto, es. bug sul limite 40 trovato dalla BVA.\nConclusione: specifica e verifica diventano il collo di bottiglia; responsabilità umana."
+}

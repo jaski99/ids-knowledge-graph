@@ -1,0 +1,83 @@
+{
+  "intuizione": "Maven automatizza ciò che altrimenti faresti a mano: scaricare le librerie giuste, compilare, eseguire i test, impacchettare il jar. Tutto è descritto in un solo file, il pom.xml, e segue convenzioni fisse (dove stanno sorgenti e test, quali fasi esistono), così chiunque cloni il progetto lo costruisce con un comando, mvn package, ottenendo lo stesso risultato.",
+  "spiegazione": "## Che problema risolve\n\nSenza uno strumento di build: scarichi a mano i jar di JUnit (e le loro dipendenze), li metti nel classpath, compili con `javac` file per file, lanci i test, crei il jar. Ogni sviluppatore lo fa a modo suo e «sul mio computer funziona». **Maven** (Apache) rende la build:\n- **dichiarativa**: dici *cosa* ti serve nel `pom.xml`, non *come* farlo;\n- **riproducibile**: stesse versioni delle dipendenze per tutti, anche sul server di CI;\n- **convenzionale** (*convention over configuration*): se rispetti le cartelle standard non devi configurare quasi nulla.\n\n## Il pom.xml (Project Object Model)\n\n```xml\n<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n  <modelVersion>4.0.0</modelVersion>\n\n  <groupId>it.unimore.ids</groupId>\n  <artifactId>farmacia</artifactId>\n  <version>1.0.0-SNAPSHOT</version>\n  <packaging>jar</packaging>\n\n  <properties>\n    <maven.compiler.release>17</maven.compiler.release>\n    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>\n  </properties>\n\n  <dependencies>\n    <dependency>\n      <groupId>org.junit.jupiter</groupId>\n      <artifactId>junit-jupiter</artifactId>\n      <version>5.11.3</version>\n      <scope>test</scope>\n    </dependency>\n  </dependencies>\n\n  <build>\n    <plugins>\n      <plugin>\n        <groupId>org.apache.maven.plugins</groupId>\n        <artifactId>maven-surefire-plugin</artifactId>\n        <version>3.5.2</version>\n      </plugin>\n    </plugins>\n  </build>\n</project>\n```\n\n- **Coordinate GAV**: `groupId` (organizzazione, stile package invertito), `artifactId` (nome del progetto), `version`. Identificano univocamente ogni artefatto nel repository.\n- **SNAPSHOT**: versione in sviluppo, che può cambiare; `1.0.0` senza suffisso è una release immutabile.\n- **dependencies**: le librerie, ognuna con GAV e **scope**.\n- **build/plugins**: i plugin che fanno il lavoro (compiler, surefire per i test, jar...). Il plugin Surefire in versione recente (3.x) esegue i test JUnit 5.\n\n### Gli scope delle dipendenze\n| scope | disponibile in | esempio |\n|---|---|---|\n| `compile` (default) | compilazione, test, runtime, finisce nel pacchetto | una libreria JSON |\n| `test` | solo compilazione ed esecuzione dei test | JUnit, Mockito |\n| `provided` | compilazione, ma a runtime la fornisce l'ambiente | API servlet in un application server |\n| `runtime` | solo esecuzione, non compilazione | driver JDBC |\n\n## Struttura standard delle cartelle\n\n```text\nfarmacia/\n├── pom.xml\n├── src/main/java/it/unimore/farmacia/Spedizioni.java     codice di produzione\n├── src/main/resources/                                  file di configurazione\n├── src/test/java/it/unimore/farmacia/SpedizioniBvaTest.java   test (stesso package)\n└── target/                                              output generato (non va in Git)\n```\n\n## Il ciclo di vita e le fasi\n\n```mermaid\nflowchart LR\n    V[\"validate\"] --> C[\"compile\"] --> T[\"test\"] --> P[\"package\"] --> VE[\"verify\"] --> I[\"install\"] --> D[\"deploy\"]\n```\n\nLe fasi del ciclo di vita **default** sono ordinate: invocarne una esegue **tutte le precedenti**. Quindi `mvn package` fa validate → compile → test → package: se un test fallisce, il jar **non** viene prodotto.\n\n| comando | effetto |\n|---|---|\n| `mvn compile` | compila `src/main/java` in `target/classes` |\n| `mvn test` | compila anche i test ed esegue JUnit (Surefire) |\n| `mvn package` | crea `target/farmacia-1.0.0-SNAPSHOT.jar` |\n| `mvn verify` | controlli aggiuntivi (test di integrazione, analisi), usato spesso in CI |\n| `mvn install` | copia il jar nel repository **locale** (`~/.m2/repository`) per altri progetti sulla stessa macchina |\n| `mvn deploy` | pubblica in un repository **remoto** condiviso |\n| `mvn clean` | (ciclo *clean*) cancella `target/` |\n\n## Dipendenze transitive\n\nSe dichiari A e A dipende da B, Maven scarica anche B (**dipendenza transitiva**). Vantaggio: non devi elencare tutto. Problemi: conflitti di versione (A vuole B 1.0, C vuole B 2.0). Maven li risolve con la regola della **definizione più vicina** (*nearest wins*: vince la versione più vicina nell'albero delle dipendenze; a parità di profondità, quella dichiarata prima). Strumenti: `mvn dependency:tree` per vedere l'albero, `<exclusions>` per escludere una transitiva, `<dependencyManagement>` per fissare le versioni in un punto solo.\n\nLe dipendenze arrivano da **Maven Central** (repository pubblico) e vengono messe in cache nel repository locale `~/.m2`.\n\n## Maven nel quadro dell'ingegneria del software\n- **Gestione delle configurazioni**: il pom è un elemento di configurazione versionato in Git; le versioni fissate rendono la build riproducibile.\n- **CI**: il server esegue `mvn verify` a ogni push; build rossa = qualcuno ha rotto qualcosa.\n- **Alternative**: Gradle (script in Groovy/Kotlin, più flessibile), Ant (imperativo, più vecchio).",
+  "analogia": "Il pom.xml è come la ricetta stampata di un piatto da ristorante di catena: ingredienti con marca e grammatura esatte (dipendenze con versione), procedura con fasi in ordine fisso (compile, test, package) e la regola che se l'assaggio fallisce il piatto non esce dalla cucina (test falliti, niente jar). Qualsiasi cuoco, in qualsiasi filiale, ottiene lo stesso piatto. L'analogia cede sulle dipendenze transitive: chi compra un ingrediente non riceve automaticamente anche gli ingredienti di cui è fatto, mentre Maven scarica da solo tutta la catena delle librerie.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Classpath e compilazione con javac/java (Fondamenti/OOP)",
+      "collegamento": "Maven costruisce al posto tuo il classpath con tutte le librerie dichiarate e compila nell'ordine giusto."
+    },
+    {
+      "conoscenza": "Package Java e struttura delle cartelle",
+      "collegamento": "src/main/java/it/unimore/farmacia corrisponde al package it.unimore.farmacia; i test stanno nello stesso package in src/test/java."
+    },
+    {
+      "conoscenza": "JUnit 5",
+      "collegamento": "La dipendenza junit-jupiter con scope test e il plugin Surefire eseguono i test nella fase test.",
+      "nodo": "junit-5"
+    },
+    {
+      "conoscenza": "Gestione delle configurazioni",
+      "collegamento": "Il pom versionato e le versioni fissate sono parte della baseline del progetto.",
+      "nodo": "gestione-configurazioni"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Aggiungere JUnit 5 a un progetto e capire cosa fa mvn package",
+      "problema": "Un progetto Maven ha il pom senza dipendenze. Aggiungi JUnit 5 e spiega cosa succede lanciando `mvn package` se uno dei test fallisce.",
+      "passi": [
+        "Nel blocco <dependencies> aggiungo org.junit.jupiter:junit-jupiter con versione esplicita e <scope>test</scope>: serve solo per compilare ed eseguire i test e non finirà nel jar.",
+        "Mi assicuro che il plugin maven-surefire-plugin sia in una versione 3.x, che supporta JUnit 5.",
+        "Metto i test in src/test/java nello stesso package delle classi testate.",
+        "`mvn package` esegue in ordine validate, compile, test, package. Se un test fallisce la fase test fallisce, la build si ferma con BUILD FAILURE e il jar non viene creato.",
+        "Per saltare i test esiste -DskipTests, da non usare per «far passare» la build."
+      ],
+      "soluzione": "Dipendenza junit-jupiter con scope test, Surefire 3.x; mvn package esegue anche i test e, se uno fallisce, non produce il jar.",
+      "perche_funziona": "Le fasi sono cumulative: ogni fase richiama le precedenti, quindi un pacchetto esiste solo se i test sono verdi."
+    },
+    {
+      "titolo": "Conflitto tra dipendenze transitive",
+      "problema": "Il progetto dipende da lib-a 1.0 (che usa commons-x 1.2) e da lib-b 2.0 (che usa commons-x 2.0). A runtime compare NoSuchMethodError in lib-b. Spiega e risolvi.",
+      "passi": [
+        "Lancio `mvn dependency:tree` e vedo che entrambe le versioni di commons-x sono richieste alla stessa profondità.",
+        "A parità di profondità vince la dichiarazione incontrata per prima (lib-a, quindi commons-x 1.2): lib-b chiama un metodo che esiste solo nella 2.0, da cui NoSuchMethodError.",
+        "Soluzione: fisso la versione in <dependencyManagement> a 2.0 (se compatibile con lib-a) oppure aggiungo un'<exclusion> di commons-x sotto lib-a.",
+        "Riesegui i test per verificare che lib-a funzioni con la 2.0."
+      ],
+      "soluzione": "Causa: mediazione «nearest wins» sceglie commons-x 1.2. Soluzione: dependencyManagement o exclusion, poi test.",
+      "perche_funziona": "Capire la regola di mediazione trasforma un errore misterioso a runtime in una scelta esplicita di versione."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che `mvn package` salti i test: li esegue (fase test) e si ferma se falliscono.",
+    "Dimenticare scope test per JUnit: finisce tra le dipendenze di produzione.",
+    "Mettere i test in src/main/java o cambiare le cartelle senza motivo.",
+    "Versionare la cartella target/ in Git.",
+    "Confondere install (repository locale) e deploy (repository remoto).",
+    "Usare versioni non fissate (o SNAPSHOT di terzi) in una release: la build non è riproducibile."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa sono le coordinate GAV?",
+      "risposta": "groupId, artifactId e version: identificano univocamente un artefatto Maven in un repository."
+    },
+    {
+      "domanda": "Quali fasi esegue `mvn install`?",
+      "risposta": "Tutte le fasi del ciclo default fino a install: validate, compile, test, package, verify, install; alla fine il jar è copiato nel repository locale ~/.m2."
+    },
+    {
+      "domanda": "Che differenza c'è tra scope test e compile?",
+      "risposta": "Compile (default) rende la dipendenza disponibile ovunque e la include nel pacchetto; test la rende disponibile solo per compilare ed eseguire i test."
+    },
+    {
+      "domanda": "Che cos'è una dipendenza transitiva e come vedi l'albero completo?",
+      "risposta": "Una dipendenza delle tue dipendenze, scaricata automaticamente; l'albero si vede con mvn dependency:tree."
+    },
+    {
+      "domanda": "Che cosa significa convention over configuration?",
+      "risposta": "Se rispetti le convenzioni (cartelle standard, fasi standard) non serve configurare nulla: il pom resta piccolo e ogni progetto Maven ha la stessa struttura."
+    }
+  ],
+  "riepilogo": "Maven: build dichiarativa e riproducibile, descritta nel pom.xml.\nGAV identifica gli artefatti; scope compile/test/provided/runtime.\nCartelle standard: src/main/java, src/test/java, target/.\nCiclo: validate → compile → test → package → verify → install → deploy (cumulativo).\nTransitive: nearest wins; dependency:tree, exclusions, dependencyManagement."
+}

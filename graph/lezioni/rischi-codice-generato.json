@@ -1,0 +1,73 @@
+{
+  "intuizione": "Il codice generato dall'AI fa risparmiare tempo sul lavoro ripetitivo e aiuta con API poco note, ma porta rischi tipici: inventa librerie o metodi, sbaglia i casi limite, introduce vulnerabilità, può riprodurre codice con licenza, aumenta la duplicazione e invita a fidarsi troppo. Ogni rischio ha una contromisura che viene dalle tecniche classiche dell'ingegneria del software.",
+  "spiegazione": "> Nota: argomento della parte più recente del programma, non trattato dai testi di riferimento classici; i contenuti sono di carattere generale.\n\n## Opportunità\n\n- **Produttività** sul codice ripetitivo (boilerplate, mapping, getter, test scheletro).\n- **Prototipazione rapida** per esplorare un'idea o un'interfaccia.\n- **Apprendimento di API** e linguaggi poco noti; spiegazione di codice legacy.\n- **Documentazione** e messaggi di commit in bozza.\n- **Supporto a test e refactoring** se guidato da una specifica chiara.\n\n## Rischi e mitigazioni\n\n| rischio | che cosa succede | mitigazione |\n|---|---|---|\n| **Allucinazioni** | metodi, classi o pacchetti inesistenti; parametri inventati | compilazione, test, verificare ogni dipendenza sul repository ufficiale |\n| **Bug sui casi limite** | `<=` invece di `<`, off-by-one, null, liste vuote | test derivati dalla specifica con EC + BVA, copertura |\n| **Vulnerabilità di sicurezza** | SQL injection, input non validati, segreti nel codice, crittografia debole | review di sicurezza, analisi statica, programmazione difensiva |\n| **Dipendenze inventate o malevole** | il modello suggerisce un pacchetto con un nome plausibile ma inesistente, che un attaccante può registrare | controllare esistenza, manutentori, popolarità e licenza prima di aggiungerlo al pom |\n| **Prompt injection** (agenti) | testo malevolo in un file, issue o pagina web letto dall'agente gli fa eseguire azioni non volute | permessi minimi, sandbox, nessun segreto accessibile, approvazione umana per azioni critiche |\n| **Licenze e copyright** | frammenti simili a codice con licenza copyleft | filtri sui suggerimenti che coincidono con codice pubblico, scansione delle licenze |\n| **Debito tecnico** | codice duplicato, verboso, incoerente con l'architettura | review, refactoring, linee guida di progetto nel contesto del prompt |\n| **Eccesso di fiducia** | si accetta codice non capito (\"sembra giusto\") | regola: non si fa commit di codice che non si sa spiegare |\n| **Riservatezza dei dati** | codice o dati aziendali inviati a servizi esterni | policy aziendali, strumenti approvati, niente dati personali o segreti nei prompt |\n\nLa **OWASP Top 10 for LLM Applications** è il riferimento più noto per i rischi di sicurezza delle applicazioni basate su LLM; pone la **prompt injection** al primo posto. Studi empirici sugli assistenti di completamento hanno trovato che una quota rilevante dei suggerimenti in scenari sensibili per la sicurezza conteneva vulnerabilità.\n\n## Esempio 1: vulnerabilità tipica\n\nRichiesta: «metodo che cerca un cliente per cognome». Una risposta plausibile ma pericolosa:\n\n```java\n// GENERATO: vulnerabile a SQL injection\npublic ResultSet cerca(Connection c, String cognome) throws SQLException {\n    Statement st = c.createStatement();\n    return st.executeQuery(\"SELECT * FROM clienti WHERE cognome = '\" + cognome + \"'\");\n}\n```\n\nCon `cognome = \"x' OR '1'='1\"` la query restituisce tutti i clienti. Versione corretta, con query parametrizzata e validazione:\n\n```java\npublic ResultSet cerca(Connection c, String cognome) throws SQLException {\n    if (cognome == null || cognome.isBlank())\n        throw new IllegalArgumentException(\"cognome obbligatorio\");\n    PreparedStatement ps = c.prepareStatement(\"SELECT * FROM clienti WHERE cognome = ?\");\n    ps.setString(1, cognome);\n    return ps.executeQuery();\n}\n```\n\n## Esempio 2: bug su un limite\n\nSpecifica: 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; fuori intervallo → -1.\n\n```java\n// GENERATO\ndouble costoPiazzola(double mq) {\n    if (mq < 15 || mq > 100) return -1;\n    return mq <= 40 ? mq * 10 : mq * 8;   // 40 cade nella fascia sbagliata\n}\n```\n\nPer mq = 40 il codice restituisce 400 invece di 320. Un test di BVA sul limite 40 lo scopre subito; il codice «sembra» giusto a una lettura veloce.\n\n## Il rischio che li contiene tutti: la fiducia\n\n```mermaid\nflowchart LR\n    GEN[\"Codice generato plausibile\"] --> FID{\"Lo sviluppatore lo capisce e lo verifica?\"}\n    FID -- \"sì\" --> OK[\"Test, review, analisi: difetti trovati presto\"]\n    FID -- \"no\" --> DEB[\"Difetti e vulnerabilità in produzione\"]\n    DEB --> COSTO[\"Costo di correzione molto più alto\"]\n```\n\nPer la curva del costo degli errori, un difetto accettato senza verifica e scoperto in produzione costa molto più che se fosse stato trovato in review. La velocità dell'AI è un vantaggio solo se la verifica tiene il passo.",
+  "analogia": "Usare codice generato senza verificarlo è come firmare un contratto scritto da un assistente bravissimo ma che a volte inventa clausole con assoluta sicurezza: il 95% è perfetto, ma la clausola inventata è proprio quella che ti costerà cara. La responsabilità della firma resta tua. L'analogia cede perché nel codice molti di questi errori si possono scovare in modo sistematico, con test, compilatore e analisi statica, cosa che per un contratto richiede invece un avvocato.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "LLM e agenti",
+      "collegamento": "I rischi derivano dal funzionamento probabilistico del modello e dall'autonomia degli agenti.",
+      "nodo": "llm-agenti-ciclo-vita"
+    },
+    {
+      "conoscenza": "Programmazione difensiva",
+      "collegamento": "Il codice generato spesso omette validazione degli input e gestione degli errori.",
+      "nodo": "programmazione-difensiva"
+    },
+    {
+      "conoscenza": "Licenze software",
+      "collegamento": "Il codice suggerito può riprodurre frammenti con licenza copyleft.",
+      "nodo": "licenze-software"
+    },
+    {
+      "conoscenza": "Boundary value analysis",
+      "collegamento": "I limiti delle fasce sono il punto in cui il codice generato sbaglia più spesso.",
+      "nodo": "boundary-value-analysis"
+    },
+    {
+      "conoscenza": "Basi di dati e SQL",
+      "collegamento": "La SQL injection nasce dal concatenare input dell'utente nella query invece di usare parametri."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Domanda: rischi e mitigazioni",
+      "problema": "«Quali rischi comporta il codice generato da un LLM e come si mitigano?» (almeno 5 rischi)",
+      "passi": [
+        "Allucinazioni (API o librerie inesistenti) → compilazione, test, verifica delle dipendenze sul repository ufficiale.",
+        "Casi limite errati → test derivati dalla specifica con EC e BVA, misura della copertura.",
+        "Vulnerabilità (injection, segreti, input non validati) → review di sicurezza, analisi statica, query parametrizzate.",
+        "Prompt injection negli agenti → permessi minimi, sandbox, approvazione umana per azioni critiche.",
+        "Licenze → scansione delle licenze, filtri sul codice pubblico.",
+        "Debito tecnico ed eccesso di fiducia → review del diff, refactoring, non fare commit di codice che non si sa spiegare."
+      ],
+      "soluzione": "Sei coppie rischio → mitigazione, con una frase finale: lo sviluppatore resta responsabile.",
+      "perche_funziona": "Ogni rischio è legato a una contromisura concreta del corso, il che rende la risposta verificabile e non generica."
+    }
+  ],
+  "errori_comuni": [
+    "Elencare rischi senza mitigazioni (o viceversa).",
+    "Ridurre i rischi alle sole allucinazioni dimenticando sicurezza, licenze e riservatezza.",
+    "Usare test generati dallo stesso modello come unica verifica del codice generato.",
+    "Aggiungere al progetto una dipendenza suggerita senza verificarne esistenza e affidabilità.",
+    "Considerare l'AI responsabile degli errori: la responsabilità resta di chi fa commit."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cos'è un'allucinazione nel codice generato?",
+      "risposta": "Codice che usa API, metodi, parametri o pacchetti inesistenti o con un comportamento diverso da quello supposto, prodotto con la stessa sicurezza del codice corretto."
+    },
+    {
+      "domanda": "Che cos'è la prompt injection e perché riguarda gli agenti?",
+      "risposta": "È l'inserimento di istruzioni malevole in contenuti letti dal modello (file, issue, pagine web) che lo inducono a comportamenti non voluti; negli agenti è grave perché possono eseguire comandi e modificare il repository."
+    },
+    {
+      "domanda": "Perché un suggerimento con un nome di pacchetto inesistente è un rischio di sicurezza?",
+      "risposta": "Perché un attaccante può registrare quel nome con codice malevolo: chi aggiunge la dipendenza senza verificarla lo installa."
+    },
+    {
+      "domanda": "Come si corregge la vulnerabilità dell'esempio con la query SQL?",
+      "risposta": "Usando una PreparedStatement con parametri invece della concatenazione di stringhe, e validando l'input."
+    }
+  ],
+  "riepilogo": "Opportunità: produttività, prototipi, API nuove, documentazione.\nRischi: allucinazioni, casi limite, vulnerabilità, dipendenze inventate, prompt injection.\nE inoltre: licenze, debito tecnico, eccesso di fiducia, riservatezza dei dati.\nOgni rischio ha una mitigazione classica: test EC/BVA, review, analisi statica, permessi minimi.\nNon si fa commit di codice che non si sa spiegare."
+}

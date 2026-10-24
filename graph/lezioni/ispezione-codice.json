@@ -1,0 +1,79 @@
+{
+  "intuizione": "Un'ispezione è una lettura sistematica del codice (o di un documento) fatta da più persone con ruoli precisi e una checklist, senza eseguire niente. Trova difetti che i test faticano a trovare (violazioni di standard, casi non gestiti, codice incomprensibile) e li trova presto, quando costano poco. La code review sulle pull request è la sua versione leggera e quotidiana.",
+  "spiegazione": "## Verifica statica contro verifica dinamica\n\n- **Dinamica** = eseguire il codice (testing).\n- **Statica** = esaminare il codice senza eseguirlo: **ispezioni e revisioni** (persone) e **analisi statica** (strumenti: compilatore, linter, SpotBugs, SonarQube).\n\nLe revisioni si possono fare su **qualunque artefatto**: requisiti, diagrammi UML, piani di test, non solo codice. Per questo sono il modo più economico di trovare un errore nei requisiti prima che diventi codice.\n\n## L'ispezione di Fagan (IBM, anni '70)\n\nÈ la forma più formale. **Ruoli**:\n\n| ruolo | compito |\n|---|---|\n| **Moderatore** | organizza, conduce la riunione, garantisce il processo; non è l'autore |\n| **Autore** | ha prodotto il materiale; risponde alle domande e poi corregge |\n| **Lettore** | parafrasa il codice ad alta voce, pezzo per pezzo, durante la riunione |\n| **Ispettori** | cercano difetti, preparandosi in anticipo con la checklist |\n| **Segretario (recorder)** | registra ogni difetto trovato (posizione, tipo, gravità) |\n\n**Fasi**:\n\n```mermaid\nflowchart LR\n    PL[\"Pianificazione\"] --> OV[\"Overview\"]\n    OV --> PR[\"Preparazione individuale\"]\n    PR --> RI[\"Riunione di ispezione\"]\n    RI --> RW[\"Rework (correzione)\"]\n    RW --> FU[\"Follow-up\"]\n    FU -. \"troppi difetti\" .-> PL\n```\n\n1. **Pianificazione**: il moderatore verifica che il materiale sia pronto, sceglie i partecipanti, fissa la riunione.\n2. **Overview**: l'autore presenta il contesto (facoltativa se il gruppo conosce già il sistema).\n3. **Preparazione**: ognuno studia il materiale da solo con la checklist; qui si trova la maggior parte dei difetti.\n4. **Riunione**: il lettore parafrasa, gli ispettori segnalano i difetti, il segretario li registra. **Si cercano i difetti, non le soluzioni** e non si giudica l'autore. Durata limitata (circa due ore al massimo, oltre l'attenzione cala).\n5. **Rework**: l'autore corregge.\n6. **Follow-up**: il moderatore verifica le correzioni; se i difetti erano molti, si ripete l'ispezione.\n\nSi raccolgono **metriche** (difetti trovati per tipo, per KLOC, tempo speso) per migliorare checklist e processo.\n\n### Esempio di checklist per Java\n- Ogni variabile è inizializzata prima dell'uso? Ci sono possibili `NullPointerException`?\n- I confronti sulle soglie usano l'operatore giusto (`<` vs `<=`)? I cicli terminano?\n- Gli oggetti si confrontano con `equals`, non con `==`?\n- Le risorse (file, connessioni) sono chiuse (`try-with-resources`)?\n- Le eccezioni sono gestite o propagate, mai ingoiate da un `catch` vuoto?\n- I parametri dei metodi pubblici sono validati?\n- Nomi chiari, metodi brevi, niente codice duplicato o morto?\n\n## Forme più leggere\n\n- **Walkthrough**: l'autore guida i colleghi attraverso il codice o il progetto; meno formale, utile anche per formazione.\n- **Code review con pull request**: un collega legge il *diff* su GitHub/GitLab prima del merge, commenta riga per riga, approva o chiede modifiche. È l'ispezione moderna, asincrona e continua.\n- **Pair programming**: revisione continua mentre si scrive.\n- **Desk check**: l'autore rilegge da solo con una checklist.\n\n## Un difetto che l'ispezione trova e il test no\n\n```java\npublic boolean stessoCodice(Prodotto a, Prodotto b) {\n    return a.getCodice() == b.getCodice();   // String confrontate con ==\n}\n```\n\nCon stringhe letterali i test possono **passare** (la JVM riusa le stesse istanze di stringa per i letterali uguali), ma con codici letti da file o database il metodo restituisce `false` anche per codici uguali. Un ispettore con la checklist («oggetti confrontati con equals?») lo nota in pochi secondi.\n\n## Perché conviene\n- Trova difetti **prima** dell'esecuzione e anche in artefatti non eseguibili (requisiti, progetto): il costo di correzione è minimo (curva di Boehm).\n- Trova **classi di difetti** diverse dai test: leggibilità, standard, manutenibilità, casi mai pensati.\n- Diffonde la conoscenza del codice nel team.\n- Limite: costa tempo di persone esperte e non verifica il comportamento a runtime (prestazioni, interazioni): **complementare** al testing.",
+  "analogia": "Un'ispezione è come la correzione di bozze di un libro prima della stampa: più lettori, ognuno con il suo compito (chi controlla la grammatica, chi la coerenza della trama), che segnano gli errori su un registro; poi l'autore corregge e il caporedattore verifica. Si trovano refusi che nessun lettore finale noterebbe subito, e costa molto meno che ristampare. L'analogia cede perché il libro non si «esegue»: nel software certi difetti (prestazioni, concorrenza) si vedono solo eseguendo, per questo l'ispezione non sostituisce i test.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Confronto tra oggetti in Java (equals contro ==)",
+      "collegamento": "È un tipico punto di checklist che l'ispezione trova e i test possono non rivelare."
+    },
+    {
+      "conoscenza": "Lavoro di gruppo su progetti universitari con GitHub",
+      "collegamento": "Le pull request con commenti e approvazioni sono una code review: la forma leggera dell'ispezione."
+    },
+    {
+      "conoscenza": "Buone pratiche di programmazione",
+      "collegamento": "Gli standard di codifica sono il metro con cui l'ispezione giudica il codice.",
+      "nodo": "buone-pratiche-programmazione"
+    },
+    {
+      "conoscenza": "Code smell",
+      "collegamento": "Molti punti della checklist sono smell da riconoscere leggendo (metodi lunghi, duplicazione).",
+      "nodo": "code-smell"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Organizzare un'ispezione",
+      "problema": "Il team deve ispezionare la classe GestorePrenotazioni (400 righe) prima del rilascio. Descrivi chi fa che cosa e in che ordine.",
+      "passi": [
+        "Pianificazione: il moderatore (non l'autore) verifica che la classe compili e passi i test, sceglie 2 ispettori, un lettore e un segretario, distribuisce codice e checklist, fissa una riunione di massimo 2 ore.",
+        "Overview breve dell'autore sul ruolo della classe nel sistema.",
+        "Preparazione: ogni ispettore legge da solo e annota i sospetti difetti.",
+        "Riunione: il lettore parafrasa metodo per metodo; gli ispettori segnalano; il segretario registra posizione, tipo e gravità; nessuna discussione sulle soluzioni.",
+        "Rework dell'autore; follow-up del moderatore che chiude i difetti o pianifica una nuova ispezione."
+      ],
+      "soluzione": "Ruoli: moderatore, autore, lettore, ispettori, segretario. Fasi: pianificazione, overview, preparazione, riunione, rework, follow-up.",
+      "perche_funziona": "Ruoli separati evitano conflitti (l'autore non modera) e la preparazione individuale massimizza i difetti trovati prima della riunione."
+    },
+    {
+      "titolo": "Ispezione con checklist su un frammento",
+      "problema": "```java\npublic double media(List<Integer> voti) {\n    int somma = 0;\n    for (int i = 0; i <= voti.size(); i++) somma += voti.get(i);\n    return somma / voti.size();\n}\n```\nTrova i difetti senza eseguire.",
+      "passi": [
+        "Ciclo: `i <= voti.size()` accede a un indice fuori dai limiti (IndexOutOfBoundsException): deve essere `<`.",
+        "Divisione intera: `somma / voti.size()` tronca (voti 27 e 28 danno 27, non 27,5): serve `(double) somma / voti.size()`.",
+        "Lista vuota: divisione per zero (ArithmeticException con interi): va gestita con un controllo esplicito.",
+        "voti null o elementi null: nessun controllo (NullPointerException).",
+        "Stile: un for-each o `voti.stream().mapToInt(Integer::intValue).average()` eliminerebbe l'errore sull'indice."
+      ],
+      "soluzione": "4 difetti (indice, divisione intera, lista vuota, null) + 1 suggerimento di stile, tutti trovati leggendo.",
+      "perche_funziona": "La checklist guida l'occhio sui punti dove gli errori sono frequenti (limiti dei cicli, tipi numerici, casi vuoti, null)."
+    }
+  ],
+  "errori_comuni": [
+    "Trasformare la riunione in una sessione di progettazione delle soluzioni: si registrano i difetti, si correggono dopo.",
+    "Far moderare l'autore o usare l'ispezione per valutare le persone: la gente smette di collaborare.",
+    "Saltare la preparazione individuale: la riunione rende molto meno.",
+    "Dire che l'ispezione sostituisce il testing: trova classi di difetti diverse.",
+    "Dimenticare che si possono ispezionare anche requisiti e diagrammi, non solo il codice."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i ruoli dell'ispezione di Fagan?",
+      "risposta": "Moderatore, autore, lettore, ispettori e segretario (recorder)."
+    },
+    {
+      "domanda": "Perché l'ispezione può costare meno del testing per alcuni difetti?",
+      "risposta": "Perché trova il difetto direttamente nel punto in cui si trova, prima dell'esecuzione e anche in artefatti non eseguibili come i requisiti, senza la fase di debugging necessaria per risalire da una failure al fault; inoltre un difetto trovato presto costa meno da correggere."
+    },
+    {
+      "domanda": "Che differenza c'è tra ispezione e walkthrough?",
+      "risposta": "L'ispezione è formale: ruoli definiti, preparazione, checklist, metriche, follow-up. Il walkthrough è informale: l'autore guida i colleghi attraverso il materiale, spesso a scopo di comprensione o formazione."
+    },
+    {
+      "domanda": "Fai due esempi di difetti che una checklist di ispezione trova facilmente.",
+      "risposta": "Stringhe confrontate con == invece di equals; risorse non chiuse; catch vuoti; limiti dei cicli sbagliati; parametri pubblici non validati."
+    }
+  ],
+  "riepilogo": "Ispezione = verifica statica fatta da persone, senza eseguire, su codice o qualsiasi artefatto.\nFagan: moderatore, autore, lettore, ispettori, segretario.\nFasi: pianificazione, overview, preparazione, riunione, rework, follow-up; checklist e metriche.\nForme leggere: walkthrough, code review su pull request, pair programming.\nComplementare al testing: trova difetti presto e a basso costo."
+}

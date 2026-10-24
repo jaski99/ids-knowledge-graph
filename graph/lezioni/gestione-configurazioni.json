@@ -1,0 +1,78 @@
+{
+  "intuizione": "Un sistema software non è solo codice: è codice, documenti, script di build, file di configurazione, librerie in versioni precise. La gestione delle configurazioni tiene traccia di tutti questi pezzi e delle loro versioni, decide chi può cambiarli e come, e permette di dire in ogni momento «la versione 2.1 consegnata al cliente era fatta esattamente da questi elementi», ricostruendola identica.",
+  "spiegazione": "## Il problema\n\nIl cliente segnala un bug sulla versione installata a gennaio. Per riprodurlo devi ricostruire **esattamente** quella versione: quale codice, quale versione di ogni libreria, quale configurazione del database, quale documento dei requisiti era in vigore. E intanto il team ha continuato a modificare tutto. Il **Software Configuration Management (SCM)** è la disciplina che rende possibile questa ricostruzione e tiene sotto controllo i cambiamenti.\n\n## Concetti chiave\n\n- **Configuration item (CI, elemento di configurazione)**: ogni artefatto posto sotto controllo: sorgenti, test, `pom.xml`, documento dei requisiti, diagrammi UML, script di deploy, file di configurazione, perfino la versione del compilatore.\n- **Versione**: stato di un CI in un certo momento. **Variante**: versione alternativa che convive (es. edizione per Windows e per Linux).\n- **Baseline**: insieme di CI in versioni precise, **revisionato e approvato formalmente**, che diventa punto di riferimento: da lì in poi si cambia solo con la procedura di controllo. Esempi: baseline dei requisiti approvati, baseline di una release (in Git, un **tag** come `v2.1.0`).\n- **Release**: una baseline consegnata all'esterno.\n\n## Le quattro attività classiche\n\n```mermaid\nflowchart LR\n    ID[\"Identificazione: quali CI, nomi, versioni, baseline\"] --> CC[\"Controllo delle modifiche: change request, CCB\"]\n    CC --> SA[\"Status accounting: registrare e riportare lo stato\"]\n    SA --> AU[\"Audit: verificare che la baseline sia completa e conforme\"]\n```\n\n1. **Identificazione**: decidere quali artefatti sono CI, come si chiamano (*naming model*), dove sono memorizzati (*storage model*), come si numerano le versioni.\n2. **Controllo delle modifiche (change control)**: nessuna modifica a una baseline senza una procedura.\n3. **Status accounting**: registrare e rendere visibile lo stato di ogni CI e di ogni richiesta (quali modifiche sono in quale versione, quali richieste sono aperte).\n4. **Audit di configurazione**: verificare che una baseline contenga davvero ciò che dichiara (*physical audit*) e soddisfi i requisiti (*functional audit*) prima del rilascio.\n\nA queste si aggiungono **build e release management**: costruire in modo riproducibile i prodotti a partire dai CI.\n\n## Il processo di change control\n\n```mermaid\nflowchart TD\n    CR[\"Change request: chi, cosa, perché\"] --> AN[\"Analisi di impatto: CI coinvolti, costo, rischi\"]\n    AN --> CCB{\"CCB: approva?\"}\n    CCB -- \"no\" --> RJ[\"Rifiutata o rinviata, con motivazione\"]\n    CCB -- \"sì\" --> IM[\"Implementazione su branch dedicato\"]\n    IM --> VE[\"Verifica: test e review\"]\n    VE --> BL[\"Integrazione nella nuova baseline e rilascio\"]\n    BL --> ST[\"Status accounting aggiornato\"]\n```\n\nIl **Change Control Board (CCB)** è il gruppo (responsabile tecnico, project manager, qualità, a volte cliente) che decide quali modifiche entrano, valutando beneficio, costo, rischio e priorità. Nei progetti agili il ruolo è svolto in forma leggera dal Product Owner che ordina il backlog e dalla review delle pull request.\n\n## SCM con gli strumenti del corso\n\n| esigenza SCM | strumento |\n|---|---|\n| versioni dei CI e storia | **Git** (commit, branch) |\n| baseline e release | tag Git (`v2.1.0`), versione nel `pom.xml` |\n| versioni delle librerie | **Maven**: dipendenze con versione fissata nel pom |\n| build riproducibile | `mvn package` su un server di **CI** pulito |\n| change request e status accounting | issue tracker (GitHub Issues, Jira) collegato ai commit e alle pull request |\n| controllo delle modifiche | pull request con review obbligatoria e test verdi prima del merge |\n\n### Esempio: tracciabilità tra richiesta e codice\n\n```java\n/**\n * CR-142: lo sconto tessera si applica sopra i 500 euro cumulativi (prima: 400).\n * Approvata dal CCB il 12/03; rilasciata nella versione 2.2.0.\n */\npublic final class Fedelta {\n    static final double SOGLIA_SCONTO = 500.0;\n    private Fedelta() {}\n}\n```\n\nIl commit avrà un messaggio come `CR-142: soglia sconto tessera a 500 euro`, la pull request rimanda alla issue, il tag `v2.2.0` la include: da qualunque punto si risale agli altri.\n\n## Perché è importante\n- Ricostruire qualsiasi versione consegnata (supporto, bug del cliente, audit legali).\n- Evitare modifiche non autorizzate o perse e lavoro duplicato.\n- Sapere sempre cosa contiene una release (note di rilascio, changelog).\n- Fondamento di CI/CD, rilascio e manutenzione.",
+  "analogia": "La gestione delle configurazioni è come l'archivio tecnico di un'officina aeronautica: ogni aereo ha un registro che dice esattamente quali pezzi monta, con numero di serie e revisione, chi li ha cambiati, quando e con quale autorizzazione. Nessun meccanico può sostituire un pezzo senza un ordine di lavoro approvato, e un ispettore verifica periodicamente che il registro corrisponda all'aereo. L'analogia cede perché nel software i «pezzi» si copiano a costo zero e possono esistere in molte versioni contemporaneamente su branch diversi, cosa impossibile con un pezzo fisico.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Versioni di un documento e storico delle revisioni (esperienza comune con Google Docs)",
+      "collegamento": "Lo SCM generalizza lo storico delle revisioni a tutti gli artefatti del progetto e aggiunge un processo di approvazione."
+    },
+    {
+      "conoscenza": "Transazioni e log nelle Basi di dati",
+      "collegamento": "Status accounting e storia dei CI ricordano il log delle transazioni: si sa sempre chi ha cambiato cosa e quando."
+    },
+    {
+      "conoscenza": "Git",
+      "collegamento": "Commit, branch e tag implementano versioni e baseline.",
+      "nodo": "git-versionamento"
+    },
+    {
+      "conoscenza": "Maven",
+      "collegamento": "Le versioni fissate delle dipendenze nel pom fanno parte della configurazione.",
+      "nodo": "maven"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Domanda: definisci configuration item e baseline",
+      "problema": "«Che cosa si intende per gestione delle configurazioni? Si definiscano configuration item e baseline.»",
+      "passi": [
+        "Definizione di SCM: disciplina che identifica gli elementi che compongono il sistema e le loro versioni, ne controlla le modifiche, ne registra lo stato e verifica l'integrità delle baseline lungo tutto il ciclo di vita.",
+        "Configuration item: qualunque artefatto messo sotto controllo di configurazione (codice, documenti, build script, configurazioni, librerie), identificato univocamente e versionato.",
+        "Baseline: insieme di CI in versioni specifiche, revisionato e approvato, che diventa riferimento stabile; si modifica solo tramite change control. Esempio: baseline dei requisiti approvati; release 2.1.0 = tag Git più pom con versioni fissate.",
+        "Attività: identificazione, controllo delle modifiche (CR, CCB), status accounting, audit; più build e release management."
+      ],
+      "soluzione": "SCM = identificazione + controllo modifiche + status accounting + audit. CI = artefatto versionato sotto controllo. Baseline = insieme approvato di CI in versioni precise, modificabile solo con change control.",
+      "perche_funziona": "Definizioni precise con un esempio concreto (tag Git e pom) dimostrano che sai collegare la teoria agli strumenti."
+    },
+    {
+      "titolo": "Seguire una change request",
+      "problema": "Il cliente della farmacia chiede di inviare le notifiche di disponibilità anche via SMS. Descrivi il percorso della richiesta fino al rilascio.",
+      "passi": [
+        "Si apre la change request CR-201 con descrizione, motivazione e richiedente.",
+        "Analisi di impatto: CI coinvolti (classe Notificatore, requisiti, diagramma delle classi, test, configurazione del gateway SMS), stima 3 giorni, rischio: costo del servizio SMS.",
+        "Il CCB approva per la versione 2.3.0 (o la rinvia, motivando).",
+        "Implementazione sul branch feat/cr-201-sms, test JUnit, aggiornamento dei documenti, pull request con review.",
+        "Merge, build CI verde, tag v2.3.0, changelog aggiornato; la CR passa a «chiusa – rilasciata in 2.3.0» (status accounting)."
+      ],
+      "soluzione": "CR → analisi di impatto → decisione CCB → implementazione su branch → verifica → nuova baseline (tag) → stato aggiornato.",
+      "perche_funziona": "Ogni passo lascia una traccia collegata agli altri: in futuro si potrà sapere perché, quando e dove è stata fatta la modifica."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che lo SCM riguardi solo il codice: anche requisiti, diagrammi, configurazioni e script sono CI.",
+    "Confondere versione e baseline: la baseline è un insieme approvato di versioni, un punto di riferimento formale.",
+    "Ridurre lo SCM a «usare Git»: Git copre versioni e branch, ma servono anche processo di change control, status accounting e audit.",
+    "Dimenticare le versioni di librerie e strumenti: senza quelle la build non è riproducibile.",
+    "Modifiche a una baseline senza change request («è solo una riga»)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono le quattro attività classiche dello SCM?",
+      "risposta": "Identificazione della configurazione, controllo delle modifiche, status accounting (registrazione e report dello stato), audit di configurazione."
+    },
+    {
+      "domanda": "Che cosa fa il Change Control Board?",
+      "risposta": "Valuta le richieste di modifica (beneficio, costo, rischio, impatto) e decide se approvarle, rifiutarle o rinviarle, e in quale versione includerle."
+    },
+    {
+      "domanda": "Come si realizza una baseline di release con Git e Maven?",
+      "risposta": "Con un tag Git (es. v2.1.0) sul commit approvato, che contiene il pom.xml con versione 2.1.0 e dipendenze in versioni fissate, così la build può essere ricostruita identica."
+    },
+    {
+      "domanda": "Che differenza c'è tra versione e variante?",
+      "risposta": "Una versione sostituisce la precedente nel tempo (2.0 → 2.1); una variante è una versione alternativa che convive con le altre per esigenze diverse (es. per piattaforme o clienti diversi)."
+    }
+  ],
+  "riepilogo": "SCM: identifica, controlla, traccia e verifica tutti gli elementi di configurazione e le loro versioni.\nCI = artefatto sotto controllo; baseline = insieme approvato di CI, cambia solo con change control.\nAttività: identificazione, change control (CR, CCB), status accounting, audit (+ build/release).\nStrumenti: Git (versioni, tag), Maven (dipendenze), CI, issue tracker e pull request."
+}

@@ -1,0 +1,79 @@
+{
+  "intuizione": "La manutenzione è tutto ciò che si fa a un software dopo il rilascio, ed è la fase più lunga e costosa della sua vita. Non significa solo «correggere bug»: si distinguono quattro tipi a seconda del motivo della modifica. Correttiva: c'è un difetto. Adattiva: è cambiato l'ambiente. Perfettiva: gli utenti vogliono di più o meglio. Preventiva: si migliora la struttura per evitare problemi futuri.",
+  "spiegazione": "## Perché la manutenzione conta\n\nUn sistema che viene usato **deve cambiare**: cambiano le leggi, i sistemi operativi, le esigenze degli utenti. È la prima delle *leggi di Lehman* sull'evoluzione del software (**cambiamento continuo**: un sistema usato nel mondo reale deve evolvere o diventa progressivamente meno utile). La seconda è altrettanto importante: **complessità crescente**: ogni modifica tende a degradare la struttura, a meno che non si lavori esplicitamente per contrastarla.\n\nPer questo la manutenzione assorbe la maggior parte del costo totale di un sistema: le stime più citate si aggirano sul 60–80% del costo del ciclo di vita (i numeri variano molto tra studi e domini, ma l'ordine di grandezza è che si spende più dopo il rilascio che prima).\n\n## I quattro tipi (classificazione ISO/IEC 14764)\n\n| tipo | motivo | esempio | reattiva o proattiva |\n|---|---|---|---|\n| **Correttiva** | eliminare un difetto scoperto | il rapporto conta due volte le vendite annullate | reattiva |\n| **Adattiva** | adeguarsi a un cambiamento dell'**ambiente** (SO, hardware, librerie, leggi, formati esterni) | nuova aliquota IVA per legge; migrazione a Java 21; nuova API del corriere | reattiva |\n| **Perfettiva** | nuove funzionalità o migliori prestazioni/usabilità richieste dagli utenti | esportazione in PDF; ricerca più veloce | proattiva |\n| **Preventiva** | migliorare la manutenibilità e prevenire guasti futuri, senza cambiare il comportamento visibile | refactoring di un metodo da 300 righe; aggiornare una libreria prima della fine del supporto; aggiungere test | proattiva |\n\nUno studio classico (Lientz e Swanson, 1980) trovò che la parte più grande dello sforzo andava nella manutenzione perfettiva (circa metà), seguita dall'adattiva (circa un quarto) e dalla correttiva (circa un quinto): **correggere bug è una parte minoritaria** della manutenzione.\n\n## Come riconoscerli: chiedersi «perché cambio il codice?»\n\n```mermaid\nflowchart TD\n    Q[\"Perché devo modificare il software?\"] --> D{\"Il software fa una cosa diversa da quella specificata?\"}\n    D -- \"sì\" --> CO[\"Correttiva\"]\n    D -- \"no\" --> E{\"È cambiato qualcosa fuori dal software?\"}\n    E -- \"sì: legge, SO, libreria, interfaccia esterna\" --> AD[\"Adattiva\"]\n    E -- \"no\" --> F{\"Cambia il comportamento visibile all'utente?\"}\n    F -- \"sì: nuova funzione o prestazione\" --> PE[\"Perfettiva\"]\n    F -- \"no: solo struttura e qualità interna\" --> PR[\"Preventiva\"]\n```\n\n## Quattro modifiche allo stesso codice\n\nCodice di partenza:\n\n```java\npublic class Scontrino {\n    public double totale(double[] prezzi) {\n        double t = 0;\n        for (int i = 1; i < prezzi.length; i++)   // difetto: salta il primo prezzo\n            t += prezzi[i];\n        return t * 1.22;                           // IVA cablata nel codice\n    }\n}\n```\n\n- **Correttiva**: `i = 1` → `i = 0` (il primo articolo non veniva conteggiato).\n- **Adattiva**: la legge cambia l'aliquota ⇒ l'IVA diventa un parametro letto dalla configurazione invece della costante `1.22`.\n- **Perfettiva**: il cliente chiede lo sconto fedeltà del 5% ⇒ nuovo metodo `totaleConSconto`.\n- **Preventiva**: estrarre `subtotale()` e `applicaIva()` (refactoring Extract Method) e aggiungere test JUnit, senza cambiare i risultati.\n\n```java\npublic class Scontrino {\n    private final double aliquotaIva;              // adattiva: dalla configurazione\n    public Scontrino(double aliquotaIva) { this.aliquotaIva = aliquotaIva; }\n\n    double subtotale(double[] prezzi) {           // preventiva: Extract Method\n        double t = 0;\n        for (double p : prezzi) t += p;           // correttiva: nessun elemento saltato\n        return t;\n    }\n    double applicaIva(double imponibile) { return imponibile * (1 + aliquotaIva); }\n\n    public double totale(double[] prezzi) { return applicaIva(subtotale(prezzi)); }\n\n    public double totaleConSconto(double[] prezzi, double sconto) {   // perfettiva\n        return applicaIva(subtotale(prezzi) * (1 - sconto));\n    }\n}\n```\n\n## Il processo di manutenzione\n1. **Richiesta di modifica** (segnalazione o change request), registrata.\n2. **Analisi dell'impatto**: quali moduli, test e documenti tocca; stima del costo.\n3. **Approvazione** (change control) e pianificazione nella release.\n4. **Implementazione** e **test di regressione** (i test automatici sono ciò che rende la manutenzione sicura).\n5. **Rilascio** con nuova versione e aggiornamento della documentazione.\n\n## Che cosa rende un sistema manutenibile\nAlta coesione e basso accoppiamento, nomi chiari, test automatici, documentazione allineata, assenza di code smell. Ogni errore lasciato nei requisiti o nel progetto si paga con interessi crescenti in manutenzione: è la stessa logica della curva di Boehm sul costo degli errori.",
+  "analogia": "Mantenere un software è come mantenere un'automobile. Correttiva: riparare il freno che non funziona. Adattiva: montare le gomme invernali perché è arrivato l'inverno (non è cambiata l'auto, è cambiato l'ambiente). Perfettiva: installare il navigatore che il proprietario desidera. Preventiva: il tagliando, cambiare la cinghia prima che si rompa. L'analogia cede perché un'auto si usura anche se nessuno la tocca, mentre il software non si consuma: si degrada solo perché l'ambiente cambia o perché le modifiche ne peggiorano la struttura.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Release e post-produzione",
+      "collegamento": "Le segnalazioni raccolte dopo il rilascio sono l'ingresso della manutenzione.",
+      "nodo": "release-post-produzione"
+    },
+    {
+      "conoscenza": "Refactoring",
+      "collegamento": "La manutenzione preventiva coincide in gran parte con il refactoring: migliorare la struttura senza cambiare il comportamento.",
+      "nodo": "refactoring"
+    },
+    {
+      "conoscenza": "Costo degli errori (Boehm)",
+      "collegamento": "Un errore che sopravvive fino alla produzione costa molto di più: la manutenzione correttiva ne paga il prezzo.",
+      "nodo": "requisiti-costo-errori-boehm"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Basso accoppiamento limita l'impatto di ogni modifica e rende la manutenzione più economica.",
+      "nodo": "coesione-accoppiamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Classificare quattro richieste",
+      "problema": "Classifica: (a) dal 1° gennaio la fattura elettronica deve usare un nuovo formato XML imposto dall'Agenzia delle Entrate; (b) il programma va in crash se il nome del cliente contiene un apostrofo; (c) il responsabile chiede un grafico delle vendite mensili; (d) un modulo con complessità ciclomatica 45 viene suddiviso in metodi più piccoli prima di un'estensione.",
+      "passi": [
+        "(a) Cambia un requisito esterno imposto dall'ambiente (legge/formato) ⇒ adattiva.",
+        "(b) Il software non rispetta il comportamento atteso ⇒ correttiva.",
+        "(c) Nuova funzionalità richiesta dall'utente ⇒ perfettiva.",
+        "(d) Nessun cambiamento visibile, migliora la manutenibilità ⇒ preventiva."
+      ],
+      "soluzione": "(a) adattiva, (b) correttiva, (c) perfettiva, (d) preventiva.",
+      "perche_funziona": "La domanda discriminante è il motivo della modifica: difetto, ambiente, nuova esigenza, qualità interna."
+    },
+    {
+      "titolo": "Domanda aperta: manutenzione e costi",
+      "problema": "«Perché la manutenzione è la fase più costosa del ciclo di vita e come si può ridurne il costo?»",
+      "passi": [
+        "Il software usato deve evolvere (cambiamento continuo) e ogni modifica tende ad aumentarne la complessità.",
+        "La manutenzione dura per tutta la vita del sistema, spesso molti anni, ed è prevalentemente perfettiva e adattiva, non solo correzione di bug.",
+        "Il costo di ogni modifica dipende da quanto è difficile capire il codice e prevederne l'impatto.",
+        "Riduzione: progettazione modulare (coesione alta, accoppiamento basso), test automatici di regressione, documentazione e tracciabilità aggiornate, refactoring regolare (preventiva), requisiti di qualità che riducono la correttiva.",
+        "Processo: analisi dell'impatto, change control, versionamento."
+      ],
+      "soluzione": "Costa perché è lunga, inevitabile e la complessità cresce; si riduce con buona progettazione, test, refactoring e gestione delle modifiche.",
+      "perche_funziona": "Collega la classificazione dei tipi alle cause del costo e propone contromisure concrete per ciascuna."
+    }
+  ],
+  "errori_comuni": [
+    "Credere che manutenzione significhi solo correggere bug (la correttiva è una parte minoritaria).",
+    "Confondere adattiva e perfettiva: adattiva = cambia l'ambiente esterno; perfettiva = cambiano o crescono le esigenze dell'utente.",
+    "Classificare come preventiva una modifica che cambia il comportamento visibile.",
+    "Modificare senza analisi dell'impatto né test di regressione."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i quattro tipi di manutenzione?",
+      "risposta": "Correttiva (eliminare difetti), adattiva (adeguarsi a cambiamenti dell'ambiente), perfettiva (nuove funzionalità o miglioramenti richiesti), preventiva (migliorare la manutenibilità per prevenire problemi futuri)."
+    },
+    {
+      "domanda": "Il passaggio a una nuova versione del sistema operativo che richiede di modificare il codice che tipo di manutenzione è?",
+      "risposta": "Adattiva: il software non aveva difetti e non cambiano le esigenze, è cambiato l'ambiente in cui gira."
+    },
+    {
+      "domanda": "Quale tipo di manutenzione assorbe tipicamente la quota maggiore dello sforzo?",
+      "risposta": "La perfettiva (nuove funzionalità e miglioramenti), seguita dall'adattiva; la correttiva è una quota minore."
+    },
+    {
+      "domanda": "Che cosa afferma la legge di Lehman della complessità crescente?",
+      "risposta": "Che, man mano che un sistema evolve, la sua complessità aumenta a meno che non si dedichi lavoro esplicito a ridurla (refactoring, manutenzione preventiva)."
+    }
+  ],
+  "riepilogo": "Manutenzione = modifiche dopo il rilascio; è la fase più lunga e costosa.\nCorrettiva (difetti), adattiva (ambiente), perfettiva (nuove esigenze), preventiva (struttura).\nChiediti perché cambi il codice; la correttiva è una parte minoritaria.\nLehman: cambiamento continuo e complessità crescente.\nProcesso: richiesta, analisi dell'impatto, approvazione, modifica, regressione, rilascio."
+}

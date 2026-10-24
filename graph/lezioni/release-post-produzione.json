@@ -1,0 +1,79 @@
+{
+  "intuizione": "Consegnare il software non è la fine del lavoro: è l'inizio della sua vita reale. Prima del rilascio definitivo lo si fa provare a gruppi sempre più ampi (alpha, beta, release candidate); dopo, bisogna installarlo, assistere gli utenti, raccogliere le segnalazioni, distribuire correzioni e, un giorno, annunciare la fine del supporto. Tutto ciò che emerge in questa fase alimenta la manutenzione.",
+  "spiegazione": "## Le fasi di un rilascio\n\n```mermaid\nflowchart LR\n    DV[\"Sviluppo\"] --> AL[\"Alpha: test interni\"]\n    AL --> BE[\"Beta: utenti esterni selezionati\"]\n    BE --> RC[\"Release candidate: candidata finale\"]\n    RC --> GA[\"GA: rilascio generale\"]\n    GA --> SU[\"Supporto e patch\"]\n    SU --> EOL[\"Fine del supporto (EOL)\"]\n```\n\n| fase | chi la usa | scopo | stato del prodotto |\n|---|---|---|---|\n| **Alpha** | team interno, tester dell'azienda | trovare i difetti gravi; funzionalità ancora incomplete | instabile |\n| **Beta** | utenti reali selezionati (beta chiusa) o chiunque (beta aperta) | validazione in condizioni reali, usabilità, compatibilità con ambienti diversi | funzionalità complete, difetti noti |\n| **Release candidate (RC)** | ampio pubblico di prova | confermare che è pronta; si correggono solo difetti bloccanti | potenzialmente definitiva |\n| **GA (General Availability)** | tutti i clienti | rilascio ufficiale, supportato | stabile |\n\nIn SemVer queste fasi si esprimono con le pre-release: `2.0.0-alpha.1`, `2.0.0-beta.3`, `2.0.0-rc.1`, poi `2.0.0`. Alpha e beta sono anche i luoghi del **test di accettazione** (alpha test presso lo sviluppatore, beta test presso gli utenti).\n\n## Preparare il rilascio\n- Congelamento delle funzionalità (*feature freeze*) e branch di release.\n- Baseline: tag Git, versione nel pom, changelog e **note di rilascio** (novità, problemi noti, istruzioni di aggiornamento).\n- Pacchetto di installazione e documentazione utente.\n- **Configurazione dell'ambiente separata dal codice**: lo stesso artefatto deve girare in test, staging e produzione cambiando solo la configurazione esterna (variabili d'ambiente, file di configurazione), senza ricompilare.\n\n```java\npublic final class Config {\n    private Config() {}\n\n    /** URL del database letto dall'ambiente: niente indirizzi o password nel codice. */\n    public static String dbUrl() {\n        String url = System.getenv(\"FARMACIA_DB_URL\");\n        if (url == null || url.isBlank())\n            throw new IllegalStateException(\"variabile FARMACIA_DB_URL non impostata\");\n        return url;\n    }\n}\n```\n\n## La post-produzione\n\n### Installazione e distribuzione\nInstallazione presso il cliente, migrazione dei dati dal vecchio sistema, formazione degli utenti. Per i servizi web, deploy sui server (spesso via pipeline CI/CD) con strategie che riducono il rischio: rilascio graduale (*canary*: prima a una piccola percentuale di utenti) o *blue-green* (due ambienti identici, si sposta il traffico e si può tornare indietro subito).\n\n### Supporto agli utenti\nHelp desk organizzato su più livelli: il primo livello risponde alle domande comuni e raccoglie le informazioni; il secondo analizza i problemi tecnici; il terzo (gli sviluppatori) corregge i difetti. Le segnalazioni sono numerose subito dopo il rilascio e poi calano: va previsto nel dimensionamento del supporto.\n\n### Segnalazioni, correzioni e change request\nOgni segnalazione si registra (issue tracker), si classifica (difetto o richiesta di nuova funzionalità), si prioritizza per gravità e diffusione. I difetti critici diventano **patch** urgenti (hotfix, versione PATCH); le altre modifiche confluiscono nelle release successive passando dal **change control**.\n\n### Monitoraggio\nLog, metriche (tempi di risposta, errori), allarmi: permettono di scoprire i problemi prima che li segnali il cliente.\n\n### Fine del supporto (EOL)\nSi annuncia con anticipo la data dopo la quale una versione non riceverà più correzioni e si indica il percorso di migrazione; si mantengono contemporaneamente poche versioni (es. l'ultima e una LTS, *long-term support*).\n\n## Dal rilascio alla manutenzione\n\n```mermaid\nflowchart TD\n    U[\"Utenti in produzione\"] --> S[\"Segnalazioni, richieste, dati di monitoraggio\"]\n    S --> C{\"Classificazione\"}\n    C -- \"difetto\" --> CO[\"Manutenzione correttiva: patch\"]\n    C -- \"ambiente cambiato\" --> AD[\"Adattiva\"]\n    C -- \"nuova esigenza\" --> PE[\"Perfettiva\"]\n    CO --> R[\"Nuova release\"]\n    AD --> R\n    PE --> R\n    R --> U\n```\n\nLa post-produzione chiude il ciclo: le informazioni raccolte diventano lavoro di manutenzione e nuove release.",
+  "analogia": "Il rilascio di un software è come l'apertura di un nuovo ristorante: prima una cena di prova per amici e staff (alpha), poi qualche serata a inviti per clienti veri (beta), poi la «prova generale» con il menù definitivo (release candidate) e infine l'inaugurazione (GA). Dopo l'apertura il lavoro continua: si ascoltano le lamentele, si sistemano i piatti, si cambia il menù con le stagioni, e prima o poi un piatto esce dal menù (fine del supporto). L'analogia cede perché un aggiornamento software può arrivare a tutti i clienti in pochi minuti e si può anche annullare, cosa che con un menù stampato non succede.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Test di accettazione, alpha e beta",
+      "collegamento": "Le fasi alpha e beta sono il luogo naturale della validazione con utenti reali.",
+      "nodo": "testing-livelli-tipi"
+    },
+    {
+      "conoscenza": "Versionamento semantico",
+      "collegamento": "Le pre-release (alpha, beta, rc) e le patch post-rilascio si esprimono nel numero di versione.",
+      "nodo": "versionamento-semantico"
+    },
+    {
+      "conoscenza": "Gestione delle configurazioni",
+      "collegamento": "Ogni rilascio è una baseline e le modifiche post-rilascio passano dal change control.",
+      "nodo": "gestione-configurazioni"
+    },
+    {
+      "conoscenza": "Variabili d'ambiente (Sistemi operativi)",
+      "collegamento": "Permettono di separare la configurazione dal codice: stesso jar, ambienti diversi."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Pianificare il rilascio dell'app farmacia",
+      "problema": "L'app per la farmacia è pronta. Descrivi le fasi dal codice completo all'uso stabile in 10 farmacie.",
+      "passi": [
+        "Alpha: test interni con dati fittizi; correzione dei difetti gravi.",
+        "Beta: installazione in 2 farmacie pilota con dati reali; si raccolgono segnalazioni di usabilità e problemi di compatibilità (stampanti, lettori di codici a barre).",
+        "Release candidate 1.0.0-rc.1: si correggono solo i difetti bloccanti; feature freeze.",
+        "GA 1.0.0: installazione nelle 10 farmacie con migrazione dei dati dal vecchio gestionale e formazione del personale; note di rilascio e manuale.",
+        "Post-produzione: help desk su due livelli, issue tracker, hotfix 1.0.1 per i difetti critici, nuove funzionalità pianificate per la 1.1.0 tramite change control."
+      ],
+      "soluzione": "Alpha → beta in 2 farmacie → RC → GA con migrazione e formazione → supporto, patch e release successive.",
+      "perche_funziona": "Allargare gradualmente il pubblico riduce il rischio: i difetti emergono quando costano ancora poco e toccano pochi utenti."
+    },
+    {
+      "titolo": "Classificare le segnalazioni post-rilascio",
+      "problema": "Nella prima settimana arrivano: (a) il rapporto giornaliero conta due volte le vendite annullate; (b) richiesta di esportare il rapporto in PDF; (c) il nuovo sistema operativo dei PC della farmacia blocca la stampa delle etichette. Come le gestisci?",
+      "passi": [
+        "(a) Difetto ⇒ manutenzione correttiva; gravità alta (dati contabili sbagliati) ⇒ hotfix 1.0.1 con test di regressione.",
+        "(b) Nuova esigenza ⇒ change request, manutenzione perfettiva, pianificata per la 1.1.0 se il CCB approva.",
+        "(c) Cambiamento dell'ambiente ⇒ manutenzione adattiva; priorità alta perché blocca il lavoro: patch o release minore.",
+        "Tutte e tre registrate nell'issue tracker e collegate alle versioni in cui vengono risolte (status accounting)."
+      ],
+      "soluzione": "(a) correttiva, hotfix; (b) perfettiva, release futura; (c) adattiva, priorità alta.",
+      "perche_funziona": "Classificare subito decide il canale (hotfix o release pianificata) e permette di misurare dove va lo sforzo di manutenzione."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che il ciclo di vita finisca con la consegna.",
+    "Confondere beta e release candidate: la RC è la candidata definitiva, in cui si correggono solo difetti bloccanti.",
+    "Inserire configurazioni specifiche dell'ambiente (URL, password) nel codice compilato.",
+    "Non pianificare la fine del supporto, trovandosi a mantenere troppe versioni.",
+    "Trattare le richieste di nuove funzionalità come bug urgenti, saltando il change control."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che differenza c'è tra alpha e beta test?",
+      "risposta": "L'alpha test è svolto internamente (sviluppatori o tester dell'azienda) su un prodotto ancora instabile; il beta test è svolto da utenti reali esterni, nel loro ambiente, su un prodotto con funzionalità complete."
+    },
+    {
+      "domanda": "Che cos'è una release candidate?",
+      "risposta": "Una versione potenzialmente definitiva: se non emergono difetti bloccanti diventa la release generale; nel frattempo si correggono solo problemi gravi."
+    },
+    {
+      "domanda": "Quali attività comprende la post-produzione?",
+      "risposta": "Installazione e distribuzione (con migrazione e formazione), supporto agli utenti, raccolta e classificazione di segnalazioni e change request, patch, monitoraggio, gestione della fine del supporto."
+    },
+    {
+      "domanda": "Perché la configurazione dell'ambiente va separata dal codice?",
+      "risposta": "Per poter installare lo stesso artefatto testato in ambienti diversi cambiando solo la configurazione, senza ricompilare, e per non inserire segreti nel codice versionato."
+    }
+  ],
+  "riepilogo": "Rilascio graduale: alpha (interno) → beta (utenti reali) → RC (candidata) → GA.\nPrima del rilascio: feature freeze, tag, changelog e note, configurazione separata dal codice.\nPost-produzione: installazione, supporto a livelli, segnalazioni e change request, patch, monitoraggio, EOL.\nLe segnalazioni alimentano la manutenzione (correttiva, adattiva, perfettiva)."
+}
