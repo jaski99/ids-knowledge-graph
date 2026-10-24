@@ -1,0 +1,80 @@
+{
+  "intuizione": "Con la Continuous Integration ogni modifica viene integrata spesso nel ramo principale e un server la costruisce e la testa automaticamente: se qualcosa si rompe lo sai entro pochi minuti, quando la causa è ancora fresca. Continuous Delivery significa che il software che supera la pipeline è sempre pronto per essere rilasciato con un clic; Continuous Deployment fa un passo in più e lo rilascia in produzione da solo.",
+  "spiegazione": "## Il problema: l'«inferno dell'integrazione»\n\nSe quattro sviluppatori lavorano tre settimane ciascuno sul proprio ramo e poi uniscono tutto il giorno prima della consegna, scoprono decine di conflitti e test rotti, e nessuno sa quale modifica ha causato cosa. Più si aspetta a integrare, più l'integrazione costa. La **Continuous Integration** ribalta la logica: integrare **spesso** (almeno una volta al giorno) e **verificare ogni integrazione automaticamente**.\n\n## Continuous Integration: le pratiche\n\n- Un solo repository condiviso e un ramo principale (`main`).\n- Ogni sviluppatore integra le proprie modifiche frequentemente, con commit piccoli.\n- **Ogni push avvia una build automatica** su un server pulito: compilazione, unit test, eventuale analisi statica.\n- La build deve essere **veloce** (idealmente pochi minuti) per dare un feedback rapido.\n- **Build rotta = priorità assoluta**: si ripara subito (o si fa revert) prima di aggiungere altro.\n- I risultati sono visibili a tutti (badge, notifiche, stato della pull request).\n\n## Delivery e Deployment\n\n| | Continuous Integration | Continuous Delivery | Continuous Deployment |\n|---|---|---|---|\n| automatico | build + test a ogni push | + pipeline fino a un ambiente simile alla produzione (staging): l'artefatto è **sempre rilasciabile** | + **rilascio automatico in produzione** se tutto passa |\n| decisione di rilascio | – | **umana** (un clic) | nessuna: la pipeline decide |\n\n## La pipeline\n\n```mermaid\nflowchart LR\n    PU[\"push / pull request\"] --> B[\"build: mvn compile\"]\n    B --> UT[\"unit test: mvn test\"]\n    UT --> SA[\"analisi statica e copertura\"]\n    SA --> PK[\"package: jar o immagine container\"]\n    PK --> ST[\"deploy su staging + test di integrazione e accettazione\"]\n    ST --> AP{\"approvazione manuale?\"}\n    AP -- \"delivery: sì\" --> PR[\"produzione\"]\n    AP -- \"deployment: no, automatico\" --> PR\n```\n\nOgni stadio è un «cancello» (*quality gate*): se fallisce, la pipeline si ferma e l'artefatto non avanza. L'artefatto costruito una volta è lo **stesso** che passa per tutti gli ambienti (*build once, deploy many*).\n\n## Esempio concreto: GitHub Actions per un progetto Maven\n\n```yaml\n# .github/workflows/ci.yml\nname: CI\non:\n  push:\n    branches: [ main ]\n  pull_request:\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-java@v4\n        with:\n          distribution: temurin\n          java-version: '17'\n          cache: maven\n      - name: Build e test\n        run: mvn -B verify\n```\n\nA ogni push su `main` o a ogni pull request, GitHub avvia una macchina pulita, scarica il codice, installa Java 17, esegue `mvn -B verify` (compilazione, test JUnit, eventuali controlli). Se un test fallisce, la pull request mostra una ❌ e, con le regole di protezione del branch, non si può fare merge.\n\nIl test che la pipeline esegue è un normale JUnit:\n\n```java\n@Test\nvoid soglia50PagineCostaDueEuro() {\n    assertEquals(2.0, Spedizioni.calcolaCostoSpedizione(50, 2, 10), 1e-9);\n}\n```\n\n## Benefici\n- **Feedback rapido**: un difetto si scopre minuti dopo averlo introdotto, quando il contesto è fresco e il diff è piccolo (debugging facile).\n- **Integrazioni piccole** ⇒ conflitti piccoli.\n- **Regressione automatica** a ogni modifica.\n- **Rilasci frequenti e a basso rischio**: ogni rilascio contiene poche modifiche, facili da annullare.\n- **Riproducibilità**: la build gira su una macchina pulita, non «sul mio portatile».\n\n## Prerequisiti e limiti\nServono una buona suite di test automatici (senza test la CI verifica solo che compili), build scriptate (Maven), versionamento di tutto (SCM), e per il deployment continuo anche monitoraggio e possibilità di rollback rapido (feature flag, deploy blue-green o canary). È una pratica centrale del movimento **DevOps**, che avvicina sviluppo e operazioni.",
+  "analogia": "La CI è come la cucina di un ristorante dove lo chef assaggia ogni componente appena è pronto invece di assaggiare il piatto finito solo al momento di servirlo: se la salsa è sbagliata se ne accorge subito e sa esattamente cosa è andato storto. La continuous delivery è avere sempre un piatto pronto da servire appena il cliente lo chiede; il continuous deployment è il cameriere che lo porta in sala da solo appena supera l'assaggio. L'analogia cede perché il software si può «ritirare» dal cliente con un rollback in pochi secondi, un piatto mangiato no.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Script e automazione da terminale (Sistemi operativi)",
+      "collegamento": "Una pipeline è una sequenza di comandi (mvn verify, deploy) eseguita automaticamente da un server."
+    },
+    {
+      "conoscenza": "Maven",
+      "collegamento": "La pipeline esegue le fasi di Maven: verify esegue compilazione, test e controlli.",
+      "nodo": "maven"
+    },
+    {
+      "conoscenza": "JUnit 5",
+      "collegamento": "Senza test automatici la CI verificherebbe solo la compilazione.",
+      "nodo": "junit-5"
+    },
+    {
+      "conoscenza": "Gestione delle configurazioni",
+      "collegamento": "La CI presuppone che tutto sia versionato e che la build sia riproducibile.",
+      "nodo": "gestione-configurazioni"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Domanda: CI, delivery e deployment",
+      "problema": "«Si descriva la continuous integration e la differenza tra continuous delivery e continuous deployment.»",
+      "passi": [
+        "CI: pratica per cui gli sviluppatori integrano frequentemente sul ramo principale e ogni integrazione è verificata da una build automatica con test; build rotta riparata subito.",
+        "Benefici: feedback rapido, integrazioni piccole, regressione automatica, riproducibilità.",
+        "Continuous Delivery: pipeline automatica fino a uno stato sempre rilasciabile (staging, test di accettazione); il rilascio in produzione è una decisione umana con un clic.",
+        "Continuous Deployment: ogni modifica che supera la pipeline va in produzione automaticamente, senza intervento umano.",
+        "Prerequisiti: test automatici affidabili, build scriptata, versionamento di tutto, monitoraggio e rollback."
+      ],
+      "soluzione": "CI = integrazione frequente + build/test automatici; Delivery = sempre rilasciabile, rilascio manuale; Deployment = rilascio automatico.",
+      "perche_funziona": "Il punto chiave da far emergere è chi decide il rilascio: nessuno nella CI pura, una persona nella delivery, la pipeline nel deployment."
+    },
+    {
+      "titolo": "Progettare una pipeline per il progetto farmacia",
+      "problema": "Il team vuole che nessuna pull request con test rotti arrivi su main e che ogni versione su main sia installabile su un server di prova. Progetta la pipeline.",
+      "passi": [
+        "Trigger: ogni pull request e ogni push su main.",
+        "Stadio 1: checkout, setup Java, `mvn -B verify` (compilazione + JUnit + copertura con soglia minima, es. 70% dei rami).",
+        "Regola di protezione di main: merge consentito solo con pipeline verde e una review approvata.",
+        "Stadio 2 (solo su main): package del jar con versione SNAPSHOT e deploy automatico sul server di staging, poi smoke test.",
+        "Rilascio in produzione: manuale, dal tag di versione (continuous delivery)."
+      ],
+      "soluzione": "PR → verify con test e soglia di copertura → merge protetto → deploy automatico su staging → rilascio manuale dal tag.",
+      "perche_funziona": "Ogni stadio è un cancello: i problemi vengono fermati il prima possibile e l'artefatto che arriva in staging è lo stesso che andrà in produzione."
+    }
+  ],
+  "errori_comuni": [
+    "Confondere continuous delivery e continuous deployment (la differenza è il rilascio manuale o automatico).",
+    "Pensare che basti installare un server di CI: senza integrazione frequente e test automatici non è CI.",
+    "Lasciare la build rossa per giorni continuando ad aggiungere commit.",
+    "Pipeline lente (ore): il feedback arriva troppo tardi e gli sviluppatori la aggirano.",
+    "Ricostruire l'artefatto per ogni ambiente invece di promuovere lo stesso."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa si intende per continuous integration?",
+      "risposta": "Integrare frequentemente (almeno quotidianamente) le modifiche sul ramo principale, con ogni integrazione verificata da una build automatica che compila ed esegue i test, e riparare subito le build rotte."
+    },
+    {
+      "domanda": "Qual è la differenza tra continuous delivery e continuous deployment?",
+      "risposta": "Nella delivery il software è sempre pronto per il rilascio ma la messa in produzione è decisa da una persona; nel deployment ogni modifica che supera la pipeline viene rilasciata automaticamente in produzione."
+    },
+    {
+      "domanda": "Perché integrare spesso riduce i costi?",
+      "risposta": "Perché ogni integrazione contiene poche modifiche: i conflitti sono piccoli, un test che fallisce indica un diff ristretto e il difetto si corregge quando il contesto è ancora fresco."
+    },
+    {
+      "domanda": "Che cosa significa build once, deploy many?",
+      "risposta": "L'artefatto viene costruito una sola volta e lo stesso binario viene promosso negli ambienti successivi (staging, produzione), così ciò che è stato testato è esattamente ciò che si rilascia."
+    }
+  ],
+  "riepilogo": "CI: integrare spesso su main; ogni push → build + test automatici; build rotta riparata subito.\nDelivery: pipeline fino a «sempre rilasciabile», rilascio con decisione umana.\nDeployment: rilascio in produzione automatico.\nPipeline a stadi (build, test, analisi, package, staging, produzione), build once deploy many.\nPrerequisiti: test automatici, Maven, SCM, monitoraggio e rollback."
+}
