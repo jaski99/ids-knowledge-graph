@@ -1,0 +1,87 @@
+{
+  "intuizione": "La Simple Factory decide con un if quale oggetto creare, e ogni nuovo prodotto la obbliga a cambiare. Factory Method sposta quella decisione nelle sottoclassi: la classe base scrive tutto il procedimento ('crea il prodotto, preparalo, impacchettalo') ma lascia astratto il solo passo 'crea'. Ogni sottoclasse risponde a quel passo con il proprio prodotto, e per una nuova variante basta una nuova sottoclasse.",
+  "spiegazione": "## Il problema\n\nUna catena di sushi bar apre filiali a Tokyo e a Milano. Il procedimento d'ordine è identico (crea il pezzo, preparalo, taglialo, servilo) ma *quale* sushi si crea cambia per filiale: a Milano l'uramaki è col salmone e philadelphia, a Tokyo è tradizionale. Con una Simple Factory dovresti mettere `if (citta == ...)` dentro la factory, che crescerebbe all'infinito; con classi separate duplicheresti il procedimento d'ordine.\n\n## La soluzione: un metodo di creazione astratto\n\n**Factory Method** (GoF, *creazionale*, ambito *di classe*): *definisce un'interfaccia per creare un oggetto, ma lascia alle sottoclassi decidere quale classe istanziare. Factory Method permette a una classe di rinviare l'istanziazione alle sottoclassi.*\n\nRuoli:\n- **Product**: interfaccia/classe astratta degli oggetti creati (`Sushi`).\n- **ConcreteProduct**: implementazioni (`UramakiMilano`, `UramakiTokyo`, ...).\n- **Creator**: classe astratta che dichiara il *factory method* astratto (`creaSushi`) e contiene la logica che lo usa (`ordina`).\n- **ConcreteCreator**: sottoclassi che ridefiniscono il factory method restituendo un ConcreteProduct.\n\n```mermaid\nclassDiagram\n    class Sushi {\n        <<abstract>>\n        +nome() String\n        +prepara() void\n    }\n    class UramakiMilano\n    class UramakiTokyo\n    class NigiriTokyo\n    class SushiBar {\n        <<abstract>>\n        +ordina(String tipo) Sushi\n        #creaSushi(String tipo) Sushi*\n    }\n    class SushiBarMilano {\n        #creaSushi(String tipo) Sushi\n    }\n    class SushiBarTokyo {\n        #creaSushi(String tipo) Sushi\n    }\n    Sushi <|-- UramakiMilano\n    Sushi <|-- UramakiTokyo\n    Sushi <|-- NigiriTokyo\n    SushiBar <|-- SushiBarMilano\n    SushiBar <|-- SushiBarTokyo\n    SushiBar ..> Sushi : usa\n    SushiBarMilano ..> UramakiMilano : crea\n    SushiBarTokyo ..> UramakiTokyo : crea\n```\n\n(L'asterisco dopo `creaSushi` indica in Mermaid un metodo astratto.)\n\n## Codice Java completo\n\n```java\npublic abstract class Sushi {\n    public abstract String nome();\n    public void prepara() { System.out.println(\"Preparo \" + nome()); }\n    public void taglia()  { System.out.println(\"Taglio \" + nome()); }\n}\npublic class UramakiMilano extends Sushi { public String nome() { return \"uramaki salmone e philadelphia\"; } }\npublic class UramakiTokyo  extends Sushi { public String nome() { return \"uramaki tradizionale\"; } }\npublic class NigiriTokyo   extends Sushi { public String nome() { return \"nigiri di tonno\"; } }\n\npublic abstract class SushiBar {\n    // logica comune: NON sa quale classe concreta verrà creata\n    public final Sushi ordina(String tipo) {\n        Sushi s = creaSushi(tipo);     // <-- il factory method\n        s.prepara();\n        s.taglia();\n        return s;\n    }\n    // factory method: le sottoclassi decidono\n    protected abstract Sushi creaSushi(String tipo);\n}\n\npublic class SushiBarMilano extends SushiBar {\n    @Override\n    protected Sushi creaSushi(String tipo) {\n        if (tipo.equals(\"uramaki\")) return new UramakiMilano();\n        throw new IllegalArgumentException(\"Non disponibile a Milano: \" + tipo);\n    }\n}\n\npublic class SushiBarTokyo extends SushiBar {\n    @Override\n    protected Sushi creaSushi(String tipo) {\n        return switch (tipo) {\n            case \"uramaki\" -> new UramakiTokyo();\n            case \"nigiri\"  -> new NigiriTokyo();\n            default -> throw new IllegalArgumentException(\"Tipo sconosciuto: \" + tipo);\n        };\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        SushiBar bar = new SushiBarMilano();   // l'unico punto che conosce la filiale\n        bar.ordina(\"uramaki\");                 // Preparo uramaki salmone e philadelphia ...\n    }\n}\n```\n\nOsserva che `ordina` è `final` ed è un piccolo **Template Method**: lo scheletro è fisso e un passo (la creazione) è delegato alle sottoclassi. Factory Method è spesso \"un Template Method il cui passo variabile è una `new`\".\n\n## Varianti\n\n- **Factory method con implementazione di default**: il Creator non è astratto e `creaSushi` restituisce un prodotto standard; le sottoclassi lo ridefiniscono solo se serve.\n- **Factory method parametrico**: riceve un parametro (come sopra `tipo`) e dentro ogni ConcreteCreator c'è una piccola scelta locale.\n- Esempi nella JDK: `Collection.iterator()` (ogni collezione crea il *proprio* `Iterator` concreto: `ArrayList` → iteratore di array, `LinkedList` → iteratore di lista) è il classico esempio di Factory Method.\n\n## Conseguenze\n\n**Vantaggi**\n- **Open/Closed**: una nuova variante (filiale di Osaka) = una nuova sottoclasse, senza toccare `SushiBar` né le altre filiali.\n- **DIP**: la logica comune (`ordina`) dipende solo dall'astrazione `Sushi`.\n- **SRP**: la creazione di ogni variante sta nella sua classe.\n\n**Limiti**\n- **Proliferazione di classi**: una sottoclasse Creator per ogni variante, anche se cambia solo una riga.\n- Si basa sull'**ereditarietà**: la scelta è fissata a compile time (scegli `SushiBarMilano` e non puoi cambiarla su quell'oggetto), e Java ha ereditarietà singola.\n- Se le varianti sono molte combinazioni di molti prodotti, conviene **Abstract Factory**.\n\n## Confronto con i pattern vicini\n\n| | Simple Factory | Factory Method | Abstract Factory | Template Method |\n|---|---|---|---|---|\n| decide | un if nella factory | la sottoclasse del Creator | l'oggetto factory scelto | la sottoclasse (passi dell'algoritmo) |\n| meccanismo | parametro | ereditarietà | composizione | ereditarietà |\n| scopo | centralizzare la new | rinviare la new alle sottoclassi | creare famiglie coerenti | fissare lo scheletro di un algoritmo |\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"lo stesso procedimento, ma ogni variante (sede, formato, piattaforma) crea un oggetto diverso\"*, *\"la classe non può sapere in anticipo quali oggetti dovrà creare\"*, *\"le sottoclassi specificano gli oggetti da creare\"*. Esempio: un generatore di report che segue sempre gli stessi passi ma produce un `Documento` PDF o HTML a seconda della sottoclasse.\n",
+  "analogia": "È un franchising: la casa madre scrive il manuale operativo identico per tutti ('ricevi l'ordine, prepara, servi, incassa'), ma lascia scritto 'il prodotto lo sceglie la sede locale'. La sede di Napoli serve la pizza napoletana, quella di Roma la pizza al taglio. L'analogia regge finché ogni sede fa una sola scelta; quando ogni sede deve scegliere un intero kit coerente (pizza, bibita, dolce) si passa ad Abstract Factory.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Metodi astratti e override in Java",
+      "collegamento": "Il factory method è un metodo abstract (protected) del Creator; ogni sottoclasse lo ridefinisce con @Override. È il meccanismo di base che conosci da Programmazione a oggetti."
+    },
+    {
+      "conoscenza": "Simple Factory",
+      "collegamento": "Factory Method risolve il limite principale della Simple Factory: invece di aggiungere rami all'if, si aggiunge una sottoclasse (OCP).",
+      "nodo": "design-pattern-simple-factory"
+    },
+    {
+      "conoscenza": "Template Method",
+      "collegamento": "ordina() è un metodo final che chiama un passo astratto: Factory Method è un caso particolare di Template Method in cui il passo variabile è la creazione.",
+      "nodo": "design-pattern-template-method"
+    },
+    {
+      "conoscenza": "Iterator nelle Collection Java",
+      "collegamento": "Ogni volta che hai scritto lista.iterator() hai usato un factory method: ArrayList e LinkedList restituiscono iteratori concreti diversi dietro l'interfaccia Iterator."
+    },
+    {
+      "conoscenza": "Concetto di design pattern",
+      "collegamento": "È un pattern creazionale di ambito classe, perché la scelta avviene via ereditarietà.",
+      "nodo": "design-pattern-introduzione"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Esportazione del rapporto giornaliero della farmacia",
+      "problema": "Il rapporto giornaliero delle vendite si genera sempre così: raccogli le vendite, crea il documento, scrivi intestazione e righe, salva. Il documento può essere PDF o CSV e in futuro HTML. Progetta con Factory Method: ruoli, class diagram a parole e codice minimo.",
+      "passi": [
+        "Individuo il prodotto: interface Documento { void intestazione(String t); void riga(String r); void salva(); }, con PdfDocumento e CsvDocumento.",
+        "Individuo il Creator: abstract class GeneratoreRapporto con il metodo final genera(List<Vendita> vendite) che chiama creaDocumento(), poi intestazione, una riga per vendita, salva.",
+        "Factory method: protected abstract Documento creaDocumento(); ConcreteCreator: GeneratorePdf { return new PdfDocumento(); } e GeneratoreCsv { return new CsvDocumento(); }.",
+        "Class diagram: GeneratoreRapporto <|-- GeneratorePdf, GeneratoreCsv; Documento <|.. PdfDocumento, CsvDocumento; GeneratoreRapporto ..> Documento.",
+        "Verifico OCP: per l'HTML aggiungo HtmlDocumento e GeneratoreHtml, nessuna classe esistente cambia."
+      ],
+      "soluzione": "Product = Documento; ConcreteProduct = PdfDocumento, CsvDocumento; Creator = GeneratoreRapporto (genera final + creaDocumento astratto); ConcreteCreator = GeneratorePdf, GeneratoreCsv. Limite: una coppia di classi per ogni formato.",
+      "perche_funziona": "La parte stabile (sequenza di generazione) sta nel Creator, la parte variabile (quale documento) nelle sottoclassi; il Creator dipende solo dall'interfaccia Documento, quindi un formato nuovo non tocca il codice esistente."
+    },
+    {
+      "titolo": "Distinguere Factory Method da Simple Factory nel codice",
+      "problema": "Codice A: class FabbricaNotifiche { Notifica crea(String canale) { if (canale.equals(\"mail\")) return new Mail(); return new Sms(); } }. Codice B: abstract class Servizio { abstract Notifica creaNotifica(); void avvisa(String m) { creaNotifica().invia(m); } } con ServizioMail e ServizioSms. Quale pattern è ognuno?",
+      "passi": [
+        "In A la scelta dipende da un parametro dentro un unico metodo concreto: è una Simple Factory.",
+        "In B la classe astratta Servizio usa creaNotifica() senza sapere cosa crea; la scelta è in sottoclassi che ridefiniscono un metodo astratto: è Factory Method.",
+        "Effetto di un nuovo canale (push): in A modifico l'if (OCP violato); in B aggiungo ServizioPush (OCP rispettato).",
+        "Annoto anche il costo di B: una sottoclasse per canale."
+      ],
+      "soluzione": "A = Simple Factory (parametro + if); B = Factory Method (metodo astratto ridefinito dalle sottoclassi, usato dalla logica comune avvisa()).",
+      "perche_funziona": "Il criterio decisivo è dove sta la decisione: in un if (Simple Factory) o nel polimorfismo di sottoclassi (Factory Method). Guardare chi viene modificato per una nuova variante conferma la classificazione."
+    }
+  ],
+  "errori_comuni": [
+    "Scrivere il factory method come static: un metodo statico non si ridefinisce, quindi il pattern non funziona.",
+    "Mettere la logica di scelta con if/switch nel Creator astratto: si ricade nella Simple Factory.",
+    "Confondere Factory Method (un prodotto, ereditarietà) con Abstract Factory (famiglia di prodotti, oggetto factory composto nel client).",
+    "Dimenticare la logica comune nel Creator: se il Creator contiene solo il metodo astratto, il pattern perde gran parte del senso.",
+    "Non indicare il limite della proliferazione di sottoclassi quando si giustifica la scelta."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Factory Method?",
+      "risposta": "Definire un'interfaccia (metodo) per creare un oggetto lasciando alle sottoclassi la decisione su quale classe concreta istanziare: la classe base rinvia l'istanziazione alle sottoclassi."
+    },
+    {
+      "domanda": "Elenca i quattro ruoli del pattern.",
+      "risposta": "Product (astrazione del prodotto), ConcreteProduct (implementazioni), Creator (dichiara il factory method e contiene la logica che lo usa), ConcreteCreator (ridefinisce il factory method creando il prodotto concreto)."
+    },
+    {
+      "domanda": "Perché si dice che è un pattern 'di classe'?",
+      "risposta": "Perché la relazione tra chi usa il prodotto e chi lo crea è fissata via ereditarietà a compile time: si sceglie la sottoclasse del Creator."
+    },
+    {
+      "domanda": "Che rapporto c'è con Template Method?",
+      "risposta": "Il metodo che usa il factory method è spesso un template method: scheletro fisso nella superclasse, con un passo (la creazione) ridefinito dalle sottoclassi."
+    },
+    {
+      "domanda": "Cita un esempio di Factory Method nella libreria standard Java.",
+      "risposta": "Collection.iterator(): ogni collezione concreta restituisce il proprio Iterator concreto dietro l'interfaccia Iterator."
+    }
+  ],
+  "riepilogo": "Factory Method (creazionale, di classe): il Creator dichiara creaX() astratto, le sottoclassi decidono il prodotto.\nLa logica comune usa solo l'interfaccia Product → OCP e DIP.\nNuova variante = nuova sottoclasse; costo: proliferazione di classi.\nÈ un Template Method il cui passo variabile è la creazione.\nUn prodotto → Factory Method; famiglia di prodotti → Abstract Factory."
+}

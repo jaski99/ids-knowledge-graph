@@ -1,0 +1,87 @@
+{
+  "intuizione": "Molti problemi di progettazione si ripresentano identici in progetti diversi: creare oggetti senza legarsi alle classi concrete, comporre oggetti in alberi, avvisare chi è interessato a un evento. Un design pattern è la soluzione collaudata a uno di questi problemi, con un nome condiviso: dire 'qui uso un Decorator' comunica in due parole una struttura di classi intera. Non è codice da copiare, è uno schema da adattare al tuo caso.",
+  "spiegazione": "## Che cos'è un design pattern\n\nUn **design pattern** è una *soluzione riusabile a un problema ricorrente di progettazione* in un contesto preciso. Il termine viene dall'architetto Christopher Alexander (anni '70, pattern per edifici e città) ed è stato portato nel software dal libro *Design Patterns: Elements of Reusable Object-Oriented Software* (1994) di Gamma, Helm, Johnson e Vlissides, la **Gang of Four (GoF)**, che cataloga **23 pattern**.\n\nOgni pattern si descrive con quattro elementi essenziali:\n\n| elemento | domanda a cui risponde |\n|---|---|\n| **Nome** | come lo chiamiamo? (vocabolario comune tra progettisti) |\n| **Problema** | quando si applica? quale situazione/forza lo rende utile? |\n| **Soluzione** | quali classi/interfacce, con quali ruoli e relazioni? (schema astratto, non codice fisso) |\n| **Conseguenze** | vantaggi, costi, limiti, compromessi |\n\nUn pattern **non è**:\n- una libreria o un framework (non si importa, si *applica*);\n- un algoritmo (risolve problemi di *struttura e responsabilità*, non di calcolo);\n- un obbligo: usarlo dove il problema non c'è aggiunge complessità inutile (*over-engineering*).\n\n## Le tre categorie GoF\n\n```mermaid\nflowchart TD\n    GoF[23 pattern GoF] --> C[Creazionali: come si creano gli oggetti]\n    GoF --> S[Strutturali: come si compongono classi e oggetti]\n    GoF --> B[Comportamentali: come collaborano e si dividono le responsabilita]\n    C --> C1[Factory Method, Abstract Factory, Singleton, Builder, Prototype]\n    S --> S1[Adapter, Composite, Decorator, Facade, Proxy, Bridge, Flyweight]\n    B --> B1[Observer, Strategy, State, Template Method, Command, Iterator, ...]\n```\n\n- **Creazionali**: nascondono *come* e *quale* oggetto concreto viene creato. Il client chiede \"un prodotto\" e riceve un'istanza di una sottoclasse che non conosce. Esempi: Factory Method, Abstract Factory, Singleton. (La *Simple Factory* è un idioma molto usato ma **non** è nel catalogo GoF.)\n- **Strutturali**: organizzano classi e oggetti in strutture più grandi. Adapter (adatta un'interfaccia), Composite (alberi parte-tutto), Decorator (aggiunge responsabilità avvolgendo).\n- **Comportamentali**: distribuiscono responsabilità e algoritmi tra oggetti. Observer (notifiche uno-a-molti), Strategy (algoritmi intercambiabili), State (comportamento che dipende dallo stato), Template Method (scheletro fisso con passi variabili).\n\nGoF li classifica anche per **ambito**: *di classe* (la relazione è fissata a compile time tramite **ereditarietà**, es. Template Method, Factory Method, class Adapter) o *di oggetto* (la relazione è dinamica, tramite **composizione**, es. Strategy, Decorator, Observer).\n\n## I due principi che stanno sotto quasi tutti i pattern\n\nGoF enuncia due regole guida:\n\n1. *Program to an interface, not an implementation* — il client dipende da un tipo astratto, non da una classe concreta.\n2. *Favor object composition over class inheritance* — preferisci \"avere un\" oggetto a cui delegare piuttosto che \"essere un\" sottotipo: la composizione si cambia a runtime, l'ereditarietà no.\n\nUn esempio di cosa significa in Java:\n\n```java\n// Dipendenza da implementazione: rigida\nArrayList<String> nomi = new ArrayList<>();\n\n// Dipendenza da interfaccia: posso sostituire con LinkedList senza toccare il resto\nList<String> nomi2 = new ArrayList<>();\n\n// Composizione invece di ereditarietà: il comportamento è un oggetto sostituibile\ninterface Sconto { double applica(double prezzo); }\nclass Carrello {\n    private Sconto sconto;                       // \"ha uno\" sconto\n    Carrello(Sconto s) { this.sconto = s; }\n    void setSconto(Sconto s) { this.sconto = s; } // cambiabile a runtime\n    double totale(double lordo) { return sconto.applica(lordo); }\n}\n```\n\nQuesti principi realizzano in pratica **basso accoppiamento**, **alta coesione** e i principi **SOLID** (soprattutto Open/Closed e Dependency Inversion).\n\n## Perché servono (e perché all'esame contano)\n\n- **Vocabolario**: in una riga (\"struttura a Composite\") descrivi un intero class diagram.\n- **Qualità**: sono soluzioni già pensate per essere estendibili (OCP) e poco accoppiate.\n- **Documentazione**: chi legge il codice riconosce i ruoli (Component, Leaf, Composite…) e capisce in fretta.\n\nNelle prove d'esame disponibili l'esercizio 1.4 della Parte 1 chiede di progettare *attraverso un design pattern* una parte del caso di studio, **motivando** la scelta, indicandone eventualmente i **limiti**, disegnando il **class diagram** e scrivendo le **classi Java minime**. Le soluzioni reali usano Composite (biblioteca, 2016/17) e Observer (farmacia, 2025); dalla sintesi delle prove 2022 e 2023 risultano Decorator e Template Method. Il testo non nomina mai il pattern: va riconosciuto dallo scenario (vedi il nodo dedicato).\n\n## Come si descrive un pattern in una risposta d'esame\n\nSchema in 5 punti che funziona per qualsiasi pattern:\n\n1. **Nome e categoria** (\"Decorator, strutturale\").\n2. **Problema nel caso specifico** (\"gli accessori si combinano liberamente: con l'ereditarietà servirebbe una sottoclasse per ogni combinazione\").\n3. **Ruoli mappati sulle classi del caso** (\"Piazzola = Component, PiazzolaBase = ConcreteComponent, Corrente = ConcreteDecorator\").\n4. **Class diagram + codice minimo**.\n5. **Conseguenze/limiti** (almeno uno, concreto).\n\n## Anti-pattern e over-engineering\n\nUn *anti-pattern* è una soluzione ricorrente ma dannosa (es. *God Class*, *Singleton* usato come variabile globale). Anche un pattern buono diventa un problema se applicato senza il suo problema: tre interfacce e due factory per creare un oggetto che non cambierà mai sono complessità pura (principio **YAGNI**).\n",
+  "analogia": "I pattern sono come le 'mosse' degli scacchi con un nome (arrocco, forchetta, inchiodatura): un giocatore esperto non ricalcola ogni volta da zero, riconosce la situazione e applica la mossa nota, adattandola alla posizione. L'analogia smette di valere perché una mossa di scacchi è sempre identica, mentre un pattern è uno schema che va adattato: nomi delle classi, numero di sottoclassi e dettagli cambiano da caso a caso.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Ereditarietà, classi astratte e interfacce in Java",
+      "collegamento": "Tutti i pattern sono costruiti con questi tre attrezzi: i ruoli astratti (Component, Observer, Strategy) sono interfacce o classi astratte, i ruoli concreti le implementano. Se sai cosa fa il binding dinamico, sai già perché i pattern funzionano."
+    },
+    {
+      "conoscenza": "Composizione vs ereditarietà (Programmazione a oggetti)",
+      "collegamento": "La relazione 'ha un' (un campo che riferisce un altro oggetto) è la base dei pattern di oggetto: Decorator, Strategy, Observer. 'È un' (extends) è la base di quelli di classe: Template Method, Factory Method."
+    },
+    {
+      "conoscenza": "Class diagram UML",
+      "collegamento": "Un pattern si comunica quasi sempre con un class diagram: realizzazione (linea tratteggiata con triangolo), generalizzazione, aggregazione e composizione sono le frecce che userai.",
+      "nodo": "uml-diagramma-classi"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Ogni pattern è un modo specifico di abbassare l'accoppiamento (il client dipende da un'astrazione) mantenendo alta la coesione (ogni classe ha un ruolo).",
+      "nodo": "coesione-accoppiamento"
+    },
+    {
+      "conoscenza": "Normalizzazione nelle basi di dati",
+      "collegamento": "Come le forme normali sono 'ricette' note per eliminare anomalie nelle tabelle, i pattern sono ricette note per eliminare rigidità nelle classi."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Classificare cinque pattern",
+      "problema": "Per ciascuno dei pattern Composite, Singleton, Strategy, Adapter, Template Method indica categoria GoF e ambito (classe/oggetto), con una frase di motivazione.",
+      "passi": [
+        "Mi chiedo per ognuno: risolve un problema di creazione, di struttura o di collaborazione?",
+        "Singleton controlla quante istanze si creano → creazionale; ambito oggetto (gestisce un'istanza).",
+        "Composite e Adapter organizzano classi/oggetti in strutture → strutturali. Composite è di oggetto (albero di oggetti); Adapter esiste in due varianti: object adapter (composizione) e class adapter (ereditarietà multipla, in Java non praticabile con classi).",
+        "Strategy distribuisce un algoritmo su oggetti intercambiabili → comportamentale, di oggetto (composizione, cambia a runtime).",
+        "Template Method fissa lo scheletro di un algoritmo in una superclasse → comportamentale, di classe (ereditarietà, fissato a compile time)."
+      ],
+      "soluzione": "Singleton: creazionale/oggetto. Composite: strutturale/oggetto. Adapter: strutturale/oggetto (object adapter) o classe (class adapter). Strategy: comportamentale/oggetto. Template Method: comportamentale/classe.",
+      "perche_funziona": "La categoria discende dalla domanda 'che problema risolve', l'ambito da 'la relazione si basa su extends (statico) o su un riferimento a un oggetto (dinamico)'. Con queste due domande classifichi qualsiasi pattern senza memorizzare la tabella."
+    },
+    {
+      "titolo": "Strutturare una risposta 'che cos'è un design pattern?'",
+      "problema": "Domanda teorica da 2-3 punti: 'Che cosa si intende per design pattern? Come si classificano?'",
+      "passi": [
+        "Definizione: soluzione riusabile a un problema ricorrente di progettazione in un contesto; non è codice ma uno schema di classi e responsabilità.",
+        "Origine: Alexander in architettura, GoF 1994 nel software, 23 pattern.",
+        "Quattro elementi: nome, problema, soluzione, conseguenze.",
+        "Classificazione: creazionali / strutturali / comportamentali, con due esempi ciascuno; ambito classe vs oggetto.",
+        "Chiusura: principi sottostanti (programmare per interfacce, preferire la composizione) e rischio di over-engineering."
+      ],
+      "soluzione": "Un design pattern è una soluzione collaudata e riusabile a un problema di progettazione ricorrente, descritta da nome, problema, soluzione (ruoli e relazioni tra classi) e conseguenze. Il catalogo GoF ne conta 23, divisi in creazionali (es. Factory Method, Singleton), strutturali (es. Composite, Decorator, Adapter) e comportamentali (es. Observer, Strategy, Template Method); per ambito, di classe (ereditarietà) o di oggetto (composizione). Si basano su 'programma per interfacce' e 'preferisci la composizione all'ereditarietà'; vanno applicati solo dove il problema esiste.",
+      "perche_funziona": "La risposta copre definizione, struttura della descrizione, classificazione con esempi e un giudizio critico: è la combinazione definizione + esempi + limiti che rende completa una risposta teorica."
+    }
+  ],
+  "errori_comuni": [
+    "Definire un pattern come 'un pezzo di codice da riusare': è uno schema progettuale da adattare, non una libreria.",
+    "Mettere la Simple Factory nel catalogo GoF: è un idioma, i pattern GoF creazionali sono Factory Method, Abstract Factory, Singleton, Builder, Prototype.",
+    "Confondere categorie: Decorator e Composite sono strutturali, non comportamentali; Strategy e State sono comportamentali.",
+    "Nominare il pattern all'esame senza mappare i ruoli sulle classi del caso e senza motivazione né limiti.",
+    "Usare pattern ovunque 'per fare bella figura': senza il problema corrispondente aggiungono solo classi (over-engineering, YAGNI)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i quattro elementi con cui si descrive un pattern?",
+      "risposta": "Nome, problema (contesto di applicazione), soluzione (ruoli, classi, relazioni, in forma astratta), conseguenze (vantaggi, costi, limiti)."
+    },
+    {
+      "domanda": "Elenca le tre categorie GoF con due esempi ciascuna.",
+      "risposta": "Creazionali: Factory Method, Abstract Factory, Singleton. Strutturali: Adapter, Composite, Decorator. Comportamentali: Observer, Strategy, State, Template Method."
+    },
+    {
+      "domanda": "Che differenza c'è tra pattern di classe e pattern di oggetto?",
+      "risposta": "Nei pattern di classe la relazione tra le parti è fissata a compile time con l'ereditarietà (Template Method, Factory Method); in quelli di oggetto è stabilita a runtime con la composizione e si può cambiare (Strategy, Decorator, Observer)."
+    },
+    {
+      "domanda": "Quali due principi generali enuncia GoF?",
+      "risposta": "Programmare verso un'interfaccia e non verso un'implementazione; preferire la composizione di oggetti all'ereditarietà di classe."
+    },
+    {
+      "domanda": "Quando NON conviene applicare un pattern?",
+      "risposta": "Quando il problema che risolve non c'è o non è prevedibile: aggiunge indirezione e classi senza benefici (over-engineering), peggiorando leggibilità e manutenibilità."
+    }
+  ],
+  "riepilogo": "Pattern = soluzione riusabile a un problema ricorrente: nome, problema, soluzione, conseguenze.\nGoF 1994: 23 pattern, creazionali / strutturali / comportamentali; ambito classe (extends) o oggetto (composizione).\nPrincipi: programma per interfacce, preferisci la composizione.\nAll'esame (1.4): riconoscere dallo scenario, motivare, class diagram, Java minimo, limiti.\nSenza il problema, un pattern è solo complessità."
+}

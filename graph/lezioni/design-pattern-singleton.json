@@ -1,0 +1,85 @@
+{
+  "intuizione": "Certe cose in un sistema devono esistere una volta sola: il registro unico delle vendite del giorno, la configurazione, il gestore della connessione. Singleton fa in modo che la classe stessa impedisca di creare una seconda istanza (costruttore privato) e offra un unico punto da cui ottenere quella esistente (getInstance). È il pattern più semplice da scrivere e il più facile da usare male, perché diventa in fretta una variabile globale travestita.",
+  "spiegazione": "## Il problema\n\nNella farmacia il **rapporto giornaliero** delle vendite deve essere *unico*: se la cassa e il modulo prenotazioni creassero ognuno il proprio `RapportoGiornaliero`, le vendite sarebbero sparse su due oggetti e il riepilogo sarebbe sbagliato. Passare lo stesso oggetto a mano in ogni costruttore è possibile ma scomodo; dobbiamo anche *impedire* che qualcuno faccia `new RapportoGiornaliero()` per errore.\n\n## La soluzione\n\n**Singleton** (GoF, *creazionale*): *assicura che una classe abbia una sola istanza e fornisce un punto di accesso globale ad essa.*\n\nTre ingredienti:\n1. **costruttore `private`** → nessuno fuori dalla classe può fare `new`;\n2. **campo `private static`** che contiene l'unica istanza;\n3. **metodo `public static getInstance()`** che la restituisce (creandola se serve).\n\n```mermaid\nclassDiagram\n    class RapportoGiornaliero {\n        -RapportoGiornaliero istanza$\n        -Map~String,Integer~ venduti\n        -RapportoGiornaliero()\n        +getInstance()$ RapportoGiornaliero\n        +registraVendita(String codice, int qta) void\n        +stampa() void\n    }\n    RapportoGiornaliero --> RapportoGiornaliero : istanza unica\n```\n\n(In UML/Mermaid i membri statici sono sottolineati; `$` in Mermaid indica static.)\n\n## Implementazioni Java\n\n### Lazy, non thread-safe (versione didattica)\n\n```java\npublic class RapportoGiornaliero {\n    private static RapportoGiornaliero istanza;           // null finché non serve\n    private final Map<String, Integer> venduti = new HashMap<>();\n\n    private RapportoGiornaliero() { }                     // niente new dall'esterno\n\n    public static RapportoGiornaliero getInstance() {\n        if (istanza == null) {                            // creazione pigra (lazy)\n            istanza = new RapportoGiornaliero();\n        }\n        return istanza;\n    }\n\n    public void registraVendita(String codice, int qta) {\n        venduti.merge(codice, qta, Integer::sum);\n    }\n    public void stampa() {\n        venduti.forEach((c, q) -> System.out.println(c + \": \" + q));\n    }\n}\n// uso\nRapportoGiornaliero.getInstance().registraVendita(\"ASP500\", 2);\n```\n\n**Problema**: con più thread, due chiamate contemporanee possono trovare entrambe `istanza == null` e creare **due** oggetti (race condition).\n\n### Eager (thread-safe, semplice)\n\n```java\npublic class Configurazione {\n    private static final Configurazione ISTANZA = new Configurazione(); // creata al caricamento della classe\n    private Configurazione() { }\n    public static Configurazione getInstance() { return ISTANZA; }\n}\n```\nLa JVM garantisce che l'inizializzazione di un campo statico avvenga una volta sola e in modo thread-safe. Costo: l'oggetto viene creato anche se non viene mai usato.\n\n### Lazy sincronizzato\n\n```java\npublic static synchronized RapportoGiornaliero getInstance() {\n    if (istanza == null) istanza = new RapportoGiornaliero();\n    return istanza;\n}\n```\nCorretto ma ogni chiamata paga il lock, anche dopo la creazione. (La variante *double-checked locking* richiede il campo `volatile` per essere corretta.)\n\n### Holder idiom (lazy e thread-safe senza lock)\n\n```java\npublic class Registro {\n    private Registro() { }\n    private static class Holder { static final Registro ISTANZA = new Registro(); }\n    public static Registro getInstance() { return Holder.ISTANZA; }  // Holder caricata solo qui\n}\n```\n\n### Enum (raccomandato da Effective Java)\n\n```java\npublic enum Contatore {\n    INSTANCE;\n    private int valore;\n    public int prossimo() { return ++valore; }\n}\n// Contatore.INSTANCE.prossimo();\n```\nThread-safe, resistente a serializzazione e riflessione; limite: non può estendere un'altra classe.\n\n## Conseguenze\n\n**Vantaggi**\n- **unicità garantita** dalla classe stessa;\n- **accesso controllato** e comodo da qualunque punto;\n- possibile **inizializzazione pigra** (risorse costose create solo se servono).\n\n**Limiti (importanti all'esame e nella pratica)**\n- è di fatto **stato globale**: qualunque classe può leggerlo e modificarlo → **accoppiamento nascosto** (la dipendenza non compare nel costruttore);\n- **test difficili**: lo stato sopravvive tra un test e l'altro e non si sostituisce facilmente con un mock;\n- **viola SRP**: la classe gestisce sia il proprio compito sia il proprio ciclo di vita;\n- **concorrenza**: la versione lazy semplice non è thread-safe;\n- non si estende bene (costruttore privato).\n\nPer questo molti lo considerano un **anti-pattern** se usato come scorciatoia per variabili globali. Alternativa moderna: creare un'unica istanza all'avvio e **iniettarla** (dependency injection) dove serve; l'unicità diventa una scelta di configurazione e non un vincolo nel codice.\n\n## Confronto\n\n| | Singleton | Classe con soli metodi static (es. `Math`) |\n|---|---|---|\n| è un oggetto? | sì: può implementare interfacce, essere passato come parametro | no |\n| stato | sì, nell'istanza | eventualmente campi static |\n| polimorfismo | possibile (implementa un'interfaccia) | no |\n| init lazy | sì | no (all'avvio della classe) |\n\nLe **factory concrete** di Abstract Factory sono spesso Singleton.\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"un unico\"*, *\"uno e un solo\"*, *\"centralizzato\"*, *\"globale\"*, *\"condiviso da tutto il sistema\"* (registro, log, configurazione, rapporto giornaliero, pool di connessioni). Ma attenzione: se lo scenario parla anche di *notifiche* o *aggiornamento dopo ogni operazione*, il pattern principale potrebbe essere un altro (es. Observer) e Singleton al massimo un dettaglio.\n",
+  "analogia": "È il sindaco di un comune: ce n'è uno solo, non lo 'crei' tu (non puoi nominarne un altro: costruttore privato) e chiunque deve parlarci passa dall'ufficio del sindaco (getInstance). L'analogia mostra anche il difetto: se ogni pratica del comune richiede la firma diretta del sindaco, tutto dipende da lui e niente funziona senza; allo stesso modo un Singleton usato ovunque lega tutto il codice a un unico punto globale.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Modificatori static e private in Java",
+      "collegamento": "Il pattern è costruito interamente con static (campo e metodo di classe) e private (costruttore): se sai che un campo static è condiviso da tutte le istanze, sai già metà del pattern."
+    },
+    {
+      "conoscenza": "Thread e race condition (Sistemi operativi)",
+      "collegamento": "Il problema della versione lazy è una race condition classica sul controllo 'istanza == null'; synchronized è un mutex come quelli visti a Sistemi operativi."
+    },
+    {
+      "conoscenza": "Enum in Java",
+      "collegamento": "Un enum con un solo valore è la forma più sicura di Singleton: la JVM garantisce una sola istanza per costante."
+    },
+    {
+      "conoscenza": "Variabili globali in C (Fondamenti)",
+      "collegamento": "Un Singleton abusato ha gli stessi difetti di una variabile globale: chiunque la modifica, le dipendenze sono invisibili, il codice è difficile da testare."
+    },
+    {
+      "conoscenza": "Principio di singola responsabilità",
+      "collegamento": "Singleton viola SRP perché la classe gestisce il proprio ciclo di vita oltre al proprio compito.",
+      "nodo": "principi-solid"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Rendere unico il rapporto giornaliero e discuterne i limiti",
+      "problema": "Nel caso farmacia il rapporto giornaliero riepiloga tutti i prodotti venduti ed è aggiornato dopo ogni vendita o prenotazione. Mostra come renderlo unico con Singleton e discuti se è una buona scelta.",
+      "passi": [
+        "Rendo private il costruttore di RapportoGiornaliero, aggiungo private static RapportoGiornaliero istanza e public static getInstance() che la crea se null.",
+        "La cassa chiama RapportoGiornaliero.getInstance().registraVendita(codice, qta); il modulo prenotazioni chiama lo stesso metodo: lavorano sullo stesso oggetto.",
+        "Se il sistema è multi-thread (più casse), uso l'inizializzazione eager o l'holder idiom per evitare due istanze.",
+        "Limiti: dipendenza nascosta (Cassa non dichiara di usare il rapporto), test che si influenzano tra loro (lo stato resta tra un test e l'altro), violazione di SRP.",
+        "Alternativa: istanziare un solo RapportoGiornaliero nel main e passarlo ai costruttori di Cassa e GestorePrenotazioni (dependency injection); oppure renderlo Observer delle vendite."
+      ],
+      "soluzione": "Singleton con costruttore privato, istanza statica e getInstance() (eager o holder se concorrente). Funziona, ma rende globale lo stato: preferibile un'unica istanza creata all'avvio e iniettata, così le dipendenze sono esplicite e testabili.",
+      "perche_funziona": "La risposta non si ferma al codice: valuta il pattern rispetto ad accoppiamento e testabilità, che è ciò che una domanda di progettazione richiede."
+    },
+    {
+      "titolo": "Trovare il bug in un Singleton",
+      "problema": "public class Logger { public static Logger istanza; public Logger() {} public static Logger get() { if (istanza == null) istanza = new Logger(); return istanza; } }. Quali problemi ha?",
+      "passi": [
+        "Costruttore public: chiunque può fare new Logger(), quindi l'unicità non è garantita. Va reso private.",
+        "Campo public: chiunque può assegnare Logger.istanza = null o un altro oggetto. Va reso private.",
+        "get() lazy senza sincronizzazione: con due thread si possono creare due istanze. Soluzione: eager (private static final Logger ISTANZA = new Logger()) o holder idiom.",
+        "Riscrivo: private static final Logger ISTANZA = new Logger(); private Logger() {} public static Logger getInstance() { return ISTANZA; }."
+      ],
+      "soluzione": "Tre difetti: costruttore pubblico, campo pubblico, lazy non thread-safe. Versione corretta eager con campo private static final e costruttore private.",
+      "perche_funziona": "Ognuno dei tre ingredienti del pattern ha uno scopo preciso (impedire new, proteggere l'istanza, crearla una volta sola); verificarli uno per uno trova tutti i bug."
+    }
+  ],
+  "errori_comuni": [
+    "Lasciare il costruttore public o protected: l'unicità non è più garantita.",
+    "Scrivere la versione lazy senza considerare i thread e dichiararla thread-safe.",
+    "Presentarlo solo come vantaggio: all'esame va citato che introduce stato globale, accoppiamento nascosto e test difficili.",
+    "Confondere Singleton con una classe di utilità con metodi static: il Singleton è un oggetto che può implementare interfacce.",
+    "Usare Singleton per qualunque classe 'di cui ne serve una': spesso basta crearne una e passarla."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Singleton e quali sono i suoi tre elementi?",
+      "risposta": "Garantire una sola istanza di una classe e un punto di accesso globale. Elementi: costruttore private, campo private static con l'istanza, metodo public static getInstance()."
+    },
+    {
+      "domanda": "Perché la versione lazy semplice non è thread-safe e come si corregge?",
+      "risposta": "Due thread possono trovare istanza == null contemporaneamente e creare due oggetti. Si corregge con inizializzazione eager, metodo synchronized, double-checked locking con volatile, holder idiom o enum."
+    },
+    {
+      "domanda": "Quali sono i principali svantaggi del pattern?",
+      "risposta": "Stato globale e accoppiamento nascosto, difficoltà nei test (stato condiviso, niente mock), violazione di SRP, problemi di concorrenza, scarsa estendibilità."
+    },
+    {
+      "domanda": "Che vantaggio ha un Singleton rispetto a una classe con soli metodi statici?",
+      "risposta": "È un oggetto: può implementare interfacce, essere passato come parametro, usare polimorfismo e inizializzazione lazy."
+    },
+    {
+      "domanda": "Qual è l'alternativa consigliata per avere un'unica istanza senza i difetti del Singleton?",
+      "risposta": "Creare un'unica istanza all'avvio (composition root) e iniettarla tramite costruttore nelle classi che la usano (dependency injection)."
+    }
+  ],
+  "riepilogo": "Singleton (creazionale): una sola istanza + accesso globale.\nCostruttore private, campo private static, getInstance() public static.\nLazy semplice non thread-safe → eager, holder idiom o enum.\nLimiti: stato globale, accoppiamento nascosto, test difficili, viola SRP.\nAlternativa: un'istanza creata all'avvio e iniettata."
+}
