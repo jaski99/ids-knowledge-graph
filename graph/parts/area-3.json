@@ -1,15 +1,494 @@
 [
   {
+    "id": "buone-pratiche-programmazione",
+    "title": "Buona programmazione e best practices",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Codice leggibile e manutenibile: nomi significativi, metodi brevi con una sola responsabilità, niente duplicazione (DRY), KISS/YAGNI, convenzioni di stile condivise, commenti che spiegano il perché, gestione esplicita degli errori. I principi SOLID guidano la struttura delle classi.",
+    "saper_fare": [
+      "Elencare e spiegare almeno 5 buone pratiche con un esempio Java",
+      "Riconoscere in un frammento di codice violazioni di DRY, SRP o naming",
+      "Collegare le buone pratiche a coesione e accoppiamento"
+    ],
+    "prerequisiti": [
+      {
+        "id": "coesione-accoppiamento",
+        "forza": "soft",
+        "motivo": "Le buone pratiche servono a ottenere alta coesione e basso accoppiamento anche nel codice."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: buone pratiche",
+        "testo": "Cita tre buone pratiche di programmazione e spiega perché riducono i costi di manutenzione.",
+        "soluzione": "1) Nomi significativi: il codice si legge più di quanto si scriva, quindi si capisce prima. 2) Metodi brevi con una sola responsabilità: si testano e si modificano in isolamento. 3) DRY: una sola copia della logica, quindi una correzione vale ovunque. Conclusione: la manutenzione costa la maggior parte del ciclo di vita, e un codice leggibile la riduce."
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma ('buona programmazione e best practices'). Non compare nelle prove d'esame note (2016/17, 2022, 2023) come domanda a sé, ma è la base per le domande su refactoring e ottimizzazione."
+    },
+    "risorse": [
+      {
+        "titolo": "Google Java Style Guide",
+        "url": "https://google.github.io/styleguide/javaguide.html",
+        "verificato": true
+      },
+      {
+        "titolo": "SOLID (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/SOLID",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 9"
+      }
+    ],
+    "checklist_ripasso": [
+      "DRY, KISS, YAGNI, SRP",
+      "Nomi parlanti > commenti",
+      "Stile condiviso nel team"
+    ]
+  },
+  {
+    "id": "ottimizzazione-codice",
+    "title": "Ottimizzazione del codice e ottimizzazione prematura",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Ottimizzare per la velocità ha senso solo dopo che il codice è corretto e pulito: 'make it work, make it right, make it fast'. Knuth (1974): 'premature optimization is the root of all evil' nel 97% dei casi. Prima si misura con un profiler, si trovano i pochi punti caldi (regola 80/20) e si interviene prima sull'algoritmo e sulle strutture dati, poi si misura di nuovo con i test che restano verdi.",
+    "saper_fare": [
+      "Spiegare la citazione di Knuth e il suo contesto (il 3% critico)",
+      "Descrivere il ciclo misura, profiling, ottimizzazione e nuova misura",
+      "Distinguere un'ottimizzazione algoritmica (O(n²) → O(n log n)) da una micro-ottimizzazione",
+      "Motivare i rischi dell'ottimizzazione prematura (leggibilità, bug, tempo sprecato)"
+    ],
+    "prerequisiti": [
+      {
+        "id": "buone-pratiche-programmazione",
+        "forza": "hard",
+        "motivo": "Si ottimizza codice già pulito e leggibile."
+      },
+      {
+        "id": "refactoring",
+        "forza": "soft",
+        "motivo": "Il codice va prima ristrutturato e coperto da test; i test proteggono anche l'ottimizzazione."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica (prova 2022): ottimizzazione per la velocità",
+        "testo": "Come si ottimizza un programma per la velocità? Cosa si intende per ottimizzazione prematura?",
+        "soluzione": "1) Prima la correttezza: make it work, make it right, make it fast (K. Beck). 2) Si definisce un obiettivo misurabile (es. risposta < 200 ms). 3) Si fa il profiling (es. VisualVM) per trovare gli hotspot: di solito pochi metodi pesano la maggior parte del tempo. 4) Si interviene in ordine: algoritmo e strutture dati (es. una ricerca lineare dentro un ciclo diventa una HashMap), I/O e query, solo alla fine le micro-ottimizzazioni. 5) Si misura di nuovo e si eseguono i test di regressione. Ottimizzazione prematura (Knuth 1974): ottimizzare senza misure e prima del tempo; peggiora la leggibilità, introduce bug e spesso agisce su codice che non è il collo di bottiglia. Knuth aggiunge di non trascurare il 3% di codice davvero critico."
+      }
+    ],
+    "tempo_studio_min": 45,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Domanda teorica nella prova 2022. Collega le best practice del programma e il refactoring."
+    },
+    "risorse": [
+      {
+        "titolo": "Program optimization (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Program_optimization",
+        "verificato": true
+      },
+      {
+        "titolo": "Premature Optimization (C2 wiki)",
+        "url": "https://wiki.c2.com/?PrematureOptimization",
+        "verificato": true
+      },
+      {
+        "titolo": "Make It Work Make It Right Make It Fast (C2 wiki)",
+        "url": "https://wiki.c2.com/?MakeItWorkMakeItRightMakeItFast",
+        "verificato": true
+      },
+      {
+        "titolo": "Profiling (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Profiling_(computer_programming)",
+        "verificato": true
+      },
+      {
+        "titolo": "VisualVM (profiler Java)",
+        "url": "https://visualvm.github.io/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "TRAPPOLA: 'ottimizzare sempre e subito' è sbagliato. Prima si misura, poi si ottimizza",
+      "Knuth 1974: 97% premature optimization, ma non trascurare il 3% critico",
+      "Make it work → right → fast",
+      "Profiler → hotspot → algoritmo prima delle micro-ottimizzazioni → nuova misura + test"
+    ]
+  },
+  {
+    "id": "code-smell",
+    "title": "Code smell",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Un code smell è un sintomo superficiale di un problema di progettazione, non un bug. Esempi: Duplicated Code, Long Method, Large Class, Long Parameter List, Feature Envy, Switch Statements, Shotgun Surgery, Data Class. Ogni smell suggerisce uno o più refactoring.",
+    "saper_fare": [
+      "Riconoscere almeno 5 smell in un frammento di codice",
+      "Associare a ogni smell il refactoring che lo elimina"
+    ],
+    "prerequisiti": [
+      {
+        "id": "buone-pratiche-programmazione",
+        "forza": "hard",
+        "motivo": "Uno smell è una violazione delle buone pratiche."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda: riconosci lo smell",
+        "testo": "Un metodo calcolaTotale() di 80 righe calcola sconti, IVA e spese di spedizione e stampa una ricevuta. Quali smell vedi e come li elimini?",
+        "soluzione": "Smell: Long Method e più responsabilità nello stesso metodo (bassa coesione). Refactoring: Extract Method per calcolaSconto, calcolaIva, calcolaSpedizione e stampaRicevuta; se la stampa usa soprattutto i dati di un'altra classe, Move Method. Prima di iniziare servono test che fissino il comportamento attuale."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Strumento per argomentare la domanda sul refactoring (prova 2016/17). Da solo non è mai stato chiesto."
+    },
+    "risorse": [
+      {
+        "titolo": "Code smells (Refactoring.Guru)",
+        "url": "https://refactoring.guru/refactoring/smells",
+        "verificato": true
+      },
+      {
+        "titolo": "CodeSmell (M. Fowler)",
+        "url": "https://martinfowler.com/bliki/CodeSmell.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "9.3.4 refactoring"
+      }
+    ],
+    "checklist_ripasso": [
+      "Smell ≠ bug",
+      "Long Method → Extract Method",
+      "Duplicated Code → Extract Method/Pull Up",
+      "Switch → Replace Conditional with Polymorphism"
+    ]
+  },
+  {
+    "id": "refactoring",
+    "title": "Refactoring",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Il refactoring (Fowler) cambia la struttura interna del codice senza cambiarne il comportamento osservabile, per renderlo più comprensibile ed economico da modificare. Si fa a piccoli passi, ognuno seguito dai test di regressione. Esempi: Extract Method, Rename, Move Method, Replace Conditional with Polymorphism, refactoring verso pattern.",
+    "saper_fare": [
+      "Definire il refactoring e distinguerlo da ottimizzazione e bug fixing",
+      "Applicare Extract Method e Rename a un frammento Java",
+      "Spiegare il ruolo dei test di regressione",
+      "Elencare i rischi del refactoring e come mitigarli"
+    ],
+    "prerequisiti": [
+      {
+        "id": "code-smell",
+        "forza": "hard",
+        "motivo": "Gli smell indicano dove e come fare refactoring."
+      },
+      {
+        "id": "design-pattern-introduzione",
+        "forza": "soft",
+        "motivo": "Molti refactoring portano verso un design pattern."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: Extract Method",
+        "testo": "double prezzo(Ordine o){ double t=0; for(Riga r:o.righe()) t+=r.qta()*r.prezzo(); if(t>100) t*=0.9; return t*1.22; } Applica il refactoring.",
+        "soluzione": "1) Scrivi prima un test: due righe da 60 € → (120 × 0,9) × 1,22 = 131,76. 2) Extract Method: subtotale(o), applicaSconto(t) e conIva(t). 3) Rename delle costanti: SOGLIA_SCONTO=100, IVA=1.22. 4) Riesegui il test: deve dare ancora 131,76. Il comportamento non cambia, la leggibilità migliora."
+      }
+    ],
+    "tempo_studio_min": 45,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Domanda teorica nel fac-simile 2016/17 (cos'è, a cosa serve, rischi). Nel programma e in TSUI 9.3.4."
+    },
+    "risorse": [
+      {
+        "titolo": "Definition of Refactoring (M. Fowler)",
+        "url": "https://martinfowler.com/bliki/DefinitionOfRefactoring.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Catalogo dei refactoring (refactoring.com)",
+        "url": "https://refactoring.com/catalog/",
+        "verificato": true
+      },
+      {
+        "titolo": "Refactoring (Refactoring.Guru)",
+        "url": "https://refactoring.guru/refactoring",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "9.3.4 refactoring"
+      }
+    ],
+    "checklist_ripasso": [
+      "Stesso comportamento esterno, struttura migliore",
+      "Piccoli passi + test verdi",
+      "Extract Method, Rename, Move Method, Replace Conditional with Polymorphism"
+    ]
+  },
+  {
+    "id": "domanda-refactoring",
+    "title": "Domanda d'esame: refactoring (cos'è, a cosa serve, rischi)",
+    "area": 3,
+    "tipo": "tipo_esercizio",
+    "sapere": "Domanda teorica aperta della Parte 3 (circa 3 punti). Si risponde con questa struttura: definizione, scopi, quando farlo, come farlo, esempi, rischi e mitigazioni.",
+    "saper_fare": [
+      "Scrivere in circa 10 minuti una risposta strutturata in 6 punti",
+      "Citare almeno 2 refactoring concreti e 3 rischi con la relativa mitigazione"
+    ],
+    "prerequisiti": [
+      {
+        "id": "refactoring",
+        "forza": "hard",
+        "motivo": "Serve conoscere il concetto."
+      },
+      {
+        "id": "code-smell",
+        "forza": "soft",
+        "motivo": "Gli smell motivano il 'quando'."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto parte 3: domanda refactoring (fac-simile 2016/17)",
+        "testo": "Cos'è il refactoring, a cosa serve e quali rischi comporta?",
+        "soluzione": "1) Definizione: modifica della struttura interna del codice che non ne altera il comportamento osservabile (Fowler). 2) Scopi: leggibilità, manutenibilità ed estendibilità; eliminare gli smell; ridurre il debito tecnico; preparare il codice a nuove funzionalità. 3) Quando: prima di aggiungere una feature, durante la code review, alla terza duplicazione (rule of three). 4) Come: piccoli passi, ognuno seguito dai test di regressione; usare i refactoring automatici dell'IDE; commit frequenti. 5) Esempi: Extract Method, Rename, Move Method, Replace Conditional with Polymorphism. 6) Rischi: regressioni se mancano i test (mitigazione: test prima di iniziare); costo in tempo senza nuove feature visibili al cliente (mitigazione: farlo in modo opportunistico); conflitti di merge (mitigazione: branch brevi); rottura di API pubbliche (mitigazione: deprecazione); refactoring senza fine (mitigazione: obiettivo chiaro)."
+      },
+      {
+        "tipo_esame": "scritto parte 3: variante",
+        "testo": "Refactoring e ottimizzazione sono la stessa cosa?",
+        "soluzione": "No. Il refactoring migliora la struttura e la leggibilità; l'ottimizzazione migliora le prestazioni e spesso peggiora la leggibilità. Hanno in comune che il comportamento non cambia e che servono i test. L'ordine giusto è make it right (refactoring), poi make it fast (ottimizzazione guidata dal profiling)."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Domanda d'esame nel fac-simile 2016/17. La struttura in 6 punti serve per prendere tutti i punti."
+    },
+    "risorse": [
+      {
+        "titolo": "Definition of Refactoring (M. Fowler)",
+        "url": "https://martinfowler.com/bliki/DefinitionOfRefactoring.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Opportunistic Refactoring (M. Fowler)",
+        "url": "https://martinfowler.com/bliki/OpportunisticRefactoring.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "9.3.4 refactoring"
+      }
+    ],
+    "checklist_ripasso": [
+      "Definizione → scopi → quando → come → esempi → rischi",
+      "Rischio principale: regressioni senza test"
+    ]
+  },
+  {
+    "id": "testing-livelli-tipi",
+    "title": "Testing: livelli, tipi e terminologia",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Il testing esegue il software per scoprire failure; non dimostra l'assenza di difetti (Dijkstra). Livelli: unit, integration, system, acceptance; il test di regressione si ripete a ogni modifica. Terminologia: error (sbaglio umano), fault o defect (difetto nel codice), failure (comportamento errato osservato). Verifica: 'stiamo costruendo il prodotto nel modo giusto?'. Validazione: 'stiamo costruendo il prodotto giusto?'.",
+    "saper_fare": [
+      "Distinguere error, fault e failure con un esempio",
+      "Descrivere i 4 livelli di test e chi li esegue",
+      "Distinguere verifica e validazione"
+    ],
+    "prerequisiti": [
+      {
+        "id": "requisiti-obiettivi",
+        "forza": "soft",
+        "motivo": "I test di sistema e di accettazione si basano sui requisiti."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: terminologia",
+        "testo": "Un programmatore scrive i<=n invece di i<n e il programma va in crash con un ArrayIndexOutOfBounds. Classifica error, fault e failure.",
+        "soluzione": "Error: lo sbaglio del programmatore (pensava a un intervallo chiuso). Fault: la condizione i<=n nel codice. Failure: il crash osservato durante l'esecuzione. Il testing rivela la failure; il debugging porta dal sintomo al fault."
+      }
+    ],
+    "tempo_studio_min": 35,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): è la base delle Parti 2 e 3 (black box, white box, debugging). TSUI cap. 10."
+    },
+    "risorse": [
+      {
+        "titolo": "Software testing (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Software_testing",
+        "verificato": true
+      },
+      {
+        "titolo": "The Practical Test Pyramid (M. Fowler)",
+        "url": "https://martinfowler.com/articles/practical-test-pyramid.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Regression testing (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Regression_testing",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 10"
+      }
+    ],
+    "checklist_ripasso": [
+      "Error → fault → failure",
+      "Unit, integration, system, acceptance + regressione",
+      "Verifica ≠ validazione",
+      "Il testing mostra la presenza di difetti, non la loro assenza"
+    ]
+  },
+  {
+    "id": "black-box-vs-white-box",
+    "title": "Black box e white box testing",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Black box (funzionale): i casi di test si ricavano dalla specifica, senza guardare il codice (classi di equivalenza, valori limite). White box (strutturale): i casi si ricavano dal codice per coprirne la struttura (statement, decision, condition, MC/DC, path). Le due tecniche sono complementari: la black box trova le funzionalità mancanti, la white box trova il codice non esercitato.",
+    "saper_fare": [
+      "Classificare una tecnica di test come black box o white box",
+      "Spiegare pro e contro e la complementarità delle due"
+    ],
+    "prerequisiti": [
+      {
+        "id": "testing-livelli-tipi",
+        "forza": "hard",
+        "motivo": "Servono il vocabolario e i livelli di test."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica (prova 2016/17): white box",
+        "testo": "Cos'è il white box testing e in cosa si differenzia dal black box?",
+        "soluzione": "White box: i test sono progettati conoscendo il codice, con l'obiettivo di coprire istruzioni, decisioni e cammini; la misura è la copertura (es. statement coverage = istruzioni eseguite / totali). Black box: i test derivano dalla specifica (input → output atteso) con classi di equivalenza e BVA. La white box non scopre i requisiti dimenticati; la black box non garantisce di esercitare tutto il codice. Per questo si usano insieme."
+      }
+    ],
+    "tempo_studio_min": 25,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): Parte 2 sempre in black box; domande sulla white box nelle prove 2016/17, 2022 e 2023."
+    },
+    "risorse": [
+      {
+        "titolo": "Black-box testing (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Black-box_testing",
+        "verificato": true
+      },
+      {
+        "titolo": "White-box testing (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/White-box_testing",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 10"
+      }
+    ],
+    "checklist_ripasso": [
+      "Black box = dalla specifica",
+      "White box = dal codice",
+      "Sono complementari"
+    ]
+  },
+  {
+    "id": "classi-equivalenza",
+    "title": "Partizione in classi di equivalenza",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "Si divide il dominio di ogni input in classi in cui il programma dovrebbe comportarsi allo stesso modo: classi valide (una per ogni scaglione o regola) e non valide (fuori dominio). Basta un caso per classe. Regola dei test minimi: i casi validi possono coprire più classi valide insieme; ogni caso non valido contiene una sola classe non valida, altrimenti un errore può mascherarne un altro.",
+    "saper_fare": [
+      "Individuare le classi valide e non valide di ogni parametro a partire dalla specifica",
+      "Numerare le classi (C1, C2, ...) e costruire la tabella classe → caso di test",
+      "Ricavare l'insieme minimo di test: una classe non valida per volta"
+    ],
+    "prerequisiti": [
+      {
+        "id": "black-box-vs-white-box",
+        "forza": "hard",
+        "motivo": "È una tecnica black box."
+      },
+      {
+        "id": "requisiti-obiettivi",
+        "forza": "soft",
+        "motivo": "Le classi si ricavano dai vincoli della specifica."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto parte 2: classi di equivalenza (fac-simile 2016/17)",
+        "testo": "double luggageCost(int nPieces, double weight): al massimo 2 pezzi, peso totale < 60 kg; i primi 20 kg sono gratis, poi 10 €/kg; in caso di errore restituisce -1. Ricava le classi e i test minimi.",
+        "soluzione": "Ipotesi: nPieces valido in 1..2 e weight > 0. nPieces: C1 <1 (NV), C2 1..2 (V), C3 >2 (NV). weight: C4 ≤0 (NV), C5 (0,20] gratis (V), C6 (20,60) a pagamento (V), C7 ≥60 (NV). Test minimi: validi T1(1,10.0)=0 [C2,C5], T2(2,30.0)=100 [C2,C6]; non validi uno per volta: T3(0,10.0)=-1 [C1], T4(3,10.0)=-1 [C3], T5(1,-5.0)=-1 [C4], T6(1,70.0)=-1 [C7]. In totale 6 test."
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): Parte 2 (7 punti) in tutte e tre le prove."
+    },
+    "risorse": [
+      {
+        "titolo": "Equivalence partitioning (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Equivalence_partitioning",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 10"
+      }
+    ],
+    "checklist_ripasso": [
+      "Valide + non valide per ogni parametro",
+      "Un caso non valido per volta",
+      "I casi validi possono coprire più classi"
+    ]
+  },
+  {
     "id": "boundary-value-analysis",
     "title": "Analisi dei valori limite (Boundary Value Analysis)",
     "area": 3,
     "tipo": "abilita",
-    "sapere": "Tecnica di test black-box: gli errori si concentrano ai bordi delle classi di equivalenza dell'input, quindi si scelgono casi di test sui valori minimo, appena sotto/sopra il minimo, nominale, appena sotto/sopra il massimo e massimo.",
+    "sapere": "Tecnica black box: gli errori si concentrano ai bordi delle classi di equivalenza. Per ogni bordo di una classe valida si testano il limite, il valore appena sotto e quello appena sopra (passo ε = 1 per gli interi, ad esempio 0,1 per i double, come nella soluzione ufficiale): min-ε, min, min+ε, max-ε, max, max+ε.",
     "saper_fare": [
-      "Derivare i casi di test ai limiti per un intervallo di input",
-      "Tradurre i casi di test in test JUnit"
+      "Individuare i bordi di ogni classe valida e scegliere il passo ε",
+      "Derivare i casi limite con l'output atteso",
+      "Tradurre i casi in un test parametrico JUnit 5"
     ],
     "prerequisiti": [
+      {
+        "id": "classi-equivalenza",
+        "forza": "hard",
+        "motivo": "I limiti sono i bordi delle classi di equivalenza."
+      },
       {
         "id": "requisiti-obiettivi",
         "forza": "soft",
@@ -21,12 +500,17 @@
         "tipo_esame": "scritto: casi di test BVA",
         "testo": "isAdulto(eta) accetta età intere valide 18..65 (incluse) e restituisce true, false altrimenti. Ricava i casi di test con BVA.",
         "soluzione": "1) Limiti: min=18, max=65. 2) Valori: 17, 18, 19, 41 (nominale), 64, 65, 66. 3) Atteso: 17→false, 18→true, 19→true, 41→true, 64→true, 65→true, 66→false. 4) In JUnit 5: @ParameterizedTest con @CsvSource({\"17,false\",\"18,true\",...})."
+      },
+      {
+        "tipo_esame": "scritto parte 2: boundary conditions (fac-simile 2016/17)",
+        "testo": "luggageCost(nPieces, weight) come nel nodo classi-equivalenza: scrivi le boundary conditions sui casi validi del peso, con nPieces=2.",
+        "soluzione": "Bordi del peso: 20 (gratis/pagamento) e 60 (limite escluso). TB(2,0.1)=0; TB(2,20.0)=0; TB(2,20.1)=1 (0,1 kg × 10 €); TB(2,59.9)=399; TB(2,60.0)=-1. Su nPieces: TB(1,10.0)=0, TB(2,10.0)=0, TB(3,10.0)=-1, TB(0,10.0)=-1."
       }
     ],
-    "tempo_studio_min": 45,
+    "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Tecnica di testing citata esplicitamente nel programma. (formato d'esame ancora sconosciuto: priorità basata su programma e testi)"
+      "motivazione": "Presente nelle prove d'esame (fac-simile 2016/17, 2022, 2023): le boundary conditions sui casi validi sono richieste nella Parte 2 di ogni prova. Tecnica citata esplicitamente nel programma (TSUI 10.3.2)."
     },
     "risorse": [
       {
@@ -40,8 +524,8 @@
         "verificato": true
       },
       {
-        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
-        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "titolo": "Boundary-value analysis (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Boundary-value_analysis",
         "verificato": true
       }
     ],
@@ -52,9 +536,669 @@
       }
     ],
     "checklist_ripasso": [
-      "min-1, min, min+1, nominale, max-1, max, max+1",
-      "Rapporto con le classi di equivalenza",
+      "min-ε, min, min+ε, max-ε, max, max+ε",
+      "ε = 1 per gli int, 0,1 per i double (scrivilo nella risposta)",
+      "I limiti esclusi (<60) vanno testati da tutte e due le parti",
       "Test parametrici JUnit"
+    ]
+  },
+  {
+    "id": "esercizio-black-box-scaglioni",
+    "title": "Esercizio d'esame: black box su una funzione a scaglioni (classi di equivalenza + BVA)",
+    "area": 3,
+    "tipo": "tipo_esercizio",
+    "sapere": "La Parte 2 dello scritto (7 punti, circa 20 minuti) chiede sempre una funzione Java a scaglioni, con un parametro numerico decisivo. Procedura: 1) riscrivi la specifica come intervalli su una retta numerica; 2) classi valide (una per scaglione) e non valide (sotto il minimo, sopra il massimo, eventuali valori proibiti); 3) tabella dei test minimi; 4) boundary conditions su ogni bordo delle classi valide con un passo ε dichiarato; 5) output atteso calcolato per ogni caso.",
+    "saper_fare": [
+      "Applicare la procedura in 5 passi su una funzione a scaglioni nuova in meno di 20 minuti",
+      "Presentare i risultati in tabella: classe, input, output atteso",
+      "Dichiarare le ipotesi quando la specifica è ambigua (limite incluso o escluso, valore di ε)",
+      "Segnalare le anomalie della specifica (salti di prezzo, buchi tra scaglioni)"
+    ],
+    "prerequisiti": [
+      {
+        "id": "classi-equivalenza",
+        "forza": "hard",
+        "motivo": "Passi 2-3 della procedura."
+      },
+      {
+        "id": "boundary-value-analysis",
+        "forza": "hard",
+        "motivo": "Passo 4 della procedura."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto parte 2 (prova 2022): costoPiazzola",
+        "testo": "double costoPiazzola(double mq): superficie < 15 m² → errore (-1); 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; mq > 100 → errore (-1). Classi di equivalenza, test minimi e boundary conditions.",
+        "soluzione": "Retta: (-∞,15) NV | [15,40) V | [40,100] V | (100,+∞) NV. Classi: C1 mq<15 NV; C2 15≤mq<40 V; C3 40≤mq≤100 V; C4 mq>100 NV. Test minimi: T1(10)=-1 [C1]; T2(25)=250 [C2]; T3(70)=560 [C3]; T4(150)=-1 [C4]. Boundary conditions (ε=0,1): TB(14.9)=-1; TB(15.0)=150; TB(15.1)=151; TB(39.9)=399; TB(40.0)=320; TB(40.1)=320.8; TB(99.9)=799.2; TB(100.0)=800; TB(100.1)=-1. Nota: 39,9 m² costano più di 40 m² (399 > 320). È un salto di prezzo da segnalare come possibile anomalia dei requisiti."
+      },
+      {
+        "tipo_esame": "scritto parte 2 (stile prova 2023): calcolaCostoAccessi a 4 scaglioni",
+        "testo": "double calcolaCostoAccessi(int n): n ≤ 0 → -1; 1..10 accessi → 6 € ciascuno; 11..20 → 5 €; 21..50 → 4 €; ≥ 51 → 3 € (la tariffa vale per tutti gli accessi). Classi, test minimi, BVA.",
+        "soluzione": "Classi: C1 n≤0 NV; C2 1..10 V; C3 11..20 V; C4 21..50 V; C5 ≥51 V (nessun limite superiore). Test minimi: T1(-3)=-1; T2(5)=30; T3(15)=75; T4(30)=120; T5(80)=240. BVA (ε=1, interi): TB(0)=-1; TB(1)=6; TB(2)=12; TB(9)=54; TB(10)=60; TB(11)=55; TB(12)=60; TB(19)=95; TB(20)=100; TB(21)=84; TB(22)=88; TB(49)=196; TB(50)=200; TB(51)=153; TB(52)=156; in più un valore grande come TB(Integer.MAX_VALUE) per l'overflow, se il risultato fosse un int. Anomalia: 11 accessi costano meno di 10 (55 < 60)."
+      },
+      {
+        "tipo_esame": "scritto parte 2: luggageCost con due parametri (fac-simile 2016/17)",
+        "testo": "luggageCost(int nPieces, double weight): max 2 pezzi, peso < 60 kg, 20 kg gratis, poi 10 €/kg, errore -1. Tabella finale.",
+        "soluzione": "Classi: nPieces C1<1 NV, C2 1..2 V, C3>2 NV; weight C4≤0 NV, C5 (0,20] V, C6 (20,60) V, C7≥60 NV. Minimi: (1,10)=0; (2,30)=100; (0,10)=-1; (3,10)=-1; (1,-5)=-1; (1,70)=-1. BVA sui validi: TB(2,20.0)=0; TB(2,20.1)=1; TB(2,59.9)=399; TB(2,60.0)=-1; TB(1,20.0)=0; TB(3,20.0)=-1. Quando ci sono due parametri si fa la BVA su uno tenendo l'altro a un valore valido."
+      }
+    ],
+    "tempo_studio_min": 60,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Parte 2 dello scritto (7 punti su 30) in tutte e tre le prove note (2016/17 luggageCost, 2022 costoPiazzola, 2023 calcolaCostoAccessi). Ha il miglior rapporto tra punti e tempo di studio."
+    },
+    "risorse": [
+      {
+        "titolo": "Equivalence partitioning (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Equivalence_partitioning",
+        "verificato": true
+      },
+      {
+        "titolo": "Boundary-value analysis (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Boundary-value_analysis",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.2 Boundary Value Analysis"
+      }
+    ],
+    "checklist_ripasso": [
+      "FORMULARIO: retta numerica → classi V/NV → test minimi (un NV per volta) → TB min-ε/min/min+ε e max-ε/max/max+ε → output atteso",
+      "Dichiara sempre ε e se i limiti sono inclusi o esclusi",
+      "Classe valida senza limite superiore: testa un valore grande",
+      "Segnala i salti di prezzo o i buchi tra scaglioni",
+      "Scrivi l'output atteso numerico per OGNI caso"
+    ]
+  },
+  {
+    "id": "grafo-flusso-controllo",
+    "title": "Grafo di flusso di controllo (CFG)",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "Il CFG rappresenta un metodo con nodi (blocchi di istruzioni sequenziali o decisioni) e archi (possibili passaggi del controllo). if ha 2 archi uscenti; while e for hanno un arco di ritorno alla condizione; le condizioni composte (&&, ||) si possono espandere in un nodo per condizione. È la base di path analysis, coperture e complessità ciclomatica.",
+    "saper_fare": [
+      "Disegnare il CFG di un metodo con if, if-else, while e for",
+      "Numerare nodi e archi ed elencare i cammini indipendenti"
+    ],
+    "prerequisiti": [
+      {
+        "id": "black-box-vs-white-box",
+        "forza": "hard",
+        "motivo": "Il CFG è lo strumento della white box."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto parte 3 (prova 2016/17): diagramma di flusso",
+        "testo": "int conta(int[] a, int s){ int i=0,c=0; while(i<a.length){ if(a[i]>s) c++; i++; } return c; } Disegna il CFG.",
+        "soluzione": "Nodi: N1 {i=0,c=0}; N2 [i<a.length]; N3 [a[i]>s]; N4 {c++}; N5 {i++}; N6 {return c}. Archi: N1→N2, N2→N3 (T), N2→N6 (F), N3→N4 (T), N3→N5 (F), N4→N5, N5→N2. In totale 6 nodi e 7 archi."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Prova 2016/17 (diagramma di flusso da codice) e domande sulla white box nel 2022 e 2023. Base della path analysis (TSUI 10.3.3)."
+    },
+    "risorse": [
+      {
+        "titolo": "Control-flow graph (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Control-flow_graph",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.3 path analysis"
+      }
+    ],
+    "checklist_ripasso": [
+      "if = 2 archi; while = arco di ritorno",
+      "Condizioni composte espanse",
+      "Numera nodi e archi"
+    ]
+  },
+  {
+    "id": "complessita-ciclomatica",
+    "title": "Path analysis e complessità ciclomatica di McCabe",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "La complessità ciclomatica V(G) = E − N + 2 (archi − nodi + 2, per un grafo connesso) = numero di decisioni binarie + 1 = numero di regioni del CFG planare. È il numero di cammini linearmente indipendenti, cioè il numero minimo di test per la basis path coverage. Valori alti (indicativamente > 10) segnalano metodi da semplificare.",
+    "saper_fare": [
+      "Calcolare V(G) in almeno due modi e verificare che coincidano",
+      "Elencare un insieme di cammini di base e i relativi test",
+      "Usare V(G) come metrica per decidere un refactoring"
+    ],
+    "prerequisiti": [
+      {
+        "id": "grafo-flusso-controllo",
+        "forza": "hard",
+        "motivo": "V(G) si calcola sul CFG."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: calcolo V(G)",
+        "testo": "Calcola V(G) per conta(int[] a, int s) (CFG con 6 nodi e 7 archi).",
+        "soluzione": "E − N + 2 = 7 − 6 + 2 = 3. Controllo: 2 decisioni (while, if) + 1 = 3. Cammini di base: P1 N1-N2-N6 (array vuoto: conta({},0)=0); P2 N1-N2-N3-N5-N2-N6 (conta({-1},0)=0); P3 N1-N2-N3-N4-N5-N2-N6 (conta({5},0)=1). Servono 3 test."
+      },
+      {
+        "tipo_esame": "esercizio: condizioni composte",
+        "testo": "if (x>0 && y>0) A(); else B(); for(...) { if (z==0) C(); }: quanto vale V(G)?",
+        "soluzione": "Contando ogni condizione semplice: x>0, y>0, for, z==0 = 4 decisioni, quindi V(G) = 5. Se && si conta come una sola decisione, V(G) = 4. Nella risposta va dichiarata la convenzione usata."
+      }
+    ],
+    "tempo_studio_min": 35,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Path analysis è nel programma (TSUI 10.3.3), ma nelle prove note si chiedono le coperture e non V(G): utile soprattutto come metrica nella domanda sulle software metrics."
+    },
+    "risorse": [
+      {
+        "titolo": "Cyclomatic complexity (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Cyclomatic_complexity",
+        "verificato": true
+      },
+      {
+        "titolo": "Complessità ciclomatica (Wikipedia IT)",
+        "url": "https://it.wikipedia.org/wiki/Complessit%C3%A0_ciclomatica",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.3 path analysis"
+      }
+    ],
+    "checklist_ripasso": [
+      "V(G) = E − N + 2 = decisioni + 1",
+      "= n° minimo di test per la basis path coverage",
+      "Le condizioni composte contano: dichiara la convenzione"
+    ]
+  },
+  {
+    "id": "criteri-copertura",
+    "title": "Criteri di copertura: statement, decision, condition, MC/DC",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Statement coverage: ogni istruzione eseguita almeno una volta. Decision (branch) coverage: ogni decisione assume sia T sia F (implica la statement coverage). Condition coverage: ogni condizione semplice assume T e F (non implica la decision coverage). MC/DC: in più, ogni condizione deve mostrare di influenzare da sola l'esito della decisione; con n condizioni servono di solito n+1 test (contro i 2^n della multiple condition). È richiesta dallo standard avionico DO-178C.",
+    "saper_fare": [
+      "Definire i 4 criteri e la gerarchia di inclusione",
+      "Trovare il numero minimo di test per statement coverage e decision coverage",
+      "Costruire un insieme MC/DC per A && B e A || B"
+    ],
+    "prerequisiti": [
+      {
+        "id": "grafo-flusso-controllo",
+        "forza": "hard",
+        "motivo": "Le coperture si ragionano sul CFG."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda (prova 2023): MC/DC",
+        "testo": "Spiega MC/DC e trova i test per if (a>0 && b>0).",
+        "soluzione": "Condizioni A=a>0, B=b>0, D=A&&B. Le coppie di indipendenza sono A: (T,T)→T contro (F,T)→F, con B fisso; e B: (T,T)→T contro (T,F)→F, con A fisso. Insieme MC/DC: {(T,T),(F,T),(T,F)} = 3 test = n+1, ad esempio (1,1),(0,1),(1,0). Confronto: la decision coverage si ottiene con 2 test, (T,T) e (F,T); la condition coverage si ottiene con (T,F) e (F,T), ma in quel caso D è sempre F e la decision coverage non è raggiunta."
+      },
+      {
+        "tipo_esame": "domanda (prova 2022): statement e decision coverage",
+        "testo": "Definisci statement e decision coverage e spiega la differenza con un esempio.",
+        "soluzione": "Codice: int y=0; if (x>0) y=10/x; return 100/y;. Statement: basta x=5, che esegue tutte le istruzioni (y=2, risultato 50). Decision: servono x=5 (T) e x=-1 (F). Il test x=-1 trova il bug: y resta 0 e 100/y lancia ArithmeticException. La sola statement coverage non lo trova. Decision ⊃ statement."
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Domande nelle prove 2016/17 (decision coverage), 2022 (statement e decision) e 2023 (MC/DC)."
+    },
+    "risorse": [
+      {
+        "titolo": "Code coverage (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Code_coverage",
+        "verificato": true
+      },
+      {
+        "titolo": "Modified condition/decision coverage (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Modified_condition/decision_coverage",
+        "verificato": true
+      },
+      {
+        "titolo": "JaCoCo: contatori di copertura",
+        "url": "https://www.jacoco.org/jacoco/trunk/doc/counters.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.3 path analysis"
+      }
+    ],
+    "checklist_ripasso": [
+      "Statement ⊂ decision ⊂ MC/DC ⊂ multiple condition",
+      "Condition coverage NON implica decision coverage",
+      "MC/DC: n+1 test, ogni condizione cambia da sola l'esito"
+    ]
+  },
+  {
+    "id": "esercizio-white-box-copertura",
+    "title": "Esercizio d'esame: da codice a CFG e test minimi per la copertura",
+    "area": 3,
+    "tipo": "tipo_esercizio",
+    "sapere": "Domanda della Parte 3 (circa 4 punti, prova 2016/17), con definizioni richieste anche nel 2022 e 2023. Procedura: 1) CFG numerato; 2) tabella delle decisioni (T/F); 3) insieme minimo di test con input e output atteso per la statement coverage; 4) eventuali test aggiuntivi per la decision coverage (e MC/DC se richiesta); 5) cammini coperti da ogni test.",
+    "saper_fare": [
+      "Ricavare dal codice i test minimi per statement e decision coverage, indicando i cammini",
+      "Giustificare perché un insieme è minimo"
+    ],
+    "prerequisiti": [
+      {
+        "id": "criteri-copertura",
+        "forza": "hard",
+        "motivo": "Serve conoscere i criteri."
+      },
+      {
+        "id": "grafo-flusso-controllo",
+        "forza": "hard",
+        "motivo": "Il primo passo è il CFG."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto parte 3 (fac-simile 2016/17): if + while",
+        "testo": "int conta(int[] a, int s){ int i=0,c=0; while(i<a.length){ if(a[i]>s) c++; i++; } return c; } CFG e test minimi per statement e decision coverage.",
+        "soluzione": "CFG: N1..N6 come nel nodo grafo-flusso-controllo. Statement: T1 conta({5},0)=1, cammino N1-N2-N3-N4-N5-N2-N6, copre tutti i nodi: 1 test. Decision: devono essere coperti while T/F e if T/F. T1 copre while T, while F e if T, ma non if F. Basta un solo test: T2 conta({5,-1},0)=1 copre if T (5>0) e if F (-1>0). Minimo per decision = 1 test (T2). In alternativa T1 + conta({-1},0)=0."
+      },
+      {
+        "tipo_esame": "scritto parte 3: if-else annidato",
+        "testo": "String tipo(int a,int b){ if(a==b) return \"uguali\"; if(a>b) return \"primo\"; return \"secondo\"; } Test minimi per statement e decision coverage.",
+        "soluzione": "Decisioni: D1 a==b, D2 a>b. Statement: tre return, quindi 3 test: (1,1)→uguali; (2,1)→primo; (1,2)→secondo. Decision: lo stesso insieme copre D1 T/F e D2 T/F, quindi 3 test anche qui. V(G) = 2 + 1 = 3, coerente."
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Esercizio da 4 punti nel fac-simile 2016/17; coperture richieste nel 2022 e 2023."
+    },
+    "risorse": [
+      {
+        "titolo": "Code coverage (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Code_coverage",
+        "verificato": true
+      },
+      {
+        "titolo": "Control-flow graph (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Control-flow_graph",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.3 path analysis"
+      }
+    ],
+    "checklist_ripasso": [
+      "CFG → tabella decisioni → test minimi con output atteso",
+      "Un ciclo con 2 iterazioni può coprire T e F dell'if con un solo test",
+      "Indica sempre il cammino coperto"
+    ]
+  },
+  {
+    "id": "debugging",
+    "title": "Debugging e processo di debugging",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "Il debugging parte da una failure osservata e arriva a localizzare e correggere il fault. Il testing rivela; il debugging diagnostica e corregge. Processo: 1) riprodurre in modo affidabile; 2) isolare e localizzare (ipotesi, divide et impera o bisezione, ad esempio git bisect; breakpoint, log, ispezione dello stato); 3) capire la causa radice; 4) correggere; 5) aggiungere un test che fallisce prima della correzione e passa dopo; 6) eseguire i test di regressione e verificare di non aver introdotto nuovi difetti.",
+    "saper_fare": [
+      "Descrivere le fasi del processo di debugging",
+      "Scegliere una tecnica di localizzazione (bisezione, breakpoint, logging, backtracking) adatta al caso",
+      "Scrivere un test di regressione per il bug corretto"
+    ],
+    "prerequisiti": [
+      {
+        "id": "testing-livelli-tipi",
+        "forza": "hard",
+        "motivo": "Serve la distinzione failure/fault e il ruolo dei test di regressione."
+      },
+      {
+        "id": "git-versionamento",
+        "forza": "soft",
+        "motivo": "git bisect localizza il commit che ha introdotto il difetto."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda (prove 2016/17 e 2023): processo di debugging",
+        "testo": "Descrivi il processo di debugging.",
+        "soluzione": "1) Riproduci la failure con input minimi (caso minimo). 2) Formula ipotesi sulla causa e verificale: breakpoint e ispezione delle variabili, logging, bisezione sul codice o sui commit (git bisect), backtracking dal punto della failure. 3) Individua la causa radice (fault), non solo il sintomo. 4) Correggi con una modifica minima. 5) Aggiungi un test che riproduce il bug (rosso prima, verde dopo). 6) Esegui tutta la suite di regressione. Debugging ≠ testing: il testing mostra che c'è una failure; il debugging trova e rimuove il fault."
+      }
+    ],
+    "tempo_studio_min": 35,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Domanda nelle prove 2016/17 (3 punti) e 2023."
+    },
+    "risorse": [
+      {
+        "titolo": "Debugging (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Debugging",
+        "verificato": true
+      },
+      {
+        "titolo": "Documentazione Git (git bisect)",
+        "url": "https://git-scm.com/docs",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 10"
+      }
+    ],
+    "checklist_ripasso": [
+      "Riproduci → localizza → causa radice → correggi → test di regressione",
+      "Testing ≠ debugging",
+      "Bisezione (git bisect), breakpoint, log"
+    ]
+  },
+  {
+    "id": "ispezione-codice",
+    "title": "Ispezione e revisione del codice",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Verifica statica, senza eseguire il codice. L'ispezione di Fagan ha ruoli definiti (moderatore, autore, lettore, ispettore, segretario) e fasi (pianificazione, overview, preparazione, riunione, rework, follow-up), con checklist e metriche dei difetti trovati. Forme più leggere: walkthrough, code review con pull request e analisi statica automatica. Trova i difetti presto, quando correggerli costa meno.",
+    "saper_fare": [
+      "Descrivere ruoli e fasi di un'ispezione di Fagan",
+      "Confrontare ispezione, walkthrough e code review con PR",
+      "Spiegare perché l'ispezione costa meno del testing per alcuni difetti"
+    ],
+    "prerequisiti": [
+      {
+        "id": "buone-pratiche-programmazione",
+        "forza": "soft",
+        "motivo": "Le checklist di ispezione codificano le buone pratiche."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: ispezione",
+        "testo": "Cos'è un'ispezione del codice e quali vantaggi ha rispetto al testing?",
+        "soluzione": "È un processo formale di lettura del codice in gruppo, con ruoli (moderatore, autore, lettore, segretario) e fasi (pianificazione, preparazione individuale con checklist, riunione per trovare i difetti senza correggerli, rework, follow-up). Vantaggi: trova i difetti prima dell'esecuzione e anche nel codice non testabile; scopre più difetti in una volta (il testing si ferma alla prima failure); diffonde la conoscenza. Limiti: costo di tempo delle persone; non verifica il comportamento a runtime."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma ('ispezione del codice', TSUI 10.5). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "Fagan inspection (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Fagan_inspection",
+        "verificato": true
+      },
+      {
+        "titolo": "Google Engineering Practices: code review",
+        "url": "https://google.github.io/eng-practices/review/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.5 ispezioni"
+      }
+    ],
+    "checklist_ripasso": [
+      "Statica: non esegue il codice",
+      "Fagan: ruoli + 6 fasi + checklist",
+      "Nella riunione si trovano i difetti, non si correggono"
+    ]
+  },
+  {
+    "id": "junit-5",
+    "title": "Unit testing con JUnit 5",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "JUnit 5 (Jupiter) è il framework standard per i test unitari Java: metodi @Test, asserzioni (assertEquals con delta per i double, assertTrue, assertThrows), ciclo di vita (@BeforeEach, @AfterEach), test parametrici (@ParameterizedTest con @CsvSource) che si prestano a tradurre una tabella EC/BVA. Struttura Arrange-Act-Assert; con il TDD il test si scrive prima del codice (red, green, refactor).",
+    "saper_fare": [
+      "Scrivere una classe di test JUnit 5 con @Test e assertEquals/assertThrows",
+      "Tradurre una tabella di casi BVA in un @ParameterizedTest",
+      "Spiegare il ciclo TDD red-green-refactor"
+    ],
+    "prerequisiti": [
+      {
+        "id": "boundary-value-analysis",
+        "forza": "soft",
+        "motivo": "I casi da automatizzare vengono dalla BVA."
+      },
+      {
+        "id": "testing-livelli-tipi",
+        "forza": "hard",
+        "motivo": "JUnit automatizza i test unitari."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: JUnit da tabella BVA",
+        "testo": "Automatizza alcuni casi BVA di costoPiazzola(double mq).",
+        "soluzione": "@ParameterizedTest @CsvSource({\"14.9,-1\",\"15.0,150\",\"39.9,399\",\"40.0,320\",\"100.0,800\",\"100.1,-1\"}) void costo(double mq, double atteso){ assertEquals(atteso, Piazzole.costoPiazzola(mq), 1e-9); }. Il delta 1e-9 evita i falsi negativi dovuti agli arrotondamenti dei double. Per un metodo che lancia eccezioni: assertThrows(IllegalArgumentException.class, () -> f(-1));"
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma (JUnit, TSUI 1.4.3 e 10.3.5). Non compare nelle prove d'esame note (2016/17, 2022, 2023) come esercizio di codice: serve soprattutto nel progetto e per l'orale."
+    },
+    "risorse": [
+      {
+        "titolo": "JUnit 5 User Guide",
+        "url": "https://junit.org/junit5/docs/current/user-guide/",
+        "verificato": true
+      },
+      {
+        "titolo": "Test-driven development (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Test-driven_development",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "1.4.3 JUnit"
+      },
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "10.3.5 unit test/TDD"
+      }
+    ],
+    "checklist_ripasso": [
+      "@Test, @BeforeEach, assertEquals(atteso, effettivo, delta)",
+      "assertThrows per le eccezioni",
+      "@ParameterizedTest + @CsvSource = tabella BVA",
+      "TDD: red → green → refactor"
+    ]
+  },
+  {
+    "id": "programmazione-difensiva",
+    "title": "Programmazione difensiva e asserzioni",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "Il codice difensivo non si fida degli input: controlla le precondizioni (parametri nulli, fuori intervallo) e reagisce in modo esplicito (eccezione, ad esempio IllegalArgumentException, o un valore d'errore documentato come -1). Le asserzioni (assert, attive solo con -ea) verificano gli invarianti interni durante lo sviluppo e non sostituiscono la validazione degli input pubblici. Collegata al design by contract (precondizioni, postcondizioni, invarianti).",
+    "saper_fare": [
+      "Aggiungere i controlli delle precondizioni a un metodo pubblico",
+      "Distinguere quando usare un'eccezione e quando un assert",
+      "Spiegare il legame con classi non valide e BVA"
+    ],
+    "prerequisiti": [
+      {
+        "id": "buone-pratiche-programmazione",
+        "forza": "hard",
+        "motivo": "È una pratica di buona programmazione."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: rendi difensivo",
+        "testo": "public double media(int[] v){ int s=0; for(int x:v) s+=x; return s/v.length; } Rendi il metodo difensivo.",
+        "soluzione": "Problemi: v null (NullPointerException), v vuoto (divisione per zero), divisione intera (media({2,3}) dà 2.0 invece di 2.5), overflow di s. Versione difensiva: if(v==null||v.length==0) throw new IllegalArgumentException(\"v vuoto\"); long s=0; for(int x:v) s+=x; return (double)s/v.length;. Test: assertThrows con null e con {}; caso valido {2,3}→2.5. Un assert interno (es. sul risultato compreso tra minimo e massimo) serve solo in sviluppo."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma (TSUI 9.3.2). Non compare nelle prove d'esame note (2016/17, 2022, 2023): si collega ai casi non validi della Parte 2 (valore -1 di errore)."
+    },
+    "risorse": [
+      {
+        "titolo": "Defensive programming (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Defensive_programming",
+        "verificato": true
+      },
+      {
+        "titolo": "Programming With Assertions (Oracle)",
+        "url": "https://docs.oracle.com/javase/8/docs/technotes/guides/language/assert.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Design by contract (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Design_by_contract",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "9.3.2 asserzioni e programmazione difensiva"
+      }
+    ],
+    "checklist_ripasso": [
+      "Valida gli input pubblici → eccezione",
+      "assert per gli invarianti interni (-ea)",
+      "Pre-, postcondizioni, invarianti"
+    ]
+  },
+  {
+    "id": "maven",
+    "title": "Build automation con Maven",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "Maven gestisce build e dipendenze di un progetto Java dichiarandoli nel pom.xml (groupId, artifactId, version, dependencies con scope, ad esempio test). Segue convenzioni sulle cartelle (src/main/java, src/test/java) e un ciclo di vita a fasi: validate, compile, test, package, verify, install, deploy. Eseguire una fase esegue anche tutte le precedenti.",
+    "saper_fare": [
+      "Leggere e modificare un pom.xml aggiungendo JUnit con scope test",
+      "Spiegare il ciclo di vita e cosa fa mvn package",
+      "Spiegare la gestione delle dipendenze transitive"
+    ],
+    "prerequisiti": [
+      {
+        "id": "junit-5",
+        "forza": "soft",
+        "motivo": "Il primo uso tipico è eseguire i test con mvn test."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda: ciclo di vita Maven",
+        "testo": "Cosa succede con mvn package in un progetto con test JUnit?",
+        "soluzione": "Maven esegue in ordine validate, compile (src/main/java), test-compile, test (Surefire esegue JUnit; se un test fallisce la build si ferma), package (crea il jar in target/). Le dipendenze del pom vengono scaricate dal repository centrale nella cache locale ~/.m2; JUnit con <scope>test</scope> non finisce nel jar."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "bassa",
+      "motivazione": "Nel programma, ma Non compare nelle prove d'esame note (2016/17, 2022, 2023): strumento pratico, utile per il progetto e al massimo per una domanda breve."
+    },
+    "risorse": [
+      {
+        "titolo": "Maven: Getting Started",
+        "url": "https://maven.apache.org/guides/getting-started/",
+        "verificato": true
+      },
+      {
+        "titolo": "Maven: Build Lifecycle",
+        "url": "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Maven: POM reference",
+        "url": "https://maven.apache.org/pom.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Maven: dependency mechanism",
+        "url": "https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 11"
+      }
+    ],
+    "checklist_ripasso": [
+      "pom.xml: GAV + dependencies + scope",
+      "validate → compile → test → package → verify → install → deploy",
+      "Convenzione sulle cartelle"
+    ]
+  },
+  {
+    "id": "git-versionamento",
+    "title": "Controllo di versione con Git",
+    "area": 3,
+    "tipo": "abilita",
+    "sapere": "Git è un sistema di controllo versione distribuito: ogni clone ha tutta la storia. Concetti: working tree, staging area, commit (snapshot con hash), branch (puntatore mobile), merge e rebase, conflitti, remote (push, pull, fetch). Workflow tipici: feature branch e pull request, Gitflow, trunk-based development.",
+    "saper_fare": [
+      "Eseguire il ciclo add → commit → push e creare e unire un branch",
+      "Risolvere un conflitto di merge",
+      "Confrontare due workflow di branching"
+    ],
+    "prerequisiti": [],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: sequenza comandi",
+        "testo": "Crea un branch per una feature, fai un commit e uniscilo a main.",
+        "soluzione": "git switch -c feature/login → modifica i file → git add . → git commit -m \"Login\" → git switch main → git merge feature/login (in caso di conflitto: modifica i file con i marcatori <<<<<<< ======= >>>>>>>, poi git add e git commit) → git push origin main. Con GitHub di solito si apre una pull request invece del merge locale."
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma e alla base della gestione delle configurazioni (area 4). Non compare nelle prove d'esame note (2016/17, 2022, 2023): utile per il progetto."
+    },
+    "risorse": [
+      {
+        "titolo": "Pro Git (in italiano)",
+        "url": "https://git-scm.com/book/it/v2",
+        "verificato": true
+      },
+      {
+        "titolo": "Learn Git Branching (interattivo)",
+        "url": "https://learngitbranching.js.org/?locale=it_IT",
+        "verificato": true
+      },
+      {
+        "titolo": "Comparing Git workflows (Atlassian)",
+        "url": "https://www.atlassian.com/git/tutorials/comparing-workflows",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 11"
+      }
+    ],
+    "checklist_ripasso": [
+      "working tree → staging → commit → push",
+      "branch = puntatore; merge vs rebase",
+      "Conflitti: marcatori, add, commit"
     ]
   }
 ]

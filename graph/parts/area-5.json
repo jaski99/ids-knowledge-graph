@@ -1,1 +1,297 @@
-[]
+[
+  {
+    "id": "llm-agenti-ciclo-vita",
+    "title": "LLM e agenti nel ciclo di vita del software",
+    "area": 5,
+    "tipo": "concetto",
+    "sapere": "Un LLM genera testo e codice prevedendo il token successivo, senza garanzie di correttezza. Un agente di coding combina un LLM con strumenti (lettura e scrittura di file, terminale, test, Git) in un ciclo pianifica → agisci → osserva. Nel ciclo di vita: requisiti (bozze di user story), progettazione (alternative architetturali), implementazione (completamento, generazione), testing (generazione di test), manutenzione (comprensione di codice legacy, refactoring, migrazioni), documentazione.",
+    "saper_fare": [
+      "Spiegare come funziona un LLM a livello concettuale e la differenza tra assistente e agente",
+      "Mappare gli usi dell'AI sulle fasi del ciclo di vita"
+    ],
+    "prerequisiti": [
+      {
+        "id": "testing-livelli-tipi",
+        "forza": "soft",
+        "motivo": "Gli agenti usano i test come feedback per verificare le modifiche."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: AI nel ciclo di vita",
+        "testo": "Come si possono usare LLM e agenti nelle fasi del ciclo di vita del software?",
+        "soluzione": "Requisiti: bozze di user story e casi d'uso da interviste, da validare con gli stakeholder. Progettazione: proporre alternative e pattern, che decide il progettista. Implementazione: completamento e generazione di funzioni. Testing: generazione di casi (anche EC e BVA) e di test JUnit. Manutenzione: spiegare codice legacy, refactoring, migrazioni. Un agente fa da solo il ciclo pianifica → modifica → esegue i test → corregge. In ogni fase serve la verifica umana, perché l'output è probabilistico."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "Large language model (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Large_language_model",
+        "verificato": true
+      },
+      {
+        "titolo": "Building effective agents (Anthropic)",
+        "url": "https://www.anthropic.com/engineering/building-effective-agents",
+        "verificato": true
+      },
+      {
+        "titolo": "Exploring Generative AI (martinfowler.com)",
+        "url": "https://martinfowler.com/articles/exploring-gen-ai.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "LLM = previsione probabilistica di token",
+      "Agente = LLM + strumenti + ciclo",
+      "Un uso per ogni fase, sempre con verifica umana"
+    ]
+  },
+  {
+    "id": "rischi-codice-generato",
+    "title": "Opportunità, limiti e rischi del codice generato",
+    "area": 5,
+    "tipo": "concetto",
+    "sapere": "Opportunità: produttività sul codice ripetitivo, prototipazione rapida, aiuto con API poco note. Limiti e rischi: allucinazioni (API o pacchetti inesistenti), bug sottili e casi limite ignorati, vulnerabilità di sicurezza (injection, segreti nel codice, dipendenze inventate), prompt injection negli agenti, problemi di licenza e copyright sul codice suggerito, debito tecnico e codice duplicato, eccesso di fiducia dello sviluppatore, dati riservati inviati a servizi esterni.",
+    "saper_fare": [
+      "Elencare almeno 5 rischi concreti del codice generato con una mitigazione ciascuno",
+      "Bilanciare opportunità e rischi in una risposta argomentata"
+    ],
+    "prerequisiti": [
+      {
+        "id": "llm-agenti-ciclo-vita",
+        "forza": "hard",
+        "motivo": "Bisogna sapere come lavorano LLM e agenti."
+      },
+      {
+        "id": "licenze-software",
+        "forza": "soft",
+        "motivo": "Il rischio di licenza sul codice generato richiede la conoscenza delle licenze."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: rischi",
+        "testo": "Quali rischi comporta il codice generato da un LLM e come si mitigano?",
+        "soluzione": "1) Allucinazioni (metodi o librerie inesistenti) → compilazione, test, verifica delle dipendenze. 2) Casi limite errati → EC e BVA, test di regressione. 3) Vulnerabilità (SQL injection, segreti) → code review, analisi statica, OWASP. 4) Prompt injection negli agenti → privilegi minimi e conferma umana per le azioni critiche. 5) Licenze e copyright → controllo delle somiglianze e delle dipendenze. 6) Debito tecnico ed eccesso di fiducia → refactoring e revisione umana obbligatoria. 7) Dati riservati → policy aziendali e modelli on-premise."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "OWASP Top 10 for LLM Applications",
+        "url": "https://genai.owasp.org/llm-top-10/",
+        "verificato": true
+      },
+      {
+        "titolo": "Hallucination (AI) (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)",
+        "verificato": true
+      },
+      {
+        "titolo": "Asleep at the Keyboard? Sicurezza del codice di Copilot (arXiv)",
+        "url": "https://arxiv.org/abs/2108.09293",
+        "verificato": true
+      },
+      {
+        "titolo": "NIST AI Risk Management Framework",
+        "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Allucinazioni, casi limite, sicurezza, prompt injection, licenze, debito tecnico, eccesso di fiducia",
+      "Per ogni rischio: una mitigazione"
+    ]
+  },
+  {
+    "id": "verifica-umana-codice-ai",
+    "title": "Verifica umana del codice generato",
+    "area": 5,
+    "tipo": "abilita",
+    "sapere": "Il codice generato si tratta come quello di un collaboratore junior: lo sviluppatore resta responsabile. La verifica combina: comprensione riga per riga, test scritti o validati dall'umano (EC, BVA, copertura), code review e ispezione, analisi statica e di sicurezza, controllo di dipendenze e licenze, piccole modifiche per volta in commit separati. I benchmark (HumanEval, SWE-bench) misurano capacità sui casi del benchmark, non la correttezza del singolo output.",
+    "saper_fare": [
+      "Applicare una checklist di revisione a un frammento generato",
+      "Progettare test indipendenti dall'AI per validarne l'output",
+      "Spiegare perché anche i test generati dall'AI vanno verificati (oracolo)"
+    ],
+    "prerequisiti": [
+      {
+        "id": "rischi-codice-generato",
+        "forza": "hard",
+        "motivo": "La verifica risponde ai rischi."
+      },
+      {
+        "id": "ispezione-codice",
+        "forza": "soft",
+        "motivo": "Si riusano tecniche di ispezione e code review."
+      },
+      {
+        "id": "boundary-value-analysis",
+        "forza": "soft",
+        "motivo": "I casi limite sono il punto debole tipico del codice generato."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: verifica",
+        "testo": "Un assistente genera: double costoPiazzola(double mq){ if(mq<15||mq>100) return -1; return mq<=40 ? mq*10 : mq*8; }. La specifica dice 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m². Verificalo.",
+        "soluzione": "Si applica la BVA: TB(40.0) dovrebbe valere 320 (8 €/m²), mentre il codice restituisce 400 perché usa mq<=40. Il bug sta su un limite. Correzione: mq<40. Lezione: i test derivati dalla specifica scritti dall'umano (EC + BVA) trovano l'errore; un test generato dallo stesso modello avrebbe potuto confermare il comportamento sbagliato (problema dell'oracolo)."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica. L'esercizio riusa la tecnica EC/BVA della Parte 2."
+    },
+    "risorse": [
+      {
+        "titolo": "Evaluating LLMs Trained on Code, HumanEval (arXiv)",
+        "url": "https://arxiv.org/abs/2107.03374",
+        "verificato": true
+      },
+      {
+        "titolo": "SWE-bench (arXiv)",
+        "url": "https://arxiv.org/abs/2310.06770",
+        "verificato": true
+      },
+      {
+        "titolo": "Google Engineering Practices: code review",
+        "url": "https://google.github.io/eng-practices/review/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Lo sviluppatore resta responsabile",
+      "Test dalla specifica, non dal codice generato",
+      "Bug ai limiti: usa la BVA",
+      "Benchmark ≠ garanzia"
+    ]
+  },
+  {
+    "id": "assistenti-ai-sviluppo",
+    "title": "Assistenti AI per generazione, comprensione, modifica, refactoring e testing",
+    "area": 5,
+    "tipo": "abilita",
+    "sapere": "Usi pratici degli assistenti (es. GitHub Copilot, chat negli IDE, agenti): generazione da commenti o firme, spiegazione di codice sconosciuto, modifiche mirate, refactoring guidato (es. 'Extract Method mantenendo il comportamento'), generazione di test JUnit. Buone pratiche: prompt con contesto e vincoli precisi (firma, specifica, casi limite), compiti piccoli, test prima della modifica, revisione del diff.",
+    "saper_fare": [
+      "Scrivere un prompt efficace per generare test o un refactoring",
+      "Usare un assistente per spiegare codice legacy e verificarne la spiegazione",
+      "Integrare l'assistente in un flusso con test e review"
+    ],
+    "prerequisiti": [
+      {
+        "id": "llm-agenti-ciclo-vita",
+        "forza": "hard",
+        "motivo": "Bisogna conoscere le capacità di LLM e agenti."
+      },
+      {
+        "id": "refactoring",
+        "forza": "soft",
+        "motivo": "Il refactoring assistito richiede di sapere cos'è un refactoring corretto."
+      },
+      {
+        "id": "junit-5",
+        "forza": "soft",
+        "motivo": "I test generati sono in JUnit e vanno letti e corretti."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: prompt per i test",
+        "testo": "Scrivi un prompt per far generare i test di costoPiazzola e indica cosa controllare nell'output.",
+        "soluzione": "Prompt: 'Scrivi un @ParameterizedTest JUnit 5 per double costoPiazzola(double mq) con specifica: mq<15 → -1; 15≤mq<40 → 10 €/m²; 40≤mq≤100 → 8 €/m²; mq>100 → -1. Includi un caso per classe di equivalenza e i limiti 14.9, 15, 15.1, 39.9, 40, 40.1, 99.9, 100, 100.1, con il valore atteso calcolato dalla specifica e un delta per i double.' Da controllare: valori attesi ricalcolati a mano (es. 40 → 320), presenza di tutti i limiti, uso di assertEquals con delta, nessun test che si limita a ripetere l'implementazione."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "GitHub Copilot: best practices",
+        "url": "https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot",
+        "verificato": true
+      },
+      {
+        "titolo": "GitHub Copilot documentation",
+        "url": "https://docs.github.com/en/copilot",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Prompt = contesto + specifica + vincoli + casi limite",
+      "Compiti piccoli, diff revisionati",
+      "Valori attesi ricalcolati a mano"
+    ]
+  },
+  {
+    "id": "domanda-ids-ai-native",
+    "title": "Domanda d'esame: ingegneria del software AI-native",
+    "area": 5,
+    "tipo": "tipo_esercizio",
+    "sapere": "Possibile domanda teorica della Parte 3 sull'area nuova del programma. Struttura della risposta: cosa sono LLM e agenti; usi nel ciclo di vita; opportunità; limiti e rischi; ruolo della verifica umana con tecniche concrete del corso (test EC/BVA, copertura, review, refactoring).",
+    "saper_fare": [
+      "Scrivere in circa 10 minuti una risposta strutturata che colleghi l'AI alle tecniche classiche del corso"
+    ],
+    "prerequisiti": [
+      {
+        "id": "rischi-codice-generato",
+        "forza": "hard",
+        "motivo": "È il nucleo della risposta."
+      },
+      {
+        "id": "verifica-umana-codice-ai",
+        "forza": "hard",
+        "motivo": "Serve per la parte sulla verifica umana."
+      },
+      {
+        "id": "assistenti-ai-sviluppo",
+        "forza": "soft",
+        "motivo": "Fornisce gli esempi d'uso."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "scritto parte 3 (ipotetica): AI-native",
+        "testo": "Discuti opportunità e rischi dell'uso di LLM e agenti nello sviluppo software e il ruolo della verifica umana.",
+        "soluzione": "1) Definizione: LLM probabilistici; un agente aggiunge strumenti e un ciclo autonomo. 2) Usi: requisiti, generazione di codice, test, comprensione e refactoring di codice legacy. 3) Opportunità: produttività, prototipi, documentazione. 4) Rischi: allucinazioni, bug sui casi limite, sicurezza (OWASP LLM Top 10, prompt injection), licenze, debito tecnico, eccesso di fiducia. 5) Verifica umana: test derivati dalla specifica (EC + BVA), coperture, code review, analisi statica, piccoli commit; la responsabilità resta dello sviluppatore. 6) Conclusione: l'AI accelera, ma le tecniche di IdS restano necessarie, anzi più importanti."
+      }
+    ],
+    "tempo_studio_min": 20,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Area 5 aggiunta al programma attuale e assente dalle prove note (2016/17, 2022, 2023): priorità media come possibile domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "Exploring Generative AI (martinfowler.com)",
+        "url": "https://martinfowler.com/articles/exploring-gen-ai.html",
+        "verificato": true
+      },
+      {
+        "titolo": "OWASP Top 10 for LLM Applications",
+        "url": "https://genai.owasp.org/llm-top-10/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Definizione → usi → opportunità → rischi → verifica umana → conclusione",
+      "Collega sempre alle tecniche del corso"
+    ]
+  }
+]
