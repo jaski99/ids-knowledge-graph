@@ -1,41 +1,59 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createViewRegistry } from '../modules/registry.js';
+import { createViewRegistry, getAll, register } from '../modules/registry.js';
+import { idDaHash } from '../modules/avvia.js';
 
-const view = (id, title = id, mount = null) => ({ id, title, mount });
+const view = (id, titolo = id, render = () => {}) => ({ id, titolo, render });
 
-test('register memorizza id e titolo, list non espone l\'array interno', () => {
-  const r = createViewRegistry();
-  r.register(view('simulatore', 'Simulatore'));
-  const list = r.list();
-  list.push({ id: 'extra', title: 'Extra' });
-  assert.deepEqual(r.list().map((v) => v.id), ['simulatore']);
-  assert.equal(r.get('simulatore').title, 'Simulatore');
-  assert.equal(r.get('assente'), null);
+test('registry isolato registra viste e restituisce copie, con accesso per id', () => {
+  const registry = createViewRegistry();
+  const item = registry.register(view('simulatore', 'Simulatore'));
+  assert.equal(item.titolo, 'Simulatore');
+  assert.equal(registry.get('simulatore'), item);
+  assert.equal(registry.get('assente'), null);
+  const list = registry.getAll();
+  list.push(view('intruso'));
+  assert.deepEqual(registry.getAll().map((v) => v.id), ['simulatore']);
 });
 
-test('title viene ripulito dagli spazi', () => {
-  const r = createViewRegistry();
-  assert.equal(r.register(view('quiz', '  Quiz  ')).title, 'Quiz');
+test('registry isolato ripulisce titolo, rifiuta duplicati e input non validi', () => {
+  const registry = createViewRegistry();
+  assert.equal(registry.register(view('quiz', '  Quiz  ')).titolo, 'Quiz');
+  assert.throws(() => registry.register(view('quiz')), /già registrata/);
+  for (const invalid of [null, {}, { id: 'Spazi', titolo: 'X', render() {} },
+    { id: 'x', titolo: ' ', render() {} }, { id: 'ok', titolo: 'Ok' }]) {
+    assert.throws(() => registry.register(invalid), TypeError);
+  }
 });
 
-test('id duplicato o malformato rifiutati', () => {
-  const r = createViewRegistry();
-  r.register(view('grafo', 'Grafo'));
-  assert.throws(() => r.register(view('grafo', 'Altro')), /già registrata/);
-  assert.throws(() => r.register(view('Grafo', 'X')), /kebab-case/);
-  assert.throws(() => r.register(view('a b', 'X')), /kebab-case/);
-  assert.throws(() => r.register({ id: 'ok' }), /title/);
-  assert.throws(() => r.register({ id: 'ok', title: 'Ok', mount: 'no' }), /mount/);
-});
-
-test('subscribe riceve le viste già registrate e quelle successive, e si disiscrive', () => {
-  const r = createViewRegistry();
-  r.register(view('prima', 'Prima'));
+test('subscribe riceve viste preesistenti e successive, e può disiscriversi', () => {
+  const registry = createViewRegistry();
+  registry.register(view('prima'));
   const seen = [];
-  const off = r.subscribe((v) => seen.push(v.id));
-  r.register(view('dopo', 'Dopo'));
+  const off = registry.subscribe((entry) => seen.push(entry.id));
+  registry.register(view('dopo'));
   off();
-  r.register(view('mai', 'Mai'));
+  registry.register(view('mai'));
   assert.deepEqual(seen, ['prima', 'dopo']);
+});
+
+test('registry applicativo permette registrazioni idempotenti per moduli e non espone array interno', () => {
+  const render = () => {};
+  register({ id: 'registry-spec', titolo: 'Spec', render });
+  register({ id: 'registry-spec', titolo: 'Spec aggiornata', render });
+  const found = getAll().filter((entry) => entry.id === 'registry-spec');
+  assert.equal(found.length, 1);
+  assert.equal(found[0].titolo, 'Spec aggiornata');
+  const copy = getAll();
+  copy.pop();
+  assert.ok(getAll().some((entry) => entry.id === 'registry-spec'));
+});
+
+test('idDaHash accetta route vista ma non route lezione', () => {
+  assert.equal(idDaHash('#/simulatore'), 'simulatore');
+  assert.equal(idDaHash('#/ripasso'), 'ripasso');
+  assert.equal(idDaHash('#/lezione/uml-casi-uso'), null);
+  assert.equal(idDaHash('#/percorso'), 'percorso');
+  assert.equal(idDaHash(''), null);
+  assert.equal(idDaHash('#/'), null);
 });

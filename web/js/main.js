@@ -16,7 +16,7 @@ import { initTabs } from './ui/tabs.js';
 import { createLessonView } from './ui/lesson-view.js';
 import { parseRoute, lessonHash, nextToStudy } from './core/lesson.js';
 import { h, clear } from './ui/dom.js';
-import { navigation } from '../modules/registry.js';
+import { avviaModuli } from '../modules/avvia.js';
 import { createThemeController, syncThemeButtons } from './core/theme.js';
 
 const $ = (s) => document.querySelector(s);
@@ -87,34 +87,15 @@ async function main() {
     if (!next) box.append(h('p', { class: 'muted' }, 'Percorso completato 🎉 Usa la scheda Ripasso.'));
     box.hidden = !box.children.length;
   };
-  const tabs = initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
-  // Viste extra: importano `navigation` e chiamano register({ id, title, mount }).
-  // Gli id grafo, percorso e ripasso sono già nel markup: un id nuovo diventa una scheda.
-  const extraViews = [];
-  const navCtx = { graph, getState: () => state.get(), subscribe: (fn) => state.subscribe(fn), openLesson, select, toggleDone, h, clear };
-  let lastVm = null;
-  navigation.subscribe((view) => {
-    if (document.getElementById(`tab-${view.id}`)) return;
-    const btn = h('button', {
-      type: 'button', role: 'tab', id: `tab-${view.id}`, 'data-tab': view.id,
-      'aria-controls': `view-${view.id}`, 'aria-selected': 'false', tabindex: '-1',
-    }, view.title);
-    const panel = h('section', { role: 'tabpanel', id: `view-${view.id}`, 'aria-labelledby': `tab-${view.id}`, hidden: true });
-    document.querySelector('[role="tablist"]').append(btn);
-    $('#main').append(panel);
-    tabs.bind(btn);
-    const api = view.mount ? view.mount(panel, navCtx) || {} : {};
-    extraViews.push(api);
-    if (lastVm && api.update) api.update(lastVm);
-  });
+  initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
+  // Le viste aggiuntive usano il registry condiviso e le route #/<id>.
+  const moduli = avviaModuli({ document, graph, storage: localStorage });
 
   let lastSel;
   const render = (s) => {
     const visible = new Set(applyFilters(graph.nodi, s.filters, s.done).map((n) => n.id));
     const vm = { visible, done: s.done, selected: s.selected };
-    lastVm = vm;
     views.forEach((v) => (v.update || v.render).call(v, vm));
-    extraViews.forEach((v) => v.update?.(vm));
     details.render(s.selected, s.done);
     renderResume(s.done);
     $('#count').textContent = `${visible.size}/${graph.nodi.length} nodi visibili`;
@@ -126,6 +107,8 @@ async function main() {
 
   // Routing: #/lezione/<id> mostra la lezione a tutta pagina, qualsiasi altro hash mostra l'app.
   const route = async () => {
+    const moduloAttivo = moduli.mostra(location.hash);
+    document.body.classList.toggle('module-mode', moduloAttivo);
     const r = parseRoute(location.hash);
     document.body.classList.toggle('lesson-mode', Boolean(r));
     $('#lesson').hidden = !r;
@@ -154,8 +137,12 @@ async function main() {
       return;
     }
     if (e.key !== 'Escape') return;
-    if (e.target && e.target.id === 'search') { e.target.blur(); return; }
+    if (e.target && e.target.closest && e.target.closest('textarea, input, select')) {
+      if (e.target.id === 'search') e.target.blur();
+      return;
+    }
     if (parseRoute(location.hash)) location.hash = '#/percorso';
+    else if (document.body.classList.contains('module-mode')) location.hash = '#/';
     else if (state.get().selected) state.set({ selected: null });
   });
 }

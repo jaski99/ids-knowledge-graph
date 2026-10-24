@@ -1,43 +1,43 @@
-// Registro delle viste di navigazione. Nessuno stato globale: createViewRegistry()
-// restituisce un'istanza, e `navigation` è quella usata dall'app.
-// I moduli extra (per esempio il simulatore) la importano e chiamano register().
+// Registro condiviso delle viste. La API pubblica usa { id, titolo, render(container, ctx) }.
+const ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const ID_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-
-export function createViewRegistry() {
+export function createViewRegistry({ replace = false } = {}) {
   const views = [];
   const listeners = new Set();
 
-  function register(view) {
-    if (!view || typeof view !== 'object') throw new TypeError('vista: oggetto richiesto');
-    if (typeof view.id !== 'string' || !ID_RE.test(view.id)) {
-      throw new TypeError('vista: id kebab-case obbligatorio');
-    }
-    if (typeof view.title !== 'string' || !view.title.trim()) {
-      throw new TypeError('vista: title obbligatorio');
-    }
-    if (view.mount != null && typeof view.mount !== 'function') {
-      throw new TypeError('vista: mount deve essere una funzione');
-    }
-    if (views.some((v) => v.id === view.id)) throw new Error(`vista già registrata: ${view.id}`);
-    const entry = { id: view.id, title: view.title.trim(), mount: view.mount || null };
-    views.push(entry);
-    for (const fn of listeners) fn(entry);
-    return entry;
+  function register(input) {
+    if (!input || typeof input !== 'object') throw new TypeError('vista: oggetto richiesto');
+    const id = input.id;
+    const titolo = input.titolo ?? input.title;
+    const render = input.render ?? (input.mount
+      ? (container, ctx) => input.mount(container, ctx)
+      : null);
+    if (typeof id !== 'string' || !ID_RE.test(id)) throw new TypeError('vista: id kebab-case obbligatorio');
+    if (typeof titolo !== 'string' || !titolo.trim()) throw new TypeError('vista: titolo obbligatorio');
+    if (typeof render !== 'function') throw new TypeError('vista: render deve essere una funzione');
+    const prior = views.findIndex((view) => view.id === id);
+    if (prior >= 0 && !replace) throw new Error(`vista già registrata: ${id}`);
+    const view = Object.freeze({ id, titolo: titolo.trim(), render, title: titolo.trim(), mount: render });
+    if (prior >= 0) views[prior] = view;
+    else views.push(view);
+    for (const listener of listeners) listener(view);
+    return view;
   }
-
   return {
     register,
-    list() { return views.map((v) => ({ ...v })); },
-    get(id) { return views.find((v) => v.id === id) || null; },
-    /** Chiama fn per le viste già presenti e per ogni registrazione successiva. */
-    subscribe(fn) {
-      for (const v of views) fn(v);
-      listeners.add(fn);
-      return () => listeners.delete(fn);
+    getAll: () => views.slice(),
+    list: () => views.slice(),
+    get: (id) => views.find((view) => view.id === id) || null,
+    subscribe(listener) {
+      if (typeof listener !== 'function') throw new TypeError('listener deve essere una funzione');
+      views.forEach(listener);
+      listeners.add(listener);
+      return () => listeners.delete(listener);
     },
   };
 }
 
-/** Istanza condivisa: i moduli si registrano qui, main.js la monta. */
-export const navigation = createViewRegistry();
+// L'istanza applicativa permette ai moduli di registrare viste in modo idempotente.
+export const navigation = createViewRegistry({ replace: true });
+export const register = (view) => navigation.register(view);
+export const getAll = () => navigation.getAll();
