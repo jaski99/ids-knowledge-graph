@@ -1,0 +1,88 @@
+{
+  "intuizione": "A volte non devi creare un solo oggetto ma un intero kit di oggetti che devono stare insieme: bottone, finestra e menu tutti in stile chiaro o tutti in stile scuro, mai mescolati. Abstract Factory fornisce un'interfaccia con un metodo di creazione per ogni pezzo del kit; ogni factory concreta produce una variante coerente. Il client riceve una factory e crea tutto attraverso di lei, senza mai nominare le classi concrete.",
+  "spiegazione": "## Il problema: famiglie di oggetti coerenti\n\nUn'app per la farmacia gira su due terminali: **cassa touch** e **web**. Ogni interfaccia ha un `Pulsante` e un `CampoTesto`, ma in due versioni: `PulsanteTouch`/`CampoTouch` e `PulsanteWeb`/`CampoWeb`. Requisito: **non mescolare** mai componenti di famiglie diverse. Se i client scrivono `new PulsanteTouch()` qua e là, basta una svista per creare un `CampoWeb` nella schermata touch, e passare a una terza piattaforma richiede di toccare ogni schermata.\n\n## La soluzione\n\n**Abstract Factory** (GoF, *creazionale*, *di oggetto*): *fornisce un'interfaccia per creare famiglie di oggetti correlati o dipendenti senza specificare le loro classi concrete.*\n\nRuoli:\n- **AbstractFactory**: interfaccia con un metodo `crea...()` per **ogni** prodotto della famiglia.\n- **ConcreteFactory**: una per variante (`FactoryTouch`, `FactoryWeb`), crea i prodotti di quella variante.\n- **AbstractProduct**: un'interfaccia per tipo di prodotto (`Pulsante`, `CampoTesto`).\n- **ConcreteProduct**: le implementazioni per variante.\n- **Client**: riceve una `AbstractFactory` (dall'esterno) e usa solo le interfacce.\n\n```mermaid\nclassDiagram\n    class UIFactory {\n        <<interface>>\n        +creaPulsante(String etichetta) Pulsante\n        +creaCampo() CampoTesto\n    }\n    class FactoryTouch\n    class FactoryWeb\n    class Pulsante {\n        <<interface>>\n        +disegna() String\n    }\n    class CampoTesto {\n        <<interface>>\n        +disegna() String\n    }\n    class PulsanteTouch\n    class PulsanteWeb\n    class CampoTouch\n    class CampoWeb\n    class SchermataVendita {\n        -UIFactory factory\n        +mostra() void\n    }\n    UIFactory <|.. FactoryTouch\n    UIFactory <|.. FactoryWeb\n    Pulsante <|.. PulsanteTouch\n    Pulsante <|.. PulsanteWeb\n    CampoTesto <|.. CampoTouch\n    CampoTesto <|.. CampoWeb\n    FactoryTouch ..> PulsanteTouch : crea\n    FactoryTouch ..> CampoTouch : crea\n    FactoryWeb ..> PulsanteWeb : crea\n    FactoryWeb ..> CampoWeb : crea\n    SchermataVendita --> UIFactory\n```\n\n## Codice Java completo\n\n```java\npublic interface Pulsante   { String disegna(); }\npublic interface CampoTesto { String disegna(); }\n\npublic class PulsanteTouch implements Pulsante {\n    private final String etichetta;\n    public PulsanteTouch(String e) { this.etichetta = e; }\n    public String disegna() { return \"[ \" + etichetta.toUpperCase() + \" ] (grande, touch)\"; }\n}\npublic class PulsanteWeb implements Pulsante {\n    private final String etichetta;\n    public PulsanteWeb(String e) { this.etichetta = e; }\n    public String disegna() { return \"<button>\" + etichetta + \"</button>\"; }\n}\npublic class CampoTouch implements CampoTesto { public String disegna() { return \"|____| (tastiera a schermo)\"; } }\npublic class CampoWeb   implements CampoTesto { public String disegna() { return \"<input type=text>\"; } }\n\npublic interface UIFactory {\n    Pulsante creaPulsante(String etichetta);\n    CampoTesto creaCampo();\n}\npublic class FactoryTouch implements UIFactory {\n    public Pulsante creaPulsante(String e) { return new PulsanteTouch(e); }\n    public CampoTesto creaCampo()          { return new CampoTouch(); }\n}\npublic class FactoryWeb implements UIFactory {\n    public Pulsante creaPulsante(String e) { return new PulsanteWeb(e); }\n    public CampoTesto creaCampo()          { return new CampoWeb(); }\n}\n\npublic class SchermataVendita {\n    private final UIFactory factory;                 // iniettata: il client non sceglie la famiglia\n    public SchermataVendita(UIFactory f) { this.factory = f; }\n    public void mostra() {\n        CampoTesto codice = factory.creaCampo();\n        Pulsante vendi = factory.creaPulsante(\"Vendi\");\n        System.out.println(codice.disegna() + \"  \" + vendi.disegna());\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        boolean touch = args.length > 0 && args[0].equals(\"touch\");\n        UIFactory f = touch ? new FactoryTouch() : new FactoryWeb();  // unico punto di scelta\n        new SchermataVendita(f).mostra();\n    }\n}\n```\n\nLa scelta della famiglia avviene **una volta sola** (configurazione); da lì in poi è impossibile mescolare le famiglie, perché tutti i pezzi vengono dalla stessa factory.\n\n## Conseguenze\n\n**Vantaggi**\n- **Coerenza garantita** tra i prodotti di una famiglia.\n- **Isolamento delle classi concrete**: il client conosce solo interfacce.\n- **Cambio di famiglia facile**: si sostituisce un oggetto factory (anche a runtime).\n- OCP rispetto alle **famiglie**: una nuova piattaforma (es. `FactoryMobile`) non tocca i client.\n\n**Limiti**\n- **Aggiungere un nuovo tipo di prodotto è costoso**: un metodo `creaMenu()` in più va aggiunto all'interfaccia e a **tutte** le factory concrete (OCP violato rispetto ai *prodotti*). È l'asimmetria tipica del pattern.\n- Molte classi e interfacce: per due prodotti e due famiglie servono già 9 tipi.\n- Overkill se le famiglie sono una sola o i prodotti non devono essere coerenti.\n\n## Abstract Factory e Factory Method\n\nLe ConcreteFactory sono spesso implementate con **factory method** (uno per prodotto). La differenza concettuale:\n- Factory Method: **un** prodotto; la variante si sceglie **ereditando** dal Creator.\n- Abstract Factory: **famiglia** di prodotti; la variante si sceglie **componendo** il client con un oggetto factory.\n\nLe factory concrete sono spesso **Singleton** (ne basta una per famiglia).\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"famiglie\"*, *\"varianti coerenti\"*, *\"temi/stili/piattaforme\"*, *\"il sistema deve essere indipendente da come i prodotti vengono creati e configurabile con una di più famiglie\"*, *\"i prodotti di una famiglia devono essere usati insieme\"*. Esempi: temi chiaro/scuro di una GUI, driver di database diversi (connessione + comando + risultato della stessa marca), kit di ricambi per modelli di auto.\n",
+  "analogia": "È come arredare una stanza scegliendo una linea di un catalogo IKEA: se scegli la linea 'Nordica' ti arrivano letto, comodino e armadio tutti Nordica, coordinati; non ti capita un comodino 'Industrial' per sbaglio. Cambiare stile significa cambiare linea, non ogni singolo pezzo. Dove l'analogia cede: nel software, se il catalogo aggiunge un nuovo tipo di mobile (la scrivania), ogni linea esistente deve produrne una versione, ed è il costo principale del pattern.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Interfacce Java e dependency injection via costruttore",
+      "collegamento": "SchermataVendita riceve la UIFactory nel costruttore: è dependency injection, la stessa che rende sostituibili le dipendenze nei test con JUnit."
+    },
+    {
+      "conoscenza": "Factory Method",
+      "collegamento": "Ogni metodo creaX() di una ConcreteFactory è un factory method; Abstract Factory li raggruppa per famiglia e sposta la scelta dall'ereditarietà alla composizione.",
+      "nodo": "design-pattern-factory-method"
+    },
+    {
+      "conoscenza": "Driver JDBC (Basi di dati)",
+      "collegamento": "Con JDBC il codice usa Connection, Statement, ResultSet (interfacce) e il driver del DBMS fornisce l'intera famiglia di implementazioni coerenti: è lo spirito di Abstract Factory."
+    },
+    {
+      "conoscenza": "Principio Open/Closed",
+      "collegamento": "Il pattern è aperto a nuove famiglie ma non a nuovi tipi di prodotto: un buon esempio del fatto che OCP si rispetta sempre rispetto a una direzione di cambiamento prevista.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Concetto di design pattern",
+      "collegamento": "Creazionale, di oggetto: la factory è un oggetto composto nel client.",
+      "nodo": "design-pattern-introduzione"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Kit di report per due catene di farmacie",
+      "problema": "Due catene (FarmaNord e FarmaSud) usano lo stesso software ma ognuna vuole il proprio formato di Scontrino e di EtichettaPrezzo, coerenti tra loro (logo, colori, valuta). Progetta con Abstract Factory e indica cosa succede aggiungendo una terza catena e poi un nuovo documento 'Ricevuta'.",
+      "passi": [
+        "Prodotti astratti: interface Scontrino { String stampa(Vendita v); } e interface EtichettaPrezzo { String stampa(Prodotto p); }.",
+        "Factory astratta: interface KitStampa { Scontrino creaScontrino(); EtichettaPrezzo creaEtichetta(); }.",
+        "Factory concrete: KitFarmaNord (crea ScontrinoNord, EtichettaNord) e KitFarmaSud (crea ScontrinoSud, EtichettaSud).",
+        "Client: Cassa riceve un KitStampa nel costruttore e chiama kit.creaScontrino().stampa(v).",
+        "Terza catena: aggiungo KitFarmaCentro + i suoi due prodotti, nessuna modifica a Cassa né ai kit esistenti (OCP sulle famiglie).",
+        "Nuovo documento Ricevuta: aggiungo creaRicevuta() a KitStampa e lo implemento in TUTTI i kit (OCP violato sui prodotti)."
+      ],
+      "soluzione": "AbstractFactory = KitStampa; ConcreteFactory = KitFarmaNord, KitFarmaSud; AbstractProduct = Scontrino, EtichettaPrezzo; Client = Cassa. Nuova famiglia: facile; nuovo prodotto: modifica di tutte le factory.",
+      "perche_funziona": "Il pattern garantisce la coerenza perché tutti i documenti di una cassa provengono dallo stesso oggetto kit; l'esempio rende esplicita l'asimmetria famiglie/prodotti, che è il limite da citare."
+    },
+    {
+      "titolo": "Scegliere tra Factory Method e Abstract Factory",
+      "problema": "Scenario A: un'app crea un solo tipo di Notifica, ma la sottoclasse ServizioClientiPremium deve creare NotificaPrioritaria. Scenario B: un videogioco ha ambientazioni Medievale e Futuristica; ogni ambientazione ha Arma, Armatura e Veicolo che devono essere coerenti.",
+      "passi": [
+        "A: un solo prodotto, la variante è legata a una sottoclasse del servizio → Factory Method (creaNotifica() ridefinito).",
+        "B: tre prodotti che devono stare insieme, varianti per ambientazione → Abstract Factory (interface FabbricaAmbientazione { Arma creaArma(); Armatura creaArmatura(); Veicolo creaVeicolo(); }).",
+        "Controllo: in B con Factory Method servirebbero tre gerarchie di creator senza garanzia di coerenza.",
+        "Annoto il limite di B: un nuovo tipo di oggetto (Scudo) richiede di modificare tutte le fabbriche."
+      ],
+      "soluzione": "A → Factory Method; B → Abstract Factory con MedievaleFactory e FuturisticaFactory.",
+      "perche_funziona": "La parola chiave è 'famiglia di prodotti correlati': se c'è, Abstract Factory; se il prodotto è uno solo e varia per sottoclasse, Factory Method."
+    }
+  ],
+  "errori_comuni": [
+    "Definire Abstract Factory come 'una factory astratta con un metodo': il punto è la famiglia di prodotti correlati, un metodo per prodotto.",
+    "Far scegliere la famiglia ai client con if sparsi: la scelta va fatta una volta sola, configurando l'oggetto factory.",
+    "Dire che il pattern rispetta sempre OCP: aggiungere un tipo di prodotto obbliga a modificare interfaccia e tutte le factory.",
+    "Confonderlo con Factory Method: qui la variante si ottiene componendo un oggetto factory, non ereditando dal Creator.",
+    "Disegnare il client dipendente dalle ConcreteFactory o dai ConcreteProduct nel class diagram."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Abstract Factory?",
+      "risposta": "Fornire un'interfaccia per creare famiglie di oggetti correlati o dipendenti senza specificare le classi concrete, garantendo che i prodotti usati insieme siano coerenti."
+    },
+    {
+      "domanda": "Che cosa è facile e che cosa è difficile da estendere?",
+      "risposta": "Facile aggiungere una nuova famiglia (nuova ConcreteFactory + prodotti). Difficile aggiungere un nuovo tipo di prodotto: va aggiunto un metodo all'interfaccia e implementato in tutte le factory."
+    },
+    {
+      "domanda": "Come si collega a Factory Method e a Singleton?",
+      "risposta": "I metodi creaX() delle factory concrete sono spesso factory method; le factory concrete sono spesso Singleton perché ne basta una istanza per famiglia."
+    },
+    {
+      "domanda": "Quanti tipi servono per 2 prodotti e 2 famiglie, contando il client?",
+      "risposta": "1 interfaccia factory + 2 factory concrete + 2 interfacce prodotto + 4 prodotti concreti = 9, più il client: un costo di complessità da giustificare."
+    },
+    {
+      "domanda": "Dai un esempio reale di Abstract Factory.",
+      "risposta": "Temi di una GUI (chiaro/scuro con bottoni, campi, menu coerenti); driver JDBC che forniscono Connection, Statement e ResultSet della stessa implementazione."
+    }
+  ],
+  "riepilogo": "Abstract Factory (creazionale, di oggetto): interfaccia con un metodo creaX() per ogni prodotto di una famiglia.\nUna ConcreteFactory per variante → prodotti sempre coerenti, client legato solo alle interfacce.\nNuova famiglia facile; nuovo tipo di prodotto = modifica di tutte le factory.\nScelta della famiglia una sola volta (iniezione della factory).\nUn prodotto per sottoclasse → Factory Method; famiglia → Abstract Factory."
+}

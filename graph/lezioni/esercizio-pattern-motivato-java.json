@@ -1,0 +1,91 @@
+{
+  "intuizione": "L'esercizio 1.4 vale 4-5 punti e chiede quattro cose insieme: scegliere il pattern giusto per un paragrafo del caso, motivarlo (con i limiti), disegnare il class diagram con i ruoli applicati alle classi del caso e scrivere le classi Java minime che fanno capire la scelta. Si risolve bene con uno schema fisso: chi conosce lo schema non perde tempo e non dimentica pezzi.",
+  "spiegazione": "## Che cosa chiede il testo\n\nLe formulazioni reali:\n\n- **2016/17**: *\"Progettare attraverso un design pattern una soluzione per il paragrafo 2 dell'esercizio, spiegando le motivazioni (e eventualmente i limiti) della scelta. Rappresentare il class diagram e implementare le classi (minime) necessarie per la comprensione della scelta progettuale.\"* (5 punti)\n- **5/11/2025**: *\"I clienti con la tessera di fidelizzazione sono iscritti a una mailing list. Il cliente stabilisce le tipologie di prodotti a cui è interessato e qualora uno di questi prodotti sia in promozione, viene informato tramite una comunicazione. Giustificare la scelta, rappresentare il class diagram e implementare una versione preliminare e incompleta delle classi (minime) necessarie per la comprensione della nuova scelta progettuale.\"* (4 punti)\n\nQuindi quattro componenti: **scelta**, **giustificazione (+ limiti)**, **class diagram**, **codice minimo**. Tempo realistico: 15-20 minuti dentro l'ora della Parte 1.\n\n## Lo schema di risposta in 5 blocchi\n\n### Blocco 1 — Pattern e categoria (1 riga)\n\"Si sceglie il pattern **Observer** (comportamentale).\"\n\n### Blocco 2 — Motivazione (4-6 righe)\n- frase del testo che rivela il problema;\n- problema di progettazione;\n- alternativa ingenua e perché è peggiore (accoppiamento, OCP, esplosione di classi, duplicazione);\n- vantaggi del pattern *nel caso specifico*.\n\n### Blocco 3 — Limiti (1-2 righe)\nUn limite concreto e pertinente. La soluzione ufficiale 2016/17 lo fa per Composite: *\"un limite nell'uso del composite è la criticità nella fase di instanziazione della struttura, nella quale è possibile commettere errori e modellare degli scenari non coerenti con la realtà (ad esempio scaffali che contengono settori)\"*.\n\n### Blocco 4 — Class diagram\nCon i **nomi del caso** (non \"Subject\", \"ConcreteObserver\") e, se vuoi, lo stereotipo o una nota col ruolo. Attributi e metodi essenziali, relazioni con frecce corrette e molteplicità.\n\n### Blocco 5 — Codice Java minimo\n- interfaccia/classe astratta del ruolo centrale;\n- **una** o due classi concrete (non tutte: \"minime\");\n- il metodo chiave che mostra il meccanismo (la delega ricorsiva, il ciclo di notifica, la chiamata al wrapped, il template method final);\n- un breve `main` d'uso, se il tempo lo consente (la soluzione 2016/17 include una classe `Manager` con l'instanziazione).\n\nGetter/setter banali si possono omettere dichiarandolo (\"getter omessi\"); la soluzione ufficiale annota semplificazioni simili (\"per semplicità si sono indicati gli attributi come pubblici\").\n\n## Esempio completo: Observer per la farmacia (2025)\n\n**Pattern**: Observer (comportamentale).\n\n**Motivazione**: il testo descrive clienti che *si iscrivono* a una mailing list indicando le tipologie di interesse e che devono essere *informati* quando un prodotto di quelle tipologie va in promozione. È una dipendenza uno-a-molti tra la pubblicazione di una promozione e un insieme variabile di clienti. Far chiamare direttamente a `Promozioni` un metodo su ciascun cliente concreto la legherebbe a tutte le classi dei destinatari e andrebbe modificata per ogni nuovo canale (SMS, app). Con Observer la mailing list conosce solo un'interfaccia, iscrizioni e cancellazioni avvengono a runtime, nuovi tipi di destinatari si aggiungono senza modificarla (OCP).\n\n**Limiti**: ordine di notifica non garantito; se molti iscritti, la notifica sincrona può essere lenta; i clienti non disiscritti restano referenziati.\n\n```mermaid\nclassDiagram\n    class Iscritto {\n        <<interface>>\n        +notifica(Promozione p) void\n    }\n    class MailingList {\n        -List~Iscritto~ iscritti\n        +iscrivi(Iscritto i) void\n        +disiscrivi(Iscritto i) void\n        +pubblica(Promozione p) void\n    }\n    class ClienteFidelizzato {\n        -String email\n        -Set~String~ tipologieInteresse\n        +notifica(Promozione p) void\n    }\n    class Promozione {\n        -String prodotto\n        -String tipologia\n        -int sconto\n    }\n    Iscritto <|.. ClienteFidelizzato\n    MailingList \"1\" o-- \"0..*\" Iscritto : iscritti\n    MailingList ..> Promozione\n```\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Set;\n\npublic interface Iscritto { void notifica(Promozione p); }\n\npublic record Promozione(String prodotto, String tipologia, int sconto) {}\n\npublic class MailingList {\n    private final List<Iscritto> iscritti = new ArrayList<>();\n    public void iscrivi(Iscritto i)    { iscritti.add(i); }\n    public void disiscrivi(Iscritto i) { iscritti.remove(i); }\n    public void pubblica(Promozione p) {\n        for (Iscritto i : List.copyOf(iscritti)) i.notifica(p);\n    }\n}\n\npublic class ClienteFidelizzato implements Iscritto {\n    private final String email;\n    private final Set<String> tipologieInteresse;\n    public ClienteFidelizzato(String email, Set<String> tipologie) {\n        this.email = email; this.tipologieInteresse = tipologie;\n    }\n    @Override public void notifica(Promozione p) {\n        if (tipologieInteresse.contains(p.tipologia()))          // filtro sulle preferenze\n            System.out.println(\"Mail a \" + email + \": \" + p.prodotto() + \" -\" + p.sconto() + \"%\");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        MailingList ml = new MailingList();\n        ml.iscrivi(new ClienteFidelizzato(\"anna@example.com\", Set.of(\"cosmetico\")));\n        ml.iscrivi(new ClienteFidelizzato(\"bruno@example.com\", Set.of(\"medicinale\")));\n        ml.pubblica(new Promozione(\"Crema solare\", \"cosmetico\", 20)); // avvisata solo Anna\n    }\n}\n```\n\nNota di progetto: il filtro per tipologia può stare nell'observer (come sopra, semplice) oppure nel subject con una mappa tipologia → iscritti (più efficiente con molti iscritti). Dirlo in una riga mostra consapevolezza.\n\n## Coerenza con il resto della Parte 1\n\nLe prove insistono sulla *coerenza con le classi progettate al punto 1.1*. Nel 1.4 riusa i nomi del tuo class diagram (Cliente, Prodotto, Tessera…) e indica come il pattern si innesta: ad esempio `ClienteFidelizzato` è il `Cliente` con tessera dell'1.1 che ora implementa `Iscritto`.\n\n## Checklist finale (30 secondi)\n\n- [ ] pattern nominato con categoria\n- [ ] frase del testo citata + alternativa scartata\n- [ ] almeno un limite\n- [ ] diagramma con nomi del caso, realizzazioni/generalizzazioni, associazione con molteplicità\n- [ ] interfaccia + almeno una classe concreta + metodo chiave che mostra il meccanismo\n- [ ] nomi coerenti con l'1.1\n",
+  "analogia": "È come presentare un progetto a un cliente: prima dici che soluzione proponi, poi perché è la migliore rispetto all'alternativa ovvia, poi ammetti onestamente il suo punto debole, infine mostri la pianta (class diagram) e un plastico in scala (codice minimo). Un plastico non deve avere tutte le stanze arredate, ma deve far capire come funziona la casa. Dove l'analogia cede: all'esame il 'cliente' conosce già tutte le soluzioni possibili e valuta soprattutto la coerenza tra motivazione, diagramma e codice.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Riconoscere il pattern dallo scenario",
+      "collegamento": "Il primo blocco (scelta) è l'applicazione diretta di quella abilità; qui si aggiunge la produzione di diagramma e codice.",
+      "nodo": "riconoscere-pattern-scenario"
+    },
+    {
+      "conoscenza": "Associazioni e molteplicità UML",
+      "collegamento": "Nel diagramma del pattern conta disegnare bene l'associazione centrale (1 → 0..* per Observer e Composite, 1 → 1 per Decorator e Strategy).",
+      "nodo": "uml-associazioni-molteplicita"
+    },
+    {
+      "conoscenza": "Principi SOLID",
+      "collegamento": "La motivazione si scrive bene in termini di OCP, DIP e SRP: dà un lessico preciso alla giustificazione.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Interfacce, classi astratte, List e Set in Java",
+      "collegamento": "Il codice minimo usa quasi sempre un'interfaccia o una classe astratta, una collezione (List/ArrayList) e un ciclo for-each: basi di Programmazione a oggetti."
+    },
+    {
+      "conoscenza": "Composite",
+      "collegamento": "La soluzione ufficiale 2016/17 (biblioteca) è il modello di riferimento per forma e livello di dettaglio.",
+      "nodo": "design-pattern-composite"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Prova 9/6/2022 (da sintesi), 1.4 completo: Decorator per le piazzole",
+      "problema": "Rappresentare caratteristiche e costo delle piazzole in base agli accessori opzionali (corrente, illuminazione, musica): scelta, motivazione, limiti, class diagram, classi minime. Prezzi di esempio.",
+      "passi": [
+        "Blocco 1: Decorator (strutturale).",
+        "Blocco 2: 'accessori opzionali' combinabili che modificano costo e caratteristiche. Con sottoclassi servirebbero 2 tipi × 2³ combinazioni = 16 classi; con flag booleani la classe Piazzola cambierebbe a ogni nuovo accessorio (OCP violato). Decorator: un accessorio = una classe, combinazioni costruite a runtime.",
+        "Blocco 3: limiti: molti piccoli oggetti, l'identità della piazzola cambia (instanceof sulla base non funziona sull'oggetto decorato), ordine rilevante se si introducono sconti percentuali.",
+        "Blocco 4: interface Piazzola {getCosto(); getDescrizione()}; PiazzolaNormale e PiazzolaPremium la realizzano; abstract AccessorioDecorator la realizza e la aggrega con molteplicità 1; Corrente, Illuminazione, Musica estendono AccessorioDecorator.",
+        "Blocco 5: codice di Piazzola, PiazzolaNormale, AccessorioDecorator (campo protected Piazzola piazzola, delega), Corrente (getCosto() { return piazzola.getCosto() + 10; }), e main: Piazzola p = new Musica(new Corrente(new PiazzolaNormale()));."
+      ],
+      "soluzione": "Decorator con Piazzola (Component), PiazzolaNormale/Premium (ConcreteComponent), AccessorioDecorator (Decorator), Corrente/Illuminazione/Musica (ConcreteDecorator); motivazione quantitativa (16 classi evitate) e limiti; codice minimo con un decoratore concreto e il main d'uso.",
+      "perche_funziona": "Tutti e cinque i blocchi sono presenti e collegati: la motivazione usa il testo, il diagramma usa i nomi del caso, il codice mostra il meccanismo chiave (delega + aggiunta) senza classi superflue."
+    },
+    {
+      "titolo": "Correggere una risposta debole",
+      "problema": "Risposta di uno studente al 1.4 della farmacia: 'Uso il pattern Observer perché ci sono delle notifiche. [diagramma con Subject, Observer, ConcreteSubject, ConcreteObserver] [codice di Observer e Subject generici]'. Quanti punti rischia di perdere e come la migliori?",
+      "passi": [
+        "Scelta: corretta.",
+        "Motivazione: insufficiente, 'ci sono notifiche' non spiega il problema (uno-a-molti, iscritti variabili, disaccoppiamento) né l'alternativa scartata.",
+        "Limiti: assenti.",
+        "Diagramma: generico, non applicato al caso (manca il legame con Cliente/tessera/tipologie di interesse del testo e con le classi dell'1.1).",
+        "Codice: generico, non mostra la preferenza per tipologia né l'uso.",
+        "Miglioramento: riscrivo secondo i 5 blocchi come nell'esempio della lezione (MailingList, Iscritto, ClienteFidelizzato con tipologieInteresse, Promozione, limite su ordine e memory leak)."
+      ],
+      "soluzione": "La scelta è giusta ma motivazione, limiti e applicazione al caso mancano: probabile perdita di gran parte del punteggio. La versione migliorata cita il testo, scarta la chiamata diretta, mappa i ruoli sulle classi del caso, aggiunge un limite e codice con il filtro per tipologia.",
+      "perche_funziona": "Il punteggio di questo esercizio dipende da tutti e quattro i componenti richiesti dal testo; rileggere la risposta con la checklist trova esattamente le parti mancanti."
+    }
+  ],
+  "errori_comuni": [
+    "Disegnare il pattern con i nomi del catalogo (Subject, ConcreteObserver) invece che con le classi del caso di studio.",
+    "Scrivere tutte le classi concrete o getter/setter a non finire: il testo chiede classi minime per far capire la scelta.",
+    "Dimenticare i limiti, esplicitamente richiesti ('spiegando le motivazioni e eventualmente i limiti').",
+    "Codice che non mostra il meccanismo chiave (manca la delega ricorsiva, il ciclo di notifica, la chiamata all'oggetto avvolto).",
+    "Nomi incoerenti con il class diagram dell'esercizio 1.1.",
+    "Usare tipi grezzi (ArrayList senza generics) e cast inutili: compila con warning ma è meno chiaro."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali quattro componenti chiede l'esercizio 1.4?",
+      "risposta": "Scelta del pattern, giustificazione (con eventuali limiti), class diagram, implementazione delle classi minime necessarie a capire la scelta."
+    },
+    {
+      "domanda": "Che cosa deve contenere una buona motivazione?",
+      "risposta": "La frase del testo che rivela il problema, il problema di progettazione, l'alternativa ingenua e perché è peggiore, i vantaggi nel caso specifico."
+    },
+    {
+      "domanda": "Che cosa significa 'classi minime'?",
+      "risposta": "Le interfacce/classi astratte del pattern, almeno una classe concreta per ruolo e il metodo che mostra il meccanismo, più eventualmente un main d'uso; niente classi o metodi non necessari alla comprensione."
+    },
+    {
+      "domanda": "Quale limite indica la soluzione ufficiale 2016/17 per il Composite?",
+      "risposta": "La criticità della fase di instanziazione: si possono creare strutture incoerenti, ad esempio scaffali che contengono settori."
+    },
+    {
+      "domanda": "Come si garantisce la coerenza con l'esercizio 1.1?",
+      "risposta": "Riusando i nomi delle classi del class diagram principale e mostrando quale classe esistente assume quale ruolo del pattern."
+    }
+  ],
+  "riepilogo": "1.4 = scelta + motivazione con limiti + class diagram + Java minimo (4-5 punti, 15-20 min).\nMotivazione: frase del testo, problema, alternativa scartata, vantaggi nel caso.\nDiagramma con i nomi del caso e molteplicità; coerenza con l'1.1.\nCodice: interfaccia, una classe concreta, metodo chiave, main d'uso.\nChecklist finale prima di consegnare."
+}

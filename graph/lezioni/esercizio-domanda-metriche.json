@@ -1,0 +1,80 @@
+{
+  "intuizione": "La domanda sulle metriche è una delle domande teoriche aperte della Parte 3 (nel fac-simile 2016/17: 'software metrics e una metrica a scelta'). Si vince con una scaletta fissa: che cos'è una metrica e a cosa serve, come si classificano, una metrica descritta per bene con formula, mini-esempio numerico e interpretazione, e infine i limiti. La metrica più comoda da scegliere è la complessità ciclomatica, perché l'esempio si fa in tre righe di codice.",
+  "spiegazione": "## Il formato\n\n- **Parte 3** dello scritto: domande teoriche aperte, circa 10 punti in tutto e circa 40 minuti (fac-simile 2016/17); ogni domanda vale qualche punto, quindi ha **10-15 minuti** e **10-20 righe**.\n- Testo tipico: \"Si descrivano le metriche software e se ne illustri una a scelta\". Varianti plausibili: metriche OO, metriche di dimensione, uso delle metriche nel testing.\n- Chi corregge cerca: definizione corretta, classificazione, una metrica **spiegata davvero** (formula + esempio + interpretazione), consapevolezza dei limiti.\n\n## La scaletta in 5 blocchi\n\n| blocco | contenuto | righe |\n|---|---|---|\n| 1. Definizione e scopo | misura quantitativa di un attributo di prodotto/processo; stima, qualità, controllo, confronto | 2-3 |\n| 2. Classificazione | prodotto / processo / risorse; interne / esterne; dimensione, complessità, OO | 3-4 |\n| 3. Metrica scelta | definizione, formula, **mini-esempio numerico**, soglia | 5-8 |\n| 4. Interpretazione e uso | che cosa si fa con il valore (test, refactoring, stima) | 2 |\n| 5. Limiti | una metrica non è la qualità; Goodhart; soglie di contesto | 2 |\n\n## Quale metrica scegliere\n\n```mermaid\nflowchart TD\n    A[Metrica a scelta] --> B{Sai disegnare un CFG in 2 minuti?}\n    B -- si --> C[McCabe: esempio con un if dentro un while]\n    B -- no --> D{Ricordi la tabella dei pesi?}\n    D -- si --> E[Function Point: esempio con 5 funzioni]\n    D -- no --> F[LCOM o CBO: esempio con una classe di 4 metodi]\n```\n\n- **McCabe**: formula semplice, esempio rapido, collegamento al testing (punti extra per la connessione con basis path e decision coverage).\n- **Function point**: ottimi per parlare di stima, ma richiedono la tabella dei pesi.\n- **CK (LCOM, CBO)**: ideali se la domanda dice \"object-oriented\".\n\n## Mini-esempio pronto (McCabe)\n\n```java\nint conta(int[] v) {\n    int c = 0;\n    for (int x : v)          // predicato 1\n        if (x > 0) c++;      // predicato 2\n    return c;\n}\n```\nPredicati 2 → V(G) = 3; CFG: N = 5 (init, for, if, c++, return), E = 6 (init→for, for→if, for→return, if→c++, if→for, c++→for) → 6 − 5 + 2 = 3. Tre cammini indipendenti: array vuoto; un elemento positivo; un elemento non positivo.\n\n## Come si scrive (stile)\n\n- Frasi brevi, termini tecnici esatti, formule scritte esplicitamente.\n- Un esempio **numerico** vale più di tre aggettivi.\n- Non elencare dieci metriche in una riga ciascuna: meglio due righe di panoramica e una metrica approfondita.\n",
+  "analogia": "È come l'interrogazione su un organo del corpo umano: il professore non vuole l'elenco di tutti gli organi, ma due righe su come è organizzato il corpo e poi un organo spiegato bene, con come funziona, un esempio concreto e cosa succede quando si ammala. Dove l'analogia cede: qui l'esempio deve essere numerico e verificabile, e chi corregge può ricalcolarlo.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Metriche software",
+      "collegamento": "È il contenuto della risposta: classificazioni, formule e limiti.",
+      "nodo": "metriche-software"
+    },
+    {
+      "conoscenza": "Calcolare la complessità ciclomatica",
+      "collegamento": "È la metrica a scelta più rapida da esemplificare con un CFG.",
+      "nodo": "metrica-complessita-ciclomatica"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Se si sceglie una metrica CK, la si interpreta in termini di coesione (LCOM) e accoppiamento (CBO).",
+      "nodo": "coesione-accoppiamento"
+    },
+    {
+      "conoscenza": "Scrivere risposte d'esame strutturate (temi, relazioni)",
+      "collegamento": "Come in un tema: scaletta prima, poi sviluppo con un paragrafo per idea e una conclusione critica."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Risposta modello: metriche software e complessità ciclomatica",
+      "problema": "Domanda (fac-simile 2016/17): 'Si descrivano le software metrics e una metrica a scelta.' Scrivi la risposta in circa 15 righe.",
+      "passi": [
+        "Blocco 1: 'Una metrica software è una misura quantitativa, ottenuta con una regola definita, di un attributo del prodotto, del processo o delle risorse. Serve a stimare costi e tempi, valutare la qualità, individuare moduli a rischio e controllare il processo.'",
+        "Blocco 2: 'Si distinguono metriche di prodotto (LOC, function point, complessità), di processo (difetti per fase) e di risorse (effort); metriche interne, misurabili sul codice, ed esterne, legate all'uso (affidabilità); tra le metriche di prodotto: dimensione (LOC, FP), complessità (McCabe, Halstead), OO (Chidamber-Kemerer: WMC, DIT, NOC, CBO, RFC, LCOM).'",
+        "Blocco 3: 'Complessità ciclomatica (McCabe, 1976): numero di cammini linearmente indipendenti nel grafo di flusso. V(G) = E − N + 2 = predicati + 1. Esempio: un for con un if all'interno ha 2 predicati, quindi V(G) = 3; con N = 5 e E = 6 si ottiene 6 − 5 + 2 = 3.'",
+        "Blocco 4: 'V(G) è il numero di test della basis path coverage e un limite superiore per la decision coverage; valori oltre 10 suggeriscono di spezzare il metodo.'",
+        "Blocco 5: 'Limiti: non considera la complessità dei dati né la leggibilità (uno switch lungo e semplice ha V alta); come ogni metrica va interpretata nel contesto e non va usata come obiettivo.'"
+      ],
+      "soluzione": "La risposta copre definizione, classificazione, una metrica con formula ed esempio verificabile, interpretazione e limiti in circa 15 righe.",
+      "perche_funziona": "Segue la scaletta che chi corregge usa come griglia: ogni blocco corrisponde a un elemento che fa punti, e l'esempio numerico dimostra di saper applicare la metrica, non solo di ricordarla."
+    },
+    {
+      "titolo": "Variante: metriche object-oriented con esempio LCOM",
+      "problema": "Domanda: 'Si illustrino le metriche per il software orientato agli oggetti, approfondendone una.' Prepara la parte centrale.",
+      "passi": [
+        "Panoramica: suite di Chidamber e Kemerer (1994): WMC (somma delle complessità dei metodi), DIT (profondità nell'albero di ereditarietà), NOC (numero di figli), CBO (classi accoppiate), RFC (metodi propri + invocati), LCOM (mancanza di coesione).",
+        "Scelgo LCOM: P = coppie di metodi senza attributi in comune, Q = coppie con almeno un attributo in comune; LCOM = P − Q se positivo, altrimenti 0.",
+        "Esempio: classe Prenotazione con 4 metodi; m1 e m2 usano data, m3 e m4 usano importo; coppie 6, Q = 2 (m1-m2, m3-m4), P = 4 → LCOM = 2.",
+        "Interpretazione: due gruppi di metodi indipendenti → bassa coesione, probabile violazione di SRP; refactoring Extract Class (es. Pagamento separato).",
+        "Limiti: LCOM = 0 non garantisce una buona coesione; varianti (LCOM2..LCOM4) danno valori diversi."
+      ],
+      "soluzione": "Panoramica CK in 2 righe, LCOM con formula, esempio (LCOM = 2), interpretazione legata a SRP/Extract Class, limiti.",
+      "perche_funziona": "La domanda OO premia il collegamento tra la metrica e i concetti di progettazione (coesione, SRP) e un'azione conseguente: è ciò che distingue una risposta da un elenco di sigle."
+    }
+  ],
+  "errori_comuni": [
+    "Elencare tante metriche senza approfondirne nessuna.",
+    "Dare la formula senza un esempio numerico o con un esempio sbagliato (V(G) che non coincide tra le due formule).",
+    "Dimenticare i limiti: la domanda chiede implicitamente un giudizio critico.",
+    "Confondere metriche di prodotto e di processo (es. chiamare 'di prodotto' il numero di difetti trovati per fase).",
+    "Andare oltre il tempo: 10-15 minuti, poi passare alla domanda successiva."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono i 5 blocchi della risposta?",
+      "risposta": "Definizione e scopo; classificazione; metrica scelta con formula ed esempio; interpretazione e uso; limiti."
+    },
+    {
+      "domanda": "Perché McCabe è una scelta conveniente?",
+      "risposta": "Ha una formula semplice, l'esempio numerico si fa in poche righe di codice e si collega al testing (basis path, decision coverage), che dà punti extra."
+    },
+    {
+      "domanda": "Scrivi in una riga la formula dei function point.",
+      "risposta": "FP = UFP · (0.65 + 0.01 · ΣFi), dove UFP è la somma pesata di EI, EO, EQ, ILF, EIF e Fi sono le 14 caratteristiche generali valutate 0-5."
+    },
+    {
+      "domanda": "Cita un limite valido per qualunque metrica.",
+      "risposta": "Una metrica isolata non misura la qualità e, se diventa un obiettivo, viene manipolata (legge di Goodhart)."
+    }
+  ],
+  "riepilogo": "Scaletta: definizione/scopo → classificazione → metrica scelta → interpretazione → limiti.\nLa metrica scelta va con formula, mini-esempio numerico verificabile e soglia.\nMcCabe (for + if → V = 3) è la scelta più rapida; CK/LCOM se la domanda è OO.\n10-15 righe, 10-15 minuti."
+}

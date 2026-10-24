@@ -1,0 +1,87 @@
+{
+  "intuizione": "Il codice si scrive una volta e si legge decine di volte, da altri o da te stesso fra sei mesi. Le buone pratiche (nomi che dicono cosa fa una cosa, metodi brevi con un solo compito, niente copia-incolla, soluzioni semplici, commenti che spiegano il perché, errori gestiti in modo esplicito) servono a rendere la lettura e la modifica economiche. Sono la base su cui si definiscono i code smell e si fa il refactoring.",
+  "spiegazione": "## Perché contano\n\nLa manutenzione è la parte più costosa del ciclo di vita, e gran parte del tempo di manutenzione si passa a **leggere e capire** codice esistente. Il codice \"che funziona\" ma è illeggibile ha un costo nascosto che si paga a ogni modifica (il **debito tecnico**, metafora di Ward Cunningham).\n\n## Le pratiche principali\n\n### 1. Nomi significativi\nIl nome deve rivelare l'intenzione; niente abbreviazioni criptiche né numeri magici.\n```java\n// Prima\ndouble c(double p, int t) { if (t == 1) return p * 0.9; return p; }\n\n// Dopo\nstatic final int TIPO_TESSERATO = 1;\nstatic final double SCONTO_TESSERA = 0.10;\ndouble prezzoFinale(double prezzoListino, int tipoCliente) {\n    if (tipoCliente == TIPO_TESSERATO) return prezzoListino * (1 - SCONTO_TESSERA);\n    return prezzoListino;\n}\n```\nConvenzioni Java: classi `PascalCase` (sostantivi), metodi e variabili `camelCase` (verbi per i metodi), costanti `MAIUSCOLO_CON_UNDERSCORE`.\n\n### 2. Metodi brevi, una sola cosa, un solo livello di astrazione\nUn metodo che \"calcola, stampa e salva\" va spezzato. Se per descriverlo serve la parola \"e\", probabilmente fa troppe cose (SRP applicato ai metodi). Pochi parametri: oltre 3-4 si raggruppano in un oggetto.\n\n### 3. DRY — Don't Repeat Yourself\nOgni conoscenza deve avere **una sola rappresentazione**. Codice duplicato significa correggere un bug in un punto e lasciarlo negli altri.\n\n### 4. KISS e YAGNI\n- **KISS** (Keep It Simple, Stupid): la soluzione più semplice che risolve il problema.\n- **YAGNI** (You Aren't Gonna Need It, da Extreme Programming): non implementare funzionalità o generalizzazioni \"per il futuro\".\n\n### 5. Commenti che spiegano il perché\nIl codice dice **cosa** e **come**; il commento dice **perché** (una decisione, un vincolo, un riferimento). Un commento che ripete il codice invecchia male; un commento che compensa un nome cattivo va sostituito con un nome migliore. Per le API pubbliche si usa **Javadoc**.\n\n### 6. Gestione esplicita degli errori\n```java\n// Prima: errore silenzioso\ntry { salva(ordine); } catch (Exception e) { }\n\n// Dopo: eccezione specifica, messaggio utile, nessun valore magico\npublic Prodotto trova(String codice) {\n    Prodotto p = catalogo.get(codice);\n    if (p == null) throw new IllegalArgumentException(\"Prodotto inesistente: \" + codice);\n    return p;\n}\n```\nValidare gli input ai confini (fail fast), non restituire `null` o `-1` come codici d'errore quando un'eccezione o un `Optional` sono più chiari, non catturare `Exception` generica per ignorarla.\n\n### 7. Incapsulamento e visibilità minima\nAttributi `private`, metodi pubblici solo se servono ai client; preferire oggetti immutabili quando possibile (`final`).\n\n### 8. Stile condiviso e strumenti\nFormattazione uniforme (stesse regole per tutto il team), analisi statica (linter), **code review**, test automatici: le pratiche individuali diventano processo.\n\n### 9. Principi di progettazione\nA livello di classi: **SOLID**, alta coesione, basso accoppiamento, \"programma verso un'interfaccia, non un'implementazione\", composizione preferita all'ereditarietà (GoF).\n\n```mermaid\nflowchart LR\n    BP[Buone pratiche] -->|violazione| CS[Code smell]\n    CS -->|si elimina con| RF[Refactoring]\n    RF -->|protetto da| T[Test di regressione]\n    T --> BP\n```\n\n## Il legame con il resto del corso\n\n- Una violazione di una buona pratica è un **code smell** (duplicazione → Duplicated Code; metodo lungo → Long Method).\n- Lo smell si elimina con un **refactoring** (Extract Method, Rename...).\n- I **test** automatici rendono sicuro il refactoring.\n- Le **metriche** (V(G), LCOM, CBO) segnalano dove le pratiche sono state violate.\n",
+  "analogia": "Scrivere codice è come scrivere la ricetta di un piatto per un ristorante dove ogni giorno cucina una persona diversa: nomi chiari degli ingredienti, passaggi brevi e in ordine, nessuna istruzione ripetuta in due pagine diverse, note che spiegano perché si aggiunge il sale proprio in quel momento. Una ricetta scritta solo per sé funziona finché la usa l'autore. L'analogia cede sul fatto che il software cambia di continuo: la ricetta del codice viene riscritta mentre la si usa.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Principi SOLID",
+      "collegamento": "SOLID è la versione delle buone pratiche al livello della struttura delle classi.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Metodi brevi con un solo compito e incapsulamento sono il modo concreto di alzare la coesione e abbassare l'accoppiamento.",
+      "nodo": "coesione-accoppiamento"
+    },
+    {
+      "conoscenza": "Eccezioni in Java (checked/unchecked, try-catch)",
+      "collegamento": "La gestione esplicita degli errori usa eccezioni specifiche invece di codici di ritorno o catch vuoti."
+    },
+    {
+      "conoscenza": "Scrittura chiara (tesi, relazioni)",
+      "collegamento": "Le stesse regole della buona prosa: una idea per paragrafo, parole precise, niente ripetizioni."
+    },
+    {
+      "conoscenza": "Manutenzione del software",
+      "collegamento": "Le buone pratiche abbassano il costo della manutenzione, che è la fase più costosa.",
+      "nodo": "tipi-manutenzione"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Ripulire un metodo della farmacia",
+      "problema": "static double f(List<double[]> l, boolean t) { double s = 0; for (double[] x : l) s += x[0] * x[1]; if (t) s = s - s * 0.05; System.out.println(\"Totale: \" + s); return s; } dove x[0] è il prezzo e x[1] la quantità (percentuale inventata). Individua le violazioni e riscrivi.",
+      "passi": [
+        "Nomi: f, l, t, s, x non dicono nulla → totaleCarrello, righe, haTessera, totale, riga.",
+        "Numero magico 0.05 → costante SCONTO_TESSERA.",
+        "Struttura dati primitiva double[] (smell Primitive Obsession) → classe RigaOrdine con prezzo e quantita.",
+        "Il metodo calcola e stampa: due responsabilità → la stampa va al chiamante.",
+        "Riscrittura: static final double SCONTO_TESSERA = 0.05; static double totaleCarrello(List<RigaOrdine> righe, boolean haTessera) { double totale = 0; for (RigaOrdine r : righe) totale += r.prezzo() * r.quantita(); return haTessera ? totale * (1 - SCONTO_TESSERA) : totale; }"
+      ],
+      "soluzione": "Metodo totaleCarrello con nomi parlanti, costante per lo sconto, classe RigaOrdine al posto di double[], nessuna stampa interna.",
+      "perche_funziona": "Ogni modifica elimina un ostacolo alla lettura o alla modifica (nomi, costanti, tipi espliciti, una sola responsabilità) senza cambiare il risultato calcolato."
+    },
+    {
+      "titolo": "Commenti utili e commenti inutili",
+      "problema": "Valuta questi commenti: (a) i++; // incrementa i  (b) // Il fornitore accetta al massimo 50 righe per ordine (vincolo contrattuale), quindi spezziamo  (c) // calcola d   double d = p * 0.22;",
+      "passi": [
+        "(a) ripete il codice: inutile, va eliminato.",
+        "(b) spiega il perché di una scelta non deducibile dal codice: utile, va tenuto.",
+        "(c) compensa nomi cattivi: meglio double iva = prezzo * ALIQUOTA_IVA; e niente commento.",
+        "Regola: se il commento descrive cosa fa il codice, migliora il codice; se spiega perché, scrivilo."
+      ],
+      "soluzione": "Tenere (b); eliminare (a); sostituire (c) con nomi e costanti espliciti.",
+      "perche_funziona": "Un commento ha valore solo se aggiunge informazione che il codice non può esprimere; il resto diventa obsoleto e fuorviante alla prima modifica."
+    }
+  ],
+  "errori_comuni": [
+    "Pensare che il codice commentato abbondantemente sia automaticamente leggibile: i nomi contano più dei commenti.",
+    "Applicare DRY unendo codice simile per caso ma con ragioni di cambiamento diverse: si crea accoppiamento.",
+    "Ignorare un'eccezione con un catch vuoto 'per far compilare'.",
+    "Confondere KISS con 'scrivere meno righe possibili': codice compatto e criptico non è semplice.",
+    "Elencare pratiche senza esempio: all'esame servono almeno un esempio Java prima/dopo."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa dice il principio DRY e perché è importante?",
+      "risposta": "Ogni conoscenza deve avere una sola rappresentazione nel sistema; la duplicazione costringe a modificare più punti e rende probabile correggere un bug solo in uno di essi."
+    },
+    {
+      "domanda": "Che differenza c'è tra KISS e YAGNI?",
+      "risposta": "KISS chiede la soluzione più semplice per il problema attuale; YAGNI chiede di non implementare funzionalità o generalizzazioni non ancora richieste."
+    },
+    {
+      "domanda": "Quando un commento è utile?",
+      "risposta": "Quando spiega il perché di una scelta, un vincolo o un'informazione non deducibile dal codice; se descrive il cosa, è meglio migliorare nomi e struttura."
+    },
+    {
+      "domanda": "Cita tre segnali che un metodo va spezzato.",
+      "risposta": "Fa più di una cosa (la descrizione contiene 'e'), è lungo, ha molti parametri, mescola livelli di astrazione diversi, ha una complessità ciclomatica alta."
+    },
+    {
+      "domanda": "Che cos'è il debito tecnico?",
+      "risposta": "Il costo futuro accumulato scegliendo soluzioni rapide ma di bassa qualità: si paga con gli interessi a ogni modifica, finché non si rimborsa con il refactoring."
+    }
+  ],
+  "riepilogo": "Nomi che rivelano l'intenzione, costanti al posto dei numeri magici.\nMetodi brevi con una sola responsabilità e pochi parametri.\nDRY, KISS, YAGNI; commenti sul perché, non sul cosa.\nErrori gestiti in modo esplicito; incapsulamento; stile condiviso e code review.\nViolazioni → code smell → refactoring protetto dai test."
+}

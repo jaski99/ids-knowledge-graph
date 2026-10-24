@@ -1,0 +1,86 @@
+{
+  "intuizione": "Hai un client che si aspetta un'interfaccia e una classe già pronta (magari di una libreria esterna) che fa la cosa giusta ma con metodi diversi. Non puoi o non vuoi modificare nessuno dei due. L'Adapter è una classe ponte: implementa l'interfaccia che il client si aspetta e, dentro, traduce ogni chiamata in chiamate alla classe esistente.",
+  "spiegazione": "## Il problema\n\nIl sistema della farmacia invia le notifiche ai clienti tramite l'interfaccia\n\n```java\npublic interface Notificatore { void invia(String destinatario, String testo); }\n```\n\nArriva un contratto con un fornitore SMS che fornisce una libreria (che **non possiamo modificare**):\n\n```java\npublic class SmsGatewayApi {                     // classe di terze parti\n    public int sendSms(String prefix, String number, String body) {\n        System.out.println(\"SMS a +\" + prefix + \" \" + number + \": \" + body);\n        return 200;                               // codice esito\n    }\n}\n```\n\nLe firme non coincidono: nome diverso, numero diviso in prefisso e numero, valore di ritorno. Modificare tutto il codice della farmacia per usare `sendSms` legherebbe il sistema a quel fornitore; modificare la libreria è impossibile.\n\n## La soluzione\n\n**Adapter** (GoF, *strutturale*): *converte l'interfaccia di una classe in un'altra interfaccia che il client si aspetta; permette a classi con interfacce incompatibili di collaborare.*\n\nRuoli:\n- **Target**: l'interfaccia attesa dal client (`Notificatore`).\n- **Adaptee**: la classe esistente con interfaccia incompatibile (`SmsGatewayApi`).\n- **Adapter**: implementa Target e traduce verso Adaptee (`SmsAdapter`).\n- **Client**: usa solo Target (`GestorePrenotazioni`).\n\n### Object adapter (composizione) — la forma usata in Java\n\n```mermaid\nclassDiagram\n    class Notificatore {\n        <<interface>>\n        +invia(String destinatario, String testo) void\n    }\n    class SmsGatewayApi {\n        +sendSms(String prefix, String number, String body) int\n    }\n    class SmsAdapter {\n        -SmsGatewayApi api\n        +invia(String destinatario, String testo) void\n    }\n    class GestorePrenotazioni {\n        -Notificatore notificatore\n        +prodottoArrivato(Prenotazione p) void\n    }\n    Notificatore <|.. SmsAdapter\n    SmsAdapter --> SmsGatewayApi : delega\n    GestorePrenotazioni --> Notificatore\n```\n\n```java\npublic class SmsAdapter implements Notificatore {\n    private final SmsGatewayApi api;\n    public SmsAdapter(SmsGatewayApi api) { this.api = api; }\n\n    @Override\n    public void invia(String destinatario, String testo) {\n        // traduzione dei dati: \"+39 3331234567\" -> prefisso \"39\", numero \"3331234567\"\n        String pulito = destinatario.replace(\"+\", \"\").trim();\n        String[] parti = pulito.split(\" \", 2);\n        int esito = api.sendSms(parti[0], parti[1], testo);\n        // traduzione dell'esito: codice numerico -> eccezione\n        if (esito != 200) throw new IllegalStateException(\"Invio SMS fallito: \" + esito);\n    }\n}\n\npublic record Prenotazione(String telefonoCliente, String prodotto) {}\n\npublic class GestorePrenotazioni {\n    private final Notificatore notificatore;\n    public GestorePrenotazioni(Notificatore n) { this.notificatore = n; }\n    public void prodottoArrivato(Prenotazione p) {\n        notificatore.invia(p.telefonoCliente(), p.prodotto() + \" disponibile in farmacia\");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Notificatore n = new SmsAdapter(new SmsGatewayApi());\n        new GestorePrenotazioni(n).prodottoArrivato(new Prenotazione(\"+39 3331234567\", \"Tachipirina\"));\n    }\n}\n```\n\nL'adapter non fa solo \"rinominare\" un metodo: **traduce i dati** (formato del numero), **le convenzioni d'errore** (codice → eccezione) e a volte **combina più chiamate** dell'adaptee.\n\n### Class adapter (ereditarietà)\n\nL'adapter *estende* l'Adaptee e *implementa* Target: `class SmsClassAdapter extends SmsGatewayApi implements Notificatore`. In Java si può fare solo se Target è un'interfaccia (ereditarietà singola di classe). Svantaggi: lega l'adapter a *una* classe concreta (non funziona con le sottoclassi dell'adaptee) ed espone anche i metodi dell'adaptee. Per questo si preferisce l'**object adapter** (composizione), coerente con \"preferisci la composizione all'ereditarietà\".\n\n## Adapter nella JDK\n\n- `InputStreamReader` adatta un `InputStream` (byte) all'interfaccia `Reader` (caratteri).\n- `Arrays.asList(array)` adatta un array all'interfaccia `List`.\n\n## Conseguenze\n\n**Vantaggi**\n- riuso di codice esistente o di terze parti senza modificarlo;\n- il client resta indipendente dal fornitore: cambiare fornitore = scrivere un nuovo adapter (**OCP**, **DIP**);\n- la logica di traduzione è isolata in una classe (**SRP**).\n\n**Limiti**\n- una classe in più (indirezione) per ogni adaptee;\n- se le interfacce sono molto diverse (semantiche diverse, funzioni mancanti) l'adapter diventa complesso o impossibile;\n- un adattamento \"a due vie\" o molto profondo può nascondere differenze di comportamento (es. tempi, errori).\n\n## Confronto con pattern simili\n\n| pattern | interfaccia verso il client | scopo |\n|---|---|---|\n| **Adapter** | *diversa* da quella dell'oggetto avvolto (la converte) | far collaborare interfacce incompatibili |\n| **Decorator** | *uguale* a quella dell'oggetto avvolto | aggiungere responsabilità |\n| **Facade** | *nuova e semplificata* su un intero sottosistema | semplificare l'uso di molte classi |\n| **Proxy** | uguale | controllare l'accesso (lazy, remoto, protezione) |\n\nDecorator e Adapter sono entrambi *wrapper*: la differenza sta nell'interfaccia esposta.\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"integrare un sistema esistente / una libreria esterna / un servizio di un fornitore\"*, *\"interfaccia incompatibile\"*, *\"non è possibile modificare il codice del fornitore\"*, *\"sostituire in futuro il fornitore\"*, *\"sistema legacy\"*.\n",
+  "analogia": "È l'adattatore da presa italiana a presa inglese che metti in valigia: il caricatore (client) ha la sua spina, la parete (adaptee) ha la sua presa, e nessuno dei due si modifica; l'adattatore espone la forma che il caricatore si aspetta e dentro la collega a quella della parete. L'analogia cede su un punto: l'adattatore da viaggio cambia solo la forma, mentre un adapter software spesso deve anche tradurre i dati (formati, unità, codici d'errore), come un trasformatore di tensione.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Interfacce e implementazione in Java",
+      "collegamento": "L'adapter implements Target: il client lo usa come qualunque altra implementazione grazie al polimorfismo."
+    },
+    {
+      "conoscenza": "InputStreamReader e la gestione dell'I/O in Java",
+      "collegamento": "new BufferedReader(new InputStreamReader(System.in)) che hai scritto per leggere da tastiera contiene un adapter: InputStreamReader trasforma byte in caratteri."
+    },
+    {
+      "conoscenza": "Composizione vs ereditarietà",
+      "collegamento": "Object adapter (campo che riferisce l'adaptee) contro class adapter (extends): il primo è preferito per lo stesso motivo per cui si preferisce la composizione in generale.",
+      "nodo": "design-pattern-introduzione"
+    },
+    {
+      "conoscenza": "Principio di inversione delle dipendenze",
+      "collegamento": "Il client dipende dall'astrazione Notificatore, non dal fornitore: l'adapter è il pezzo che collega l'astrazione al dettaglio concreto.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Viste nelle basi di dati",
+      "collegamento": "Una vista SQL presenta tabelle esistenti con la forma che serve a un'applicazione senza modificarle: stessa idea di adattamento."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Integrare un vecchio sistema di magazzino",
+      "problema": "La farmacia ha un vecchio modulo MagazzinoLegacy con il metodo int qtyFor(String codiceInterno) che usa codici interni (prefisso 'M-' + codice). Il nuovo sistema usa l'interfaccia Magazzino { int disponibilita(String codiceProdotto); }. Progetta l'integrazione senza modificare MagazzinoLegacy.",
+      "passi": [
+        "Target = Magazzino; Adaptee = MagazzinoLegacy; Client = Cassa (verifica la disponibilità in magazzino quando un prodotto è esaurito).",
+        "Adapter: class MagazzinoAdapter implements Magazzino { private final MagazzinoLegacy legacy; ... }.",
+        "Traduzione: public int disponibilita(String codice) { int q = legacy.qtyFor(\"M-\" + codice); return Math.max(q, 0); } (il legacy restituisce -1 se il codice non esiste: lo traduco in 0).",
+        "Class diagram: Magazzino <|.. MagazzinoAdapter; MagazzinoAdapter --> MagazzinoLegacy; Cassa --> Magazzino.",
+        "Limite: se il legacy fosse lento o lanciasse eccezioni diverse, l'adapter dovrebbe gestirle e la traduzione diventerebbe più complessa."
+      ],
+      "soluzione": "Object adapter MagazzinoAdapter che implementa Magazzino, contiene un MagazzinoLegacy e traduce codice (prefisso M-) e valori speciali (-1 → 0). Cassa non sa nulla del legacy.",
+      "perche_funziona": "Il client dipende solo dal Target; tutta la conoscenza del formato legacy è confinata in una classe, quindi la futura sostituzione del magazzino richiede solo un nuovo adapter."
+    },
+    {
+      "titolo": "Adapter o Decorator?",
+      "problema": "Due classi: (A) class LoggingNotificatore implements Notificatore { private Notificatore interno; void invia(d, t) { log(d); interno.invia(d, t); } } e (B) class TelegramAdapter implements Notificatore { private TelegramBot bot; void invia(d, t) { bot.sendMessage(Long.parseLong(d), t); } }. Quale pattern è ognuna?",
+      "passi": [
+        "Guardo il tipo dell'oggetto avvolto rispetto all'interfaccia implementata.",
+        "A avvolge un Notificatore e implementa Notificatore: stessa interfaccia, aggiunge un comportamento (log) prima di delegare → Decorator.",
+        "B avvolge un TelegramBot (interfaccia diversa) ed espone Notificatore: converte l'interfaccia → Adapter.",
+        "Conferma: A si può impilare (un decoratore su un altro), B no, perché il bot non è un Notificatore."
+      ],
+      "soluzione": "A = Decorator (stessa interfaccia, responsabilità aggiunta); B = Adapter (interfaccia convertita).",
+      "perche_funziona": "Entrambi sono wrapper che delegano; il criterio decisivo è se l'interfaccia esposta coincide con quella dell'oggetto avvolto (Decorator) o la traduce (Adapter)."
+    }
+  ],
+  "errori_comuni": [
+    "Modificare l'adaptee per farlo implementare il Target: se puoi farlo, non serve l'adapter; il pattern nasce proprio quando non puoi.",
+    "Confondere Adapter e Decorator: il Decorator mantiene la stessa interfaccia dell'oggetto avvolto.",
+    "Confondere Adapter e Facade: Facade semplifica un sottosistema di molte classi, Adapter converte l'interfaccia di una classe.",
+    "Proporre il class adapter in Java quando il Target è una classe: l'ereditarietà multipla di classi non esiste.",
+    "Disegnare il client che dipende dall'Adapter concreto invece che dall'interfaccia Target."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Adapter?",
+      "risposta": "Convertire l'interfaccia di una classe esistente in quella attesa dal client, facendo collaborare classi altrimenti incompatibili senza modificarle."
+    },
+    {
+      "domanda": "Differenza tra object adapter e class adapter?",
+      "risposta": "L'object adapter contiene un riferimento all'adaptee e delega (composizione), funziona anche con le sue sottoclassi; il class adapter estende l'adaptee e implementa il target (ereditarietà), in Java possibile solo se il target è un'interfaccia."
+    },
+    {
+      "domanda": "In che cosa differiscono Adapter, Decorator e Facade?",
+      "risposta": "Adapter cambia l'interfaccia per renderla compatibile; Decorator mantiene la stessa interfaccia e aggiunge responsabilità; Facade offre un'interfaccia nuova e semplificata a un intero sottosistema."
+    },
+    {
+      "domanda": "Cita un Adapter della libreria standard Java.",
+      "risposta": "InputStreamReader (adatta InputStream a Reader) o Arrays.asList (adatta un array a List)."
+    },
+    {
+      "domanda": "Quale principio SOLID beneficia dall'uso di un adapter verso un fornitore esterno?",
+      "risposta": "Dependency Inversion (il client dipende dall'astrazione) e Open/Closed (cambiare fornitore significa aggiungere un adapter senza modificare il client)."
+    }
+  ],
+  "riepilogo": "Adapter (strutturale): converte l'interfaccia di una classe esistente in quella attesa dal client.\nRuoli: Target, Adaptee, Adapter, Client.\nObject adapter (composizione) preferito al class adapter (ereditarietà).\nTraduce nomi, dati ed errori; isola il fornitore (DIP, OCP).\nAdapter cambia l'interfaccia, Decorator la mantiene, Facade la semplifica."
+}

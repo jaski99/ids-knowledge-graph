@@ -1,0 +1,87 @@
+{
+  "intuizione": "In questa domanda il ragionamento è al contrario: ti danno il codice e devi dire quale pattern implementa. Ogni pattern lascia nel codice un'impronta riconoscibile, cioè una combinazione di costruttore privato, campo static, lista di interfacce, campo dello stesso tipo dell'interfaccia implementata, metodo final che chiama metodi astratti. Impari a cercare quelle impronte e poi a discutere pro e contro della scelta implementativa che ti chiedono.",
+  "spiegazione": "## Il formato\n\nProva del 5/11/2025, domanda 3.2 (2 punti): *\"Indicare a cosa può essere utile il codice seguente e quali sono i vantaggi/svantaggi nell'indicare il metodo createSushi come static\"*, con una classe `SimpleSushiFactory`. La domanda ha quindi due parti: **riconoscere** (cosa fa e a cosa serve) e **valutare** una scelta di implementazione.\n\n## Le impronte digitali dei pattern nel codice\n\n| impronta nel codice | pattern |\n|---|---|\n| metodo che riceve un parametro (stringa/enum) e con if/switch fa `new` di sottoclassi diverse, ritornando il supertipo | **Simple Factory** |\n| classe astratta con un metodo `abstract` che restituisce un oggetto, usato da un altro metodo della stessa classe; sottoclassi che lo ridefiniscono con una `new` | **Factory Method** |\n| interfaccia con più metodi `creaX()`, `creaY()` e più implementazioni | **Abstract Factory** |\n| costruttore `private` + campo `private static` del tipo della classe + `public static getInstance()` | **Singleton** |\n| classe che `implements` un'interfaccia e ha un campo di **un altro tipo** a cui traduce le chiamate | **Adapter** |\n| classe che `implements` un'interfaccia **e** ha un campo **dello stesso tipo dell'interfaccia**, a cui delega aggiungendo qualcosa | **Decorator** |\n| classe che estende un componente astratto e ha una `List` di quel componente; un metodo che cicla sui figli chiamando lo stesso metodo | **Composite** |\n| `List<InterfacciaX>` + metodi `add/remove/attach/subscribe` + un ciclo che chiama `update/notifica` su ogni elemento | **Observer** |\n| metodo `final` in classe astratta che chiama in sequenza metodi `abstract`/`protected` | **Template Method** |\n| campo di tipo interfaccia con setter, metodo che delega a quel campo; implementazioni indipendenti | **Strategy** |\n| campo di tipo interfaccia \"stato\", implementazioni che chiamano `context.setStato(new AltroStato())` | **State** |\n\nDistinzioni fini:\n- **Decorator vs Adapter vs Proxy**: tutti avvolgono. Campo dello *stesso* tipo dell'interfaccia implementata e aggiunta di comportamento → Decorator; campo di *altro* tipo con traduzione → Adapter; stesso tipo ma controllo dell'accesso (lazy, permessi, cache) senza aggiungere funzionalità → Proxy.\n- **Strategy vs State**: se le implementazioni cambiano il riferimento nel context (transizioni) → State.\n- **Simple Factory vs Factory Method**: if su parametro in un metodo concreto → Simple Factory; metodo astratto ridefinito → Factory Method.\n\n## Esempio: le tre impronte più frequenti\n\n```java\n// (A)\npublic class Contatore {\n    private static Contatore istanza;\n    private int n;\n    private Contatore() {}\n    public static synchronized Contatore getInstance() {\n        if (istanza == null) istanza = new Contatore();\n        return istanza;\n    }\n    public int prossimo() { return ++n; }\n}\n\n// (B)\npublic interface Bevanda { double costo(); }\npublic class Caffe implements Bevanda { public double costo() { return 1.0; } }\npublic class ConLatte implements Bevanda {\n    private final Bevanda b;\n    public ConLatte(Bevanda b) { this.b = b; }\n    public double costo() { return b.costo() + 0.2; }\n}\n\n// (C)\npublic abstract class Report {\n    public final String genera() { return testata() + corpo() + piede(); }\n    protected abstract String corpo();\n    protected String testata() { return \"== REPORT ==\\n\"; }\n    protected String piede()   { return \"\\n== FINE ==\"; }\n}\n```\n\n- (A) costruttore privato + campo static + getInstance → **Singleton** (lazy, thread-safe con `synchronized`; costo: lock a ogni chiamata).\n- (B) `ConLatte` implementa `Bevanda` e contiene una `Bevanda` a cui delega aggiungendo 0,20 → **Decorator**.\n- (C) `genera()` final che chiama `corpo()` astratto e due hook → **Template Method**.\n\n## Come strutturare la risposta (2-3 punti)\n\n1. **Nome del pattern/idioma** e categoria.\n2. **Ruoli**: quale classe è Component/Creator/Subject…\n3. **A cosa serve** nel contesto (problema risolto).\n4. **Risposta alla domanda specifica** (es. static, synchronized, final, visibilità del costruttore, scelta push/pull), con pro e contro motivati da una proprietà del linguaggio.\n5. Se il codice contiene **errori**, segnalali (il frammento 2025 assegna a `pizza` in due rami: non compila).\n\n## Domande tipiche sulla scelta implementativa\n\n- **static nel metodo di creazione** → comodo, ma niente polimorfismo/override, niente injection, test più difficili.\n- **synchronized in getInstance** → corretto con più thread, ma costo del lock a ogni chiamata; alternative eager/holder/enum.\n- **final nel template method** → impedisce di alterare la sequenza; senza final una sottoclasse potrebbe rompere l'algoritmo.\n- **copia della lista prima di notificare** → evita `ConcurrentModificationException` se un observer si disiscrive durante la notifica.\n- **campo protected nel Decorator** → comodo per le sottoclassi, ma espone l'oggetto avvolto; alternativa: private con delega nel decoratore astratto.\n",
+  "analogia": "È come riconoscere un'auto dal rumore o dalla sagoma: un esperto non ha bisogno del logo, gli bastano due o tre dettagli tipici (la calandra, la linea del tetto). Allo stesso modo costruttore privato + campo static + getInstance 'suonano' Singleton anche se la classe si chiama Contatore. Dove l'analogia cede: due auto diverse non hanno mai la stessa sagoma, mentre due pattern (Strategy e State) possono avere esattamente lo stesso codice strutturale e si distinguono solo dall'intento (chi cambia il riferimento).",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Simple Factory e static",
+      "collegamento": "La domanda 3.2 della prova 2025 è proprio su questo idioma: rivedi vantaggi e svantaggi dello static.",
+      "nodo": "design-pattern-simple-factory"
+    },
+    {
+      "conoscenza": "Riconoscere il pattern dallo scenario",
+      "collegamento": "Stessa competenza di riconoscimento, ma partendo dal codice invece che dal testo dei requisiti.",
+      "nodo": "riconoscere-pattern-scenario"
+    },
+    {
+      "conoscenza": "Modificatori Java (private, static, final, abstract, synchronized)",
+      "collegamento": "Le impronte dei pattern sono fatte di modificatori: saperne l'effetto preciso è ciò che permette di discutere i pro e i contro."
+    },
+    {
+      "conoscenza": "Lettura di codice e tracing (Fondamenti)",
+      "collegamento": "Come quando simuli a mano un programma, qui segui chi chiama chi (delega, ricorsione, ciclo sugli observer) per capire la struttura."
+    },
+    {
+      "conoscenza": "Decorator e Adapter",
+      "collegamento": "La distinzione più frequente: tipo del campo avvolto uguale (Decorator) o diverso (Adapter) dall'interfaccia implementata.",
+      "nodo": "design-pattern-decorator"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Prova 5/11/2025, domanda 3.2 (SimpleSushiFactory)",
+      "problema": "public class SimpleSushiFactory { public Sushi createSushi(String type) { Sushi sushi = null; if (type.equals(\"alga\")) sushi = new Hosomaki(); else if (type.equals(\"risoSotto\")) pizza = new Nigiri(); else if (type.equals(\"pescedentro\")) pizza = new Uramaki(); return sushi; } }. A cosa serve? Vantaggi e svantaggi di rendere createSushi static?",
+      "passi": [
+        "Impronta: metodo con parametro stringa e if che istanziano sottoclassi diverse restituendo il supertipo Sushi → Simple Factory (idioma, non GoF).",
+        "Utilità: centralizza la creazione, i client non usano new sulle classi concrete e dipendono solo da Sushi; nuovo tipo = modifica in un solo punto.",
+        "static, vantaggi: si chiama senza istanziare la factory, semplice da usare.",
+        "static, svantaggi: niente override (binding statico), quindi niente sottoclassi della factory; niente dependency injection né mock nei test; non può implementare un'interfaccia; accoppiamento più forte.",
+        "Errori nel codice: 'pizza' non è dichiarata (non compila); null restituito per tipi sconosciuti."
+      ],
+      "soluzione": "Simple Factory che incapsula la scelta e l'istanziazione delle sottoclassi di Sushi. static: più comodo ma non estendibile né sostituibile (no polimorfismo, no injection, test difficili). Segnalati l'errore 'pizza' e il ritorno null.",
+      "perche_funziona": "Riconoscimento basato sull'impronta, utilità espressa in termini di accoppiamento, pro e contro legati a una proprietà precisa del linguaggio: copre entrambe le parti della domanda."
+    },
+    {
+      "titolo": "Quattro frammenti da classificare",
+      "problema": "(1) class Cartella extends Nodo { List<Nodo> figli; long dimensione() { long s = 0; for (Nodo n : figli) s += n.dimensione(); return s; } } (2) class EuroAdapter implements PrezzoUSD { private ListinoEuro l; double prezzo(String c) { return l.getPrezzoEuro(c) * 1.08; } } (3) class Ordine { private StatoOrdine s; void paga() { s.paga(this); } void setStato(StatoOrdine n) { s = n; } } con class Nuovo implements StatoOrdine { void paga(Ordine o) { o.setStato(new Pagato()); } } (4) class Navigatore { private Percorso p; void setPercorso(Percorso p) { this.p = p; } Route calcola(A a, B b) { return p.calcola(a, b); } }",
+      "passi": [
+        "(1) estende il componente astratto Nodo e contiene una List<Nodo>; dimensione() cicla sui figli chiamando lo stesso metodo → Composite.",
+        "(2) implementa PrezzoUSD ma contiene un ListinoEuro (altro tipo) e traduce la chiamata (nome e valuta) → Adapter.",
+        "(3) il context delega allo stato e gli stati chiamano setStato con lo stato successivo → State.",
+        "(4) il context delega a una strategia impostata dall'esterno con setPercorso; le implementazioni non cambiano il riferimento → Strategy."
+      ],
+      "soluzione": "1 Composite, 2 Adapter, 3 State, 4 Strategy.",
+      "perche_funziona": "Ogni frammento contiene l'impronta della tabella; per distinguere 3 da 4, che hanno la stessa struttura, il criterio è chi modifica il riferimento: lo stato stesso (State) o il client (Strategy)."
+    }
+  ],
+  "errori_comuni": [
+    "Fermarsi al nome del pattern senza rispondere alla seconda parte (pro/contro della scelta implementativa).",
+    "Classificare come Decorator ogni wrapper: se il campo è di un tipo diverso e c'è traduzione è un Adapter.",
+    "Chiamare Factory Method una Simple Factory con if: manca il metodo astratto ridefinito dalle sottoclassi.",
+    "Non notare errori evidenti nel codice proposto (variabile non dichiarata, ritorno null).",
+    "Giustificare static con 'è più veloce' invece che con comodità d'uso contro perdita di polimorfismo e testabilità."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali tre elementi del codice identificano un Singleton?",
+      "risposta": "Costruttore private, campo private static che contiene l'istanza, metodo public static (getInstance) che la restituisce creandola se necessario."
+    },
+    {
+      "domanda": "Come distingui un Decorator da un Adapter leggendo il codice?",
+      "risposta": "Il Decorator implementa un'interfaccia e contiene un oggetto dello stesso tipo a cui delega aggiungendo comportamento; l'Adapter implementa un'interfaccia ma contiene un oggetto di tipo diverso e ne traduce le chiamate."
+    },
+    {
+      "domanda": "Quale impronta lascia il Template Method?",
+      "risposta": "Un metodo (di solito final) in una classe astratta che chiama in sequenza metodi astratti o hook protected ridefiniti dalle sottoclassi."
+    },
+    {
+      "domanda": "State e Strategy hanno la stessa struttura: come li distingui nel codice?",
+      "risposta": "In State le classi stato modificano il riferimento nel context (transizioni, setStato); in Strategy il riferimento viene cambiato solo dall'esterno dal client."
+    },
+    {
+      "domanda": "Che cosa comporta dichiarare synchronized il getInstance di un Singleton lazy?",
+      "risposta": "Rende sicura la creazione con più thread, ma impone il costo del lock a ogni chiamata anche dopo la creazione; alternative: inizializzazione eager, holder idiom, enum."
+    }
+  ],
+  "riepilogo": "Riconoscere il pattern dalle impronte nel codice, poi discutere la scelta implementativa.\nSingleton: costruttore private + static + getInstance. Decorator: implementa e contiene lo stesso tipo. Adapter: contiene un altro tipo e traduce.\nComposite: List del supertipo + ricorsione. Observer: lista di interfacce + ciclo di notifica. Template Method: final che chiama abstract.\nState vs Strategy: chi cambia il riferimento.\nRisposta: nome, ruoli, utilità, pro/contro motivati, errori nel codice."
+}

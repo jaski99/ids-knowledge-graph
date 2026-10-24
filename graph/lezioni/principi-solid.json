@@ -1,0 +1,87 @@
+{
+  "intuizione": "SOLID sono cinque regole per scrivere classi che si possono cambiare senza paura: ogni classe ha un solo motivo per cambiare, si estende senza modificarla, le sottoclassi mantengono le promesse della superclasse, le interfacce sono piccole e mirate, e il codice importante dipende da astrazioni invece che da dettagli. Sono la versione 'a livello di classe' di alta coesione e basso accoppiamento, e sono il motivo per cui i design pattern funzionano.",
+  "spiegazione": "## Da dove vengono\n\nL'acronimo SOLID raccoglie cinque principi di progettazione OO divulgati da Robert C. Martin (l'acronimo è stato proposto da Michael Feathers). Il principio di Liskov risale a Barbara Liskov (1987), l'Open/Closed a Bertrand Meyer (1988). Non sono leggi del linguaggio: sono criteri per giudicare un progetto.\n\n| lettera | principio | in una frase |\n|---|---|---|\n| **S** | Single Responsibility | una classe deve avere un solo motivo per cambiare |\n| **O** | Open/Closed | aperta all'estensione, chiusa alla modifica |\n| **L** | Liskov Substitution | un sottotipo deve poter sostituire il supertipo senza rompere il programma |\n| **I** | Interface Segregation | nessun client deve dipendere da metodi che non usa |\n| **D** | Dependency Inversion | i moduli di alto livello dipendono da astrazioni, non da dettagli |\n\n## S — Single Responsibility Principle\n\n\"Responsabilità\" = **ragione di cambiamento** (spesso: un attore/stakeholder diverso che chiede modifiche).\n\n```java\n// Violazione: tre ragioni di cambiamento (regole di sconto, formato di stampa, database)\nclass Vendita {\n    double calcolaTotale() { /* regole commerciali */ return 0; }\n    String stampaScontrino() { /* layout */ return \"\"; }\n    void salvaSuDb() { /* SQL */ }\n}\n\n// Rispetto: una classe per ragione di cambiamento\nclass Vendita { double calcolaTotale() { return 0; } }\nclass StampanteScontrino { String stampa(Vendita v) { return \"\"; } }\nclass VenditaRepository { void salva(Vendita v) { } }\n```\nSRP = **alta coesione** a livello di classe.\n\n## O — Open/Closed Principle\n\nIl comportamento si estende **aggiungendo** codice nuovo (nuove classi), non **modificando** quello esistente e già testato. Si ottiene con astrazioni e polimorfismo.\n\n```java\n// Violazione: ogni nuova forma di pagamento modifica il metodo\ndouble commissione(String tipo, double importo) {\n    if (tipo.equals(\"carta\")) return importo * 0.015;\n    else if (tipo.equals(\"bancomat\")) return 0.5;\n    return 0;\n}\n\n// Rispetto: nuovo pagamento = nuova classe\ninterface Pagamento { double commissione(double importo); }\nclass Carta implements Pagamento { public double commissione(double i) { return i * 0.015; } }\nclass Bancomat implements Pagamento { public double commissione(double i) { return 0.5; } }\nclass Satispay implements Pagamento { public double commissione(double i) { return 0.2; } } // aggiunta senza toccare nulla\n```\nStrategy, Decorator, Observer, Template Method, Factory Method sono tutti modi di rispettare OCP rispetto a una direzione di cambiamento prevista.\n\n## L — Liskov Substitution Principle\n\nSe `S` è sottotipo di `T`, ogni programma che usa `T` deve funzionare correttamente con un `S`. Le sottoclassi devono rispettare il **contratto** del supertipo: non rafforzare le **precondizioni**, non indebolire le **postcondizioni**, mantenere gli **invarianti**, non lanciare eccezioni inattese.\n\nEsempio classico (Quadrato/Rettangolo):\n\n```java\nclass Rettangolo {\n    protected int base, altezza;\n    void setBase(int b) { base = b; }\n    void setAltezza(int h) { altezza = h; }\n    int area() { return base * altezza; }\n}\nclass Quadrato extends Rettangolo {          // \"un quadrato è un rettangolo\"... in geometria\n    @Override void setBase(int b) { base = b; altezza = b; }\n    @Override void setAltezza(int h) { base = h; altezza = h; }\n}\n\nstatic void verifica(Rettangolo r) {\n    r.setBase(5); r.setAltezza(4);\n    assert r.area() == 20;                  // fallisce con un Quadrato: area 16\n}\n```\nIl Quadrato mutabile viola la postcondizione di `setAltezza` (\"la base non cambia\"). Segnali tipici di violazione: `instanceof` nel client per gestire una sottoclasse \"speciale\", oppure override che lanciano `UnsupportedOperationException`.\n\n## I — Interface Segregation Principle\n\nMeglio tante interfacce piccole e specifiche che una \"grassa\".\n\n```java\n// Violazione: la cassa automatica deve implementare anche ciò che non fa\ninterface OperatoreFarmacia { void vendi(); void preparaGalenico(); void ordinaFornitore(); }\n\n// Rispetto\ninterface Venditore { void vendi(); }\ninterface Preparatore { void preparaGalenico(); }\ninterface Acquisti { void ordinaFornitore(); }\nclass CassaAutomatica implements Venditore { public void vendi() { } }\nclass Farmacista implements Venditore, Preparatore, Acquisti {\n    public void vendi() { } public void preparaGalenico() { } public void ordinaFornitore() { }\n}\n```\nCon interfacce grasse, una modifica a un metodo costringe a ricompilare e ritestare client che non lo usano.\n\n## D — Dependency Inversion Principle\n\n1. I moduli di alto livello non devono dipendere da quelli di basso livello: **entrambi dipendono da astrazioni**.\n2. Le astrazioni non dipendono dai dettagli; i dettagli dipendono dalle astrazioni.\n\n```java\n// Violazione: la logica di business conosce il dettaglio\nclass GestorePrenotazioni {\n    private final EmailSender sender = new EmailSender();   // classe concreta, creata qui\n}\n\n// Rispetto: dipende da un'astrazione, il dettaglio viene iniettato\ninterface Notificatore { void invia(String a, String testo); }\nclass GestorePrenotazioni {\n    private final Notificatore notificatore;\n    GestorePrenotazioni(Notificatore n) { this.notificatore = n; }      // dependency injection\n}\nclass EmailSender implements Notificatore { public void invia(String a, String t) { } }\n```\n\n```mermaid\nflowchart LR\n    subgraph Prima\n    G1[GestorePrenotazioni] --> E1[EmailSender]\n    end\n    subgraph Dopo\n    G2[GestorePrenotazioni] --> N[Notificatore interfaccia]\n    E2[EmailSender] -.->|implementa| N\n    end\n```\nLa freccia di dipendenza verso il dettaglio viene **invertita**: ora è `EmailSender` a dipendere dall'astrazione posseduta dal livello alto. Effetto pratico: nei test si passa un `Notificatore` finto. **DIP non è dependency injection**: DIP è il principio (dipendere da astrazioni), l'injection è una tecnica per realizzarlo.\n\n## SOLID, coesione/accoppiamento e componenti\n\n- SRP e ISP → **coesione**; OCP, DIP e LSP → **basso accoppiamento** e sostituibilità.\n- A livello di **componenti** (Clean Architecture) gli analoghi sono REP, CCP (simile a SRP per componenti) e CRP (simile a ISP per componenti).\n\n## Equilibrio\n\nApplicare SOLID alla cieca porta a troppe interfacce e classi minuscole. OCP va applicato **rispetto ai cambiamenti probabili**, non a tutti quelli immaginabili (YAGNI).\n",
+  "analogia": "Pensa a una cucina professionale ben organizzata: ogni cuoco ha una sola postazione (S); si aggiunge un nuovo piatto con una nuova postazione senza smontare le altre (O); qualunque sostituto di un cuoco sa fare ciò che il ruolo promette (L); il lavapiatti non deve conoscere le ricette (I); lo chef dà ordini a 'chi è alla griglia', non al signor Rossi in persona, così chiunque prenda quel ruolo va bene (D). Dove l'analogia cede: in cucina il buon senso basta, nel software le violazioni sono invisibili finché non arriva la modifica che costa tre giorni invece di un'ora.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "SOLID traduce coesione alta e accoppiamento basso in regole operative sulle classi Java.",
+      "nodo": "coesione-accoppiamento"
+    },
+    {
+      "conoscenza": "Interfacce, ereditarietà e polimorfismo in Java",
+      "collegamento": "OCP, LSP e DIP si realizzano con interfacce e binding dinamico; LSP è la regola che dice quando un extends è legittimo."
+    },
+    {
+      "conoscenza": "Pre/postcondizioni e invarianti (specifica di funzioni)",
+      "collegamento": "LSP è un vincolo sui contratti: chi ridefinisce un metodo non può chiedere di più (precondizioni) né garantire di meno (postcondizioni)."
+    },
+    {
+      "conoscenza": "Normalizzazione nelle basi di dati",
+      "collegamento": "Come una tabella normalizzata contiene dati che dipendono da una sola chiave, una classe conforme a SRP contiene responsabilità con una sola ragione di cambiamento."
+    },
+    {
+      "conoscenza": "Clean Architecture: REP, CCP, CRP",
+      "collegamento": "CCP e CRP sono SRP e ISP applicati ai componenti: la domanda REP/CCP/CRP ricorrente diventa più facile partendo da SOLID.",
+      "nodo": "clean-architecture-coesione-componenti"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Individuare le violazioni in una classe della farmacia",
+      "problema": "class Farmacia { List<Prodotto> prodotti; void vendi(Carrello c) { ...aggiorna quantità...; if (c.cliente().haTessera()) {...sconto...}; new SmtpClient().invia(...); stampaPdfRapporto(); } void stampaPdfRapporto() {...} }. Quali principi SOLID sono violati e come correggi?",
+      "passi": [
+        "SRP: Farmacia vende, applica sconti, invia mail e stampa PDF → quattro ragioni di cambiamento. Separo in Magazzino, PoliticaSconto, Notificatore, GeneratoreRapporto.",
+        "OCP: lo sconto è un if dentro vendi(); nuove politiche richiedono modifiche → interfaccia PoliticaSconto (Strategy).",
+        "DIP: new SmtpClient() dentro la logica di business → dipendere da un'interfaccia Notificatore iniettata nel costruttore.",
+        "LSP e ISP: nel frammento non ci sono gerarchie né interfacce, quindi nessuna violazione visibile; lo dichiaro.",
+        "Risultato: Farmacia coordina (vendi chiama magazzino, politica, notificatore, rapporto) e ogni collaboratore è sostituibile e testabile."
+      ],
+      "soluzione": "Violati SRP (quattro responsabilità), OCP (if sullo sconto), DIP (new SmtpClient). Correzione: classi separate, PoliticaSconto come Strategy, Notificatore iniettato. LSP/ISP non valutabili sul frammento.",
+      "perche_funziona": "Ogni violazione è collegata a un sintomo nel codice (più ragioni di cambiamento, if sul tipo, new di una classe concreta) e corretta con la tecnica corrispondente; dichiarare ciò che non si può valutare evita affermazioni inventate."
+    },
+    {
+      "titolo": "Liskov: un'eccezione che rompe il contratto",
+      "problema": "interface Documento { void prestito(Utente u); } con Libro e Rivista; Rivista.prestito lancia UnsupportedOperationException perché le riviste non sono ammesse al prestito (fac-simile biblioteca). È una violazione di LSP? Come modellare meglio?",
+      "passi": [
+        "Il contratto di Documento promette che ogni documento si può prestare; Rivista non lo mantiene: un client che presta un Documento qualsiasi fallisce con una Rivista → violazione di LSP.",
+        "Sintomo: per evitare l'eccezione il client dovrebbe usare instanceof Rivista.",
+        "Correzione 1 (ISP): interface Documento { titolo... } e interface Prestabile { void prestito(Utente u); }; Libro implementa entrambe, Rivista solo Documento.",
+        "Correzione 2: un metodo boolean ammessoAlPrestito() nel contratto di Documento, con prestito() che ha come precondizione documentata ammessoAlPrestito() == true per tutti i sottotipi.",
+        "Scelgo la 1: il compilatore impedisce di prestare una rivista."
+      ],
+      "soluzione": "Sì, viola LSP. Meglio separare l'interfaccia Prestabile (ISP), implementata solo dai documenti ammessi al prestito.",
+      "perche_funziona": "LSP riguarda i contratti: una sottoclasse che lancia un'eccezione dove il supertipo prometteva successo non è sostituibile; segregare l'interfaccia rende il vincolo verificabile a compile time."
+    }
+  ],
+  "errori_comuni": [
+    "Definire SRP come 'una classe fa un solo metodo': la responsabilità è una ragione di cambiamento, non un metodo.",
+    "Dire che OCP vieta qualunque modifica: vale rispetto alle estensioni previste; correggere bug o rifattorizzare è lecito.",
+    "Confondere DIP con dependency injection: l'injection è una tecnica, il principio è dipendere da astrazioni.",
+    "Pensare che LSP sia rispettato perché il codice compila: è un vincolo comportamentale (contratti), non sintattico.",
+    "Elencare gli acronimi senza esempi: in una risposta teorica servono definizione ed esempio per ciascuno."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Enuncia i cinque principi SOLID.",
+      "risposta": "Single Responsibility (un solo motivo di cambiamento), Open/Closed (aperto all'estensione, chiuso alla modifica), Liskov Substitution (i sottotipi sostituiscono i supertipi senza alterare la correttezza), Interface Segregation (nessun client dipende da metodi che non usa), Dependency Inversion (alto e basso livello dipendono da astrazioni)."
+    },
+    {
+      "domanda": "Perché l'esempio Quadrato extends Rettangolo viola Liskov?",
+      "risposta": "Perché un Quadrato mutabile non rispetta la postcondizione di setAltezza/setBase del Rettangolo (cambiare un lato non modifica l'altro): un client che imposta base 5 e altezza 4 si aspetta area 20 e ottiene 16."
+    },
+    {
+      "domanda": "Quali pattern aiutano a rispettare l'Open/Closed?",
+      "risposta": "Strategy, Decorator, Observer, Template Method, Factory Method: permettono di aggiungere comportamento con nuove classi invece di modificare quelle esistenti."
+    },
+    {
+      "domanda": "Che relazione c'è tra SOLID e coesione/accoppiamento?",
+      "risposta": "SRP e ISP aumentano la coesione; OCP, LSP e DIP riducono l'accoppiamento e rendono le parti sostituibili."
+    },
+    {
+      "domanda": "Che cosa significa 'inversione' nel DIP?",
+      "risposta": "La dipendenza non va più dal modulo di alto livello al dettaglio concreto: entrambi dipendono da un'astrazione, e il dettaglio implementa l'interfaccia definita per il livello alto."
+    }
+  ],
+  "riepilogo": "S: una ragione di cambiamento. O: estendi senza modificare.\nL: i sottotipi rispettano i contratti del supertipo.\nI: interfacce piccole, nessuno dipende da ciò che non usa.\nD: dipendi da astrazioni; l'injection è una tecnica per farlo.\nSRP/ISP → coesione; OCP/LSP/DIP → basso accoppiamento; i pattern li realizzano."
+}

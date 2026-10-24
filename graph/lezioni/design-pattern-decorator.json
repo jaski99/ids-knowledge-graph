@@ -1,0 +1,88 @@
+{
+  "intuizione": "Una piazzola del mercato può avere corrente, illuminazione, musica, in qualunque combinazione, e ognuna aggiunge un costo. Creare una sottoclasse per ogni combinazione esplode subito (con 3 accessori sono già 8 classi). Decorator avvolge l'oggetto base in 'strati' che hanno la sua stessa interfaccia: ogni strato aggiunge il proprio pezzo (costo, descrizione) e passa la richiesta all'oggetto che avvolge. Le combinazioni si costruiscono a runtime impilando gli strati.",
+  "spiegazione": "## Il problema: esplosione di sottoclassi\n\nDalla sintesi della prova del 9/6/2022 (mercato settimanale degli ambulanti): bisogna *rappresentare caratteristiche e costo delle piazzole in base agli accessori opzionali aggiunti, come corrente, illuminazione, musica*. Le piazzole possono essere normali o premium.\n\nCon l'ereditarietà:\n\n```text\nPiazzolaNormale, PiazzolaNormaleConCorrente, PiazzolaNormaleConCorrenteEIlluminazione,\nPiazzolaNormaleConMusica, ... PiazzolaPremiumConCorrenteIlluminazioneMusica\n```\n\nCon 2 tipi base e 3 accessori: 2 × 2³ = **16 classi**; un quarto accessorio le porta a 32. E non si può aggiungere un accessorio a una piazzola già creata. Alternativa con flag booleani (`haCorrente`, `haMusica`) nella classe base: ogni nuovo accessorio modifica la classe (viola OCP) e il metodo `costo()` diventa una catena di if.\n\n## La soluzione\n\n**Decorator** (GoF, *strutturale*): *aggiunge dinamicamente responsabilità a un oggetto; fornisce un'alternativa flessibile alla creazione di sottoclassi per estendere le funzionalità.*\n\nRuoli:\n- **Component**: interfaccia comune (`Piazzola`: `getDescrizione()`, `getCosto()`).\n- **ConcreteComponent**: oggetti base (`PiazzolaNormale`, `PiazzolaPremium`).\n- **Decorator**: classe astratta che **implementa Component** e **contiene un Component** (quello avvolto); di default delega.\n- **ConcreteDecorator**: ogni accessorio (`Corrente`, `Illuminazione`, `Musica`) aggiunge il proprio contributo prima/dopo la delega.\n\n```mermaid\nclassDiagram\n    class Piazzola {\n        <<interface>>\n        +getDescrizione() String\n        +getCosto() double\n    }\n    class PiazzolaNormale {\n        +getDescrizione() String\n        +getCosto() double\n    }\n    class PiazzolaPremium {\n        +getDescrizione() String\n        +getCosto() double\n    }\n    class AccessorioDecorator {\n        <<abstract>>\n        #Piazzola piazzola\n        +getDescrizione() String\n        +getCosto() double\n    }\n    class Corrente\n    class Illuminazione\n    class Musica\n    Piazzola <|.. PiazzolaNormale\n    Piazzola <|.. PiazzolaPremium\n    Piazzola <|.. AccessorioDecorator\n    AccessorioDecorator o-- \"1\" Piazzola : avvolge\n    AccessorioDecorator <|-- Corrente\n    AccessorioDecorator <|-- Illuminazione\n    AccessorioDecorator <|-- Musica\n```\n\nIl segno distintivo: il Decorator **è un** Component (realizzazione) **e ha un** Component (associazione con molteplicità 1).\n\n## Codice Java completo\n\nI prezzi sono di esempio (il testo originale della prova non è disponibile).\n\n```java\npublic interface Piazzola {\n    String getDescrizione();\n    double getCosto();\n}\n\npublic class PiazzolaNormale implements Piazzola {\n    public String getDescrizione() { return \"Piazzola normale\"; }\n    public double getCosto() { return 30.0; }\n}\npublic class PiazzolaPremium implements Piazzola {\n    public String getDescrizione() { return \"Piazzola premium\"; }\n    public double getCosto() { return 50.0; }\n}\n\npublic abstract class AccessorioDecorator implements Piazzola {\n    protected final Piazzola piazzola;                    // l'oggetto avvolto\n    protected AccessorioDecorator(Piazzola p) { this.piazzola = p; }\n    public String getDescrizione() { return piazzola.getDescrizione(); }\n    public double getCosto() { return piazzola.getCosto(); }\n}\n\npublic class Corrente extends AccessorioDecorator {\n    public Corrente(Piazzola p) { super(p); }\n    @Override public String getDescrizione() { return piazzola.getDescrizione() + \", corrente\"; }\n    @Override public double getCosto() { return piazzola.getCosto() + 10.0; }\n}\npublic class Illuminazione extends AccessorioDecorator {\n    public Illuminazione(Piazzola p) { super(p); }\n    @Override public String getDescrizione() { return piazzola.getDescrizione() + \", illuminazione\"; }\n    @Override public double getCosto() { return piazzola.getCosto() + 5.0; }\n}\npublic class Musica extends AccessorioDecorator {\n    public Musica(Piazzola p) { super(p); }\n    @Override public String getDescrizione() { return piazzola.getDescrizione() + \", musica\"; }\n    @Override public double getCosto() { return piazzola.getCosto() + 8.0; }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Piazzola p = new PiazzolaNormale();\n        p = new Corrente(p);\n        p = new Illuminazione(p);\n        System.out.println(p.getDescrizione() + \" = \" + p.getCosto());\n        // Piazzola normale, corrente, illuminazione = 45.0\n\n        Piazzola q = new Musica(new Corrente(new Corrente(new PiazzolaPremium())));\n        System.out.println(q.getDescrizione() + \" = \" + q.getCosto());\n        // Piazzola premium, corrente, corrente, musica = 78.0  (doppia presa: accessorio ripetuto)\n    }\n}\n```\n\n### Come si propaga la chiamata\n\n```mermaid\nsequenceDiagram\n    participant C as Client\n    participant I as Illuminazione\n    participant K as Corrente\n    participant N as PiazzolaNormale\n    C->>I: getCosto()\n    I->>K: getCosto()\n    K->>N: getCosto()\n    N-->>K: 30\n    K-->>I: 40\n    I-->>C: 45\n```\n\nOgni strato chiama quello interno e aggiunge il proprio contributo al ritorno: è una **catena di deleghe** (una ricorsione su una lista concatenata di oggetti).\n\n## Decorator nella JDK\n\n`java.io`: `new BufferedReader(new InputStreamReader(new FileInputStream(\"f.txt\")))`. `BufferedInputStream`, `DataInputStream`, `GZIPInputStream` sono decoratori di `InputStream` (il primo aggiunge un buffer, il secondo la lettura di tipi primitivi, il terzo la decompressione). Anche `Collections.unmodifiableList(lista)` è un decoratore.\n\n## Conseguenze\n\n**Vantaggi**\n- **evita l'esplosione di sottoclassi**: n accessori = n classi, combinabili liberamente;\n- responsabilità aggiunte (e tolte) **a runtime**, anche ripetute;\n- **OCP**: nuovo accessorio = nuova classe; **SRP**: ogni decoratore fa una cosa.\n\n**Limiti**\n- **molti piccoli oggetti** simili: il sistema è più difficile da capire e da debuggare (stack di chiamate lungo);\n- **l'identità cambia**: un oggetto decorato non è `==` all'originale e `instanceof PiazzolaPremium` su una piazzola decorata è falso;\n- l'**ordine** dei decoratori può contare (es. uno sconto percentuale applicato prima o dopo un accessorio dà costi diversi);\n- difficile togliere un decoratore che sta \"in mezzo\" alla catena;\n- configurare la catena è compito del client (spesso affiancato da una Factory o un Builder).\n\n## Confronto con pattern simili\n\n| | Decorator | Composite | Adapter | Strategy |\n|---|---|---|---|---|\n| riferimento a | **un** Component | **molti** Component | un Adaptee di altro tipo | una strategia |\n| interfaccia | uguale | uguale | **convertita** | – |\n| scopo | aggiungere responsabilità | gerarchia parte-tutto | compatibilità | cambiare *l'interno* (algoritmo) |\n\nDecorator cambia \"la pelle\" dell'oggetto (lo avvolge da fuori), Strategy cambia \"le viscere\" (sostituisce un algoritmo interno).\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"accessori / opzioni / extra / supplementi / condimenti\"* che si **combinano liberamente**, *\"il costo dipende dalle aggiunte\"*, *\"aggiungere funzionalità a runtime\"*, *\"senza creare una classe per ogni combinazione\"*. Mascheramenti tipici: caffè con latte/panna/cioccolato (Head First), pizza con ingredienti, piazzole con corrente/illuminazione/musica (2022), auto con optional, pacchetto viaggio con assicurazione e bagaglio extra.\n",
+  "analogia": "È un panino al bancone: parti dal pane (oggetto base) e ogni farcitura avvolge quello che c'era: prosciutto, poi formaggio, poi salsa. Il cassiere calcola il prezzo sommando strato per strato, e puoi chiedere doppio formaggio senza che esista un 'panino con doppio formaggio' nel menu. Dove l'analogia cede: nel panino tutti gli strati sono visibili insieme, mentre nel Decorator ogni strato conosce solo quello immediatamente sotto e il client vede solo l'ultimo involucro.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Stream di I/O in Java",
+      "collegamento": "new BufferedReader(new InputStreamReader(...)) che usi per leggere file è una catena di decoratori: ogni classe aggiunge una capacità (buffer, conversione) mantenendo l'interfaccia di lettura."
+    },
+    {
+      "conoscenza": "Liste concatenate e ricorsione (Fondamenti)",
+      "collegamento": "La catena di decoratori è una lista concatenata di oggetti: getCosto() è una ricorsione che termina sull'oggetto base (caso base) e somma al ritorno."
+    },
+    {
+      "conoscenza": "Interfacce e delega in Java",
+      "collegamento": "Il decoratore implementa la stessa interfaccia e delega al campo avvolto: la tecnica della delega che hai visto come alternativa all'ereditarietà."
+    },
+    {
+      "conoscenza": "Principio Open/Closed e SRP",
+      "collegamento": "Un nuovo accessorio è una nuova classe, senza modificare piazzole né altri accessori; ogni decoratore ha una sola responsabilità.",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Associazioni e molteplicità UML",
+      "collegamento": "Nel diagramma va mostrata la doppia relazione: realizzazione verso Piazzola e associazione con molteplicità 1 verso Piazzola.",
+      "nodo": "uml-associazioni-molteplicita"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Prova 9/6/2022 (da sintesi), 1.4: piazzole con accessori",
+      "problema": "Rappresentare caratteristiche e costo delle piazzole del mercato in base agli accessori opzionali (corrente, illuminazione, musica). Giustificare la scelta, class diagram e classi minime. Calcolare il costo di una piazzola premium (50 €) con illuminazione (5 €) e musica (8 €). Prezzi di esempio.",
+      "passi": [
+        "Riconosco il segnale: accessori opzionali combinabili che modificano costo e descrizione di un oggetto base → Decorator.",
+        "Scarto l'alternativa: con l'ereditarietà servirebbero 2 × 2³ = 16 classi; con i flag booleani ogni nuovo accessorio modifica la classe Piazzola (OCP violato).",
+        "Ruoli: Component = interface Piazzola { getDescrizione(); getCosto(); }; ConcreteComponent = PiazzolaNormale, PiazzolaPremium; Decorator = abstract AccessorioDecorator implements Piazzola con campo Piazzola; ConcreteDecorator = Corrente, Illuminazione, Musica.",
+        "Class diagram: realizzazioni verso Piazzola, AccessorioDecorator o-- 1 Piazzola, generalizzazioni dei tre accessori verso AccessorioDecorator.",
+        "Calcolo: new Musica(new Illuminazione(new PiazzolaPremium())).getCosto() = 50 + 5 + 8 = 63 €.",
+        "Limite: molti piccoli oggetti, debug meno immediato, l'ordine conta se si introducono sconti percentuali."
+      ],
+      "soluzione": "Decorator: Piazzola (Component), PiazzolaNormale/Premium (ConcreteComponent), AccessorioDecorator (Decorator astratto che implementa e contiene Piazzola), Corrente/Illuminazione/Musica (ConcreteDecorator). Premium + illuminazione + musica = 63 €. Motivazione: combinazioni libere a runtime senza esplosione di sottoclassi (OCP). Limite: molti oggetti piccoli, identità e ordine.",
+      "perche_funziona": "Ogni elemento dello scenario (oggetto base, accessori, costo cumulativo) corrisponde a un ruolo del pattern, e l'alternativa scartata con il conto delle classi rende la motivazione quantitativa."
+    },
+    {
+      "titolo": "L'ordine dei decoratori conta?",
+      "problema": "Si aggiunge un decoratore ScontoFedelta che applica -10% al costo dell'oggetto avvolto. Piazzola normale 30 €, Corrente +10 €. Confronta new Corrente(new ScontoFedelta(base)) e new ScontoFedelta(new Corrente(base)).",
+      "passi": [
+        "Primo caso: ScontoFedelta(base) = 30 × 0,9 = 27; Corrente aggiunge 10 → 37 €.",
+        "Secondo caso: Corrente(base) = 40; ScontoFedelta → 40 × 0,9 = 36 €.",
+        "Le due catene danno costi diversi: il decoratore percentuale non commuta con quelli additivi.",
+        "Soluzione progettuale: documentare l'ordine o applicare lo sconto fuori dalla catena (ad esempio una Strategy di prezzo applicata sul totale)."
+      ],
+      "soluzione": "37 € contro 36 €: l'ordine conta. Lo sconto va applicato per ultimo (più esterno) o modellato separatamente.",
+      "perche_funziona": "Ogni decoratore lavora sul risultato di quello interno; operazioni non commutative (moltiplicazione e somma) rendono l'ordine significativo, ed è un limite concreto da citare."
+    }
+  ],
+  "errori_comuni": [
+    "Far estendere ai decoratori la classe concreta base (Corrente extends PiazzolaNormale): si perde la possibilità di decorare una premium.",
+    "Dimenticare che il Decorator deve implementare la stessa interfaccia del Component: senza, non si possono impilare decoratori.",
+    "Non delegare all'oggetto avvolto (getCosto restituisce solo il prezzo dell'accessorio): il costo totale si perde.",
+    "Disegnare solo la generalizzazione senza l'associazione verso il Component (o viceversa).",
+    "Confondere Decorator con Composite (uno contro molti) o con Adapter (interfaccia uguale contro convertita).",
+    "Proporre un booleano per accessorio nella classe base: viola OCP ed è proprio ciò che il pattern evita."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Decorator?",
+      "risposta": "Aggiungere dinamicamente responsabilità a un oggetto avvolgendolo in oggetti con la stessa interfaccia, come alternativa flessibile all'ereditarietà."
+    },
+    {
+      "domanda": "Quali due relazioni ha il Decorator astratto con il Component?",
+      "risposta": "Lo implementa/estende (è un Component, quindi è sostituibile e impilabile) e lo contiene (ha un Component a cui delegare)."
+    },
+    {
+      "domanda": "Quante classi servono con l'ereditarietà per 2 tipi base e 4 accessori combinabili, e quante con Decorator?",
+      "risposta": "Con l'ereditarietà 2 × 2⁴ = 32 classi; con Decorator 2 classi base + 1 decoratore astratto + 4 decoratori concreti (più l'interfaccia)."
+    },
+    {
+      "domanda": "Cita due limiti del pattern.",
+      "risposta": "Molti piccoli oggetti e debug più difficile; l'identità dell'oggetto cambia (instanceof e == non funzionano sull'oggetto decorato); l'ordine dei decoratori può influire sul risultato."
+    },
+    {
+      "domanda": "Esempio di Decorator nella JDK?",
+      "risposta": "Gli stream di java.io: BufferedInputStream, DataInputStream, GZIPInputStream decorano un InputStream; BufferedReader decora un Reader."
+    }
+  ],
+  "riepilogo": "Decorator (strutturale): aggiunge responsabilità a runtime avvolgendo l'oggetto.\nIl Decorator è un Component e ha un Component: delega e aggiunge (costo, descrizione).\nEvita l'esplosione di sottoclassi: n accessori = n classi combinabili (OCP).\nLimiti: molti oggetti piccoli, identità cambiata, ordine significativo.\nScenario tipico: accessori/optional con costo (piazzole 2022, caffè, pizza)."
+}

@@ -1,0 +1,90 @@
+{
+  "intuizione": "La path analysis usa la complessità ciclomatica come numero di test da progettare: se V(G) = 4, si scelgono 4 cammini linearmente indipendenti nel grafo di flusso (ognuno percorre almeno un arco nuovo), si ricavano a ritroso gli input che li fanno percorrere e si scrive per ciascuno l'output atteso. Il risultato, la basis path coverage, garantisce automaticamente la copertura di tutte le istruzioni e di tutte le decisioni.",
+  "spiegazione": "## Dalla metrica alla tecnica di test\n\nIl **basis path testing** (McCabe) è una tecnica white box in quattro passi:\n1. disegnare il **CFG** del metodo;\n2. calcolare **V(G)** (almeno due formule, per controllo);\n3. scegliere un **insieme di base** di V(G) cammini linearmente indipendenti;\n4. per ogni cammino, trovare un **input** che lo percorra e l'**output atteso**.\n\nOgni altro cammino del grafo si ottiene come combinazione (sugli archi) dei cammini di base; per questo l'insieme si chiama \"di base\", come una base di uno spazio vettoriale.\n\n## Come scegliere i cammini di base (metodo del \"cammino guida\")\n\n1. Si parte da un cammino **base** realistico, di solito il più semplice dall'ingresso all'uscita.\n2. Si costruisce il cammino successivo **invertendo una sola decisione** del precedente (la prima non ancora invertita) e completando nel modo più semplice.\n3. Si ripete finché ogni decisione è stata invertita: si ottengono esattamente V(G) cammini, ognuno con almeno un arco nuovo.\n\n## Esempio d'esame (prova del 5/11/2025, domanda 3.3)\n\n```java\npublic static int method(int a, int b) {\n/*1*/ if (a < 0) a = b;\n/*2*/ a = a + b;\n/*3*/ while (a < 0) {\n/*4*/     if (b % 2 == 0) b = b / 2;\n/*5*/     a += 3;\n      }\n/*6*/ return a;\n}\n```\n\n```mermaid\nflowchart TD\n    N1{\"1: a #lt; 0 ?\"} -- T --> N1b[\"1a: a = b\"]\n    N1 -- F --> N2[\"2: a = a + b\"]\n    N1b --> N2\n    N2 --> N3{\"3: a #lt; 0 ?\"}\n    N3 -- T --> N4{\"4: b % 2 == 0 ?\"}\n    N4 -- T --> N4b[\"4a: b = b / 2\"]\n    N4 -- F --> N5[\"5: a += 3\"]\n    N4b --> N5\n    N5 --> N3\n    N3 -- F --> N6[\"6: return a\"]\n```\n\nNodi: 1, 1a, 2, 3, 4, 4a, 5, 6 → N = 8. Archi: 1→1a, 1→2, 1a→2, 2→3, 3→4, 3→6, 4→4a, 4→5, 4a→5, 5→3 → E = 10. **V(G) = 10 − 8 + 2 = 4** = 3 predicati + 1.\n\n### Insieme di base\n\n| # | cammino | arco nuovo | input (a, b) | traccia | output |\n|---|---|---|---|---|---|\n| P1 | 1-2-3-6 | (base) | (1, 1) | 1F; a = 2; 3F | 2 |\n| P2 | 1-1a-2-3-6 | 1→1a | (−1, 1) | 1T a = 1; a = 2; 3F | 2 |\n| P3 | 1-2-3-4-5-3-6 | 3→4, 4→5, 5→3 | (0, −1) | 1F; a = −1; 3T; 4F (−1 % 2 = −1); a = 2; 3F | 2 |\n| P4 | 1-2-3-4-4a-5-3-6 | 4→4a | (0, −2) | 1F; a = −2; 3T; 4T b = −1; a = 1; 3F | 1 |\n\nAttenzione al dettaglio Java: con b negativo e dispari `b % 2` vale **−1**, non 1, quindi la condizione `b % 2 == 0` è falsa, come voluto.\n\n### Confronto con statement e decision coverage\n\n- **Statement coverage**: basta **1 test**, ad esempio (a = −2, b = −2): 1T a = −2; a = −4; 3T; 4T b = −1; a = −1; 3T; 4F; a = 2; 3F → 2. Percorre tutti i nodi.\n- **Decision coverage**: quel test copre 1T, 3T, 3F, 4T, 4F; manca **1F** → serve un secondo test, ad esempio (1, 1). **2 test**.\n- **Basis path**: **4 test** = V(G).\n\nGerarchia: statement ≤ decision ≤ basis path ≤ tutti i cammini (che con il while sono potenzialmente infiniti). V(G) è quindi un **limite superiore** ai test della decision coverage.\n\n## Cammini non eseguibili\n\nNon tutti i cammini del grafo sono percorribili: se due decisioni dipendono dalla stessa variabile, alcune combinazioni sono impossibili (infeasible path).\n\n```java\nif (x > 0) y = 1;      // D1\nif (x > 0) z = 2;      // D2: stessa condizione\n```\nI cammini D1 = T con D2 = F non esistono. Se un cammino di base è infeasible, lo si sostituisce con un altro cammino indipendente percorribile; se non ce ne sono, è un segnale di **codice ridondante o morto** da rifattorizzare.\n\n## Perché è utile anche fuori dai test\n\n- V(G) alto → molti test necessari → costo di test e manutenzione alto: indicazione oggettiva per spezzare il metodo.\n- Il numero di cammini di base è un criterio di **adeguatezza**: se ho meno di V(G) test, sicuramente esiste un cammino indipendente non esercitato.\n",
+  "analogia": "Pensa a un ispettore che deve verificare la segnaletica di un quartiere con alcuni sensi unici e una rotonda. Invece di percorrere tutti i percorsi possibili (infiniti, perché può girare nella rotonda quante volte vuole), sceglie un percorso base e poi ne aggiunge uno nuovo per ogni svolta diversa: dopo V(G) giri ha percorso ogni tratto in almeno un contesto nuovo. Dove l'analogia cede: nel programma alcune svolte sono vincolate da quelle precedenti (cammini non eseguibili), cosa che in un quartiere non succede.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Calcolare la complessità ciclomatica",
+      "collegamento": "Qui V(G) smette di essere un numero e diventa il numero di test da progettare.",
+      "nodo": "metrica-complessita-ciclomatica"
+    },
+    {
+      "conoscenza": "Grafo di flusso di controllo",
+      "collegamento": "I cammini si leggono sul CFG: ogni arco nuovo corrisponde a un esito di decisione non ancora esercitato.",
+      "nodo": "grafo-flusso-controllo"
+    },
+    {
+      "conoscenza": "Criteri di copertura",
+      "collegamento": "La basis path coverage implica decision e statement coverage: è il criterio più forte dei tre tra quelli praticabili.",
+      "nodo": "criteri-copertura"
+    },
+    {
+      "conoscenza": "Basi e indipendenza lineare (algebra lineare)",
+      "collegamento": "Rappresentando un cammino come vettore dei conteggi degli archi, i cammini di base sono vettori linearmente indipendenti e gli altri ne sono combinazioni."
+    },
+    {
+      "conoscenza": "Operatore % in Java con numeri negativi",
+      "collegamento": "Il resto ha il segno del dividendo: -1 % 2 = -1. Serve per costruire correttamente gli input dei cammini."
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Basis path per un metodo di sconto",
+      "problema": "static double sconto(double totale, boolean tessera) { double s = 0; if (tessera) s = 0.05; if (totale > 100) s += 0.05; return totale * (1 - s); } (percentuali inventate). Trova V(G), un insieme di cammini di base con i test, e confronta con decision coverage e copertura di tutti i cammini.",
+      "passi": [
+        "CFG: 1 (s = 0) → D1 (tessera?) T → A (s = 0.05) → D2; D1 F → D2; D2 (totale > 100?) T → B (s += 0.05) → R; D2 F → R (return).",
+        "N = 6 (1, D1, A, D2, B, R); E = 7 (1→D1, D1→A, D1→D2, A→D2, D2→B, D2→R, B→R) → V = 7 − 6 + 2 = 3 = 2 predicati + 1.",
+        "P1 base FF: (totale = 100, tessera = false) → 100.0.",
+        "P2 inverto D1: TF: (100, true) → 95.0.",
+        "P3 inverto D2 rispetto al base: FT: (150, false) → 142.5.",
+        "Decision coverage: bastano 2 test (TT e FF), ad esempio (150, true) → 135.0 e (100, false) → 100.0.",
+        "Tutti i cammini: 4 (TT, TF, FT, FF); la basis path non include TT, che è combinazione degli altri sugli archi."
+      ],
+      "soluzione": "V(G) = 3; test di base (100, false) → 100.0, (100, true) → 95.0, (150, false) → 142.5. Decision coverage: 2 test; tutti i cammini: 4.",
+      "perche_funziona": "Invertire una decisione alla volta rispetto al cammino base garantisce che ogni cammino aggiunga un arco nuovo, quindi l'indipendenza; l'esempio mostra concretamente la gerarchia decision ≤ basis path ≤ tutti i cammini (2 ≤ 3 ≤ 4). Il valore limite 100 verifica anche che l'uguaglianza non dia lo sconto."
+    },
+    {
+      "titolo": "Quanti test per method della prova 2025",
+      "problema": "Per method(int a, int b) della prova del 5/11/2025 (codice nella spiegazione): quanti test servono per statement, decision e basis path coverage? Fornisci gli input.",
+      "passi": [
+        "CFG con N = 8, E = 10 → V(G) = 4.",
+        "Statement: un cammino che passa per 1a, 4a e 5: serve a < 0 e, dopo a = b + b, a < 0 con b pari → (−2, −2) → output 2. 1 test.",
+        "Decision: manca 1F → aggiungo (1, 1) → 2. 2 test.",
+        "Basis path: (1, 1) → 2; (−1, 1) → 2; (0, −1) → 2; (0, −2) → 1. 4 test.",
+        "Verifico le tracce, in particolare −1 % 2 = −1 in Java (4F)."
+      ],
+      "soluzione": "Statement 1 test (−2, −2); decision 2 test (−2, −2), (1, 1); basis path 4 test (1, 1), (−1, 1), (0, −1), (0, −2).",
+      "perche_funziona": "Ogni criterio chiede di esercitare un insieme diverso di elementi del CFG (nodi, esiti delle decisioni, cammini indipendenti); ragionando all'indietro dal cammino voluto e verificando con una traccia in avanti si evitano input sbagliati."
+    }
+  ],
+  "errori_comuni": [
+    "Scegliere cammini che non aggiungono archi nuovi: non sono indipendenti e il conteggio V(G) non è rispettato.",
+    "Dimenticare l'output atteso: un test senza oracolo non è un test.",
+    "Assumere che b % 2 valga 1 per b negativo dispari: in Java vale -1.",
+    "Credere che la basis path copra tutti i cammini: con cicli i cammini possono essere infiniti, e combinazioni come TT possono restare non eseguite.",
+    "Non accorgersi che un cammino scelto è infeasible e proporre comunque un input che in realtà percorre un altro cammino."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa garantisce la basis path coverage rispetto a statement e decision coverage?",
+      "risposta": "Le implica entrambe: un insieme di V(G) cammini indipendenti percorre tutti gli archi, quindi ogni nodo e ogni esito di decisione."
+    },
+    {
+      "domanda": "Come si costruisce un insieme di cammini di base?",
+      "risposta": "Si parte da un cammino base e si genera ogni cammino successivo invertendo una decisione alla volta, finché tutte sono state invertite: si ottengono V(G) cammini con almeno un arco nuovo ciascuno."
+    },
+    {
+      "domanda": "Che cos'è un cammino non eseguibile?",
+      "risposta": "Un cammino del CFG che nessun input può percorrere, tipicamente perché decisioni diverse dipendono dalle stesse variabili in modo correlato."
+    },
+    {
+      "domanda": "Un metodo ha V(G) = 6. Quanti test servono al massimo per la decision coverage?",
+      "risposta": "Al massimo 6 (V(G) è un limite superiore); spesso ne bastano meno."
+    },
+    {
+      "domanda": "Perché V(G) è utile anche come indicatore di manutenibilità?",
+      "risposta": "Perché misura quanti cammini indipendenti ci sono da capire e testare: un valore alto significa costi di test e di modifica alti e suggerisce di spezzare il metodo."
+    }
+  ],
+  "riepilogo": "Basis path testing: CFG → V(G) → V(G) cammini indipendenti → input e output attesi.\nOgni cammino nuovo inverte una decisione e aggiunge almeno un arco.\nGerarchia: statement ≤ decision ≤ basis path ≤ tutti i cammini.\nProva 2025: V(G) = 4; 1 test per statement, 2 per decision, 4 per basis path.\nAttenzione ai cammini non eseguibili e a % con i negativi in Java."
+}

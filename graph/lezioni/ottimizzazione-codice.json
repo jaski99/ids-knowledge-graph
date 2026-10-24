@@ -1,0 +1,88 @@
+{
+  "intuizione": "Ottimizzare vuol dire rendere il codice più veloce o meno affamato di memoria, ma farlo troppo presto è uno degli errori più costosi: si complica il codice in punti che non sono il collo di bottiglia. La regola è 'make it work, make it right, make it fast': prima corretto, poi pulito, poi veloce. E si ottimizza solo dopo aver misurato con un profiler dove si spende davvero il tempo, di solito in pochissimi punti.",
+  "spiegazione": "## La citazione di Knuth\n\nDonald Knuth, *Structured Programming with go to Statements* (1974):\n\n> \"We should forget about small efficiencies, say about 97% of the time: **premature optimization is the root of all evil**. Yet we should not pass up our opportunities in that critical 3%.\"\n\nLa frase viene spesso citata a metà. Il senso completo ha due parti:\n1. nella grande maggioranza del codice le micro-ottimizzazioni non servono e peggiorano leggibilità e manutenibilità;\n2. ma c'è un **3% critico** in cui l'ottimizzazione conta, e va individuato **misurando**, non indovinando.\n\n## Make it work, make it right, make it fast\n\nFormula attribuita a Kent Beck, che dà l'ordine delle priorità:\n1. **work**: il codice è corretto e i test passano;\n2. **right**: il codice è pulito (buone pratiche, refactoring), quindi facile da modificare;\n3. **fast**: solo se i requisiti di prestazione non sono soddisfatti, lo si rende veloce dove serve.\n\nOttimizzare un codice sbagliato o confuso significa ottimizzare la cosa sbagliata, e il codice ottimizzato è più difficile da correggere.\n\n## Perché l'ottimizzazione prematura è dannosa\n\n- il programmatore **sbaglia quasi sempre a indovinare** dove sta il collo di bottiglia;\n- il codice ottimizzato è **più complesso** (V(G) più alta, meno leggibile, più bug);\n- si spende tempo su parti irrilevanti per il tempo totale;\n- compilatori e JIT (la JVM HotSpot) fanno già molte micro-ottimizzazioni da soli.\n\n## Il processo corretto\n\n```mermaid\nflowchart TD\n    R[Requisito di prestazione misurabile] --> M[Misura: benchmark e profiler]\n    M --> H{Requisito soddisfatto?}\n    H -- si --> STOP[Fermati]\n    H -- no --> P[Individua i punti caldi]\n    P --> A[Migliora algoritmo e strutture dati]\n    A --> T[Test di regressione verdi]\n    T --> M\n```\n\n1. Avere un **obiettivo misurabile** (es. \"la ricerca risponde in meno di 200 ms con 10.000 prodotti\").\n2. **Misurare** con un **profiler** (es. VisualVM, Java Flight Recorder) e benchmark ripetibili (in Java JMH, per evitare gli effetti del warm-up del JIT).\n3. Trovare i **punti caldi**: per la regola 80/20 (Pareto) la maggior parte del tempo si spende in una piccola parte del codice.\n4. Intervenire prima su **algoritmo e strutture dati** (complessità asintotica), poi su I/O e accessi al database, solo alla fine sulle micro-ottimizzazioni.\n5. **Rieseguire i test** (correttezza invariata) e **rimisurare** (miglioramento reale?).\n\n## Legge di Amdahl\n\nSe una parte che occupa la frazione p del tempo viene accelerata di un fattore s, lo speedup complessivo è:\n\nS = 1 / ((1 − p) + p / s)\n\nAccelerare di 10 volte una funzione che occupa il 5% del tempo dà S = 1 / (0.95 + 0.005) ≈ 1.05: un guadagno del 5%. Ecco perché bisogna misurare prima.\n\n## Esempio: l'algoritmo conta più dei trucchi\n\n```java\nimport java.util.*;\n\npublic class Main {\n    // O(n*m): contains su List scorre tutta la lista\n    static int comuniLenta(List<String> clienti, List<String> iscrittiNewsletter) {\n        int c = 0;\n        for (String x : clienti) if (iscrittiNewsletter.contains(x)) c++;\n        return c;\n    }\n    // O(n+m): contains su HashSet costa O(1) in media\n    static int comuniVeloce(List<String> clienti, List<String> iscrittiNewsletter) {\n        Set<String> iscritti = new HashSet<>(iscrittiNewsletter);\n        int c = 0;\n        for (String x : clienti) if (iscritti.contains(x)) c++;\n        return c;\n    }\n    public static void main(String[] args) {\n        List<String> a = new ArrayList<>(), b = new ArrayList<>();\n        for (int i = 0; i < 20000; i++) { a.add(\"c\" + i); b.add(\"c\" + (i * 2)); }\n        int r1 = comuniLenta(a, b), r2 = comuniVeloce(a, b);\n        if (r1 != r2) throw new AssertionError();\n        System.out.println(\"Stesso risultato: \" + r1);\n    }\n}\n```\nCambiare struttura dati rende il metodo asintoticamente più veloce **senza** renderlo meno leggibile. Un altro classico Java: concatenare stringhe in un ciclo con `+` crea un oggetto nuovo a ogni iterazione; `StringBuilder` lo evita.\n\n## Ottimizzazione, refactoring e progettazione\n\n- Il refactoring mira alla leggibilità, l'ottimizzazione alle prestazioni: spesso tirano in direzioni opposte.\n- Un codice ben strutturato è **più facile da ottimizzare**: il punto caldo è isolato in un metodo, lo si sostituisce senza toccare il resto (es. una Strategy più efficiente).\n- Le scelte **architetturali** (caching, indici sul database, numero di chiamate di rete) non sono ottimizzazioni premature: vanno considerate in progettazione, se ci sono requisiti di prestazione noti.\n",
+  "analogia": "È come voler arrivare prima al lavoro: prima di comprare pneumatici sportivi (micro-ottimizzazione) conviene cronometrare il tragitto e scoprire che 20 dei 30 minuti si perdono nel parcheggio. Cambiare parcheggio (algoritmo) vale più di qualunque modifica al motore. L'analogia cede su un punto: nel software misurare è economico e preciso grazie al profiler, quindi non ci sono scuse per indovinare.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Complessità computazionale (O grande)",
+      "collegamento": "Il guadagno vero viene quasi sempre dal passare a un algoritmo o a una struttura dati di complessità inferiore, ad esempio da O(n·m) a O(n+m)."
+    },
+    {
+      "conoscenza": "Collezioni Java (ArrayList, HashSet, HashMap)",
+      "collegamento": "contains su ArrayList è lineare, su HashSet costante in media: scegliere la collezione giusta è la prima ottimizzazione."
+    },
+    {
+      "conoscenza": "Refactoring",
+      "collegamento": "Prima si rende il codice pulito (make it right), poi lo si velocizza; refactoring e ottimizzazione non cambiano il comportamento ma hanno scopi diversi.",
+      "nodo": "refactoring"
+    },
+    {
+      "conoscenza": "Requisiti non funzionali",
+      "collegamento": "Si ottimizza per soddisfare un requisito di prestazione misurabile, non per gusto personale."
+    },
+    {
+      "conoscenza": "Buone pratiche di programmazione",
+      "collegamento": "KISS e la leggibilità sono il valore che l'ottimizzazione prematura sacrifica.",
+      "nodo": "buone-pratiche-programmazione"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Risposta alla domanda d'esame sull'ottimizzazione (prova 2022)",
+      "problema": "Domanda (dalla sintesi della prova del 9/6/2022): 'Discutere l'ottimizzazione del codice per la velocità.' Imposta una risposta di circa 12 righe.",
+      "passi": [
+        "Apertura: l'ottimizzazione migliora tempo o memoria senza cambiare il comportamento; ha un costo in leggibilità e manutenibilità.",
+        "Knuth (1974): 'premature optimization is the root of all evil' circa nel 97% dei casi, ma non bisogna perdere le occasioni nel 3% critico.",
+        "Ordine: make it work, make it right, make it fast (Kent Beck).",
+        "Processo: obiettivo misurabile → profiling → punti caldi (regola 80/20) → algoritmi e strutture dati prima delle micro-ottimizzazioni → test di regressione → nuova misura.",
+        "Esempio: List.contains in un ciclo (O(n·m)) sostituito da HashSet (O(n+m)).",
+        "Legge di Amdahl come argomento per misurare prima di ottimizzare.",
+        "Chiusura: un design pulito rende più facile ottimizzare i punti caldi isolandoli."
+      ],
+      "soluzione": "Risposta in 6-7 blocchi: definizione e costo, Knuth completo, work/right/fast, processo con profiler, esempio algoritmico, Amdahl, legame con il design.",
+      "perche_funziona": "Ogni blocco corrisponde a un elemento noto del tema (citazione, priorità, processo, esempio); l'esempio concreto e la legge di Amdahl trasformano lo slogan in un ragionamento verificabile."
+    },
+    {
+      "titolo": "Dove conviene ottimizzare? Legge di Amdahl",
+      "problema": "Il profiler mostra che nella generazione del report mensile delle piscine il 70% del tempo è nella query al database, il 20% nel calcolo delle statistiche, il 10% nella formattazione. Puoi rendere 2 volte più veloce la query (indice) oppure 10 volte più veloce la formattazione. Quale scegli?",
+      "passi": [
+        "Query: p = 0.7, s = 2 → S = 1 / (0.3 + 0.35) = 1 / 0.65 ≈ 1.54.",
+        "Formattazione: p = 0.1, s = 10 → S = 1 / (0.9 + 0.01) = 1 / 0.91 ≈ 1.10.",
+        "La query dà +54%, la formattazione +10% nonostante il fattore 10.",
+        "Scelgo l'indice sulla query, poi misuro di nuovo: le proporzioni cambiano e il prossimo punto caldo potrebbe essere un altro."
+      ],
+      "soluzione": "Ottimizzare la query: speedup ≈ 1.54 contro ≈ 1.10.",
+      "perche_funziona": "Lo speedup complessivo è limitato dalla frazione di tempo non migliorata: conviene intervenire sulla parte che pesa di più, ed è proprio ciò che il profiler rivela."
+    }
+  ],
+  "errori_comuni": [
+    "Citare solo 'premature optimization is the root of all evil' senza la seconda parte sul 3% critico.",
+    "Ottimizzare senza misurare, basandosi sull'intuito.",
+    "Partire dalle micro-ottimizzazioni invece che da algoritmi e strutture dati.",
+    "Non rieseguire i test dopo l'ottimizzazione: un codice veloce ma sbagliato è inutile.",
+    "Considerare 'prematura' qualunque attenzione alle prestazioni: le scelte architetturali con requisiti noti vanno fatte in progettazione."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa intende Knuth con 'premature optimization is the root of all evil'?",
+      "risposta": "Che nel 97% circa del codice le piccole ottimizzazioni non valgono il costo in complessità; vanno invece cercate, misurando, nel 3% critico."
+    },
+    {
+      "domanda": "Che cosa significa 'make it work, make it right, make it fast'?",
+      "risposta": "Prima rendere il codice corretto, poi pulito e ben strutturato, infine veloce, e solo dove serve."
+    },
+    {
+      "domanda": "A che cosa serve un profiler?",
+      "risposta": "A misurare dove il programma spende tempo e memoria, per trovare i punti caldi su cui intervenire."
+    },
+    {
+      "domanda": "Una funzione occupa il 10% del tempo e la rendi infinitamente veloce: quale speedup massimo ottieni?",
+      "risposta": "S = 1 / 0.9 ≈ 1.11: al massimo un guadagno dell'11% circa (legge di Amdahl)."
+    },
+    {
+      "domanda": "Perché un codice ben strutturato è più facile da ottimizzare?",
+      "risposta": "Perché i punti caldi sono isolati in metodi o classi con responsabilità chiare e si possono sostituire senza toccare il resto, con i test che verificano la correttezza."
+    }
+  ],
+  "riepilogo": "Knuth: dimentica le piccole efficienze nel 97% dei casi, non perdere il 3% critico.\nMake it work, make it right, make it fast.\nMisura con profiler e benchmark; intervieni sui punti caldi (80/20).\nPrima algoritmo e strutture dati, poi micro-ottimizzazioni; test e nuova misura.\nAmdahl: S = 1 / ((1 − p) + p / s)."
+}

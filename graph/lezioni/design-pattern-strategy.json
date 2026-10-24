@@ -1,0 +1,87 @@
+{
+  "intuizione": "Lo stesso compito si può svolgere con algoritmi diversi: calcolare il prezzo con o senza sconto fedeltà, spedire con corriere o ritiro in negozio. Invece di un grande if che sceglie l'algoritmo dentro la classe, Strategy mette ogni algoritmo in una propria classe dietro un'interfaccia comune. La classe che lo usa tiene un riferimento alla strategia corrente e glielo delega; cambiare algoritmo significa passare un altro oggetto, anche a runtime.",
+  "spiegazione": "## Il problema\n\nNel caso farmacia (prova 5/11/2025) i clienti con tessera fedeltà, *superata una soglia di spesa cumulativa*, ottengono uno *sconto sulle transazioni successive*. Domani potrebbero arrivare il \"Black Friday -20%\" o il \"3x2 sui cosmetici\". Implementazione ingenua:\n\n```java\nclass Carrello {\n    double totale(String tipoPrezzo) {\n        double lordo = calcolaLordo();\n        if (tipoPrezzo.equals(\"standard\")) return lordo;\n        else if (tipoPrezzo.equals(\"fedelta\")) return lordo * 0.9;\n        else if (tipoPrezzo.equals(\"blackfriday\")) return lordo * 0.8;\n        // ogni nuova politica: modifico Carrello\n        return lordo;\n    }\n}\n```\n\n`Carrello` mescola due responsabilità (gestire le righe e conoscere tutte le politiche di prezzo), viola OCP e non si può testare una politica isolata.\n\n## La soluzione\n\n**Strategy** (GoF, *comportamentale*): *definisce una famiglia di algoritmi, incapsula ciascuno di essi e li rende intercambiabili; Strategy permette all'algoritmo di variare indipendentemente dai client che lo usano.*\n\nRuoli:\n- **Strategy**: interfaccia comune all'algoritmo (`PoliticaPrezzo`).\n- **ConcreteStrategy**: implementazioni (`PrezzoPieno`, `ScontoFedelta`, `ScontoPercentuale`).\n- **Context**: usa una Strategy tramite l'interfaccia, ricevendola dall'esterno (`Carrello`).\n\n```mermaid\nclassDiagram\n    class Carrello {\n        -List~Riga~ righe\n        -PoliticaPrezzo politica\n        +aggiungi(Riga r) void\n        +setPolitica(PoliticaPrezzo p) void\n        +totale() double\n    }\n    class PoliticaPrezzo {\n        <<interface>>\n        +applica(double lordo) double\n    }\n    class PrezzoPieno\n    class ScontoPercentuale {\n        -double percento\n    }\n    class ScontoFedelta {\n        -double sogliaRaggiunta\n    }\n    Carrello o-- \"1\" PoliticaPrezzo\n    PoliticaPrezzo <|.. PrezzoPieno\n    PoliticaPrezzo <|.. ScontoPercentuale\n    PoliticaPrezzo <|.. ScontoFedelta\n```\n\n## Codice Java completo\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic interface PoliticaPrezzo {\n    double applica(double lordo);\n}\n\npublic class PrezzoPieno implements PoliticaPrezzo {\n    public double applica(double lordo) { return lordo; }\n}\n\npublic class ScontoPercentuale implements PoliticaPrezzo {\n    private final double percento;\n    public ScontoPercentuale(double percento) { this.percento = percento; }\n    public double applica(double lordo) { return lordo * (1 - percento / 100.0); }\n}\n\npublic record Riga(String prodotto, double prezzoUnitario, int quantita) {\n    double importo() { return prezzoUnitario * quantita; }\n}\n\npublic class Carrello {\n    private final List<Riga> righe = new ArrayList<>();\n    private PoliticaPrezzo politica = new PrezzoPieno();          // default\n\n    public void aggiungi(Riga r) { righe.add(r); }\n    public void setPolitica(PoliticaPrezzo p) { this.politica = p; } // intercambiabile a runtime\n    public double totale() {\n        double lordo = 0;\n        for (Riga r : righe) lordo += r.importo();\n        return politica.applica(lordo);                              // delega\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Carrello c = new Carrello();\n        c.aggiungi(new Riga(\"Crema\", 12.0, 2));\n        c.aggiungi(new Riga(\"Vitamine\", 8.0, 1));\n        System.out.println(c.totale());                    // 32.0\n        c.setPolitica(new ScontoPercentuale(10));          // cliente oltre la soglia\n        System.out.println(c.totale());                    // 28.8\n        c.setPolitica(lordo -> Math.max(0, lordo - 5));    // buono da 5 euro come lambda\n        System.out.println(c.totale());                    // 27.0\n    }\n}\n```\n\nPoiché `PoliticaPrezzo` ha un solo metodo astratto è una **interfaccia funzionale**: una strategia si può scrivere come **lambda**. In Java moderno Strategy è ovunque: `Comparator` passato a `list.sort(...)` è una strategia di ordinamento.\n\n```java\nList<String> nomi = new ArrayList<>(List.of(\"Rossi\", \"Bianchi\", \"Verdi\"));\nnomi.sort(Comparator.naturalOrder());                 // strategia 1\nnomi.sort(Comparator.comparing(String::length));      // strategia 2\n```\n\n## Chi sceglie la strategia?\n\nIl **client** (o chi configura il Context): ad esempio dopo ogni acquisto il sistema verifica il cumulativo della tessera e, se supera la soglia, imposta `ScontoPercentuale` sul carrello della transazione successiva. La regola \"quando scatta lo sconto\" resta fuori dalle strategie, che calcolano soltanto.\n\n## Conseguenze\n\n**Vantaggi**\n- **OCP**: nuova politica = nuova classe; `Carrello` non cambia;\n- **SRP**: ogni algoritmo nella sua classe, testabile in isolamento;\n- **elimina le catene di if/switch** sul tipo di algoritmo;\n- **composizione** invece di ereditarietà: l'algoritmo cambia a runtime (con l'ereditarietà sarebbe fissato creando `CarrelloScontato extends Carrello`).\n\n**Limiti**\n- il client **deve conoscere le strategie** per sceglierne una;\n- **più oggetti/classi** (mitigato dalle lambda);\n- l'interfaccia deve andare bene per tutte le strategie: alcune ricevono dati che non usano;\n- comunicazione Context-Strategy: se la strategia ha bisogno di molti dati del Context, l'accoppiamento sale.\n\n## Confronti\n\n| | Strategy | State | Template Method | Decorator |\n|---|---|---|---|---|\n| meccanismo | composizione | composizione | **ereditarietà** | composizione |\n| varia | l'**intero** algoritmo | il comportamento per **stato** | alcuni **passi** di un algoritmo fisso | aggiunge **strati** |\n| chi sceglie | il client | gli stati stessi | la sottoclasse scelta a compile time | il client che impila |\n\nStrategy e Template Method risolvono lo stesso problema (\"algoritmo che varia\") con meccanismi opposti: delega a un oggetto contro sottoclassi che riempiono i passi.\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"diverse modalità di calcolo / politiche / criteri / tariffe\"*, *\"l'utente sceglie come…\"*, *\"in futuro potranno essere aggiunte altre modalità\"*, *\"il calcolo dipende dal tipo di cliente/abbonamento\"*. Esempi: politiche di sconto, metodi di pagamento, criteri di ordinamento di una classifica, algoritmi di estrazione di una lotteria, tariffe di spedizione.\n",
+  "analogia": "È il navigatore che ti chiede 'percorso più veloce, più corto o senza pedaggi?': la destinazione e il navigatore sono gli stessi, cambia solo il criterio di calcolo, che puoi scegliere tu anche a metà viaggio. Dove l'analogia cede: nel navigatore i criteri sono pochi e fissati dal produttore, mentre con Strategy chiunque può aggiungere una nuova strategia implementando l'interfaccia, senza toccare il navigatore.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Comparator e lambda in Java",
+      "collegamento": "list.sort(comparator) è Strategy: l'algoritmo di ordinamento (Context) delega il confronto a una strategia; scrivere un Comparator come lambda è scrivere una ConcreteStrategy."
+    },
+    {
+      "conoscenza": "Puntatori a funzione in C (Fondamenti)",
+      "collegamento": "qsort(base, n, size, cmp) riceve la funzione di confronto come parametro: è l'idea di Strategy prima degli oggetti."
+    },
+    {
+      "conoscenza": "Principio Open/Closed e Single Responsibility",
+      "collegamento": "Ogni politica è una classe a sé (SRP) e se ne aggiungono senza modificare il Context (OCP).",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Template Method",
+      "collegamento": "Risolve lo stesso problema con l'ereditarietà invece che con la composizione: confrontarli è una domanda classica.",
+      "nodo": "design-pattern-template-method"
+    },
+    {
+      "conoscenza": "Refactoring Replace Conditional with Polymorphism",
+      "collegamento": "Trasformare un if/switch sul tipo di calcolo in una gerarchia di strategie è un refactoring standard.",
+      "nodo": "refactoring"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Lotteria degli acquisti: algoritmo di estrazione intercambiabile",
+      "problema": "Nella sintesi della prova 2022 il mercato prevede una lotteria degli acquisti. Supponi che l'organizzazione voglia poter cambiare il criterio di estrazione: casuale uniforme, pesato sull'importo speso, oppure 'primo acquirente della giornata'. Progetta con Strategy.",
+      "passi": [
+        "Il problema è un algoritmo (scegliere il vincitore) con più varianti intercambiabili, scelte dall'organizzazione: Strategy.",
+        "Strategy: interface CriterioEstrazione { Acquisto estrai(List<Acquisto> acquisti); }.",
+        "ConcreteStrategy: EstrazioneUniforme (indice casuale con java.util.Random), EstrazionePesata (somma cumulativa degli importi, numero casuale in [0, totale)), PrimoAcquisto (minimo per orario).",
+        "Context: Lotteria { private CriterioEstrazione criterio; void setCriterio(...); Acquisto vincitore() { return criterio.estrai(acquisti); } }.",
+        "Testabilità: passo a EstrazionePesata un Random con seed fisso e verifico il vincitore atteso in un test JUnit."
+      ],
+      "soluzione": "Strategy: CriterioEstrazione (Strategy), tre criteri concreti, Lotteria (Context) che delega l'estrazione. Un nuovo criterio non modifica Lotteria.",
+      "perche_funziona": "La variabilità è isolata dietro un'interfaccia con un solo metodo; il Context resta stabile e ogni criterio si testa da solo."
+    },
+    {
+      "titolo": "Strategy o Template Method per le tariffe delle piscine?",
+      "problema": "Il costo di un ingresso in piscina segue sempre: calcola tariffa base, applica supplementi per i servizi, applica arrotondamento. Cambia solo il calcolo della tariffa base tra abbonati e occasionali. Quale pattern scegli e perché?",
+      "passi": [
+        "L'algoritmo ha una sequenza fissa di passi e varia un solo passo: è il terreno di Template Method (metodo final calcolaCosto() che chiama tariffaBase() astratto).",
+        "Con Strategy dovrei estrarre solo il passo variabile in un oggetto TariffaBase e il Context manterrebbe la sequenza: funziona ugualmente ed è più flessibile (cambio a runtime, niente sottoclassi).",
+        "Criterio di scelta: se la variante è legata al tipo dell'oggetto e non cambia nel tempo, Template Method è più semplice; se va cambiata a runtime o combinata, Strategy.",
+        "Qui la tariffa dipende dal tipo di cliente, che può cambiare (un occasionale che si abbona): preferisco Strategy per il passo variabile, mantenendo la sequenza nel Context."
+      ],
+      "soluzione": "Entrambi applicabili; scelgo Strategy per il passo 'tariffa base' perché il tipo di cliente può cambiare a runtime; Template Method sarebbe adeguato se la variante fosse fissa per sottoclasse.",
+      "perche_funziona": "Mostrare di conoscere l'alternativa e scegliere con un criterio esplicito (statico contro dinamico, ereditarietà contro composizione) è ciò che rende motivata una scelta progettuale."
+    }
+  ],
+  "errori_comuni": [
+    "Lasciare nel Context l'if che sceglie l'algoritmo e chiamarlo Strategy: la scelta deve avvenire fuori, passando l'oggetto strategia.",
+    "Confondere Strategy con State: in Strategy le implementazioni non si conoscono e non cambiano da sole.",
+    "Creare una sottoclasse del Context per ogni algoritmo: è ereditarietà (Template Method), non Strategy.",
+    "Dimenticare il riferimento del Context all'interfaccia Strategy nel class diagram (associazione con molteplicità 1).",
+    "Mettere nella strategia anche la regola di quando applicarla (es. verifica della soglia): mescola responsabilità."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di Strategy?",
+      "risposta": "Definire una famiglia di algoritmi, incapsularli in classi separate dietro un'interfaccia comune e renderli intercambiabili, così l'algoritmo varia indipendentemente dal client."
+    },
+    {
+      "domanda": "Quali sono i ruoli del pattern?",
+      "risposta": "Strategy (interfaccia dell'algoritmo), ConcreteStrategy (implementazioni), Context (usa la strategia tramite l'interfaccia e la riceve dall'esterno)."
+    },
+    {
+      "domanda": "Perché Strategy rispetta l'Open/Closed Principle?",
+      "risposta": "Perché una nuova variante dell'algoritmo si aggiunge con una nuova classe che implementa l'interfaccia, senza modificare il Context né le altre strategie."
+    },
+    {
+      "domanda": "Che differenza c'è tra Strategy e Template Method?",
+      "risposta": "Strategy usa la composizione e sostituisce l'intero algoritmo anche a runtime; Template Method usa l'ereditarietà, fissa lo scheletro nella superclasse e lascia ridefinire alcuni passi alle sottoclassi, scelta fissata a compile time."
+    },
+    {
+      "domanda": "Dai un esempio di Strategy nella libreria standard.",
+      "risposta": "Comparator passato a List.sort o Collections.sort: l'algoritmo di ordinamento delega il confronto alla strategia."
+    }
+  ],
+  "riepilogo": "Strategy (comportamentale): famiglia di algoritmi intercambiabili dietro un'interfaccia.\nIl Context ha una Strategy e le delega il calcolo; il client sceglie quale.\nElimina gli if sul tipo di algoritmo; OCP, SRP, cambio a runtime; lambda in Java.\nLimite: il client deve conoscere le strategie; più oggetti.\nStrategy = composizione; Template Method = ereditarietà; State = transizioni interne."
+}

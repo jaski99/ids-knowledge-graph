@@ -1,0 +1,86 @@
+{
+  "intuizione": "Un acquisto si comporta in modo diverso a seconda di dove si trova: se è nel carrello puoi aggiungere prodotti, se è pagato no, se è annullato non puoi più fare niente. Scrivere questo con uno switch sullo stato in ogni metodo produce codice ripetuto e fragile. State trasforma ogni stato in una classe: l'oggetto delega le richieste allo stato corrente e sono gli stati stessi a decidere il passaggio allo stato successivo. È lo state diagram UML tradotto in codice.",
+  "spiegazione": "## Il problema: gli switch sullo stato\n\nLa prova del 5/11/2025 chiede uno *state diagram che mostri gli stati che può assumere un acquisto*. Supponiamo questo ciclo di vita: **InCompilazione** (carrello aperto) → **Pagato** → **Consegnato**, con **Annullato** raggiungibile da InCompilazione e da Pagato (con rimborso).\n\n```mermaid\nstateDiagram-v2\n    [*] --> InCompilazione\n    InCompilazione --> InCompilazione : aggiungi\n    InCompilazione --> Pagato : paga\n    InCompilazione --> Annullato : annulla\n    Pagato --> Consegnato : consegna\n    Pagato --> Annullato : annulla / rimborso\n    Consegnato --> [*]\n    Annullato --> [*]\n```\n\nImplementazione ingenua:\n\n```java\nclass Acquisto {\n    private String stato = \"IN_COMPILAZIONE\";\n    void aggiungi(Prodotto p) {\n        switch (stato) {\n            case \"IN_COMPILAZIONE\" -> righe.add(p);\n            case \"PAGATO\", \"CONSEGNATO\" -> throw new IllegalStateException(\"già pagato\");\n            case \"ANNULLATO\" -> throw new IllegalStateException(\"annullato\");\n        }\n    }\n    void paga() { switch (stato) { /* ... */ } }\n    void annulla() { switch (stato) { /* ... */ } }\n    void consegna() { switch (stato) { /* ... */ } }\n}\n```\n\nOgni metodo ha uno switch su *tutti* gli stati; un nuovo stato (es. *InSpedizione*) richiede di modificare **ogni** metodo (shotgun surgery, OCP violato), e le regole di uno stato sono sparse in tutta la classe (bassa coesione).\n\n## La soluzione\n\n**State** (GoF, *comportamentale*): *permette a un oggetto di alterare il proprio comportamento quando cambia il suo stato interno; l'oggetto sembrerà cambiare classe.*\n\nRuoli:\n- **Context** (`Acquisto`): l'oggetto con stato; tiene un riferimento allo stato corrente e **delega** a esso le richieste.\n- **State** (`StatoAcquisto`): interfaccia con un metodo per ogni evento.\n- **ConcreteState** (`InCompilazione`, `Pagato`, `Consegnato`, `Annullato`): implementano il comportamento in quello stato e **decidono le transizioni** cambiando lo stato del Context.\n\n```mermaid\nclassDiagram\n    class Acquisto {\n        -StatoAcquisto stato\n        -List~String~ righe\n        +aggiungi(String prodotto) void\n        +paga() void\n        +annulla() void\n        +consegna() void\n        ~setStato(StatoAcquisto s) void\n    }\n    class StatoAcquisto {\n        <<interface>>\n        +aggiungi(Acquisto a, String prodotto) void\n        +paga(Acquisto a) void\n        +annulla(Acquisto a) void\n        +consegna(Acquisto a) void\n    }\n    class InCompilazione\n    class Pagato\n    class Consegnato\n    class Annullato\n    Acquisto o-- \"1\" StatoAcquisto : stato corrente\n    StatoAcquisto <|.. InCompilazione\n    StatoAcquisto <|.. Pagato\n    StatoAcquisto <|.. Consegnato\n    StatoAcquisto <|.. Annullato\n```\n\n## Codice Java completo\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic interface StatoAcquisto {\n    default void aggiungi(Acquisto a, String p) { throw new IllegalStateException(nome() + \": non puoi aggiungere\"); }\n    default void paga(Acquisto a)               { throw new IllegalStateException(nome() + \": non puoi pagare\"); }\n    default void annulla(Acquisto a)            { throw new IllegalStateException(nome() + \": non puoi annullare\"); }\n    default void consegna(Acquisto a)           { throw new IllegalStateException(nome() + \": non puoi consegnare\"); }\n    String nome();\n}\n\npublic class InCompilazione implements StatoAcquisto {\n    public String nome() { return \"InCompilazione\"; }\n    @Override public void aggiungi(Acquisto a, String p) { a.righe().add(p); }   // resta nello stato\n    @Override public void paga(Acquisto a) {\n        if (a.righe().isEmpty()) throw new IllegalStateException(\"carrello vuoto\");   // guardia\n        a.setStato(new Pagato());\n    }\n    @Override public void annulla(Acquisto a) { a.setStato(new Annullato()); }\n}\n\npublic class Pagato implements StatoAcquisto {\n    public String nome() { return \"Pagato\"; }\n    @Override public void consegna(Acquisto a) { a.setStato(new Consegnato()); }\n    @Override public void annulla(Acquisto a) {\n        System.out.println(\"Rimborso emesso\");                 // azione sulla transizione\n        a.setStato(new Annullato());\n    }\n}\npublic class Consegnato implements StatoAcquisto { public String nome() { return \"Consegnato\"; } }\npublic class Annullato  implements StatoAcquisto { public String nome() { return \"Annullato\"; } }\n\npublic class Acquisto {\n    private StatoAcquisto stato = new InCompilazione();\n    private final List<String> righe = new ArrayList<>();\n\n    public void aggiungi(String p) { stato.aggiungi(this, p); }   // delega allo stato\n    public void paga()             { stato.paga(this); }\n    public void annulla()          { stato.annulla(this); }\n    public void consegna()         { stato.consegna(this); }\n\n    void setStato(StatoAcquisto s) { this.stato = s; }            // visibilità di package\n    List<String> righe()           { return righe; }\n    public String getStato()       { return stato.nome(); }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Acquisto a = new Acquisto();\n        a.aggiungi(\"Crema solare\");\n        a.paga();\n        System.out.println(a.getStato());   // Pagato\n        a.annulla();                        // Rimborso emesso\n        System.out.println(a.getStato());   // Annullato\n        a.paga();                           // IllegalStateException: Annullato: non puoi pagare\n    }\n}\n```\n\nI metodi `default` dell'interfaccia esprimono \"in questo stato l'evento non è ammesso\": ogni stato concreto ridefinisce solo gli eventi che gestisce, proprio come nello state diagram escono solo alcune frecce da ogni stato.\n\n## Dallo state diagram al codice: la corrispondenza\n\n| state diagram | codice State |\n|---|---|\n| stato | classe ConcreteState |\n| evento sulla freccia | metodo dell'interfaccia State |\n| transizione | `context.setStato(new Destinazione())` |\n| guardia `[condizione]` | `if` prima della transizione |\n| azione `/ azione` | istruzione eseguita durante la transizione |\n| evento non previsto | eccezione (o metodo vuoto) |\n\n## Conseguenze\n\n**Vantaggi**\n- **comportamento di uno stato localizzato** in una classe (alta coesione, SRP);\n- **nuovi stati** senza toccare gli altri metodi del Context (OCP);\n- **transizioni esplicite** e verificabili; niente switch ripetuti;\n- corrispondenza diretta con lo state diagram (progettazione e codice coerenti, come chiede l'esame).\n\n**Limiti**\n- **più classi**: per 2-3 stati con poca logica, un `enum` con uno switch è più semplice;\n- le classi stato si **conoscono tra loro** (ognuna crea la successiva): accoppiamento tra stati;\n- il Context deve esporre parte di sé agli stati (`setStato`, dati) → incapsulamento un po' indebolito.\n\nGli stati senza campi si possono condividere (istanze singole, es. costanti `static final`) invece di crearne di nuovi a ogni transizione.\n\n## State vs Strategy\n\nHanno **lo stesso class diagram** (Context che delega a un'interfaccia con più implementazioni). Cambia l'**intento**:\n\n| | State | Strategy |\n|---|---|---|\n| chi sceglie l'implementazione | gli **stati stessi** (transizioni interne) | il **client** dall'esterno |\n| le implementazioni si conoscono? | sì, si passano il controllo | no, sono indipendenti |\n| cosa rappresenta | una *fase* del ciclo di vita | un *algoritmo* intercambiabile |\n| cambia nel tempo? | sì, continuamente | di solito fissato per un uso |\n\n## Come riconoscerlo in uno scenario\n\nSegnali: *\"stati\"*, *\"ciclo di vita\"*, *\"a seconda dello stato l'operazione è permessa o no\"*, *\"passa da… a…\"*, *\"sospeso / attivo / chiuso\"*. Esempi: acquisto (2025, come state diagram), utente della biblioteca che diventa **sospeso** e non può più prendere prestiti (2016/17), prenotazione della piazzola in attesa di approvazione / approvata / rifiutata, distributore automatico.\n",
+  "analogia": "È un semaforo con un vigile che cambia casacca: la stessa domanda 'posso passare?' riceve risposte diverse a seconda della casacca indossata (verde, giallo, rosso), ed è la casacca stessa a dire quale sarà la prossima. Il semaforo (Context) non ragiona: chiede alla casacca corrente. Dove l'analogia cede: nel semaforo la sequenza è fissa e ciclica, mentre negli stati software le transizioni dipendono dagli eventi e possono avere guardie e azioni.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "State diagram UML",
+      "collegamento": "State è la traduzione diretta in codice di uno state diagram: stati → classi, eventi → metodi, transizioni → setStato. Disegnare prima il diagramma rende il codice quasi meccanico.",
+      "nodo": "uml-diagramma-stati"
+    },
+    {
+      "conoscenza": "Automi a stati finiti (Fondamenti / Reti logiche)",
+      "collegamento": "Un automa ha stati, input e funzione di transizione: lo stesso modello, con la funzione di transizione distribuita nelle classi stato."
+    },
+    {
+      "conoscenza": "switch ed enum in Java",
+      "collegamento": "La soluzione ingenua è uno switch sull'enum dello stato in ogni metodo; il pattern sostituisce lo switch con il polimorfismo (refactoring 'Replace Conditional with Polymorphism')."
+    },
+    {
+      "conoscenza": "Metodi default nelle interfacce Java 8+",
+      "collegamento": "I default permettono di definire una volta il comportamento 'evento non ammesso', ridefinendo in ogni stato solo gli eventi validi."
+    },
+    {
+      "conoscenza": "Strategy",
+      "collegamento": "Stesso diagramma, intento diverso: in State sono gli stati a sceglierne il successivo.",
+      "nodo": "design-pattern-strategy"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Utente della biblioteca: attivo, sollecitato, sospeso",
+      "problema": "Fac-simile 2016/17: se un documento non viene restituito entro il termine si invia un sollecito; se non basta l'utente viene sospeso e non può più prendere prestiti. Modella con lo state diagram e poi con il pattern State, indicando cosa fa prendiInPrestito() in ogni stato.",
+      "passi": [
+        "Stati: Attivo, Sollecitato, Sospeso. Eventi: scadenzaSuperata, restituzione, prendiInPrestito.",
+        "Transizioni: Attivo --scadenzaSuperata / invia sollecito--> Sollecitato; Sollecitato --restituzione--> Attivo; Sollecitato --scadenzaSuperata--> Sospeso; Sospeso non ha uscite previste dal testo.",
+        "Interfaccia StatoUtente { void prendiInPrestito(Utente u, Documento d); void scadenzaSuperata(Utente u); void restituzione(Utente u); }.",
+        "Attivo.prendiInPrestito: verifica il limite di 5 documenti e registra il prestito. Sollecitato.prendiInPrestito: dal testo non è specificato; scelgo di rifiutare finché non restituisce e dichiaro l'ipotesi. Sospeso.prendiInPrestito: lancia un'eccezione 'utente sospeso'.",
+        "Utente (Context) ha un campo StatoUtente stato inizializzato ad Attivo e delega i tre metodi."
+      ],
+      "soluzione": "State diagram a tre stati e pattern State con Utente come Context, StatoUtente come interfaccia e Attivo/Sollecitato/Sospeso come stati concreti; le transizioni sono fatte dagli stati (setStato). Ipotesi esplicita sul comportamento nello stato Sollecitato.",
+      "perche_funziona": "Il comportamento di prendiInPrestito cambia per stato senza if nell'Utente; diagramma e codice coincidono uno a uno, e le ipotesi su ciò che il testo non dice sono dichiarate."
+    },
+    {
+      "titolo": "Enum o pattern State?",
+      "problema": "Una Lampada ha due stati (accesa/spenta) e un solo evento (premi). Un OrdineOnline ha sei stati, cinque eventi, guardie e azioni (rimborsi, email). Per quale conviene il pattern?",
+      "passi": [
+        "Lampada: 2 stati × 1 evento, logica banale → un boolean o un enum con un if è più leggibile; il pattern aggiungerebbe 3 classi senza benefici.",
+        "OrdineOnline: 6 × 5 = 30 combinazioni stato/evento con logica diversa → con gli switch ogni metodo avrebbe 6 casi; con State ogni classe contiene solo i propri eventi validi.",
+        "Valuto l'evoluzione: un nuovo stato 'Reso' nell'ordine è una nuova classe, senza toccare le altre.",
+        "Concludo: pattern per OrdineOnline, enum per Lampada."
+      ],
+      "soluzione": "Lampada: enum/boolean. OrdineOnline: pattern State.",
+      "perche_funziona": "Il pattern conviene quando il numero di combinazioni stato-evento e la logica per stato sono abbastanza grandi da rendere gli switch ripetuti costosi; sotto quella soglia è over-engineering."
+    }
+  ],
+  "errori_comuni": [
+    "Mettere la logica delle transizioni nel Context con uno switch: si ricade nel problema iniziale.",
+    "Confondere State e Strategy: stesso diagramma, ma in State le transizioni sono interne e gli stati si conoscono.",
+    "Disegnare lo state diagram con stati che sono azioni ('paga') invece di condizioni ('Pagato'), o dimenticare stato iniziale e finale.",
+    "Ignorare gli eventi non ammessi in uno stato: vanno gestiti (eccezione o nessun effetto) in modo esplicito.",
+    "Usare il pattern per due stati banali: un enum basta."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è l'intento di State?",
+      "risposta": "Permettere a un oggetto di cambiare comportamento quando cambia il suo stato interno, incapsulando ogni stato in una classe; l'oggetto sembra cambiare classe."
+    },
+    {
+      "domanda": "Chi decide le transizioni nel pattern State?",
+      "risposta": "Di norma i ConcreteState: quando gestiscono un evento impostano il nuovo stato sul Context (es. context.setStato(new Pagato()))."
+    },
+    {
+      "domanda": "Come si mappa uno state diagram sul pattern?",
+      "risposta": "Stati → classi ConcreteState; eventi → metodi dell'interfaccia State; transizioni → cambio dello stato nel Context; guardie → condizioni; azioni → istruzioni eseguite nella transizione."
+    },
+    {
+      "domanda": "Qual è la differenza tra State e Strategy?",
+      "risposta": "Stessa struttura, intento diverso: in Strategy il client sceglie un algoritmo e le strategie sono indipendenti; in State gli stati rappresentano fasi del ciclo di vita, si conoscono e decidono le transizioni."
+    },
+    {
+      "domanda": "Quali sono i limiti di State?",
+      "risposta": "Più classi, accoppiamento tra le classi stato, il Context espone parti di sé agli stati; per pochi stati semplici un enum è preferibile."
+    }
+  ],
+  "riepilogo": "State (comportamentale): il comportamento dipende dallo stato, ogni stato è una classe.\nIl Context delega allo stato corrente; i ConcreteState eseguono le transizioni.\nCorrispondenza 1:1 con lo state diagram (stati, eventi, guardie, azioni).\nElimina gli switch ripetuti (OCP, coesione); costo: più classi, stati accoppiati.\nState vs Strategy: stessa struttura; transizioni interne contro scelta del client."
+}
