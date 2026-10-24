@@ -1,0 +1,21 @@
+.module-nav { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .55rem; }
+.module-link {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+  padding: .35rem .9rem; border-radius: 999px; border: 1px solid var(--acc, #2563eb);
+  color: var(--acc, #2563eb); background: #fff; text-decoration: none; font-weight: 600;
+}
+.module-link:hover { background: #eff6ff; }
+body.module-mode > header,
+body.module-mode > .layout,
+body.module-mode > .skip { display: none; }
+.module-page { max-width: 980px; margin: 0 auto; padding: .75rem 1rem 3rem; }
+.mod-top { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; margin-bottom: .6rem; }
+.mod-top h1 { font-size: 1.45rem; line-height: 1.25; margin: 0; }
+.mod-top h1:focus { outline: none; }
+.module-page h2 { display: block; font-size: 1.15rem; margin: 0 0 .35rem; }
+.module-page h3 { font-size: 1.02rem; margin: .2rem 0 .4rem; }
+.module-page h4 { font-size: .95rem; margin: .2rem 0 .35rem; }
+@media (max-width: 720px) {
+  .module-page { padding: .5rem .75rem 2.5rem; }
+  .mod-top h1 { font-size: 1.25rem; }
+}
