@@ -1,0 +1,78 @@
+{
+  "intuizione": "Un numero di versione come 2.4.1 può essere un messaggio preciso per chi usa la tua libreria: il primo numero cambia quando rompi la compatibilità, il secondo quando aggiungi funzionalità senza rompere niente, il terzo quando correggi bug. Leggendo solo il numero, chi dipende da te sa se può aggiornare tranquillo. Il changelog racconta in parole che cosa è cambiato in ogni versione.",
+  "spiegazione": "## Semantic Versioning (SemVer 2.0.0)\n\nFormato: **MAJOR.MINOR.PATCH**, tre interi non negativi senza zeri iniziali.\n\n| incremento | quando | azzeri | esempio |\n|---|---|---|---|\n| **MAJOR** | modifiche **incompatibili** dell'API pubblica | MINOR e PATCH | 2.4.1 → **3.0.0** |\n| **MINOR** | nuove funzionalità **retrocompatibili**, o deprecazione di qualcosa | PATCH | 2.4.1 → **2.5.0** |\n| **PATCH** | correzioni di bug **retrocompatibili** | – | 2.4.1 → **2.4.2** |\n\nRegole importanti:\n- Prima serve un'**API pubblica dichiarata** (Javadoc, interfacce): SemVer parla della compatibilità di quella.\n- **0.y.z** è sviluppo iniziale: qualunque cosa può cambiare in qualsiasi momento. **1.0.0** definisce la prima API pubblica stabile.\n- Una versione rilasciata è **immutabile**: per correggere si rilascia una nuova versione.\n- **Pre-release**: trattino e identificatori, es. `1.0.0-alpha`, `1.0.0-beta.2`, `1.0.0-rc.1`; precede la versione normale: `1.0.0-rc.1 < 1.0.0`.\n- **Build metadata**: `+` e identificatori, es. `1.0.0+20261024.abc123`; **ignorati** nel confronto di precedenza.\n- Precedenza: si confrontano MAJOR, MINOR, PATCH numericamente; poi la pre-release (identificatori numerici confrontati come numeri, alfanumerici in ordine ASCII). Esempio: `1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-rc.1 < 1.0.0`.\n\n## Che cosa rompe la compatibilità in Java\n\n```java\n// Versione 2.4.0: API pubblica della libreria\npublic interface CalcolatoreSpedizioni {\n    double costo(int pagine, int peso, int tariffa);\n}\n```\n\n| modifica | tipo | nuova versione |\n|---|---|---|\n| correggo un errore di arrotondamento dentro `costo` | PATCH | 2.4.1 |\n| aggiungo un **metodo default** `double costoExpress(int pagine, int peso)` all'interfaccia | MINOR | 2.5.0 |\n| marco un metodo `@Deprecated` (continua a funzionare) | MINOR | 2.5.0 |\n| aggiungo un parametro a `costo` o lo rinomino | MAJOR | 3.0.0 |\n| aggiungo un metodo **astratto** all'interfaccia | MAJOR | 3.0.0 (chi la implementa non compila più) |\n| rimuovo una classe pubblica | MAJOR | 3.0.0 |\n| cambio il valore restituito per input non validi da -1 a un'eccezione | MAJOR | 3.0.0 (cambia il contratto, anche se compila) |\n\nL'ultima riga è la trappola: la compatibilità riguarda il **comportamento** documentato, non solo la compilazione.\n\n## Changelog (formato Keep a Changelog)\n\nUn file `CHANGELOG.md` per esseri umani, con la versione più recente in alto e una sezione `Unreleased` per le modifiche non ancora rilasciate. Sezioni standard: **Added, Changed, Deprecated, Removed, Fixed, Security**.\n\n```text\n# Changelog\n\n## [Unreleased]\n\n## [3.0.0] - 2026-10-20\n### Changed\n- `costo()` lancia IllegalArgumentException per input non validi invece di restituire -1.\n### Removed\n- Classe `VecchioCalcolatore`, deprecata dalla 2.5.0.\n\n## [2.5.0] - 2026-09-01\n### Added\n- Metodo `costoExpress()` per le spedizioni in 24 ore.\n### Deprecated\n- `VecchioCalcolatore`: usare `CalcolatoreSpedizioni`.\n\n## [2.4.1] - 2026-08-10\n### Fixed\n- Arrotondamento al centesimo nel calcolo del costo.\n```\n\n## Dove si scrive la versione\n\n```mermaid\nflowchart LR\n    C[\"Commit su main con test verdi\"] --> P[\"pom.xml: version 2.5.0\"]\n    P --> T[\"git tag -a v2.5.0\"]\n    T --> CL[\"CHANGELOG.md: sezione 2.5.0\"]\n    CL --> R[\"Release pubblicata (Maven Central, GitHub Releases)\"]\n```\n\nIn Maven, durante lo sviluppo la versione è `2.5.0-SNAPSHOT`; al rilascio diventa `2.5.0` e la successiva `2.6.0-SNAPSHOT`. Chi dipende dalla libreria può scegliere versioni fisse (riproducibilità) e aggiornare consapevolmente leggendo il changelog.\n\n## Perché serve\n- Evita il *dependency hell*: con regole chiare, gli strumenti e le persone capiscono se un aggiornamento è sicuro.\n- Collega SCM e rilascio: il tag con la versione è la baseline della release.\n- Comunica il rischio: un MAJOR richiede di leggere le note di migrazione.",
+  "analogia": "SemVer è come la numerazione delle edizioni di un manuale universitario con le correzioni: una ristampa con refusi corretti (PATCH) la puoi usare senza problemi con gli appunti del corso; una nuova edizione con un capitolo in più ma gli stessi esercizi numerati uguale (MINOR) va ancora bene; una nuova edizione con i capitoli rinumerati (MAJOR) rompe tutti i riferimenti delle slide. L'analogia cede perché per un libro nessuno «aggiorna automaticamente», mentre gli strumenti di build possono aggiornare da soli le dipendenze fidandosi delle regole SemVer, ed è per questo che violarle fa danni.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Interfacce Java e metodi default (OOP)",
+      "collegamento": "Aggiungere un metodo astratto a un'interfaccia rompe chi la implementa; un metodo default no: è la differenza tra MAJOR e MINOR."
+    },
+    {
+      "conoscenza": "Contratto di un metodo (Javadoc, precondizioni)",
+      "collegamento": "Cambiare il comportamento documentato, anche senza cambiare la firma, è una modifica incompatibile."
+    },
+    {
+      "conoscenza": "Gestione delle configurazioni",
+      "collegamento": "La versione taggata è la baseline di una release.",
+      "nodo": "gestione-configurazioni"
+    },
+    {
+      "conoscenza": "Git",
+      "collegamento": "git tag -a v2.5.0 marca il commit rilasciato.",
+      "nodo": "git-versionamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Decidere il numero di versione",
+      "problema": "La libreria è alla 1.7.3. Il prossimo rilascio contiene: (1) correzione di un NullPointerException; (2) nuovo metodo pubblico `stampaRiepilogo()`; (3) il metodo `getTotale()` ora restituisce BigDecimal invece di double. Che versione rilasci? E se ci fossero solo (1) e (2)?",
+      "passi": [
+        "Classifico: (1) PATCH (bug fix compatibile); (2) MINOR (funzionalità compatibile); (3) MAJOR (cambia il tipo restituito: il codice dei client non compila più).",
+        "Vince la modifica più forte: MAJOR ⇒ 2.0.0 (MINOR e PATCH azzerati).",
+        "Con solo (1) e (2): la più forte è MINOR ⇒ 1.8.0 (PATCH azzerata).",
+        "Changelog della 2.0.0: Changed (getTotale restituisce BigDecimal, con nota di migrazione), Added (stampaRiepilogo), Fixed (NullPointerException)."
+      ],
+      "soluzione": "Tutte e tre: 2.0.0. Solo (1) e (2): 1.8.0.",
+      "perche_funziona": "Il numero comunica il massimo rischio contenuto nel rilascio: basta una modifica incompatibile per richiedere un MAJOR."
+    },
+    {
+      "titolo": "Ordinare versioni con pre-release",
+      "problema": "Ordina: 1.0.0, 1.0.0-rc.1, 1.0.0-alpha, 1.0.0-beta.11, 1.0.0-beta.2, 1.0.0+build.5, 0.9.12.",
+      "passi": [
+        "0.9.12 viene prima di tutte le 1.0.0 (MAJOR minore).",
+        "Le pre-release precedono la versione normale: alpha < beta < rc (confronto ASCII degli identificatori alfanumerici).",
+        "Tra beta.2 e beta.11 gli identificatori numerici si confrontano come numeri: 2 < 11.",
+        "1.0.0+build.5 ha la stessa precedenza di 1.0.0 (i metadati di build si ignorano)."
+      ],
+      "soluzione": "0.9.12 < 1.0.0-alpha < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0 = 1.0.0+build.5 (stessa precedenza).",
+      "perche_funziona": "Le regole di precedenza di SemVer 2.0.0 sono deterministiche: confronto numerico per i numeri, ASCII per le etichette, metadati ignorati."
+    }
+  ],
+  "errori_comuni": [
+    "Incrementare MINOR per una modifica incompatibile «piccola»: qualsiasi rottura dell'API pubblica richiede MAJOR.",
+    "Non azzerare i numeri inferiori (2.4.1 → 3.4.1 è sbagliato: 3.0.0).",
+    "Pensare che contino solo le firme: cambiare il comportamento documentato è incompatibile.",
+    "Modificare una versione già rilasciata invece di pubblicarne una nuova.",
+    "Changelog come dump dei messaggi di commit: va scritto per le persone, per categorie.",
+    "Considerare 0.x stabile: in 0.y.z tutto può cambiare."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quando si incrementa MAJOR, MINOR e PATCH?",
+      "risposta": "MAJOR per modifiche incompatibili dell'API pubblica; MINOR per nuove funzionalità retrocompatibili (o deprecazioni); PATCH per correzioni di bug retrocompatibili."
+    },
+    {
+      "domanda": "Aggiungere un metodo astratto a un'interfaccia pubblica Java è MINOR o MAJOR? Perché?",
+      "risposta": "MAJOR: tutte le classi dei client che implementano l'interfaccia non compilano più finché non implementano il nuovo metodo. Con un metodo default sarebbe MINOR."
+    },
+    {
+      "domanda": "Che cosa significa la versione 0.4.2?",
+      "risposta": "Sviluppo iniziale: l'API non è considerata stabile e può cambiare in modo incompatibile in qualsiasi rilascio."
+    },
+    {
+      "domanda": "Quali sezioni prevede Keep a Changelog?",
+      "risposta": "Added, Changed, Deprecated, Removed, Fixed, Security, più una sezione Unreleased in cima per le modifiche non ancora rilasciate."
+    }
+  ],
+  "riepilogo": "SemVer: MAJOR (incompatibile) . MINOR (funzionalità compatibili) . PATCH (bug fix compatibili); azzera i numeri inferiori.\n0.y.z = instabile; versioni rilasciate immutabili; pre-release 1.0.0-rc.1 < 1.0.0; +build ignorato.\nCompatibilità = firme e comportamento documentato.\nChangelog per persone: Added, Changed, Deprecated, Removed, Fixed, Security."
+}
