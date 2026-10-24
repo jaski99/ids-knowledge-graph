@@ -14,6 +14,7 @@ import { initTabs } from './ui/tabs.js';
 import { createLessonView } from './ui/lesson-view.js';
 import { parseRoute, lessonHash, nextToStudy } from './core/lesson.js';
 import { h, clear } from './ui/dom.js';
+import { avviaModuli } from '../modules/avvia.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -63,6 +64,8 @@ async function main() {
     box.hidden = !box.children.length;
   };
   initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
+  // Viste del registro web/modules (simulatore, ripasso, …). Unico punto di aggancio.
+  const moduli = avviaModuli({ document, graph, storage: localStorage });
 
   let lastSel;
   const render = (s) => {
@@ -80,6 +83,8 @@ async function main() {
 
   // Routing: #/lezione/<id> mostra la lezione a tutta pagina, qualsiasi altro hash mostra l'app.
   const route = async () => {
+    const moduloAttivo = moduli.mostra(location.hash);
+    document.body.classList.toggle('module-mode', moduloAttivo);
     const r = parseRoute(location.hash);
     document.body.classList.toggle('lesson-mode', Boolean(r));
     $('#lesson').hidden = !r;
@@ -103,7 +108,9 @@ async function main() {
   route();
   addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
+    if (e.target && e.target.closest && e.target.closest('textarea, input, select')) return;
     if (parseRoute(location.hash)) location.hash = '#/percorso';
+    else if (document.body.classList.contains('module-mode')) location.hash = '#/';
     else if (state.get().selected) state.set({ selected: null });
   });
 }

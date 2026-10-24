@@ -2,5 +2,5 @@
   "name": "ids-kg-web",
   "private": true,
   "type": "module",
-  "scripts": { "build": "sh build.sh", "test": "node --test tests/", "serve": "sh build.sh && python3 -m http.server 8000" }
+  "scripts": { "build": "sh build.sh", "test": "node --test tests/*.test.js", "serve": "sh build.sh && python3 -m http.server 8000" }
 }

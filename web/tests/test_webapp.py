@@ -29,7 +29,10 @@ def test_build_copia_graph():
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="node non installato")
 def test_unit_js():
-    r = subprocess.run(["node", "--test", "tests/"], cwd=WEB, capture_output=True, text=True)
+    # File espliciti: Node 22.23 non espande la directory `tests/` (la esegue come modulo).
+    files = sorted(str(p.relative_to(WEB)) for p in (WEB / "tests").glob("*.test.js"))
+    assert files, "nessun test JS"
+    r = subprocess.run(["node", "--test", *files], cwd=WEB, capture_output=True, text=True)
     assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
 
 
