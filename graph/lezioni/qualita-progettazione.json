@@ -1,0 +1,70 @@
+{
+  "intuizione": "«Il programma funziona» non basta: un buon progetto deve anche poter essere capito, modificato, testato, riusato, e deve funzionare in modo efficiente e affidabile. I modelli di qualità ISO (9126 e poi 25010) danno un vocabolario standard per queste caratteristiche esterne. Gli attributi interni del progetto, come coesione, accoppiamento e semplicità, sono le leve concrete che le determinano.",
+  "spiegazione": "## Qualità esterne e attributi interni\n\n- **Qualità esterne**: percepite da chi usa o mantiene il sistema (affidabilità, prestazioni, usabilità, manutenibilità…). Si osservano facendo girare o modificando il sistema.\n- **Attributi interni**: proprietà del progetto e del codice misurabili senza eseguirlo (coesione, accoppiamento, dimensione, complessità, profondità di ereditarietà).\n\nLe metriche si applicano agli attributi interni perché **predicono** le qualità esterne: basso accoppiamento → modifiche locali → maggiore manutenibilità.\n\n```mermaid\nflowchart LR\n    subgraph INT[\"Attributi interni del progetto\"]\n        CO[\"Coesione\"]\n        AC[\"Accoppiamento\"]\n        CX[\"Complessità\"]\n        DIM[\"Dimensione\"]\n    end\n    subgraph EXT[\"Qualità esterne\"]\n        MA[\"Manutenibilità\"]\n        AF[\"Affidabilità\"]\n        RI[\"Riusabilità\"]\n        TE[\"Testabilità\"]\n    end\n    CO --> MA\n    CO --> RI\n    AC --> MA\n    AC --> TE\n    AC --> RI\n    CX --> TE\n    CX --> AF\n    DIM --> MA\n```\n\n## Il modello ISO/IEC 9126 (1991, 2001)\n\nSei caratteristiche di qualità del prodotto:\n\n| caratteristica | domanda | sotto-caratteristiche principali |\n|---|---|---|\n| **funzionalità** | fa ciò che serve? | adeguatezza, accuratezza, interoperabilità, sicurezza |\n| **affidabilità** | continua a funzionare? | maturità, tolleranza ai guasti, recuperabilità |\n| **usabilità** | è facile da usare? | comprensibilità, apprendibilità, operabilità |\n| **efficienza** | quante risorse consuma? | comportamento nel tempo, uso delle risorse |\n| **manutenibilità** | è facile da modificare? | analizzabilità, modificabilità, stabilità, testabilità |\n| **portabilità** | si sposta su altri ambienti? | adattabilità, installabilità, sostituibilità |\n\n## Il modello ISO/IEC 25010 (2011, revisione 2023)\n\nIl 25010:2011 ha sostituito il 9126 con **8 caratteristiche**: idoneità funzionale, efficienza delle prestazioni, **compatibilità**, usabilità, affidabilità, **sicurezza** (promossa a caratteristica autonoma), manutenibilità (modularità, riusabilità, analizzabilità, modificabilità, testabilità), portabilità.\n\nLa revisione 2023 le porta a **9**: usabilità diventa *interaction capability*, portabilità diventa *flexibility* (che include anche la scalabilità) e si aggiunge la *safety* (assenza di danni a persone e ambiente).\n\nPer l'esame è sufficiente saper elencare le caratteristiche di un modello e spiegare il legame con gli attributi interni; ricordare che 25010 ha sostituito 9126 aggiungendo compatibilità e sicurezza è un plus.\n\n## Le caratteristiche di un buon progetto (vista del progettista)\n\n1. **Correttezza e completezza** rispetto ai requisiti.\n2. **Comprensibilità**: nomi chiari, struttura regolare, documentazione.\n3. **Modificabilità/estendibilità**: aggiungere funzionalità senza riscrivere (principio Open/Closed).\n4. **Riusabilità**: componenti con interfacce generali.\n5. **Testabilità**: moduli isolabili, dipendenze iniettabili.\n6. **Efficienza**: uso ragionevole delle risorse, senza ottimizzazioni premature.\n7. **Semplicità** (KISS): la soluzione più semplice che soddisfa i requisiti.\n\n```java\n// Testabilità come conseguenza del basso accoppiamento:\n// Sconto dipende da un'interfaccia, quindi nel test si sostituisce con una lambda.\ninterface Orologio { java.time.DayOfWeek oggi(); }\n\nclass Sconto {\n    private final Orologio orologio;\n    Sconto(Orologio o) { orologio = o; }\n    double applica(double importo) {\n        return orologio.oggi() == java.time.DayOfWeek.WEDNESDAY ? importo * 0.9 : importo; // mercoledì -10%\n    }\n}\n\nclass ScontoDemo {\n    public static void main(String[] args) {\n        Sconto s = new Sconto(() -> java.time.DayOfWeek.WEDNESDAY);   // \"stub\" del tempo\n        System.out.println(s.applica(100) == 90.0 ? \"OK\" : \"FAIL\");\n    }\n}\n```\n\nSe `Sconto` chiamasse direttamente `LocalDate.now()`, il test darebbe esiti diversi a seconda del giorno: l'accoppiamento con l'orologio di sistema peggiora la testabilità.\n\n## Compromessi\n\nLe qualità sono spesso in conflitto: più livelli di astrazione → maggiore modificabilità ma minore efficienza; più sicurezza → minore usabilità. Il progettista sceglie in base ai requisiti non funzionali con priorità.",
+  "analogia": "Comprare un'auto: le qualità esterne sono quelle che senti guidando (consumi, affidabilità, comfort, costo del tagliando); gli attributi interni sono quelli che vede il meccanico (motore accessibile, pezzi standard, cablaggi ordinati). Un motore con pezzi standard e accessibili rende il tagliando economico, così come un progetto poco accoppiato rende economica la manutenzione. L'analogia cede perché il software non si usura: la sua «manutenzione» consiste quasi sempre nel cambiarlo, non nel ripararlo.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Requisiti non funzionali",
+      "collegamento": "Sono le qualità esterne richieste dal cliente, espresse in modo verificabile.",
+      "nodo": "requisiti-scrittura-verificabile"
+    },
+    {
+      "conoscenza": "Complessità computazionale (Algoritmi)",
+      "collegamento": "Riguarda l'efficienza, una delle caratteristiche di qualità; le altre (manutenibilità, usabilità) non si misurano con la O-grande."
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Sono gli attributi interni che più influenzano manutenibilità, testabilità e riuso.",
+      "nodo": "coesione-accoppiamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Dal requisito alla caratteristica ISO",
+      "problema": "Classifica secondo ISO/IEC 25010:2011: (a) «la ricerca di un prodotto risponde entro 1 secondo»; (b) «il sistema riprende a funzionare entro 5 minuti dopo un guasto»; (c) «solo il farmacista può modificare i prezzi»; (d) «un nuovo operatore impara a registrare una vendita in 30 minuti»; (e) «il calcolo degli sconti si modifica cambiando una sola classe»; (f) «il software gira sia su Windows sia su Linux».",
+      "passi": [
+        "(a) tempo di risposta → efficienza delle prestazioni.",
+        "(b) recupero dopo un guasto → affidabilità (recuperabilità).",
+        "(c) controllo degli accessi → sicurezza.",
+        "(d) facilità di apprendimento → usabilità (apprendibilità).",
+        "(e) modifica localizzata → manutenibilità (modificabilità, modularità).",
+        "(f) ambienti diversi → portabilità (adattabilità)."
+      ],
+      "soluzione": "(a) efficienza delle prestazioni; (b) affidabilità; (c) sicurezza; (d) usabilità; (e) manutenibilità; (f) portabilità.",
+      "perche_funziona": "Ogni requisito si mappa alla caratteristica che misura; con il 9126 (c) ricadrebbe in funzionalità (sotto-caratteristica sicurezza)."
+    },
+    {
+      "titolo": "Perché il basso accoppiamento migliora la manutenibilità",
+      "problema": "Rispondi alla domanda breve «Perché un basso accoppiamento migliora la manutenibilità?» con un esempio della farmacia.",
+      "passi": [
+        "Definisco: accoppiamento = dipendenza tra moduli.",
+        "Effetto: una modifica a un modulo si propaga solo ai moduli che ne dipendono.",
+        "Esempio: se Vendita usa Prodotto solo tramite isDisponibile() e decrementa(), cambiare la rappresentazione delle quantità (farmacia + magazzino) tocca solo Prodotto.",
+        "Effetti collaterali positivi: meno regressioni, test isolati con stub, riuso."
+      ],
+      "soluzione": "Con basso accoppiamento una modifica resta confinata in pochi moduli: meno codice da cambiare e ritestare e meno regressioni. Esempio: Vendita usa solo l'interfaccia di Prodotto, quindi cambiare la gestione delle scorte non tocca Vendita.",
+      "perche_funziona": "Collega l'attributo interno (accoppiamento) alla qualità esterna (manutenibilità) con il meccanismo causale (propagazione delle modifiche) e un esempio concreto."
+    }
+  ],
+  "errori_comuni": [
+    "Confondere qualità esterne (manutenibilità) e attributi interni (accoppiamento).",
+    "Elencare caratteristiche mescolando 9126 e 25010 senza dirlo.",
+    "Considerare la qualità solo come assenza di bug (correttezza).",
+    "Ottimizzare l'efficienza a scapito della manutenibilità senza un requisito che lo giustifichi."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali sono le caratteristiche di qualità del modello ISO/IEC 9126?",
+      "risposta": "Funzionalità, affidabilità, usabilità, efficienza, manutenibilità e portabilità, ciascuna suddivisa in sotto-caratteristiche (es. manutenibilità: analizzabilità, modificabilità, stabilità, testabilità)."
+    },
+    {
+      "domanda": "Cosa cambia con ISO/IEC 25010?",
+      "risposta": "Nella versione 2011 sostituisce il 9126 con 8 caratteristiche, aggiungendo compatibilità e rendendo la sicurezza una caratteristica autonoma; la revisione 2023 arriva a 9, rinominando usabilità in interaction capability e portabilità in flexibility e aggiungendo safety."
+    },
+    {
+      "domanda": "Che rapporto c'è tra attributi interni e qualità esterne?",
+      "risposta": "Gli attributi interni (coesione, accoppiamento, complessità, dimensione) sono misurabili sul progetto e sul codice e influenzano le qualità esterne (manutenibilità, testabilità, affidabilità, riuso), che si osservano solo usando o modificando il sistema; per questo le metriche li misurano come indicatori."
+    }
+  ],
+  "riepilogo": "Qualità esterne (osservate) vs attributi interni (misurabili sul progetto).\nISO 9126: funzionalità, affidabilità, usabilità, efficienza, manutenibilità, portabilità.\nISO 25010:2011: 8 caratteristiche (+ compatibilità, sicurezza); revisione 2023: 9.\nCoesione alta e accoppiamento basso → manutenibilità, testabilità, riuso."
+}
