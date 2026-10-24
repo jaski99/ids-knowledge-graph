@@ -1,0 +1,86 @@
+/* Ripasso a flashcard: classi prefissate `rip-` per non collidere con le altre viste. */
+.rip-lead { font-size: 1.02rem; margin: .2rem 0 .8rem; }
+.rip-err { color: #b91c1c; font-weight: 600; margin: .4rem 0; }
+
+.rip-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: .6rem 0 1rem;
+}
+.rip-stat {
+  background: var(--card, #fff); border: 1px solid var(--line, #e5e7eb);
+  border-radius: 10px; padding: .6rem .7rem; text-align: center; min-width: 0;
+}
+.rip-stat-valore { font-size: 1.5rem; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
+.rip-stat-etichetta { color: var(--muted, #4b5563); font-size: .85rem; margin: .15rem 0 0; }
+
+.rip-filtri { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: end; margin: .4rem 0 1rem; }
+.rip-filtri label { display: flex; flex-direction: column; gap: .25rem; font-weight: 600; font-size: .9rem; }
+.rip-filtri select {
+  font: inherit; min-height: 44px; padding: .4rem .55rem;
+  border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: inherit; max-width: 100%;
+}
+.rip-filtri-nota { margin: 0 0 .35rem; }
+
+.rip-carta {
+  background: var(--card, #fff); border: 1px solid var(--line, #e5e7eb);
+  border-radius: 12px; padding: 1rem 1.1rem 1.1rem; margin: .5rem 0 1.2rem;
+}
+.rip-sessione { margin: 0 0 .5rem; }
+.rip-meta { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0 0 .6rem; }
+.rip-chip {
+  border: 1px solid var(--line, #e5e7eb); border-radius: 999px; padding: .1rem .55rem;
+  font-size: .82rem; color: var(--muted, #4b5563); background: #f8fafc;
+}
+.rip-nodo { margin: 0 0 .25rem; }
+.rip-tipo { margin: 0 0 .7rem; }
+.rip-domanda {
+  font-size: 1.18rem; font-weight: 600; line-height: 1.4;
+  white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 1rem;
+}
+.rip-domanda:focus { outline: none; }
+.rip-risposta { background: #f0fdf4; border-radius: 8px; padding: .6rem .85rem .8rem; margin: 0 0 .8rem; }
+.rip-risposta h3 { margin: .25rem 0 .4rem; }
+.rip-risposta-testo { white-space: pre-wrap; overflow-wrap: anywhere; }
+.rip-azioni { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0; }
+
+.rip-voti { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: .4rem 0 .6rem; }
+.rip-voto {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem;
+  min-height: 56px; padding: .5rem .4rem; font: inherit; cursor: pointer;
+  border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; color: inherit;
+}
+.rip-voto:hover { background: #f8fafc; }
+.rip-voto:focus-visible { outline: 3px solid var(--acc, #2563eb); outline-offset: 2px; }
+.rip-voto-nome { font-weight: 700; }
+.rip-voto-tra { font-size: .82rem; color: var(--muted, #4b5563); }
+.rip-voto-ancora { border-color: #fca5a5; } .rip-voto-ancora .rip-voto-nome { color: #b91c1c; }
+.rip-voto-difficile { border-color: #fcd34d; } .rip-voto-difficile .rip-voto-nome { color: #92400e; }
+.rip-voto-bene { border-color: #93c5fd; } .rip-voto-bene .rip-voto-nome { color: #1d4ed8; }
+.rip-voto-facile { border-color: #86efac; } .rip-voto-facile .rip-voto-nome { color: #15803d; }
+
+.rip-apri { margin: .7rem 0 0; }
+.rip-vuoto, .rip-fatto { margin: .5rem 0 1.2rem; }
+.rip-vuoto {
+  background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: .7rem .85rem;
+}
+
+.rip-aree { margin: 1rem 0; }
+.rip-aree-lista { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: .45rem; }
+.rip-area { display: grid; grid-template-columns: minmax(180px, 1.2fr) 2fr auto; gap: .7rem; align-items: center; }
+.rip-area-nome { min-width: 0; }
+.rip-barra { display: block; height: .65rem; border-radius: 999px; background: #e5e7eb; overflow: hidden; }
+.rip-barra-piena { display: block; height: 100%; background: var(--acc, #2563eb); border-radius: 999px; }
+.rip-area-valore { font-variant-numeric: tabular-nums; color: var(--muted, #4b5563); font-size: .9rem; }
+
+.rip-reset { margin: 1.4rem 0 0; }
+
+@media (max-width: 720px) {
+  .rip-stats { grid-template-columns: 1fr 1fr; }
+  .rip-voti { grid-template-columns: 1fr 1fr; }
+  .rip-carta { padding: .85rem .8rem 1rem; }
+  .rip-domanda { font-size: 1.08rem; }
+  .rip-filtri label { flex: 1 1 150px; }
+  .rip-area { grid-template-columns: 1fr auto; grid-template-areas: "nome valore" "barra barra"; row-gap: .2rem; }
+  .rip-area-nome { grid-area: nome; }
+  .rip-barra { grid-area: barra; }
+  .rip-area-valore { grid-area: valore; }
+}

@@ -2,6 +2,7 @@
 import { register, getAll } from './registry.js';
 import { h } from './dom.js';
 import { createSimulatoreView } from './simulatore/view.js';
+import { createRipassoView } from './ripasso/view.js';
 
 export function idDaHash(hash) {
   if (typeof hash !== 'string') return null;
@@ -22,6 +23,7 @@ function ensureCss(doc, href) {
 export function avviaModuli(ctx) {
   const doc = ctx.document;
   register(createSimulatoreView());
+  register(createRipassoView());
   ensureCss(doc, 'modules/chrome.css');
   ensureCss(doc, 'modules/simulatore/style.css');
   const nav = doc.getElementById('module-nav');
