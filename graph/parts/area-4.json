@@ -1,1 +1,401 @@
-[]
+[
+  {
+    "id": "gestione-configurazioni",
+    "title": "Gestione delle configurazioni (SCM)",
+    "area": 4,
+    "tipo": "concetto",
+    "sapere": "Il Software Configuration Management identifica, controlla e traccia tutti gli elementi di configurazione (codice, documenti, build script, configurazioni) e le loro versioni. Attività: identificazione delle CI e delle baseline, controllo delle modifiche (change request, change control board), status accounting, audit. Strumenti: controllo versione, build automation, issue tracker.",
+    "saper_fare": [
+      "Definire configuration item e baseline",
+      "Descrivere il processo di change control dalla richiesta al rilascio",
+      "Collegare SCM a Git, Maven e CI"
+    ],
+    "prerequisiti": [
+      {
+        "id": "git-versionamento",
+        "forza": "hard",
+        "motivo": "Il controllo versione è lo strumento base dell'SCM."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: SCM",
+        "testo": "Cos'è la gestione delle configurazioni e perché serve?",
+        "soluzione": "SCM = disciplina che tiene sotto controllo l'evoluzione del software. 1) Identificazione: quali artefatti sono configuration item e quali sono le baseline (versioni approvate). 2) Controllo delle modifiche: change request, analisi d'impatto, approvazione della CCB, implementazione, verifica. 3) Status accounting: registrare chi ha cambiato cosa e quando. 4) Audit: la release contiene ciò che si dichiara. Serve a riprodurre qualsiasi versione, lavorare in parallelo senza perdite e sapere cosa è stato rilasciato al cliente."
+      }
+    ],
+    "tempo_studio_min": 35,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma ('gestione delle configurazioni', TSUI cap. 11). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "Software configuration management (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Software_configuration_management",
+        "verificato": true
+      },
+      {
+        "titolo": "Version control (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Version_control",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 11"
+      }
+    ],
+    "checklist_ripasso": [
+      "CI, baseline, change control, status accounting, audit",
+      "CCB approva le modifiche",
+      "Riproducibilità delle release"
+    ]
+  },
+  {
+    "id": "versionamento-semantico",
+    "title": "Versionamento semantico e changelog",
+    "area": 4,
+    "tipo": "abilita",
+    "sapere": "Semantic Versioning: MAJOR.MINOR.PATCH. Si incrementa MAJOR per modifiche incompatibili dell'API, MINOR per funzionalità retrocompatibili, PATCH per correzioni retrocompatibili; pre-release come 1.0.0-rc.1. Un changelog leggibile (Keep a Changelog) documenta le modifiche di ogni release.",
+    "saper_fare": [
+      "Decidere il nuovo numero di versione data una lista di modifiche",
+      "Scrivere una voce di changelog per sezioni (Added, Changed, Fixed, Removed)"
+    ],
+    "prerequisiti": [
+      {
+        "id": "gestione-configurazioni",
+        "forza": "soft",
+        "motivo": "Il versioning identifica le baseline rilasciate."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: quale versione?",
+        "testo": "Versione 2.3.1. La release rimuove un metodo pubblico deprecato e corregge un bug. Nuova versione?",
+        "soluzione": "La rimozione di un metodo pubblico è incompatibile, quindi si incrementa MAJOR: 3.0.0 (MINOR e PATCH si azzerano). Se ci fosse solo il bug fix: 2.3.2. Con solo una nuova funzionalità retrocompatibile: 2.4.0."
+      }
+    ],
+    "tempo_studio_min": 15,
+    "priorita": {
+      "livello": "bassa",
+      "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023): argomento di contorno a gestione delle configurazioni e post-produzione."
+    },
+    "risorse": [
+      {
+        "titolo": "Semantic Versioning (in italiano)",
+        "url": "https://semver.org/lang/it/",
+        "verificato": true
+      },
+      {
+        "titolo": "Keep a Changelog (in italiano)",
+        "url": "https://keepachangelog.com/it-IT/1.1.0/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "MAJOR = incompatibile, MINOR = feature, PATCH = fix",
+      "Incrementando MAJOR si azzerano MINOR e PATCH"
+    ]
+  },
+  {
+    "id": "ci-cd",
+    "title": "Integrazione e consegna continua (CI/CD)",
+    "area": 4,
+    "tipo": "concetto",
+    "sapere": "Continuous Integration: ogni sviluppatore integra spesso sul ramo principale; ogni push avvia una build automatica con i test (es. mvn verify su GitHub Actions) e una build rotta si ripara subito. Continuous Delivery: il software è sempre rilasciabile tramite una pipeline (build, test, analisi, staging). Continuous Deployment: il rilascio in produzione è automatico.",
+    "saper_fare": [
+      "Descrivere le fasi di una pipeline CI/CD",
+      "Distinguere continuous delivery e continuous deployment",
+      "Spiegare i benefici della CI (integrazione frequente, feedback rapido)"
+    ],
+    "prerequisiti": [
+      {
+        "id": "maven",
+        "forza": "soft",
+        "motivo": "La pipeline esegue la build Maven."
+      },
+      {
+        "id": "gestione-configurazioni",
+        "forza": "hard",
+        "motivo": "La CI automatizza il controllo delle configurazioni e delle build."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda: pipeline",
+        "testo": "Descrivi una pipeline CI per un progetto Java su GitHub.",
+        "soluzione": "Trigger: push o pull request. Job: checkout → setup JDK → mvn -B verify (compila, esegue JUnit e la copertura JaCoCo) → analisi statica → artefatto jar. Se un passo fallisce, la PR non si può unire. Delivery: su main il jar viene pubblicato in staging; il deploy in produzione è manuale (delivery) oppure automatico (deployment)."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "bassa",
+      "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023). Completa la gestione delle configurazioni e la post-produzione del programma."
+    },
+    "risorse": [
+      {
+        "titolo": "Continuous Integration (M. Fowler)",
+        "url": "https://martinfowler.com/articles/continuousIntegration.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Understanding GitHub Actions",
+        "url": "https://docs.github.com/en/actions/about-github-actions/understanding-github-actions",
+        "verificato": true
+      },
+      {
+        "titolo": "Continuous delivery (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Continuous_delivery",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "CI = integrare spesso + build e test automatici",
+      "Delivery = sempre rilasciabile; deployment = rilascio automatico",
+      "Una build rotta si ripara subito"
+    ]
+  },
+  {
+    "id": "release-post-produzione",
+    "title": "Rilascio e post-produzione",
+    "area": 4,
+    "tipo": "concetto",
+    "sapere": "Dopo lo sviluppo il software viene rilasciato in fasi (alpha, beta, release candidate, GA) e passa alla post-produzione: installazione e distribuzione, supporto agli utenti, raccolta di segnalazioni e change request, monitoraggio, patch, fine del supporto (EOL). La configurazione dell'ambiente va separata dal codice (12-factor).",
+    "saper_fare": [
+      "Descrivere le fasi del ciclo di rilascio",
+      "Elencare le attività di post-produzione e come alimentano la manutenzione"
+    ],
+    "prerequisiti": [
+      {
+        "id": "gestione-configurazioni",
+        "forza": "hard",
+        "motivo": "Ogni release è una baseline controllata."
+      },
+      {
+        "id": "versionamento-semantico",
+        "forza": "soft",
+        "motivo": "Le release sono identificate da una versione."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: post-produzione",
+        "testo": "Quali attività seguono il rilascio di un prodotto software?",
+        "soluzione": "1) Distribuzione e installazione (pacchetti, ambienti, configurazione separata dal codice). 2) Supporto agli utenti e help desk. 3) Raccolta di bug report e change request, gestiti con il change control. 4) Monitoraggio (log, metriche, errori). 5) Rilascio di patch e versioni minori con versioning e changelog. 6) Pianificazione della fine del supporto (EOL). Queste attività alimentano la manutenzione (correttiva, adattiva, perfettiva, preventiva)."
+      }
+    ],
+    "tempo_studio_min": 20,
+    "priorita": {
+      "livello": "bassa",
+      "motivazione": "Non compare nelle prove d'esame note (2016/17, 2022, 2023). Nel programma come 'post produzione' (TSUI cap. 11-12)."
+    },
+    "risorse": [
+      {
+        "titolo": "Software release life cycle (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Software_release_life_cycle",
+        "verificato": true
+      },
+      {
+        "titolo": "The Twelve-Factor App (in italiano)",
+        "url": "https://12factor.net/it/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 12"
+      }
+    ],
+    "checklist_ripasso": [
+      "alpha → beta → RC → GA → EOL",
+      "Le segnalazioni post-rilascio alimentano la manutenzione"
+    ]
+  },
+  {
+    "id": "tipi-manutenzione",
+    "title": "Manutenzione del software: tipi e costi",
+    "area": 4,
+    "tipo": "concetto",
+    "sapere": "La manutenzione è tutto ciò che si fa dopo la consegna ed è la parte più costosa del ciclo di vita. Tipi (ISO/IEC 14764): correttiva (corregge difetti), adattiva (adatta il software a un ambiente che cambia), perfettiva (nuove funzionalità o prestazioni), preventiva (migliora la manutenibilità, ad esempio con il refactoring). Le leggi di Lehman dicono che un software usato deve evolvere, e che la sua complessità cresce se non si interviene.",
+    "saper_fare": [
+      "Classificare una modifica nei 4 tipi di manutenzione",
+      "Spiegare perché la manutenzione domina i costi e come la riducono progettazione e test",
+      "Collegare la manutenzione preventiva al refactoring"
+    ],
+    "prerequisiti": [
+      {
+        "id": "release-post-produzione",
+        "forza": "soft",
+        "motivo": "Le richieste di manutenzione nascono in post-produzione."
+      },
+      {
+        "id": "refactoring",
+        "forza": "soft",
+        "motivo": "Il refactoring è manutenzione preventiva."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: classifica",
+        "testo": "Classifica: a) correzione di un crash; b) porting a Java 21; c) aggiunta dell'export in PDF; d) Extract Class su una God Class.",
+        "soluzione": "a) Correttiva. b) Adattiva (cambia l'ambiente). c) Perfettiva (nuova funzionalità). d) Preventiva (migliora la manutenibilità futura senza cambiare il comportamento)."
+      }
+    ],
+    "tempo_studio_min": 25,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma ('manutenzione', TSUI cap. 12). Non compare nelle prove d'esame note (2016/17, 2022, 2023): possibile domanda teorica breve, collegata al costo degli errori nei requisiti (domanda 2022)."
+    },
+    "risorse": [
+      {
+        "titolo": "Software maintenance (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/Software_maintenance",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 12"
+      }
+    ],
+    "checklist_ripasso": [
+      "Correttiva, adattiva, perfettiva, preventiva",
+      "La manutenzione è la parte più costosa del ciclo di vita",
+      "Leggi di Lehman"
+    ]
+  },
+  {
+    "id": "licenze-software",
+    "title": "Licenze software: proprietarie, permissive e copyleft",
+    "area": 4,
+    "tipo": "concetto",
+    "sapere": "Una licenza stabilisce cosa si può fare con il software (usare, modificare, ridistribuire) e a quali condizioni. Licenze permissive: MIT (attribuzione e testo della licenza), Apache 2.0 (in più concessione esplicita dei brevetti, NOTICE, indicazione delle modifiche). Licenze copyleft: GPL (forte: le opere derivate distribuite restano GPL con sorgenti), LGPL (debole: una libreria si può collegare da codice proprietario, ma le modifiche alla libreria restano LGPL), AGPL (estende l'obbligo all'uso via rete). Il software senza licenza è 'all rights reserved'.",
+    "saper_fare": [
+      "Confrontare MIT, Apache 2.0, LGPL e GPL su obblighi, brevetti e copyleft",
+      "Spiegare la differenza tra copyleft forte e debole",
+      "Usare gli identificativi SPDX"
+    ],
+    "prerequisiti": [],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: licenze",
+        "testo": "Differenze tra MIT, Apache 2.0, LGPL e GPL?",
+        "soluzione": "MIT: permissiva e minima; chiede di mantenere copyright e licenza; il codice si può usare anche in prodotti chiusi. Apache 2.0: permissiva, con in più la licenza esplicita sui brevetti, il file NOTICE e l'indicazione delle modifiche. LGPL: copyleft debole; un programma proprietario può usare la libreria con collegamento dinamico, ma chi distribuisce una versione modificata della libreria deve rilasciarne i sorgenti in LGPL. GPL: copyleft forte; distribuendo un'opera derivata, tutto deve essere distribuito in GPL con i sorgenti."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Nel programma ('licenze software'); Non compare nelle prove d'esame note (2016/17, 2022, 2023). TSUI non ha una sezione dedicata: si studia sulle fonti ufficiali (GNU, OSI, Apache)."
+    },
+    "risorse": [
+      {
+        "titolo": "GNU GPL v3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "verificato": true
+      },
+      {
+        "titolo": "GNU LGPL v3",
+        "url": "https://www.gnu.org/licenses/lgpl-3.0.html",
+        "verificato": true
+      },
+      {
+        "titolo": "The MIT License (OSI)",
+        "url": "https://opensource.org/license/mit",
+        "verificato": true
+      },
+      {
+        "titolo": "Apache License 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0",
+        "verificato": true
+      },
+      {
+        "titolo": "Choose a License: confronto",
+        "url": "https://choosealicense.com/licenses/",
+        "verificato": true
+      },
+      {
+        "titolo": "SPDX License List",
+        "url": "https://spdx.org/licenses/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Permissive: MIT, Apache 2.0 (+ brevetti)",
+      "Copyleft forte: GPL; debole: LGPL; rete: AGPL",
+      "Gli obblighi scattano con la distribuzione",
+      "Senza licenza = tutti i diritti riservati"
+    ]
+  },
+  {
+    "id": "compatibilita-licenze",
+    "title": "Copyleft e compatibilità tra licenze",
+    "area": 4,
+    "tipo": "abilita",
+    "sapere": "Due licenze sono compatibili se il codice si può combinare in un'unica opera rispettandole entrambe. Le permissive (MIT, BSD) entrano in progetti GPL. Apache 2.0 è compatibile con GPLv3 ma non con GPLv2. Il codice GPL non può entrare in un prodotto proprietario distribuito. La licenza risultante di un'opera combinata è di solito la più restrittiva.",
+    "saper_fare": [
+      "Decidere se una combinazione di componenti è lecita e con quale licenza si può distribuire",
+      "Scegliere una licenza adatta agli obiettivi di un progetto"
+    ],
+    "prerequisiti": [
+      {
+        "id": "licenze-software",
+        "forza": "hard",
+        "motivo": "Bisogna conoscere obblighi e tipi di licenza."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: compatibilità",
+        "testo": "Un'app proprietaria distribuita ai clienti usa: lib A (MIT), lib B (Apache 2.0), lib C (LGPL, collegata dinamicamente), lib D (GPLv3). Si può fare?",
+        "soluzione": "A: sì (mantenere copyright e licenza). B: sì (licenza, NOTICE, brevetti). C: sì, se resta una libreria separata e sostituibile; le eventuali modifiche a C vanno rilasciate in LGPL. D: no. Distribuire un'opera derivata da codice GPL obbliga a rilasciare tutto in GPL. Soluzioni: sostituire D, comprare una licenza commerciale (se D ha doppia licenza) oppure rilasciare l'app in GPLv3."
+      },
+      {
+        "tipo_esame": "esercizio: GPLv2 + Apache",
+        "testo": "Si può unire codice Apache 2.0 a un progetto GPLv2-only?",
+        "soluzione": "No. Secondo la FSF e la ASF, Apache 2.0 è incompatibile con GPLv2 per le clausole sui brevetti. È invece compatibile con GPLv3, e l'opera combinata si distribuisce in GPLv3."
+      }
+    ],
+    "tempo_studio_min": 25,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Il programma cita le licenze; Non compare nelle prove d'esame note (2016/17, 2022, 2023). Esercizio di ragionamento adatto a una domanda teorica."
+    },
+    "risorse": [
+      {
+        "titolo": "License compatibility (Wikipedia)",
+        "url": "https://en.wikipedia.org/wiki/License_compatibility",
+        "verificato": true
+      },
+      {
+        "titolo": "Apache License v2.0 and GPL compatibility",
+        "url": "https://www.apache.org/licenses/GPL-compatibility.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Licenze e compatibilità con la GPL (GNU)",
+        "url": "https://www.gnu.org/licenses/license-list.html",
+        "verificato": true
+      },
+      {
+        "titolo": "Copyleft (GNU)",
+        "url": "https://www.gnu.org/licenses/copyleft.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Permissiva → dentro la GPL: sì",
+      "Apache 2.0 + GPLv3: sì; + GPLv2: no",
+      "GPL dentro un prodotto proprietario distribuito: no",
+      "LGPL con collegamento dinamico: sì"
+    ]
+  }
+]
