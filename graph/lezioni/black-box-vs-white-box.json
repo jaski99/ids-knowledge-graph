@@ -1,0 +1,75 @@
+{
+  "intuizione": "Ci sono due modi di scegliere i casi di test. Nel black box guardi solo la specifica (cosa il metodo promette) e non il codice: ti chiedi «quali comportamenti diversi esistono?». Nel white box apri il codice e ti chiedi «quali istruzioni e quali rami ho già fatto eseguire?». Il primo trova funzionalità mancanti o sbagliate, il secondo trova codice mai eseguito: servono entrambi.",
+  "spiegazione": "## Due domande diverse sullo stesso metodo\n\nDavanti a un metodo da testare puoi porti due domande:\n\n- **Black box (funzionale, *specification-based*)**: *«Il metodo fa ciò che la specifica promette?»*. Non leggi il codice; lavori su input, output e regole del testo. Tecniche: **classi di equivalenza**, **boundary value analysis (BVA)**, tabelle di decisione, test basati sui casi d'uso.\n- **White box (strutturale, *glass box*, *code-based*)**: *«Ho fatto eseguire tutte le parti del codice?»*. Leggi il codice, disegni il **grafo di flusso di controllo (CFG)** e scegli gli input che percorrono istruzioni, decisioni e cammini. Tecniche e criteri: **statement coverage**, **decision (branch) coverage**, **condition coverage**, **MC/DC**, **path coverage** (cammini base, complessità ciclomatica).\n\nNelle prove d'esame che conosciamo le due famiglie compaiono separate: la **Parte 2** è sempre un esercizio black box (funzione a scaglioni: classi di equivalenza + valori limite), mentre nella **Parte 3** compaiono domande white box (definizioni di statement/decision coverage e MC/DC; nella prova del 5/11/2025 il diagramma di flusso di un metodo Java con i test minimi per statement e decision coverage).\n\n## Lo stesso metodo visto dai due lati\n\nSpecifica: *«`sconto(eta, tessera)` restituisce 10 se il cliente ha almeno 65 anni oppure ha la tessera, altrimenti 0. L'età deve essere tra 0 e 120, altrimenti -1.»*\n\n```java\npublic final class Cassa {\n    private Cassa() {}\n\n    public static int sconto(int eta, boolean tessera) {\n        if (eta < 0 || eta > 120) return -1;   // decisione D1\n        if (eta >= 65 || tessera) return 10;    // decisione D2\n        return 0;\n    }\n}\n```\n\n| | Black box | White box |\n|---|---|---|\n| Da dove parto | dalla frase della specifica | dal codice (e dal suo CFG) |\n| Cosa costruisco | classi: eta < 0 (NV), 0..64 (V), 65..120 (V), > 120 (NV); tessera sì/no | tabella delle decisioni D1, D2 con esiti T/F |\n| Test tipici | (30,false)→0, (70,false)→10, (30,true)→10, (-1,false)→-1, (121,false)→-1 + bordi 64/65, 0, 120 | statement: (−1,false), (70,false), (30,false); decision: gli stessi coprono D1 T/F e D2 T/F |\n| Che cosa trova | un requisito non implementato (es. manca il controllo eta > 120) | codice morto, rami mai eseguiti, condizioni mai valutate |\n| Che cosa NON trova | codice extra non previsto (una «porta segreta» nel codice) | funzionalità mancanti: se il controllo non è scritto, non c'è nessun ramo da coprire |\n\nL'ultima riga è il cuore della **complementarità**: il white box non può accorgersi di ciò che *manca* nel codice, il black box non può accorgersi di ciò che c'è *in più*.\n\n## Come scegliere (e perché si usano insieme)\n\n```mermaid\nflowchart TD\n    Q[\"Che cosa ho in mano?\"] --> S[\"Solo la specifica o i requisiti\"]\n    Q --> C[\"Il codice sorgente\"]\n    S --> BB[\"Black box: classi di equivalenza + BVA\"]\n    C --> WB[\"White box: CFG + criteri di copertura\"]\n    BB --> M[\"Misuro la copertura dei test black box con uno strumento (es. JaCoCo)\"]\n    M --> WB2[\"Aggiungo test white box solo per i rami rimasti scoperti\"]\n```\n\nNella pratica professionale si procede proprio così: prima si scrivono i test dalla specifica (black box, spesso prima del codice, come nel TDD), poi uno strumento di copertura dice quali righe o rami non sono mai stati eseguiti, e lì si aggiungono test strutturali. Il **livello** influisce sulla scelta: negli unit test si usano entrambi; ai livelli di sistema e accettazione si usa quasi solo il black box, perché il codice è troppo grande o non è accessibile al cliente.\n\n### Grey box\n\nEsiste una via di mezzo, il **grey box**: conosci un po' la struttura interna (per esempio lo schema del database o l'architettura) ma progetti i test dalla specifica. È utile nei test di integrazione.\n\n## Vantaggi e limiti in sintesi\n\n**Black box** — pro: indipendente dall'implementazione (i test restano validi se il codice viene riscritto), può essere scritto da chi non programma e prima del codice, trova requisiti mancanti. Contro: non sa quanta parte del codice ha esercitato; con molti input il numero di combinazioni esplode.\n\n**White box** — pro: misura oggettiva (percentuale di copertura), trova codice morto e rami trascurati. Contro: richiede il codice; i test vanno rifatti se il codice cambia; **copertura al 100% non significa assenza di bug** (puoi eseguire una riga sbagliata senza accorgertene se l'oracolo non controlla il risultato giusto).",
+  "analogia": "Controllare un'auto usata. Black box: la provi su strada come un cliente qualunque (frena? sterza? i fari si accendono?) senza aprire il cofano. White box: il meccanico la mette sul ponte e controlla ogni componente, uno per uno. Il collaudo su strada scopre che manca il climatizzatore promesso; il meccanico scopre un tubo mai collegato. L'analogia smette di valere su un punto: nel software «aprire il cofano» non basta, bisogna anche far passare l'esecuzione da ogni ramo con input scelti apposta.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Specifica di un metodo e Javadoc (Fondamenti/Programmazione a oggetti)",
+      "collegamento": "La specifica (@param, @return, eccezioni) è esattamente il materiale da cui parte il black box: contratto pubblico, non implementazione."
+    },
+    {
+      "conoscenza": "if, while, for e condizioni booleane in Java",
+      "collegamento": "Sono gli elementi che il white box deve «coprire»: ogni if ha due esiti, ogni while può essere saltato o ripetuto."
+    },
+    {
+      "conoscenza": "Incapsulamento in OOP",
+      "collegamento": "Il black box tratta la classe come la tratta un client: solo l'interfaccia pubblica. Per questo i test black box sopravvivono a un refactoring interno."
+    },
+    {
+      "conoscenza": "Livelli e terminologia del testing",
+      "collegamento": "Error, fault e failure; unit, integration, system, acceptance: il black box domina ai livelli alti, il white box negli unit test.",
+      "nodo": "testing-livelli-tipi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Classificare tecniche",
+      "problema": "Per ciascuna tecnica di' se è black box o white box: (a) classi di equivalenza; (b) decision coverage; (c) boundary value analysis; (d) MC/DC; (e) test derivati dagli scenari di un caso d'uso; (f) cammini base con la complessità ciclomatica.",
+      "passi": [
+        "Chiediti per ognuna: per applicarla mi serve il codice o basta la specifica?",
+        "(a), (c), (e) si costruiscono dal testo dei requisiti: black box.",
+        "(b), (d), (f) parlano di decisioni, condizioni e cammini del codice: white box."
+      ],
+      "soluzione": "Black box: (a), (c), (e). White box: (b), (d), (f).",
+      "perche_funziona": "Il criterio di classificazione è la sorgente dei casi di test: specifica oppure struttura del codice. Non conta chi scrive i test né con quale strumento."
+    },
+    {
+      "titolo": "Domanda teorica: confronta black box e white box",
+      "problema": "Domanda aperta tipo Parte 3 (circa 2-3 punti): «Si definiscano il testing black box e white box, indicandone vantaggi e limiti».",
+      "passi": [
+        "Definizione in una riga ciascuno: black box = test dalla specifica senza guardare il codice; white box = test dalla struttura del codice per coprirne istruzioni/decisioni/cammini.",
+        "Tecniche: per il black box classi di equivalenza e valori limite; per il white box statement, decision, condition, MC/DC, path coverage sul CFG.",
+        "Vantaggi/limiti incrociati: il black box trova funzionalità mancanti ma non sa quanto codice ha eseguito; il white box misura la copertura ma non vede ciò che manca nel codice.",
+        "Chiusura: sono complementari; in pratica prima black box, poi misura della copertura e test white box per i rami scoperti. Copertura 100% non implica assenza di difetti (Dijkstra: il testing mostra la presenza dei bug, non l'assenza)."
+      ],
+      "soluzione": "Risposta in 4 blocchi: definizioni, tecniche, pro/contro incrociati, complementarità con un mini-esempio (il metodo sconto: il controllo eta>120 mancante lo trova solo il black box).",
+      "perche_funziona": "La struttura definizione → tecniche → confronto → sintesi mostra che sai sia cosa sono sia quando usarle; il mini-esempio rende verificabile l'affermazione sulla complementarità."
+    }
+  ],
+  "errori_comuni": [
+    "Dire che il white box «è migliore perché più preciso»: non vede le funzionalità mancanti, quindi non sostituisce il black box.",
+    "Confondere white box con unit test: il livello (unit, integration...) e la tecnica (black/white box) sono dimensioni indipendenti; uno unit test può essere black box.",
+    "Nella Parte 2 (black box) giustificare i casi leggendo il codice: l'esercizio chiede di ragionare sulla specifica.",
+    "Credere che copertura 100% significhi codice corretto: una riga eseguita con un'asserzione debole o un oracolo sbagliato non rivela il difetto.",
+    "Mettere la BVA tra le tecniche white box: i bordi si ricavano dalla specifica, è black box."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Perché il white box non può trovare un requisito non implementato?",
+      "risposta": "Perché costruisce i test dalla struttura del codice esistente: se un controllo o una funzione non è stata scritta, non esiste nessuna istruzione o ramo da coprire, quindi nessun criterio di copertura chiede un test che la riveli. Solo confrontando con la specifica (black box) ci si accorge che manca."
+    },
+    {
+      "domanda": "Che cosa misura uno strumento come JaCoCo e a quale famiglia appartiene questa misura?",
+      "risposta": "Misura quali righe e quali rami del codice sono stati eseguiti dai test (statement e branch coverage): è una misura white box, che si può applicare anche a una suite scritta con tecniche black box per scoprire le parti non esercitate."
+    },
+    {
+      "domanda": "Fai un esempio di difetto trovato dal white box ma non dal black box.",
+      "risposta": "Codice in più non previsto dalla specifica, per esempio un ramo `if (eta == 42) return 99;` lasciato per debug: nessuna classe di equivalenza lo prevede, ma la decision coverage impone un test che renda vera quella condizione e lo fa emergere (o almeno segnala che quel ramo non è mai stato eseguito)."
+    },
+    {
+      "domanda": "A quali livelli di test si usa prevalentemente il black box?",
+      "risposta": "Sistema e accettazione: lì si verifica il prodotto contro i requisiti e il cliente o il tester spesso non ha accesso al codice o non avrebbe senso coprirne la struttura riga per riga."
+    }
+  ],
+  "riepilogo": "Black box: test dalla specifica (classi di equivalenza, BVA); white box: test dal codice (statement, decision, condition, MC/DC, path).\nBlack box trova ciò che manca, white box trova ciò che non è mai eseguito.\nSi usano insieme: prima black box, poi copertura misurata e test per i rami scoperti.\nCopertura 100% non significa assenza di bug.\nAll'esame: Parte 2 = black box; definizioni e CFG white box nella Parte 3."
+}

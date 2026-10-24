@@ -1,0 +1,88 @@
+{
+  "intuizione": "I programmatori sbagliano soprattutto ai confini: scrivono < invece di <=, partono da 1 invece che da 0, usano 50 invece di 51. La boundary value analysis prende ogni classe valida e testa i suoi estremi e i valori immediatamente vicini, dentro e fuori. Così un errore di «uno in più o uno in meno» non può sfuggire.",
+  "spiegazione": "## Perché proprio i bordi\n\nConsidera la regola *«fino a 50 pagine (incluso) costa 2 €»*. Il programmatore può scrivere:\n\n```java\nif (numero <= 50) return 2.0;   // corretto\nif (numero <  50) return 2.0;   // sbagliato: 50 pagine finisce nello scaglione successivo\n```\n\nUn test con numero = 25 (il rappresentante della classe di equivalenza) **passa con entrambe le versioni**. Solo numero = 50 distingue il codice giusto da quello sbagliato. Gli errori *off-by-one* e gli operatori relazionali sbagliati sono tra i difetti più comuni: la BVA è la tecnica black box costruita apposta per stanarli.\n\n## La regola dei sei punti\n\nPer ogni classe **valida** `[min, max]` con passo **ε**:\n\n| valore | ruolo |\n|---|---|\n| `min − ε` | appena fuori sotto (classe adiacente o non valida) |\n| `min` | primo valore della classe |\n| `min + ε` | appena dentro |\n| `max − ε` | appena dentro |\n| `max` | ultimo valore della classe |\n| `max + ε` | appena fuori sopra |\n\n- **ε = 1** per gli interi (pagine, accessi, pezzi).\n- Per i `double` scegli e **dichiari** un passo ragionevole (0,1 o 0,01). La soluzione ufficiale del fac-simile 2016/17 usa 0,1 (`TB(2,20.1)`, `TB(2,59.9)`).\n- Estremo **escluso** (`[20, 60[`): il massimo effettivo è `60 − ε = 59,9`, e 60 è già fuori.\n- Bordi condivisi tra classi adiacenti (il `50/51` è sia `max/max+ε` di una classe sia `min−ε/min` della successiva): nella tabella finale **li scrivi una volta sola**.\n- Classe senza limite superiore («da 51 in su»): bordo inferiore più un valore molto grande (overflow).\n\nAlcuni testi usano la versione «a 2 valori» (solo il bordo e il valore appena fuori: `min − ε, min, max, max + ε`). La versione a 3 valori per bordo, qui sopra, è la più sicura all'esame.\n\n```mermaid\nflowchart LR\n    A[\"0: NV\"] --- B[\"1 | 2 ... 49 | 50\"] --- C[\"51 | 52 ... 149 | 150\"] --- D[\"151 | 152 ... 499 | 500\"] --- E[\"501: NV\"]\n```\n\n## Esempio guida: prova del 5/11/2025, BVA solo sul parametro numero\n\nDalla lezione sulle classi di equivalenza: C2 = [1, 50] → 2 €; C3 = [51, 150] → tariffa·peso·numero; C4 = [151, 500] → 450·peso·numero (centesimi, divisi per 100); fuori → -1. La consegna chiede la BVA **unicamente per numero** nei casi validi: tengo **peso = 2 e tariffa = 10** fissi su valori validi.\n\n| # | numero | bordo | calcolo | atteso (€) |\n|---|---|---|---|---|\n| B1 | 0 | min C2 − 1 | non valido | -1 |\n| B2 | 1 | min C2 | fascia 1 | 2,00 |\n| B3 | 2 | min C2 + 1 | fascia 1 | 2,00 |\n| B4 | 49 | max C2 − 1 | fascia 1 | 2,00 |\n| B5 | 50 | max C2 | fascia 1 | 2,00 |\n| B6 | 51 | min C3 | 10·2·51 = 1020 c | 10,20 |\n| B7 | 52 | min C3 + 1 | 10·2·52 = 1040 c | 10,40 |\n| B8 | 149 | max C3 − 1 | 10·2·149 = 2980 c | 29,80 |\n| B9 | 150 | max C3 | 10·2·150 = 3000 c | 30,00 |\n| B10 | 151 | min C4 | 450·2·151 = 135900 c | 1359,00 |\n| B11 | 152 | min C4 + 1 | 450·2·152 = 136800 c | 1368,00 |\n| B12 | 499 | max C4 − 1 | 450·2·499 = 449100 c | 4491,00 |\n| B13 | 500 | max C4 | 450·2·500 = 450000 c | 4500,00 |\n| B14 | 501 | max C4 + 1 | non valido | -1 |\n\nOsservazione da scrivere: tra 150 e 151 pagine il costo salta da 30 € a 1359 € (con tariffa 10). È coerente con la specifica, ma è un salto enorme: vale la pena segnalarlo come possibile anomalia dei requisiti, senza cambiare gli output attesi.\n\n## Dalla tabella a JUnit 5\n\n```java\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.CsvSource;\n\nclass SpedizioniBvaTest {\n    @ParameterizedTest(name = \"numero={0} -> {1}\")\n    @CsvSource({\n        \"0, -1\", \"1, 2.0\", \"2, 2.0\", \"49, 2.0\", \"50, 2.0\",\n        \"51, 10.2\", \"52, 10.4\", \"149, 29.8\", \"150, 30.0\",\n        \"151, 1359.0\", \"152, 1368.0\", \"499, 4491.0\", \"500, 4500.0\", \"501, -1\"\n    })\n    void bvaSuNumero(int numero, double atteso) {\n        assertEquals(atteso, Spedizioni.calcolaCostoSpedizione(numero, 2, 10), 1e-9);\n    }\n}\n```\n\nIl delta `1e-9` è obbligatorio con i `double`: `10 * 2 * 51 / 100.0` potrebbe non essere esattamente `10.2` in binario.\n\n## BVA e programmazione difensiva\n\nI valori `min − ε` e `max + ε` delle classi estreme sono esattamente gli input che i controlli difensivi del metodo devono respingere: la BVA verifica che le precondizioni siano scritte con l'operatore giusto.",
+  "analogia": "Pensa al controllo dell'età all'ingresso di un film vietato ai minori di 14 anni. Il bigliettaio sbaglia raramente con un bambino di 6 anni o un adulto di 40: sbaglia con chi ha 13 anni e 11 mesi o ha compiuto 14 anni ieri. Se vuoi verificare che applichi bene la regola, gli mandi proprio un ragazzo di 13, uno di 14 e uno di 15. Il limite dell'analogia: un bigliettaio può essere incoerente da una persona all'altra, mentre il programma è deterministico; se 14 funziona oggi, funzionerà sempre.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Operatori relazionali < e <= in Java",
+      "collegamento": "La differenza tra i due su un solo valore (il bordo) è esattamente ciò che la BVA verifica."
+    },
+    {
+      "conoscenza": "Rappresentazione dei double in virgola mobile",
+      "collegamento": "Per questo si dichiara un ε ragionevole (0,1) e si confronta con un delta in assertEquals."
+    },
+    {
+      "conoscenza": "Overflow degli interi (Integer.MAX_VALUE + 1 diventa negativo)",
+      "collegamento": "Motiva il test con un valore molto grande per le classi senza limite superiore."
+    },
+    {
+      "conoscenza": "Classi di equivalenza",
+      "collegamento": "La BVA si applica ai bordi delle classi valide già individuate.",
+      "nodo": "classi-equivalenza"
+    },
+    {
+      "conoscenza": "JUnit 5 test parametrici",
+      "collegamento": "La tabella BVA diventa una @CsvSource.",
+      "nodo": "junit-5"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "BVA su numero: calcolaCostoSpedizione (5/11/2025)",
+      "problema": "Classi valide di numero: [1, 50], [51, 150], [151, 500]. Mostra i test di boundary solo per numero, con peso = 2 g e tariffa = 10 centesimi.",
+      "passi": [
+        "Interi ⇒ ε = 1. Bordi: 1 e 50; 51 e 150; 151 e 500.",
+        "Classe [1, 50]: 0, 1, 2, 49, 50, 51.",
+        "Classe [51, 150]: 50, 51 (già presenti), 52, 149, 150, 151.",
+        "Classe [151, 500]: 150, 151 (già presenti), 152, 499, 500, 501.",
+        "Elimino i duplicati: 0, 1, 2, 49, 50, 51, 52, 149, 150, 151, 152, 499, 500, 501 (14 valori).",
+        "Calcolo gli output: 0 → -1; 1, 2, 49, 50 → 2,00; 51 → 10,20; 52 → 10,40; 149 → 29,80; 150 → 30,00; 151 → 1359,00; 152 → 1368,00; 499 → 4491,00; 500 → 4500,00; 501 → -1 (verificati eseguendo il codice)."
+      ],
+      "soluzione": "14 test di bordo con output atteso, più la segnalazione del salto 150 → 151 (30 € → 1359 €).",
+      "perche_funziona": "Ogni soglia (≤ 50, ≤ 150, ≤ 500 e ≥ 1) è stretta tra il valore che la soddisfa e quello che la viola: qualunque operatore sbagliato o costante spostata di uno fa fallire almeno un test."
+    },
+    {
+      "titolo": "BVA sui double: luggageCost (fac-simile 2016/17)",
+      "problema": "luggageCost(int nPieces, double weight): classi valide di weight [0, 20] (gratis) e ]20, 60[ (10 €/kg oltre 20). Ricava i boundary con ε = 0,1 e nPieces = 2.",
+      "passi": [
+        "ε = 0,1 dichiarato. Classe [0, 20]: −0,1 → -1; 0,0 → 0; 0,1 → 0; 19,9 → 0; 20,0 → 0; 20,1 → (0,1·10) = 1.",
+        "Classe ]20, 60[: estremo inferiore escluso, quindi min effettivo = 20,1; max effettivo = 59,9. Valori: 20,0 → 0 (già presente), 20,1 → 1, 20,2 → 2, 59,8 → 398, 59,9 → 399, 60,0 → -1.",
+        "Confronto con la soluzione ufficiale del fac-simile: TB(0,0.0) = 0, TB(1,10.0) = 0, TB(2,20.0) = 0, TB(2,20.1) = 1, TB(2,59.9) = 399: coincide con i miei valori.",
+        "Aggiungo i bordi di nPieces (con weight = 10): −1 → -1, 0 → 0, 2 → 0, 3 → -1."
+      ],
+      "soluzione": "Boundary su weight: (−0,1 → -1), (0 → 0), (0,1 → 0), (19,9 → 0), (20 → 0), (20,1 → 1), (20,2 → 2), (59,8 → 398), (59,9 → 399), (60 → -1).",
+      "perche_funziona": "Con i double l'estremo escluso diventa «limite ± ε»: dichiarare ε rende i casi univoci e ripetibili."
+    }
+  ],
+  "errori_comuni": [
+    "Fare la BVA solo sui bordi esterni (1 e 500) dimenticando quelli interni tra scaglioni (50/51, 150/151), che sono i più a rischio.",
+    "Non dichiarare ε per i double o usare valori come 20,0000001 senza spiegazione.",
+    "Sbagliare lo scaglione del bordo: 51 pagine si calcola già con la formula della seconda fascia.",
+    "Variare più parametri insieme nei test di boundary: si varia un parametro alla volta, gli altri su valori validi fissi.",
+    "Trattare un estremo escluso come incluso (60 kg con weight < 60 è non valido).",
+    "Ripetere i bordi condivisi due volte nella tabella finale (non è un errore grave, ma mostra poca attenzione)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali valori testi per la classe valida [51, 150] di un parametro intero?",
+      "risposta": "50, 51, 52, 149, 150, 151: il bordo, il valore appena dentro e quello appena fuori per entrambi gli estremi."
+    },
+    {
+      "domanda": "Che differenza c'è tra BVA e classi di equivalenza?",
+      "risposta": "Le classi di equivalenza scelgono un rappresentante qualunque (di solito centrale) per ogni comportamento; la BVA sceglie apposta i valori sui confini delle classi, dove si annidano gli errori di confronto e off-by-one. Si usano insieme."
+    },
+    {
+      "domanda": "Classe ]20, 60[ con ε = 0,1: quali sono min e max effettivi?",
+      "risposta": "Min effettivo 20,1 e max effettivo 59,9, perché entrambi gli estremi sono esclusi. I valori appena fuori sono 20,0 e 60,0."
+    },
+    {
+      "domanda": "Che cosa fai se una classe valida non ha limite superiore?",
+      "risposta": "Testo il bordo inferiore (min − 1, min, min + 1) e aggiungo un valore molto grande (es. Integer.MAX_VALUE) per scoprire overflow o comportamenti anomali."
+    },
+    {
+      "domanda": "Perché nei test di boundary su un parametro gli altri parametri restano fissi e validi?",
+      "risposta": "Per isolare l'effetto: se il test fallisce, la causa è il bordo del parametro che stai variando e non un altro controllo."
+    }
+  ],
+  "riepilogo": "Errori tipici ai confini: < contro <=, off-by-one.\nPer ogni classe valida: min−ε, min, min+ε, max−ε, max, max+ε (ε = 1 per int, dichiarato per double).\nEstremo escluso ⇒ limite effettivo ± ε; bordi condivisi una sola volta.\nUn parametro alla volta, gli altri fissi e validi; output atteso sempre.\nSegnala salti di prezzo sospetti senza cambiare gli attesi."
+}

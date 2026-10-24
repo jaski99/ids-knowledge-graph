@@ -1,0 +1,81 @@
+{
+  "intuizione": "Il grafo di flusso di controllo (CFG) è la «mappa stradale» di un metodo: i nodi sono gruppi di istruzioni o decisioni, gli archi sono le strade che l'esecuzione può prendere. Una volta disegnata la mappa, i criteri di copertura diventano domande semplici: ho visitato tutti i nodi? ho percorso tutti gli archi? quanti percorsi indipendenti esistono?",
+  "spiegazione": "## A che cosa serve\n\nIl **Control Flow Graph** è il punto di partenza di ogni esercizio white box: prima di dire quali test servono per la statement o la decision coverage devi vedere **dove il flusso si biforca e dove torna indietro**. Nella prova del 5/11/2025 è chiesto esplicitamente: *«si disegni il diagramma di flusso del metodo»*, poi i test.\n\n## Gli elementi\n\n- **Nodo**: un'istruzione oppure un **blocco base** (sequenza di istruzioni senza salti, in cui si entra dalla prima e si esce dall'ultima). Puoi numerare i nodi con i numeri di riga.\n- **Nodo decisione**: contiene una condizione (if, while, for, case). Ha **due archi uscenti** etichettati **T** (vero) e **F** (falso); uno `switch` ne ha uno per `case`.\n- **Arco**: possibile passaggio del controllo da un nodo al successivo.\n- **Nodo di ingresso** e **nodo di uscita** (il `return`; se ci sono più `return` si possono far confluire in un unico nodo «fine»).\n\n## I mattoni: come si traduce ogni costrutto\n\n```mermaid\nflowchart TD\n    subgraph IF[\"if senza else\"]\n        A1{\"cond ?\"} -- T --> A2[\"corpo\"]\n        A1 -- F --> A3[\"dopo\"]\n        A2 --> A3\n    end\n    subgraph IFELSE[\"if-else\"]\n        B1{\"cond ?\"} -- T --> B2[\"ramo then\"]\n        B1 -- F --> B3[\"ramo else\"]\n        B2 --> B4[\"dopo\"]\n        B3 --> B4\n    end\n    subgraph WHILE[\"while\"]\n        C1{\"cond ?\"} -- T --> C2[\"corpo\"]\n        C2 --> C1\n        C1 -- F --> C3[\"dopo\"]\n    end\n```\n\n- **if senza else**: il ramo F va direttamente all'istruzione successiva. Attenzione: quell'arco F «vuoto» è proprio ciò che la statement coverage non obbliga a percorrere e la decision coverage sì.\n- **while**: la condizione sta **in testa**; dal fondo del corpo parte un **arco di ritorno** verso la condizione. Il ramo F esce dal ciclo.\n- **for (init; cond; update)**: `init` è un nodo prima della condizione, `update` è l'ultimo nodo del corpo, da cui parte l'arco di ritorno.\n- **do-while**: il corpo viene prima, la condizione è **in fondo** e il suo ramo T torna all'inizio del corpo.\n- **Condizioni composte** `A && B`: si possono disegnare come un solo nodo (sufficiente per statement/decision coverage) oppure **espanse** in due nodi, perché Java valuta in corto circuito: se A è falsa, B non viene valutata. L'espansione serve per condition coverage e MC/DC.\n\n```mermaid\nflowchart LR\n    A{\"A ?\"} -- T --> B{\"B ?\"}\n    A -- F --> E[\"ramo else\"]\n    B -- T --> T1[\"ramo then\"]\n    B -- F --> E\n```\n\n## Dal CFG ai numeri: complessità ciclomatica e cammini base\n\nLa **complessità ciclomatica** di McCabe dice quanti **cammini linearmente indipendenti** ci sono, cioè quanti test servono al massimo per la *basis path coverage*:\n\n- `V(G) = E − N + 2` (E archi, N nodi, grafo connesso con un ingresso e un'uscita);\n- `V(G) = P + 1` dove P è il numero di **decisioni binarie** (una condizione composta espansa conta per ogni condizione semplice);\n- `V(G)` = numero di regioni chiuse del grafo planare + 1.\n\nUn **cammino indipendente** aggiunge almeno un arco nuovo rispetto ai precedenti. V(G) è un **limite superiore** al numero minimo di test per la decision coverage e il numero esatto per un insieme di cammini base.\n\n## Esempio completo in Java\n\n```java\npublic static int contaPari(int[] v) {\n    int c = 0;                              // nodo 1\n    for (int i = 0; i < v.length; i++) {    // nodo 2: init i = 0 ; nodo 3: i < v.length ?\n        if (v[i] % 2 == 0) {                // nodo 4\n            c++;                            // nodo 5\n        }                                   // nodo 6: i++ (update)\n    }\n    return c;                               // nodo 7\n}\n```\n\n```mermaid\nflowchart TD\n    N1[\"1: c = 0\"] --> N2[\"2: i = 0\"]\n    N2 --> N3{\"3: i minore di v.length ?\"}\n    N3 -- T --> N4{\"4: v[i] pari ?\"}\n    N4 -- T --> N5[\"5: c++\"]\n    N4 -- F --> N6[\"6: i++\"]\n    N5 --> N6\n    N6 --> N3\n    N3 -- F --> N7[\"7: return c\"]\n```\n\nConti: N = 7, E = 8 (1→2, 2→3, 3→4, 3→7, 4→5, 4→6, 5→6, 6→3), quindi V(G) = 8 − 7 + 2 = **3** = 2 decisioni + 1. Cammini base: `1-2-3-7` (array vuoto), `1-2-3-4-6-3-7` (un dispari), `1-2-3-4-5-6-3-7` (un pari).\n\n## Procedura da applicare all'esame\n\n1. Numera le righe del codice (spesso il testo d'esame le numera già).\n2. Individua le decisioni: ogni `if`, `while`, `for`, `case`, ogni operatore ternario.\n3. Disegna nodi e archi con le etichette T/F; non dimenticare gli archi di ritorno dei cicli e il ramo F degli if senza else.\n4. Verifica: ogni nodo decisione ha due archi uscenti; tutti i cammini arrivano alla fine.\n5. (Se richiesto) calcola V(G) in due modi diversi come controllo incrociato.",
+  "analogia": "Il CFG è come la mappa di un parco a sentieri: incroci (decisioni) dove scegli destra o sinistra, sentieri ad anello (cicli) che riportano allo stesso incrocio, un ingresso e un'uscita. «Visitare tutte le attrazioni» è la statement coverage, «percorrere ogni sentiero in entrambe le direzioni di ogni incrocio» è la decision coverage. L'analogia non regge sui cicli: nel parco l'anello lo percorri quante volte vuoi, mentre nel programma il numero di giri dipende dai dati, e non puoi scegliere un percorso senza trovare input che lo producano.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Diagrammi di flusso (flowchart) di Fondamenti di Informatica",
+      "collegamento": "Il CFG è un flowchart semplificato: rombi per le decisioni, rettangoli per le istruzioni, ma qui ti interessano solo i passaggi di controllo, non il dettaglio delle operazioni."
+    },
+    {
+      "conoscenza": "Grafi orientati (Algoritmi e strutture dati / Matematica discreta)",
+      "collegamento": "Nodi, archi, cammini e cicli sono gli stessi concetti; la formula E − N + 2 viene dal numero ciclomatico di un grafo."
+    },
+    {
+      "conoscenza": "Valutazione in corto circuito di && e || in Java",
+      "collegamento": "Spiega perché una condizione composta si può espandere in più nodi: B è valutata solo se A lo richiede."
+    },
+    {
+      "conoscenza": "Activity diagram UML",
+      "collegamento": "Anche l'activity diagram ha nodi decisione e merge, ma modella un processo di business; il CFG modella un singolo metodo.",
+      "nodo": "uml-diagramma-attivita"
+    },
+    {
+      "conoscenza": "Complessità ciclomatica come metrica",
+      "collegamento": "Lo stesso numero V(G) usato come metrica di qualità del codice qui serve a contare i cammini base da testare.",
+      "nodo": "metrica-complessita-ciclomatica"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "CFG di un metodo con if-else e while",
+      "problema": "Disegna il CFG e calcola V(G):\n```java\nstatic int f(int n) {\n1  int s = 0;\n2  while (n > 0) {\n3    if (n % 3 == 0) s += n;\n4    else s -= 1;\n5    n--;\n   }\n6  return s;\n}\n```",
+      "passi": [
+        "Decisioni: riga 2 (while n > 0) e riga 3 (if n % 3 == 0). Quindi P = 2.",
+        "Nodi: 1, 2, 3, 3T (s += n), 4 (s -= 1), 5, 6 → N = 7.",
+        "Archi: 1→2, 2→3 (T), 2→6 (F), 3→3T (T), 3→4 (F), 3T→5, 4→5, 5→2 (ritorno) → E = 8.",
+        "V(G) = 8 − 7 + 2 = 3; controllo: P + 1 = 3. ✓",
+        "Cammini base realizzabili: n = 0 → 1-2-6 (s = 0); n = 1 → 1-2-3-4-5-2-6 (s = -1); n = 3 → 1-2-3-3T-5-2-3-4-5-2-3-4-5-2-6 (s = 3 - 1 - 1 = 1). Nota: il cammino «puro» 1-2-3-3T-5-2-6 (un solo giro passando da 3T) è irrealizzabile, perché per avere n % 3 == 0 al primo giro serve n ≥ 3 e quindi almeno 3 giri: con i cicli i cammini base vanno sempre controllati sui dati."
+      ],
+      "soluzione": "CFG con 7 nodi, 8 archi (incluso il ritorno 5→2), V(G) = 3; tre test n = 0 (→ 0), n = 1 (→ -1), n = 3 (→ 1) percorrono tutti gli archi.",
+      "perche_funziona": "Ogni decisione binaria aggiunge esattamente un cammino indipendente; il controllo incrociato E − N + 2 = P + 1 evita di dimenticare archi (tipicamente il ritorno del ciclo)."
+    },
+    {
+      "titolo": "Condizione composta espansa",
+      "problema": "Disegna il CFG di `if (eta >= 18 && patente) ok = true; return ok;` in due versioni (condizione unica ed espansa) e calcola V(G) per entrambe.",
+      "passi": [
+        "Versione compatta: un nodo decisione D (eta >= 18 && patente), ramo T → ok = true, ramo F → return. N = 3 (D, ok = true, return), E = 3, V(G) = 3 − 3 + 2 = 2.",
+        "Versione espansa: D1 (eta >= 18) con T → D2 (patente) e F → return; D2 con T → ok = true e F → return. N = 4, E = 5, V(G) = 5 − 4 + 2 = 3.",
+        "Interpretazione: la versione espansa ha un cammino in più (eta >= 18 vera ma patente falsa), che è proprio quello che serve alla condition coverage e alla MC/DC."
+      ],
+      "soluzione": "Compatta: V(G) = 2; espansa: V(G) = 3. Per la decision coverage basta la compatta; per MC/DC si ragiona su quella espansa.",
+      "perche_funziona": "Il corto circuito di && crea davvero due punti di scelta nel bytecode; espandere il nodo rende visibili entrambi."
+    }
+  ],
+  "errori_comuni": [
+    "Dimenticare l'arco di ritorno del while/for verso la condizione: senza di esso il ciclo sparisce e V(G) risulta sbagliato.",
+    "Disegnare l'if senza else con un solo arco uscente: il ramo F esiste sempre, anche se non contiene istruzioni.",
+    "Mettere la condizione del do-while in testa come in un while: nel do-while il corpo si esegue almeno una volta.",
+    "Contare `a && b` come una sola decisione quando si calcola V(G) = P + 1 su un grafo espanso (o viceversa): sii coerente con il grafo disegnato.",
+    "Nel for, dimenticare che init e update sono nodi distinti dal corpo."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quanti archi uscenti ha un nodo decisione di un while? Dove portano?",
+      "risposta": "Due: il ramo T entra nel corpo del ciclo, il ramo F va alla prima istruzione dopo il ciclo. Dall'ultima istruzione del corpo parte poi un arco di ritorno verso la condizione."
+    },
+    {
+      "domanda": "Che cosa rappresenta V(G) per il testing?",
+      "risposta": "Il numero di cammini linearmente indipendenti del CFG: è il numero di test di un insieme di cammini base e un limite superiore al numero minimo di test necessari per la decision coverage."
+    },
+    {
+      "domanda": "Quali sono le due formule più rapide per V(G) e perché è utile usarle entrambe?",
+      "risposta": "V(G) = E − N + 2 e V(G) = P + 1 (P = decisioni binarie). Se danno risultati diversi hai sbagliato a contare nodi o archi o a disegnare il grafo: è un controllo incrociato gratuito."
+    },
+    {
+      "domanda": "Perché si espande una condizione composta in più nodi?",
+      "risposta": "Perché con la valutazione in corto circuito le condizioni semplici sono punti di scelta distinti; per condition coverage e MC/DC bisogna vedere ognuna di esse assumere T e F."
+    }
+  ],
+  "riepilogo": "CFG: nodi = istruzioni/blocchi o decisioni; archi = passaggi di controllo, etichettati T/F.\nif senza else: il ramo F esiste sempre; while/for: arco di ritorno alla condizione.\n&& e || si espandono in più nodi per via del corto circuito.\nV(G) = E − N + 2 = P + 1 = numero di cammini base.\nControlla sempre V(G) in due modi."
+}
