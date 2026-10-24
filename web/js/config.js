@@ -13,3 +13,4 @@ export const TIPO_SHAPE = { concetto: 'ellipse', abilita: 'round-rectangle', tip
 export const TIPO_ICON = { concetto: '●', abilita: '▬', tipo_esercizio: '◆' };
 export const PRIO_LABEL = { alta: 'Alta', media: 'Media', bassa: 'Bassa' };
 export const areaColor = (id) => AREA_COLORS[(id - 1) % AREA_COLORS.length];
+export const PRIO_SIZE = { alta: 40, media: 28, bassa: 18 };
