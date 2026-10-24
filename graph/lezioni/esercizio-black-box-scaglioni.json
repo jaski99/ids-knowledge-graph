@@ -1,0 +1,108 @@
+{
+  "intuizione": "Una funzione a scaglioni si comporta allo stesso modo per migliaia di input diversi e cambia comportamento solo in pochi punti: i bordi tra uno scaglione e l'altro. Testare a caso spreca tempo e manca proprio quei punti. La tecnica black box (classi di equivalenza più analisi dei valori limite) serve a scegliere il numero minimo di test che copre ogni comportamento e tutti i bordi, partendo solo dalla specifica e senza guardare il codice.",
+  "spiegazione": "## Che cosa chiede l'esercizio\n\nTi viene data la **specifica** di un metodo Java (di solito con un parametro numerico decisivo) che restituisce un valore diverso a seconda dello scaglione in cui cade l'input, e un valore d'errore (spesso `-1`) per gli input non ammessi. Devi produrre:\n\n1. le **classi di equivalenza** (valide e non valide);\n2. i **casi di test minimi** (uno per classe);\n3. i **casi di test ai limiti** (*boundary conditions*);\n4. per ogni caso, l'**output atteso** calcolato.\n\nNon serve (e non si deve) leggere il codice: è un test **black box**, si ragiona solo su ciò che la specifica promette.\n\n## Perché funziona: l'idea di classe di equivalenza\n\nUna **classe di equivalenza** è un insieme di input per cui ci aspettiamo che il programma si comporti *allo stesso modo* (stesso ramo della specifica). Se il programma funziona per un valore della classe, è ragionevole assumere che funzioni per tutti; se sbaglia per uno, probabilmente sbaglia per tutti. Quindi **un test per classe** basta per coprire i comportamenti.\n\nLe classi sono di due tipi:\n\n- **valide (V)**: input ammessi, uno per ogni scaglione/regola di calcolo;\n- **non valide (NV)**: input vietati (sotto il minimo, sopra il massimo, valori proibiti come zero o negativi).\n\nRegola d'oro per le NV: **un solo input non valido per test**. Se in un test metti due valori sbagliati e il metodo restituisce `-1`, non sai quale dei due controlli ha funzionato.\n\n## Perché i bordi: l'analisi dei valori limite (BVA)\n\nGli errori di programmazione più frequenti negli scaglioni sono `<` scritto al posto di `<=` (o viceversa) e costanti sbagliate di uno (*off-by-one*). Questi errori si vedono **solo** sui bordi. Per ogni classe valida con estremi `min` e `max` si testano:\n\n| punto | perché |\n|---|---|\n| `min - ε` | appena fuori: deve cambiare comportamento |\n| `min` | il bordo stesso: è incluso o escluso? |\n| `min + ε` | appena dentro |\n| `max - ε` | appena dentro |\n| `max` | il bordo stesso |\n| `max + ε` | appena fuori |\n\n**ε** è il passo più piccolo sensato: `1` per gli interi, per i `double` un valore che dichiari tu (es. `0,1` o `0,01`). **Scrivi sempre il valore di ε che usi**: è una scelta di progetto del test.\n\n## La procedura in 5 passi\n\n```mermaid\nflowchart TD\n    P1[\"Passo 1: Retta numerica: riscrivi la specifica come intervalli\"] --> P2[\"Passo 2: Classi V e NV (una V per scaglione)\"]\n    P2 --> P3[\"Passo 3: Test minimi: un valore centrale per classe\"]\n    P3 --> P4[\"Passo 4: BVA: min-ε, min, min+ε, max-ε, max, max+ε per ogni classe V\"]\n    P4 --> P5[\"Passo 5: Output atteso per ogni test + anomalie della specifica\"]\n```\n\n### Passo 1 — Retta numerica\n\nPrendi la specifica e trasformala in intervalli contigui, facendo attenzione a parentesi quadre (estremo incluso) e tonde (escluso). Esempio: *\"superficie sotto i 15 m² non ammessa; da 15 a meno di 40 m² 10 €/m²; da 40 a 100 m² 8 €/m²; oltre 100 non ammessa\"*:\n\n```mermaid\nflowchart LR\n    A[\"(-∞, 15) NV → -1\"] --- B[\"[15, 40) V → 10 €/m²\"] --- C[\"[40, 100] V → 8 €/m²\"] --- D[\"(100, +∞) NV → -1\"]\n```\n\nSe un estremo è ambiguo (*\"fino a 40\"*: incluso o no?), **dichiara la tua ipotesi** per iscritto e vai avanti.\n\n### Passo 2 — Classi\n\nUna riga per intervallo: `C1 mq<15 NV`, `C2 15≤mq<40 V`, `C3 40≤mq≤100 V`, `C4 mq>100 NV`. Se c'è un secondo parametro, le sue classi si elencano a parte (numerate di seguito).\n\n### Passo 3 — Test minimi\n\nUn valore **lontano dai bordi** per ogni classe, con l'output calcolato. Con più parametri: i test validi coprono più classi valide insieme; ogni test non valido ha **una sola** classe NV e tutto il resto valido.\n\n### Passo 4 — Boundary conditions\n\nApplica la tabella `min±ε / max±ε` a ogni classe valida. I bordi condivisi tra due classi (qui il 40) compaiono una volta sola nella tabella finale. Una classe valida **senza limite superiore** (es. *\"oltre 50 accessi\"*) non ha `max`: testa un valore molto grande per controllare l'overflow.\n\n### Passo 5 — Output atteso e anomalie\n\nCalcola il risultato numerico di **ogni** test: un test senza output atteso non è un test. Mentre calcoli, guarda i numeri: se 39,9 m² costano 399 € e 40 m² costano 320 €, la specifica ha un **salto di prezzo** e conviene segnalarlo come possibile anomalia dei requisiti.\n\n## Dal foglio al codice: lo stesso test in JUnit 5\n\nL'implementazione che soddisfa la specifica dell'esempio:\n\n```java\npublic final class Piazzola {\n    private Piazzola() {}\n\n    /** @return costo in euro, oppure -1 se la superficie non è ammessa */\n    public static double costoPiazzola(double mq) {\n        if (mq < 15 || mq > 100) return -1;   // classi C1 e C4\n        if (mq < 40) return mq * 10;          // classe C2\n        return mq * 8;                        // classe C3\n    }\n}\n```\n\nLa tabella dei test diventa direttamente un **test parametrico**: ogni riga di `@CsvSource` è un caso (input, output atteso).\n\n```java\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.CsvSource;\n\nclass PiazzolaTest {\n    @ParameterizedTest(name = \"mq={0} -> {1}\")\n    @CsvSource({\n        // test minimi (uno per classe)\n        \"10, -1\", \"25, 250\", \"70, 560\", \"150, -1\",\n        // boundary conditions, ε = 0.1\n        \"14.9, -1\", \"15.0, 150\", \"15.1, 151\",\n        \"39.9, 399\", \"40.0, 320\", \"40.1, 320.8\",\n        \"99.9, 799.2\", \"100.0, 800\", \"100.1, -1\"\n    })\n    void costoPiazzola(double mq, double atteso) {\n        assertEquals(atteso, Piazzola.costoPiazzola(mq), 1e-9); // delta: i double non sono esatti\n    }\n}\n```\n\nSe qualcuno scrivesse `mq <= 40` al posto di `mq < 40`, il solo test che fallisce sarebbe `40.0 → 320`. È esattamente il motivo per cui si testano i bordi.\n\n## Modello di risposta da usare sul foglio\n\n| # | classe/i | input | output atteso | tipo |\n|---|---|---|---|---|\n| T1 | C1 (NV) | 10 | -1 | minimo |\n| T2 | C2 | 25 | 250 | minimo |\n| … | … | … | … | … |\n| TB1 | bordo C2 | 14,9 | -1 | min-ε |\n\nIn testa alla tabella scrivi le **ipotesi** (ε scelto, estremi inclusi/esclusi, unità di misura).",
+  "analogia": "È come controllare un ascensore che ha un limite di 8 persone: non provi con 1, 2, 3, 4… persone. Provi con una persona (caso normale), con 7, 8 e 9 (intorno al limite, dove l'allarme deve scattare o no) e con un numero assurdo come -1 (input vietato). I bordi sono il posto dove i guasti si nascondono.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Intervalli e disequazioni (Analisi I)",
+      "collegamento": "Le classi di equivalenza sono intervalli della retta reale: parentesi quadre e tonde dicono se l'estremo è incluso, esattamente come in Analisi."
+    },
+    {
+      "conoscenza": "Catene if / else if in Java (Fondamenti di Informatica)",
+      "collegamento": "Ogni scaglione corrisponde a un ramo di una catena di if: le classi valide sono i rami, i bordi sono le condizioni (< contro <=) dove si sbaglia più spesso."
+    },
+    {
+      "conoscenza": "Aritmetica in virgola mobile (double)",
+      "collegamento": "Per questo nei test sui double si usa un delta in assertEquals e si dichiara un ε ragionevole (es. 0,1) invece del più piccolo double rappresentabile."
+    },
+    {
+      "conoscenza": "Classi di equivalenza",
+      "collegamento": "Passi 2-3 della procedura: questo nodo ne è l'applicazione completa.",
+      "nodo": "classi-equivalenza"
+    },
+    {
+      "conoscenza": "Analisi dei valori limite",
+      "collegamento": "Passo 4 della procedura: la tabella min±ε / max±ε.",
+      "nodo": "boundary-value-analysis"
+    },
+    {
+      "conoscenza": "JUnit 5",
+      "collegamento": "La tabella finale si traduce in un @ParameterizedTest con @CsvSource.",
+      "nodo": "junit-5"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "costoPiazzola(double mq): due scaglioni validi e un salto di prezzo",
+      "problema": "double costoPiazzola(double mq): mq < 15 → -1; 15 ≤ mq < 40 → 10 €/m²; 40 ≤ mq ≤ 100 → 8 €/m²; mq > 100 → -1. Trova classi di equivalenza, test minimi e boundary conditions con output atteso.",
+      "passi": [
+        "Retta numerica: (-∞, 15) NV | [15, 40) V | [40, 100] V | (100, +∞) NV. Ipotesi: ε = 0,1 m².",
+        "Classi: C1 mq < 15 (NV); C2 15 ≤ mq < 40 (V); C3 40 ≤ mq ≤ 100 (V); C4 mq > 100 (NV).",
+        "Test minimi, un valore centrale per classe: T1(10) = -1; T2(25) = 25·10 = 250; T3(70) = 70·8 = 560; T4(150) = -1.",
+        "Bordi di C2 = [15, 40): min = 15, max = 40 - ε = 39,9. Test: 14,9 → -1; 15,0 → 150; 15,1 → 151; 39,8 → 398 (facoltativo); 39,9 → 399; 40,0 → 320 (primo valore di C3).",
+        "Bordi di C3 = [40, 100]: 39,9 → 399 (già presente); 40,0 → 320; 40,1 → 320,8; 99,9 → 799,2; 100,0 → 800; 100,1 → -1.",
+        "Controllo anomalie: 39,9 m² costano 399 € ma 40 m² costano 320 €, cioè più superficie costa meno. Lo segnalo come possibile anomalia della specifica."
+      ],
+      "soluzione": "Classi C1-C4 come sopra. Test minimi: (10, -1), (25, 250), (70, 560), (150, -1). Boundary (ε = 0,1): (14,9, -1), (15,0, 150), (15,1, 151), (39,9, 399), (40,0, 320), (40,1, 320,8), (99,9, 799,2), (100,0, 800), (100,1, -1). Anomalia: salto di prezzo a 40 m².",
+      "perche_funziona": "Ogni ramo della specifica è coperto da un test minimo, e ogni condizione di confronto (<15, <40, ≤100) è stretta tra un valore che la soddisfa e uno che non la soddisfa. Un errore < contro <= su qualunque soglia fa fallire almeno un test."
+    },
+    {
+      "titolo": "tariffaParcheggio(int minuti): interi, ε = 1, quattro classi valide",
+      "problema": "int tariffaParcheggio(int minuti): minuti ≤ 0 → -1; 1..30 → 0 € (gratis); 31..120 → 2 €; 121..1440 → 5 €; oltre 1440 (più di un giorno) → -1. Classi, test minimi, BVA.",
+      "passi": [
+        "Retta (interi): (-∞, 0] NV | [1, 30] V | [31, 120] V | [121, 1440] V | [1441, +∞) NV. Per gli interi ε = 1, quindi bordi come 30/31 sono valori consecutivi.",
+        "Classi: C1 ≤ 0 (NV); C2 1..30 (V); C3 31..120 (V); C4 121..1440 (V); C5 ≥ 1441 (NV).",
+        "Test minimi: T1(-5) = -1; T2(15) = 0; T3(60) = 2; T4(600) = 5; T5(3000) = -1.",
+        "BVA per C2 [1, 30]: 0 → -1; 1 → 0; 2 → 0; 29 → 0; 30 → 0; 31 → 2.",
+        "BVA per C3 [31, 120]: 30, 31 già presenti; 32 → 2; 119 → 2; 120 → 2; 121 → 5.",
+        "BVA per C4 [121, 1440]: 120, 121 già presenti; 122 → 5; 1439 → 5; 1440 → 5; 1441 → -1.",
+        "Elimino i duplicati e ottengo 14 valori di bordo: 0, 1, 2, 29, 30, 31, 32, 119, 120, 121, 122, 1439, 1440, 1441."
+      ],
+      "soluzione": "Minimi: (-5, -1), (15, 0), (60, 2), (600, 5), (3000, -1). BVA: (0, -1), (1, 0), (2, 0), (29, 0), (30, 0), (31, 2), (32, 2), (119, 2), (120, 2), (121, 5), (122, 5), (1439, 5), (1440, 5), (1441, -1).",
+      "perche_funziona": "Con gli interi non c'è ambiguità su ε: il valore 'appena fuori' è il numero successivo. Le classi adiacenti condividono i punti di bordo, quindi la tabella finale è più corta della somma delle sei verifiche per classe."
+    },
+    {
+      "titolo": "Due parametri: costoBagaglio(int pezzi, double kg)",
+      "problema": "double costoBagaglio(int pezzi, double kg): pezzi ammessi 1..2; peso ammesso 0 < kg < 60; fino a 20 kg gratis, oltre 10 € per ogni kg eccedente; altrimenti -1. Come organizzi le classi e la BVA con due parametri?",
+      "passi": [
+        "Classi di pezzi: C1 < 1 (NV), C2 1..2 (V), C3 > 2 (NV). Classi di kg: C4 ≤ 0 (NV), C5 (0, 20] (V), C6 (20, 60) (V), C7 ≥ 60 (NV).",
+        "Test validi minimi, che coprono più classi V insieme: (1, 10) → 0 [C2, C5]; (2, 30) → 100 [C2, C6].",
+        "Test non validi, una sola NV per volta e il resto valido: (0, 10) → -1 [C1]; (3, 10) → -1 [C3]; (1, -5) → -1 [C4]; (1, 70) → -1 [C7].",
+        "BVA su un parametro alla volta, tenendo l'altro a un valore valido: kg (ε = 0,1) con pezzi = 1: 20,0 → 0; 20,1 → 1; 59,9 → 399; 60,0 → -1; 0,1 → 0; 0,0 → -1. Pezzi con kg = 10: 0 → -1; 1 → 0; 2 → 0; 3 → -1."
+      ],
+      "soluzione": "6 test minimi (2 validi, 4 non validi, uno per classe NV) più la BVA separata per ciascun parametro con l'altro fissato a un valore valido.",
+      "perche_funziona": "Se in un test cambiassi entrambi i parametri insieme, un fallimento non direbbe quale dei due controlli è sbagliato. Isolare un parametro alla volta rende ogni test diagnostico."
+    }
+  ],
+  "errori_comuni": [
+    "Dimenticare le classi non valide (sotto il minimo, sopra il massimo): sono metà dei punti.",
+    "Mettere due valori non validi nello stesso test: il -1 non dice quale controllo ha funzionato.",
+    "Non scrivere l'output atteso numerico, oppure scriverlo sbagliato perché non si applica la tariffa giusta al bordo (40 m² è già nello scaglione da 8 €).",
+    "Non dichiarare ε o l'ipotesi sugli estremi inclusi/esclusi quando la specifica è ambigua.",
+    "Guardare il codice (se c'è) invece della specifica: nel black box conta ciò che è promesso, non ciò che è implementato.",
+    "Usare assertEquals(double, double) senza delta in JUnit: con i double il test può fallire per errori di arrotondamento."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Perché basta un solo test per classe di equivalenza?",
+      "risposta": "Perché per definizione tutti i valori della classe attivano lo stesso comportamento previsto dalla specifica: se il programma è corretto (o sbagliato) per uno, lo è per tutti, con buona probabilità."
+    },
+    {
+      "domanda": "Per la classe valida [15, 40) con ε = 0,1, quali sono i sei valori della BVA?",
+      "risposta": "14,9; 15,0; 15,1; 39,8; 39,9; 40,0. Il massimo effettivo è 40 - ε = 39,9 perché 40 è escluso, e 40,0 è il primo valore fuori (nella classe successiva)."
+    },
+    {
+      "domanda": "Che cosa fai con una classe valida senza limite superiore, ad esempio 'da 51 accessi in su'?",
+      "risposta": "Testo il bordo inferiore (50, 51, 52) e aggiungo un valore molto grande (es. Integer.MAX_VALUE) per verificare overflow o comportamenti anomali."
+    },
+    {
+      "domanda": "In un test con due parametri, perché un test non valido deve contenere una sola classe NV?",
+      "risposta": "Perché se il risultato è il valore d'errore non posso sapere quale dei controlli l'ha prodotto: un controllo mancante sull'altro parametro resterebbe nascosto."
+    },
+    {
+      "domanda": "Che cosa fai se, calcolando gli output, 11 accessi costano meno di 10?",
+      "risposta": "Lo segnalo come anomalia della specifica (salto di prezzo) senza cambiare i valori attesi: il test verifica la specifica così com'è, ma il problema va riportato a chi ha scritto i requisiti."
+    }
+  ],
+  "riepilogo": "Black box: si parte dalla specifica, non dal codice.\nRetta numerica → classi V (una per scaglione) e NV (fuori dominio).\nTest minimi: un valore centrale per classe, una sola NV per test.\nBVA su ogni classe valida: min-ε, min, min+ε, max-ε, max, max+ε, con ε dichiarato.\nOutput atteso per ogni test; segnala salti di prezzo e ambiguità."
+}

@@ -32,3 +32,8 @@ Campi: `id` opaco (`mt_...`), `type` (CONCEPTUAL / PROCEDURAL / REPRESENTATIONAL
 | DAG + JSON Schema + validazione | test pytest (schema, id, prerequisiti, aciclicità, topo) |
 
 Differenze volute: prerequisiti inline (un solo file sorgente, più facile da editare a rami); niente `strength`/`reason` per ora (possibile estensione v2); id leggibili kebab-case invece che opachi.
+
+## Ricerca didattica (`data/teaching-research.json`, ri-studiato in Fase 4)
+Record per topic (copertura parziale, ~1.049/1.842): `pedagogy{summary` (markdown ~2.000 car., la "lezione" vera e propria), `bestPractices[5]`, `keyRepresentations[4]`, `commonMisconceptions[5]}`, `learn`/`assess` (risorse), `sources`, `confidence`, `provenance`. Separa il "cosa" (topic + evidence) dal "come si insegna".
+
+Adottiamo l'idea, non i dati, nell'oggetto `lezione` (v3): summary → `spiegazione` + `intuizione`; keyRepresentations → diagrammi mermaid e codice; commonMisconceptions → `errori_comuni`; assess → `domande_autoverifica`; in più `analogia`, `collegamenti_prior` ed `esempi_svolti` passo-passo. Differenza voluta: la lezione deve bastare da sola (niente rimando alle fonti per capire).

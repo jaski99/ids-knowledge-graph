@@ -3,8 +3,9 @@ import { h, clear } from './dom.js';
 import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { successors } from '../core/topo.js';
 import { formatMinuti } from '../core/progress.js';
+import { hasLesson } from '../core/lesson.js';
 
-export function createDetailsView(root, graph, { onSelect, onToggleDone, onClose }) {
+export function createDetailsView(root, graph, { onSelect, onToggleDone, onClose, onOpenLesson }) {
   const link = (id) => {
     const n = graph.byId.get(id);
     return h('button', { type: 'button', class: 'link', onclick: () => onSelect(id) }, n ? n.title : id);
@@ -23,6 +24,7 @@ export function createDetailsView(root, graph, { onSelect, onToggleDone, onClose
           h('h2', { id: 'det-title', tabindex: '-1' }, n.title),
           h('button', { type: 'button', class: 'icon', 'aria-label': 'Chiudi dettagli', onclick: onClose }, '✕')),
         h('p', { class: 'badges' }, areaBadge(n, graph.aree), tipoBadge(n), prioBadge(n), h('span', { class: 'badge' }, '⏱ ' + formatMinuti(n.tempo_studio_min))),
+        h('button', { type: 'button', class: 'btn primary open-lesson', onclick: () => onOpenLesson(n.id) }, hasLesson(n) ? '📖 Apri la lezione completa' : '📖 Apri la lezione (in preparazione)'),
         h('label', { class: 'check big' }, h('input', { type: 'checkbox', checked: done.has(n.id), onchange: (e) => onToggleDone(n.id, e.target.checked) }), ' Completato'),
         section('Sapere', h('p', {}, n.sapere)),
         section('Saper fare', h('ul', {}, n.saper_fare.map((s) => h('li', {}, s)))),

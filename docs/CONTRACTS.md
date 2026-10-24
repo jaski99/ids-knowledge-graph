@@ -1,10 +1,10 @@
 # Contratti del knowledge graph IdS
 
-**Fonte unica di verità: `graph/graph.json`** (schema v2), **generato** da `graph/meta.json` + `graph/parts/area-N.json` con `python scripts/kg.py build`. Niente note Markdown. Gli archi NON sono memorizzati: si derivano da `prerequisiti` (arco `prerequisito.id → nodo`, sia hard sia soft).
+**Fonte unica di verità: `graph/graph.json`** (schema v3), **generato** da `graph/meta.json` + `graph/parts/area-N.json` + `graph/lezioni/<id>.json` con `python scripts/kg.py build`. Niente note Markdown. Gli archi NON sono memorizzati: si derivano da `prerequisiti` (arco `prerequisito.id → nodo`, sia hard sia soft).
 
 ## graph.json (radice)
 ```json
-{ "versione": 2, "corso": {...}, "aree": [{"id":1,"titolo":"..."}, ... 5 aree],
+{ "versione": 3, "corso": {...}, "aree": [{"id":1,"titolo":"..."}, ... 5 aree],
   "testi": {"TSUI": "...", ...}, "nota_esame": "...",
   "nodi": [ <nodo>, ... ordinati per (area, id) ] }
 ```
@@ -24,7 +24,26 @@
 | `tempo_studio_min` | int 5..600 | stima |
 | `priorita` | {livello: alta\|media\|bassa, motivazione} | motivazione legata a programma + testi; **formato d'esame sconosciuto** finché non confermato (vedi `nota_esame`) |
 | `risorse` | [{titolo, url, verificato: true}] ≥1 | solo URL reali controllati con `scripts/check_urls.py` |
+| `lezione` | oggetto (opzionale nello schema, obbligatorio per completezza) | vedi sotto; sta in `graph/lezioni/<id>.json`, **mai inline nel part** |
 | `riferimenti_testo` | [{libro, capitolo_o_sezione?}] | `libro` = chiave in `testi`; capitolo SOLO se verificato su indice reale |
+
+## Lezione (v3) — il nodo deve bastare per imparare
+| campo | regole |
+|---|---|
+| `intuizione` | 2-4 frasi: l'idea in parole semplici (≥80 caratteri) |
+| `spiegazione` | markdown lungo e autosufficiente (≥1500 car.): `##`/`###`, ≥1 blocco ```java o ```mermaid; mermaid valido (niente etichette che iniziano con "1. ", niente `<` grezzi) |
+| `analogia` | un'immagine della vita quotidiana, con il punto in cui l'analogia smette di valere |
+| `collegamenti_prior` | ≥2 [{conoscenza, collegamento, nodo?}]: cosa sai già e come si aggancia; `nodo` = id esistente |
+| `esempi_svolti` | [{titolo, problema, passi[≥2], soluzione, perche_funziona}]: **≥2** per abilita/tipo_esercizio, ≥1 per concetto |
+| `errori_comuni` | ≥2 trappole concrete |
+| `domande_autoverifica` | ≥3 [{domanda, risposta}], risposte complete |
+| `riepilogo` | ≤5 righe |
+
+Regole di qualità (testate dove possibile in `tests/test_lezioni.py`):
+- **Autosufficiente**: niente rimandi al libro per capire ("vedi capitolo…", "consulta il testo…" sono vietati). I libri/risorse servono solo come approfondimento facoltativo (`risorse`, `riferimenti_testo`).
+- **Mai inventare** fatti attribuiti al prof (cosa chiede, come valuta, preferenze): solo ciò che risulta da programma, prove d'esame reali o `nota_esame`; altrimenti dirlo esplicitamente come ipotesi.
+- Java moderno e compilabile negli esempi; esempi svolti con passi numerati e risultato verificabile; modelli: le due lezioni pilota.
+- Completezza: `test_lezioni_complete` fallisce se un nodo non ha `lezione`; `KG_ALLOW_TODO=1` lo salta durante la stesura.
 
 ## Aree (programma ufficiale + area 5 aggiunta)
 1. Specifica dei requisiti — obiettivi, input, generazione specifiche, casi d'uso UML
@@ -61,6 +80,7 @@ Per HFDP, GOF, FOWLER, MILES, UMLCLASS i capitoli NON sono stati verificati: cit
 
 ## Regole per i rami contenuti
 - Ogni ramo contenuti scrive **SOLO** in `graph/parts/area-N.json` delle proprie aree (`feat/contenuti-a`: area-1, area-2; `feat/contenuti-b`: area-3, area-4, area-5).
+- Rami lezioni (`feat/lezioni-*`): creano **solo** `graph/lezioni/<id>.json` dei propri id (elenco in STATUS.md); il file contiene l'oggetto `lezione` e il nome è l'id del nodo.
 - Ogni file part è un **array JSON di nodi**; ogni nodo ha `area == N` del file.
 - Vietato modificare a mano `graph/graph.json`, `graph/meta.json`, `schema/` o i part di altre aree: modifiche a contratti/meta solo su `main`.
 - Prima di ogni commit: `python scripts/kg.py build` (rigenera `graph.json`) e `pytest -q` (verde). `python scripts/kg.py check` fallisce se `graph.json` non è aggiornato.

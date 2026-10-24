@@ -1,0 +1,107 @@
+{
+  "intuizione": "Spesso un oggetto cambia stato e altri oggetti, che non conosce in anticipo e il cui numero varia nel tempo, devono reagire subito. Se l'oggetto che cambia chiamasse direttamente ognuno di loro, dovrebbe conoscerne tutte le classi e andrebbe modificato ogni volta che arriva un nuovo interessato. Se invece fossero gli interessati a chiedere di continuo 'è cambiato qualcosa?' (polling), si sprecherebbe lavoro. Observer inverte la situazione: gli interessati si iscrivono, e chi cambia notifica tutti tramite un'interfaccia comune, senza sapere chi siano.",
+  "spiegazione": "## Il problema\n\nImmagina una classe `MailingList` di una farmacia: quando il titolare pubblica una promozione, devono essere avvisati tutti i clienti iscritti, e i clienti possono iscriversi o disiscriversi in qualunque momento. Domani potrebbe servire avvisare anche via SMS, o aggiornare un cartellone digitale in vetrina.\n\nSoluzione ingenua:\n\n```java\nclass MailingList {\n    private List<ClienteEmail> clienti = new ArrayList<>();\n    private Cartellone cartellone;                  // dipendenza concreta\n    void pubblica(Promozione p) {\n        for (ClienteEmail c : clienti) c.inviaMail(p);\n        cartellone.mostra(p);                       // ogni nuovo destinatario = modifica qui\n    }\n}\n```\n\nProblemi: `MailingList` **dipende da classi concrete** (accoppiamento alto), va **modificata** per ogni nuovo tipo di destinatario (viola il principio Open/Closed) e mescola due responsabilità: gestire le promozioni e sapere come raggiungere ogni destinatario.\n\n## L'idea del pattern\n\n**Observer** (pattern *comportamentale* del catalogo GoF) definisce una **dipendenza uno-a-molti**: quando un oggetto (*Subject*) cambia stato, tutti i suoi dipendenti (*Observer*) vengono notificati e aggiornati automaticamente. Il Subject conosce gli observer **solo tramite un'interfaccia**.\n\nRuoli:\n\n- **Subject**: mantiene la lista degli observer e offre `attach` (iscrivi), `detach` (disiscrivi), `notify` (notifica tutti).\n- **Observer**: interfaccia con un solo metodo, tipicamente `update(...)`.\n- **ConcreteSubject**: contiene lo stato interessante e chiama `notify` quando cambia.\n- **ConcreteObserver**: implementa `update` e reagisce (invia mail, ridisegna una vista…).\n\n## Struttura (class diagram)\n\n```mermaid\nclassDiagram\n    class Subject {\n        <<interface>>\n        +attach(Observer o) void\n        +detach(Observer o) void\n        +notifyObservers() void\n    }\n    class Observer {\n        <<interface>>\n        +update(Promozione p) void\n    }\n    class MailingList {\n        -List~Observer~ iscritti\n        -Promozione ultima\n        +pubblica(Promozione p) void\n    }\n    class ClienteEmail {\n        -String email\n        +update(Promozione p) void\n    }\n    class ClienteSms {\n        -String telefono\n        +update(Promozione p) void\n    }\n    Subject <|.. MailingList\n    Observer <|.. ClienteEmail\n    Observer <|.. ClienteSms\n    MailingList \"1\" o-- \"0..*\" Observer : iscritti\n```\n\nDa leggere così: `MailingList` *realizza* `Subject` e aggrega da 0 a molti `Observer`; ogni tipo di cliente *realizza* `Observer`. Non c'è nessuna freccia da `MailingList` verso le classi concrete dei clienti: è questo il punto.\n\n## Implementazione Java passo per passo\n\n**1. L'interfaccia Observer**: un solo metodo, che riceve ciò che serve sapere.\n\n```java\npublic interface Observer {\n    void update(Promozione p);\n}\n```\n\n**2. Il Subject**: lista di observer più tre operazioni. La lista è di tipo `Observer`, non di classi concrete.\n\n```java\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class MailingList {\n    private final List<Observer> iscritti = new ArrayList<>();\n\n    public void attach(Observer o)  { if (!iscritti.contains(o)) iscritti.add(o); }\n    public void detach(Observer o)  { iscritti.remove(o); }\n\n    private void notifyObservers(Promozione p) {\n        for (Observer o : List.copyOf(iscritti)) {   // copia: un observer può disiscriversi durante la notifica\n            o.update(p);\n        }\n    }\n\n    public void pubblica(Promozione p) {             // cambio di stato → notifica\n        notifyObservers(p);\n    }\n}\n```\n\n**3. Gli observer concreti**: ognuno decide come reagire.\n\n```java\npublic class ClienteEmail implements Observer {\n    private final String email;\n    public ClienteEmail(String email) { this.email = email; }\n    @Override public void update(Promozione p) {\n        System.out.println(\"Mail a \" + email + \": \" + p.descrizione());\n    }\n}\n\npublic class ClienteSms implements Observer {\n    private final String telefono;\n    public ClienteSms(String telefono) { this.telefono = telefono; }\n    @Override public void update(Promozione p) {\n        System.out.println(\"SMS a \" + telefono + \": \" + p.descrizione());\n    }\n}\n\npublic record Promozione(String descrizione, int scontoPercento) {}\n```\n\n**4. Uso**:\n\n```java\nMailingList ml = new MailingList();\nObserver anna = new ClienteEmail(\"anna@example.com\");\nml.attach(anna);\nml.attach(new ClienteSms(\"+39 333 0000000\"));\nml.pubblica(new Promozione(\"Solari -20%\", 20));   // avvisati entrambi\nml.detach(anna);\nml.pubblica(new Promozione(\"Vitamine 3x2\", 33));  // avvisato solo l'SMS\n```\n\nAggiungere un `CartelloneVetrina implements Observer` **non richiede di toccare** `MailingList`: è l'Open/Closed Principle in azione.\n\n## Che cosa succede a runtime (sequence diagram)\n\n```mermaid\nsequenceDiagram\n    participant T as Titolare\n    participant M as MailingList\n    participant E as ClienteEmail\n    participant S as ClienteSms\n    T->>M: pubblica(promo)\n    activate M\n    loop per ogni observer iscritto\n        M->>E: update(promo)\n        E-->>M: \n        M->>S: update(promo)\n        S-->>M: \n    end\n    deactivate M\n```\n\n## Push o pull?\n\n- **Push**: il Subject passa i dati nella notifica, come `update(Promozione p)`. È semplice, ma il Subject decide che cosa serve a tutti.\n- **Pull**: la notifica porta solo il riferimento al Subject, `update(Subject s)`, e ogni observer legge ciò che gli serve con dei getter. Gli observer sono più flessibili, ma dipendono dall'interfaccia di lettura del Subject.\n\nQuando lo stato è piccolo e uguale per tutti si sceglie push; quando gli observer hanno bisogno di parti diverse di uno stato ricco si sceglie pull.\n\n## Observer intorno a te\n\n- **Swing/AWT**: `button.addActionListener(listener)`. Il bottone è il Subject e l'`ActionListener` è l'Observer (`actionPerformed` fa da `update`).\n- **JavaBeans**: `PropertyChangeSupport` e `PropertyChangeListener`, la soluzione standard per notificare il cambio di una proprietà.\n- `java.util.Observable` / `java.util.Observer` esistono ma sono **deprecati da Java 9**: meglio un'interfaccia propria o `PropertyChangeListener`.\n- **MVC**: il Model notifica le View quando cambia. È l'uso storico del pattern.\n\n## Conseguenze\n\n**Vantaggi**\n- Basso accoppiamento: il Subject conosce solo l'interfaccia `Observer`.\n- Open/Closed: si aggiungono nuovi tipi di observer senza modificare il Subject.\n- Relazioni dinamiche: iscrizioni e disiscrizioni a runtime.\n- Comunicazione broadcast: il Subject non sa (né gli interessa) quanti siano gli observer.\n\n**Limiti**\n- **Ordine di notifica non garantito**: non scrivere observer che dipendono l'uno dall'altro.\n- **Aggiornamenti a cascata**: un observer che modifica un altro Subject può innescare catene costose o cicli.\n- **Memory leak** (*lapsed listener*): un observer dimenticato nella lista non viene mai liberato dal garbage collector. Bisogna chiamare sempre `detach`.\n- **Debug più difficile**: il flusso di controllo è indiretto, perché chi chiama `update` non compare nel codice dell'observer.\n\n## Come riconoscerlo in uno scenario\n\nIl testo di solito **non nomina il pattern**: descrive una situazione. Segnali tipici: *iscriversi / disiscriversi*, *avvisare / notificare appena…*, *mailing list, newsletter, abbonati*, *più viste che devono aggiornarsi*, *numero di interessati variabile*. Nella risposta conviene dare: **nome del pattern e categoria**, **motivazione** (uno-a-molti, dinamismo, basso accoppiamento, OCP), **class diagram** con i ruoli, **codice minimo** e **un limite**.",
+  "analogia": "È un canale YouTube con il pulsante 'Iscriviti' e la campanella: chi pubblica il video non telefona a ogni spettatore e non sa chi siano. Chi è interessato si iscrive (attach), può disiscriversi quando vuole (detach), e quando esce un video la piattaforma avvisa automaticamente tutti gli iscritti (notify → update).",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Interfacce e polimorfismo in Java",
+      "collegamento": "Il Subject chiama update() su una List<Observer>; il binding dinamico esegue l'implementazione di ciascuna classe concreta. Senza polimorfismo il pattern non esiste."
+    },
+    {
+      "conoscenza": "ActionListener di Swing (programmazione a eventi)",
+      "collegamento": "addActionListener è già un attach: hai usato Observer ogni volta che hai gestito il click di un bottone."
+    },
+    {
+      "conoscenza": "Trigger nelle basi di dati",
+      "collegamento": "Un trigger AFTER INSERT reagisce a un cambiamento di una tabella senza che chi fa l'INSERT lo sappia: è la stessa idea di reazione disaccoppiata a un evento."
+    },
+    {
+      "conoscenza": "Principi SOLID (Open/Closed, Dependency Inversion)",
+      "collegamento": "Il Subject dipende dall'astrazione Observer (DIP) ed è chiuso alle modifiche ma aperto a nuovi observer (OCP).",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Observer è un modo concreto di ridurre l'accoppiamento tra chi produce un evento e chi lo consuma.",
+      "nodo": "coesione-accoppiamento"
+    },
+    {
+      "conoscenza": "Associazioni e molteplicità UML",
+      "collegamento": "Nel class diagram la relazione Subject 1 → 0..* Observer è un'aggregazione con molteplicità.",
+      "nodo": "uml-associazioni-molteplicita"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Scenario d'esame: farmacia e promozioni",
+      "problema": "La farmacia vuole che i clienti iscritti alla mailing list ricevano le promozioni appena il titolare ne pubblica una; i clienti possono iscriversi e disiscriversi in qualunque momento. Quale pattern usi? Giustifica la scelta, disegna il class diagram e scrivi le classi minime in Java.",
+      "passi": [
+        "Leggo lo scenario e cerco le parole chiave: 'iscritti', 'ricevano appena… pubblica', 'iscriversi e disiscriversi in qualunque momento'. È una relazione uno-a-molti dinamica, guidata da un evento.",
+        "Scelgo il pattern: Observer (comportamentale). Scarto Mediator perché non c'è comunicazione molti-a-molti tra pari, e scarto Strategy perché non si tratta di scegliere un algoritmo.",
+        "Assegno i ruoli: Subject = MailingList (attach/iscrivi, detach/disiscrivi, notify); Observer = interfaccia Iscritto con notifica(Promozione); ConcreteObserver = Cliente.",
+        "Class diagram: MailingList o-- \"0..*\" Iscritto; Cliente ..|> Iscritto; la promozione viaggia come parametro (push).",
+        "Codice: interface Iscritto { void notifica(Promozione p); }; MailingList con List<Iscritto>, iscrivi/disiscrivi/pubblica che cicla sugli iscritti; Cliente implements Iscritto.",
+        "Chiudo con un limite: ordine di notifica non garantito e rischio di memory leak se un cliente non viene rimosso."
+      ],
+      "soluzione": "Observer. Motivazione: uno-a-molti, iscrizioni variabili a runtime, MailingList non deve conoscere le classi concrete dei destinatari (OCP: un domani ClienteSms si aggiunge senza modificarla). Struttura: MailingList{-iscritti: List<Iscritto>; +iscrivi(i); +disiscrivi(i); +pubblica(p)}, interface Iscritto{+notifica(p)}, Cliente implements Iscritto. Limite: ordine di notifica non garantito e possibile memory leak.",
+      "perche_funziona": "La giustificazione lega ogni elemento dello scenario a una caratteristica del pattern (uno-a-molti → lista di observer; iscrizione dinamica → attach/detach; destinatari diversi → interfaccia comune). Così la scelta risulta motivata e non solo nominata."
+    },
+    {
+      "titolo": "Stazione meteo: da push a pull",
+      "problema": "Una StazioneMeteo misura temperatura, umidità e pressione. Un DisplayTemperatura mostra solo la temperatura; un DisplayStatistiche usa tutti e tre i valori. Progetta l'Observer e decidi tra push e pull.",
+      "passi": [
+        "Con push, update(temp, umid, press) costringe DisplayTemperatura a ricevere dati che non usa, e se domani si aggiunge il vento cambia la firma per tutti gli observer.",
+        "Scelgo pull: l'interfaccia diventa interface Osservatore { void aggiorna(StazioneMeteo s); }.",
+        "La StazioneMeteo offre i getter getTemperatura(), getUmidita(), getPressione() e chiama aggiorna(this) quando arrivano nuove misure.",
+        "DisplayTemperatura.aggiorna(s) legge solo s.getTemperatura(); DisplayStatistiche legge tutti e tre i valori.",
+        "Aggiungere il vento significa aggiungere getVento() alla stazione: gli observer esistenti non cambiano."
+      ],
+      "soluzione": "Pull: aggiorna(StazioneMeteo s) e i getter sul subject. Ogni display prende solo ciò che gli serve; l'aggiunta di nuove grandezze non rompe gli observer esistenti.",
+      "perche_funziona": "Il pull sposta su ogni observer la decisione su quali dati leggere, quindi la firma di aggiorna resta stabile mentre lo stato del subject cresce. Il prezzo è che gli observer dipendono dai getter del subject."
+    },
+    {
+      "titolo": "Refactoring: eliminare il polling",
+      "problema": "Una classe Cruscotto ogni secondo chiama magazzino.getScorta(\"aspirina\") per vedere se la scorta è scesa sotto 10 e mostrare un avviso. Perché è un cattivo progetto e come lo trasformi con Observer?",
+      "passi": [
+        "Diagnosi: il polling spreca cicli (99% delle chiamate inutili), introduce un ritardo fino a 1 s e accoppia Cruscotto ai tempi interni del Magazzino.",
+        "Trasformo il Magazzino in Subject: aggiungo attach/detach e una lista di ScortaListener (interfaccia con scortaCambiata(String prodotto, int quantita)).",
+        "Nel metodo che decrementa la scorta, dopo aver aggiornato la quantità, il Magazzino chiama scortaCambiata su tutti i listener.",
+        "Cruscotto implementa ScortaListener e mostra l'avviso solo se quantita < 10; il ciclo di polling viene eliminato.",
+        "Verifico con un test JUnit: registro un listener finto che salva le chiamate, decremento la scorta e controllo che sia stato chiamato una volta con i valori giusti."
+      ],
+      "soluzione": "Magazzino diventa Subject con lista di ScortaListener e notifica dopo ogni variazione; Cruscotto implementa il listener; niente più thread di polling. La reazione è immediata e il costo è nullo quando non cambia nulla.",
+      "perche_funziona": "Observer sposta l'iniziativa a chi conosce il momento del cambiamento (il Magazzino), quindi la notifica avviene esattamente quando serve. Il listener finto nel test mostra un altro vantaggio: con un'interfaccia piccola il Subject si testa facilmente in isolamento."
+    }
+  ],
+  "errori_comuni": [
+    "Mettere nel Subject una lista di classi concrete (List<ClienteEmail>) invece dell'interfaccia: si perde tutto il disaccoppiamento.",
+    "Nominare il pattern senza giustificarlo con le caratteristiche dello scenario (uno-a-molti, dinamismo, OCP).",
+    "Confondere Observer con Mediator (molti-a-molti tra colleghi, coordinati da un centro) o con Strategy (scelta di un algoritmo).",
+    "Dimenticare detach: observer mai rimossi causano memory leak e notifiche a oggetti 'morti'.",
+    "Scrivere observer che dipendono dall'ordine in cui vengono notificati.",
+    "Modificare la lista degli iscritti mentre la si scorre in notify (ConcurrentModificationException): si itera su una copia."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che tipo di dipendenza modella Observer e a quale categoria GoF appartiene?",
+      "risposta": "Una dipendenza uno-a-molti tra un Subject e un numero variabile di Observer; è un pattern comportamentale."
+    },
+    {
+      "domanda": "Quali metodi offre il Subject e quale l'Observer?",
+      "risposta": "Subject: attach (iscrivi), detach (disiscrivi), notify (notifica tutti). Observer: update (o un nome equivalente come notifica/aggiorna)."
+    },
+    {
+      "domanda": "Differenza tra modello push e modello pull?",
+      "risposta": "Push: il Subject passa i dati nella chiamata update(dati). Pull: passa solo sé stesso, update(subject), e l'observer legge con i getter ciò che gli serve. Push è più semplice, pull regge meglio gli stati ricchi o che cambiano."
+    },
+    {
+      "domanda": "Quale principio SOLID è soddisfatto quando aggiungi un nuovo tipo di observer senza toccare il Subject?",
+      "risposta": "Open/Closed: il Subject è chiuso alle modifiche e aperto all'estensione. In più c'è Dependency Inversion, perché dipende dall'astrazione Observer."
+    },
+    {
+      "domanda": "Cita due limiti del pattern.",
+      "risposta": "Ordine di notifica non garantito; aggiornamenti a cascata costosi o ciclici; memory leak se non si fa detach; debug più difficile per il flusso indiretto."
+    }
+  ],
+  "riepilogo": "Observer (comportamentale): dipendenza uno-a-molti, iscrizione dinamica.\nSubject: attach/detach/notify; Observer: interfaccia con update.\nIl Subject conosce solo l'interfaccia → basso accoppiamento, OCP, DIP.\nPush (dati nella notifica) o pull (l'observer legge dal subject).\nLimiti: ordine non garantito, cascata, memory leak senza detach."
+}

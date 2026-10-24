@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 GRAPH = ROOT / "graph" / "graph.json"
 META = ROOT / "graph" / "meta.json"
 PARTS = ROOT / "graph" / "parts"
+LESSONS = ROOT / "graph" / "lezioni"
 SCHEMA = ROOT / "schema" / "node.schema.json"
 
 
@@ -58,10 +59,22 @@ def load_parts(parts_dir=PARTS):
     return {p.name: json.loads(p.read_text(encoding="utf-8")) for p in sorted(Path(parts_dir).glob("*.json"))}
 
 
-def build(meta_path=META, parts_dir=PARTS):
+def load_lessons(lessons_dir=LESSONS):
+    """{id_nodo: lezione} da graph/lezioni/<id>.json (un file per lezione: nessun conflitto tra rami)."""
+    return {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in sorted(Path(lessons_dir).glob("*.json"))}
+
+
+def build(meta_path=META, parts_dir=PARTS, lessons_dir=LESSONS):
     g = json.loads(Path(meta_path).read_text(encoding="utf-8"))
     nodes = [n for part in load_parts(parts_dir).values() for n in part]
-    g["nodi"] = sorted(nodes, key=lambda n: (n["area"], n["id"]))
+    by_id = {n["id"]: n for n in nodes}
+    for nid, lezione in load_lessons(lessons_dir).items():
+        if nid not in by_id:
+            raise KeyError(f"graph/lezioni/{nid}.json: nodo inesistente")
+        if "lezione" in by_id[nid]:
+            raise ValueError(f"{nid}: lezione sia inline nel part sia in graph/lezioni/ (usare solo graph/lezioni/)")
+        by_id[nid] = {**by_id[nid], "lezione": lezione}
+    g["nodi"] = sorted(by_id.values(), key=lambda n: (n["area"], n["id"]))
     return g
 
 

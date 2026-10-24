@@ -2,8 +2,9 @@
 import { h, clear } from './dom.js';
 import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { formatMinuti } from '../core/progress.js';
+import { hasLesson } from '../core/lesson.js';
 
-export function createPathView(root, graph, { onSelect, onToggleDone }) {
+export function createPathView(root, graph, { onSelect, onToggleDone, onOpenLesson }) {
   return {
     render({ visible, done, selected }) {
       const ids = graph.order.filter((id) => visible.has(id));
@@ -16,6 +17,7 @@ export function createPathView(root, graph, { onSelect, onToggleDone }) {
           h('input', { type: 'checkbox', id: `chk-${id}`, checked: done.has(id), 'aria-label': `Segna come completato: ${n.title}`, onchange: (e) => onToggleDone(id, e.target.checked) }),
           h('div', {},
             h('button', { type: 'button', class: 'link title', onclick: () => onSelect(id) }, n.title),
+            onOpenLesson ? h('button', { type: 'button', class: 'lesson-chip' + (hasLesson(n) ? ' ready' : ''), 'aria-label': `Apri lezione: ${n.title}`, onclick: () => onOpenLesson(id) }, hasLesson(n) ? '📖 Lezione' : '📖 Scheda') : null,
             h('div', { class: 'badges' }, areaBadge(n, graph.aree), tipoBadge(n), prioBadge(n), h('span', { class: 'badge' }, '⏱ ' + formatMinuti(n.tempo_studio_min)),
               blocked && !done.has(id) ? h('span', { class: 'badge warn', title: 'Prerequisiti indispensabili non completati' }, 'prerequisiti mancanti') : null)));
       })));

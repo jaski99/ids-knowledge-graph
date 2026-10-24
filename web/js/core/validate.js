@@ -7,7 +7,7 @@ const LIVELLI = ['alta', 'media', 'bassa'];
 export function validateGraph(g) {
   const err = [];
   if (!g || typeof g !== 'object') return ['graph.json non è un oggetto'];
-  if (g.versione !== 2) err.push(`versione attesa 2, trovata ${g.versione}`);
+  if (![2, 3].includes(g.versione)) err.push(`versione attesa 2 o 3, trovata ${g.versione}`);
   if (!Array.isArray(g.aree) || !g.aree.length) err.push('aree mancanti');
   if (!Array.isArray(g.nodi)) return [...err, 'nodi mancanti'];
   const areaIds = new Set((g.aree || []).map((a) => a.id));

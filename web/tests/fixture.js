@@ -7,4 +7,4 @@ export const nodi = () => [
   n('a', 1),
   n('d', 2, [['b'], ['c', 'soft']], { sapere: 'Perché coesione' }),
 ];
-export const graph = () => ({ versione: 2, aree, testi: {}, corso: {}, nodi: nodi() });
+export const graph = () => ({ versione: 3, aree, testi: {}, corso: {}, nodi: nodi() });
