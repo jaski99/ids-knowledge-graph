@@ -44,3 +44,10 @@ export function createStepper(total) {
 export function countFences(md, lang) {
   return (String(md).match(new RegExp('^```' + lang + '\\s*$', 'gm')) || []).length;
 }
+
+/** Prossima lezione da studiare: la prima non completata dopo `from` nel percorso, altrimenti la prima non completata. */
+export function nextToStudy(order, done, from = null) {
+  const i = from ? order.indexOf(from) : -1;
+  const after = order.slice(i + 1).find((id) => !done.has(id));
+  return after || order.find((id) => !done.has(id) && id !== from) || null;
+}

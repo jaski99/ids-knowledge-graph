@@ -109,3 +109,29 @@ def test_navigazione_e_ritorno(browser, base_url, vp):
     page.wait_for_selector("#lesson", state="hidden")
     assert page.locator("body > .layout").is_visible()
     ctx.close()
+
+
+@pytest.mark.parametrize("vp", list(VIEWPORTS))
+def test_flusso_studio_segna_e_prossima_e_riprendi(browser, base_url, vp):
+    ctx = browser.new_context(viewport=VIEWPORTS[vp], is_mobile=vp == "mobile", has_touch=vp == "mobile")
+    page = ctx.new_page()
+    errors = []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    page.goto(base_url)
+    page.wait_for_selector("#resume:not([hidden]) .btn.primary")
+    page.click("#resume .btn.primary")
+    page.wait_for_selector("#lesson-title")
+    t1 = page.inner_text("#lesson-title")
+    page.click("[data-action=done-next]")
+    page.wait_for_function("t => document.querySelector('#lesson-title')?.innerText !== t", arg=t1)
+    t2 = page.inner_text("#lesson-title")
+    assert page.evaluate("scrollY") == 0
+    page.click(".ls-top > .btn")
+    page.wait_for_selector("#view-percorso:not([hidden])")
+    assert page.locator(".path li").first.locator("input").is_checked()
+    page.reload()
+    page.wait_for_selector("#resume:not([hidden]) .btn.primary")
+    assert t2 in page.inner_text("#resume .btn.primary")
+    assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1
+    assert not errors
+    ctx.close()

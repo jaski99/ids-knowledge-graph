@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRoute, lessonHash, lessonNav, hasLesson, createStepper, countFences } from '../js/core/lesson.js';
+import { parseRoute, lessonHash, lessonNav, hasLesson, createStepper, countFences, nextToStudy } from '../js/core/lesson.js';
 
 test('routing lezione: andata e ritorno, hash estranei ignorati', () => {
   assert.equal(lessonHash('design-pattern-observer'), '#/lezione/design-pattern-observer');
@@ -31,4 +31,12 @@ test('stepper: passi uno alla volta, poi soluzione', () => {
 });
 test('countFences', () => {
   assert.equal(countFences('a\n```mermaid\nx\n```\n```java\ny\n```\n```mermaid\nz\n```', 'mermaid'), 2);
+});
+test('nextToStudy: prima non completata dopo la corrente, poi dall\'inizio', () => {
+  const order = ['a', 'b', 'c', 'd'];
+  assert.equal(nextToStudy(order, new Set(), null), 'a');
+  assert.equal(nextToStudy(order, new Set(['a', 'b']), 'a'), 'c');
+  assert.equal(nextToStudy(order, new Set(['c']), 'b'), 'd');
+  assert.equal(nextToStudy(order, new Set(['b', 'c', 'd']), 'd'), 'a');
+  assert.equal(nextToStudy(order, new Set(order), 'b'), null);
 });

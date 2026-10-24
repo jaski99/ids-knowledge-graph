@@ -12,7 +12,8 @@ import { createFiltersView } from './ui/filters-view.js';
 import { createReviewView } from './ui/review.js';
 import { initTabs } from './ui/tabs.js';
 import { createLessonView } from './ui/lesson-view.js';
-import { parseRoute, lessonHash } from './core/lesson.js';
+import { parseRoute, lessonHash, nextToStudy } from './core/lesson.js';
+import { h, clear } from './ui/dom.js';
 
 const $ = (s) => document.querySelector(s);
 
@@ -36,7 +37,7 @@ async function main() {
   const details = createDetailsView($('#details'), graph, { onSelect: select, onToggleDone: toggleDone, onClose: () => state.set({ selected: null }), onOpenLesson: openLesson });
   const lesson = createLessonView($('#lesson'), graph, {
     onOpen: openLesson,
-    onClose: () => { location.hash = '#/'; },
+    onClose: () => { location.hash = '#/percorso'; },
     onToggleDone: toggleDone,
   });
   const views = [
@@ -47,6 +48,20 @@ async function main() {
   ];
   createFiltersView($('#filters'), graph, { initial: emptyFilters(), onChange: (filters) => state.set({ filters }) });
   const [graphView] = views;
+  const readLast = () => { try { return localStorage.getItem(STORAGE_KEYS.last); } catch { return null; } };
+  const saveLast = (id) => { try { localStorage.setItem(STORAGE_KEYS.last, id); } catch { /* privacy mode */ } };
+  // Barra "riprendi": ultima lezione aperta + prossima da studiare, sempre a un tocco dalla home.
+  const renderResume = (done) => {
+    const box = $('#resume');
+    clear(box);
+    const last = graph.byId.has(readLast()) ? readLast() : null;
+    const next = nextToStudy(graph.order, done, null);
+    const btn = (id, label, cls) => h('button', { type: 'button', class: `btn ${cls}`, onclick: () => openLesson(id) }, label, h('strong', {}, graph.byId.get(id).title));
+    if (last && !done.has(last)) box.append(btn(last, '▶ Riprendi: ', 'primary'));
+    if (next && next !== last) box.append(btn(next, last && !done.has(last) ? 'Prossima da studiare: ' : '▶ Inizia: ', last && !done.has(last) ? '' : 'primary'));
+    if (!next) box.append(h('p', { class: 'muted' }, 'Percorso completato 🎉 Usa la scheda Ripasso.'));
+    box.hidden = !box.children.length;
+  };
   initTabs(document, (name) => { if (name === 'grafo') graphView.resize(); });
 
   let lastSel;
@@ -55,6 +70,7 @@ async function main() {
     const vm = { visible, done: s.done, selected: s.selected };
     views.forEach((v) => (v.update || v.render).call(v, vm));
     details.render(s.selected, s.done);
+    renderResume(s.done);
     $('#count').textContent = `${visible.size}/${graph.nodi.length} nodi visibili`;
     if (s.selected !== lastSel && s.selected) details.focus();
     lastSel = s.selected;
@@ -68,10 +84,17 @@ async function main() {
     document.body.classList.toggle('lesson-mode', Boolean(r));
     $('#lesson').hidden = !r;
     if (r) {
+      saveLast(r.id);
       state.set({ selected: r.id });
-      await lesson.render(r.id, state.get().done);
+      const drawn = lesson.render(r.id, state.get().done); // DOM pronto subito, i diagrammi arrivano dopo
       scrollTo(0, 0);
       lesson.focus();
+      await drawn;
+    } else if (location.hash === '#/percorso') {
+      $('#tab-percorso').click();
+      const last = readLast();
+      const item = last && document.getElementById(`chk-${last}`);
+      if (item) item.closest('li').scrollIntoView({ block: 'center' });
     } else {
       graphView.resize();
     }
@@ -80,7 +103,7 @@ async function main() {
   route();
   addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (parseRoute(location.hash)) location.hash = '#/';
+    if (parseRoute(location.hash)) location.hash = '#/percorso';
     else if (state.get().selected) state.set({ selected: null });
   });
 }

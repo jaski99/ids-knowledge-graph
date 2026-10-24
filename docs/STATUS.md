@@ -52,3 +52,9 @@ cd scripts && ../.venv/bin/python topo.py && ../.venv/bin/python check_urls.py
 | `feat/lezioni-c` | testing, strumenti, rilascio e manutenzione, IdS AI-native (aree 3-5) | `graph/lezioni/<id>.json` per: `black-box-vs-white-box`, `boundary-value-analysis`, `classi-equivalenza`, `criteri-copertura`, `debugging`, `esercizio-white-box-copertura`, `git-versionamento`, `grafo-flusso-controllo`, `ispezione-codice`, `junit-5`, `maven`, `programmazione-difensiva`, `testing-livelli-tipi`, `ci-cd`, `compatibilita-licenze`, `gestione-configurazioni`, `licenze-software`, `release-post-produzione`, `tipi-manutenzione`, `versionamento-semantico`, `assistenti-ai-sviluppo`, `domanda-ids-ai-native`, `llm-agenti-ciclo-vita`, `rischi-codice-generato`, `verifica-umana-codice-ai` |
 
 Nessun ramo modifica `graph/parts/*.json`, `meta.json`, `schema/` o `web/`; al merge rieseguire `kg.py build` (conflitti su `graph.json` si risolvono rigenerandolo). Merge in qualsiasi ordine.
+
+## Fase 5 — 24/10/2026: QA studente su 75 lezioni (390x844, 1280x800)
+- Script Playwright su tutte le 75 lezioni × 2 viewport: console pulita, mermaid visibili, codice evidenziato, passi/soluzioni, autoverifica, Precedente/Successivo = percorso, nessun overflow, apertura ≤0,35 s.
+- Fix: i diagrammi mermaid nelle soluzioni nascoste (11 lezioni) si rompevano (translate NaN) → disegnati solo quando visibili.
+- Fix: blocco comandi git evidenziato (bash); scroll in cima subito al cambio lezione.
+- UX: "✓ Segna come studiato e vai alla prossima" (salta le già studiate), barra "Riprendi / Prossima da studiare" in home, "← Percorso" torna al percorso sulla lezione corrente, barra superiore compatta su mobile.

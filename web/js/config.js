@@ -5,7 +5,7 @@ export function graphUrls(doc = document, loc = location) {
   const meta = doc.querySelector('meta[name="kg-graph-url"]');
   return (meta ? meta.content : 'graph.json').split(/\s+/).filter(Boolean);
 }
-export const STORAGE_KEYS = { done: 'ids-kg:completati:v1', review: 'ids-kg:ripasso:v1' };
+export const STORAGE_KEYS = { done: 'ids-kg:completati:v1', review: 'ids-kg:ripasso:v1', last: 'ids-kg:ultima-lezione:v1' };
 export const AREA_COLORS = ['#2563eb', '#d97706', '#059669', '#9333ea', '#dc2626', '#0891b2'];
 export const TIPO_LABEL = { concetto: 'Concetto', abilita: 'Abilità', tipo_esercizio: "Tipo d'esercizio" };
 export const TIPO_SHAPE = { concetto: 'ellipse', abilita: 'round-rectangle', tipo_esercizio: 'diamond' };

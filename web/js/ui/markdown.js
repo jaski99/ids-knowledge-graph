@@ -51,7 +51,8 @@ export function mdElement(md, { inline = false, tag = 'div', className = 'md' } 
 
 let mermaidPromise;
 export async function renderMermaid(root) {
-  const nodes = [...root.querySelectorAll('pre.mermaid:not([data-processed])')];
+  // solo i blocchi visibili: mermaid in un contenitore nascosto produce SVG rotti (translate(NaN))
+  const nodes = [...root.querySelectorAll('pre.mermaid:not([data-processed])')].filter((n) => n.getClientRects().length > 0);
   if (!nodes.length) return 0;
   try {
     mermaidPromise ||= import(MERMAID_URL).then((m) => {
