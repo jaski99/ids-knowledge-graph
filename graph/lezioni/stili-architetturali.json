@@ -69,5 +69,5 @@
     }
   ],
   "riepilogo": "Stile = tipi di componenti + connettori + vincoli.\nA livelli, client-server, pipe and filter, MVC, a eventi, repository.\nOgnuno favorisce qualità diverse: si sceglie in base ai requisiti NF.\nNei sistemi reali gli stili si combinano.",
-  "perche_ti_serve": "Teoria — Parte 3: stili architetturali e clean architecture (separazione delle responsabilità) hanno frequenza media-alta secondo la sintesi dell'utente prove su 13 secondo la sintesi dell’utente (sintesi sulle 13 prove) 2017-2025."
+  "perche_ti_serve": "Parte 3 Teoria: stili architetturali e separazione responsabilita — 3 prove su 13 secondo la sintesi dell'utente."
 }

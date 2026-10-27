@@ -72,5 +72,5 @@
     }
   ],
   "riepilogo": "Black box: test dalla specifica (classi di equivalenza, BVA); white box: test dal codice (statement, decision, condition, MC/DC, path).\nBlack box trova ciò che manca, white box trova ciò che non è mai eseguito.\nSi usano insieme: prima black box, poi copertura misurata e test per i rami scoperti.\nCopertura 100% non significa assenza di bug.\nAll'esame: Parte 2 = black box; definizioni e CFG white box nella Parte 3.",
-  "perche_ti_serve": "Testing — Parte 2: le differenze tra black-box e white-box hanno frequenza media secondo la sintesi dell'utente prove su 13 secondo la sintesi dell’utente (sintesi sulle 13 prove) 2017-2025."
+  "perche_ti_serve": "Parte 2 Testing: differenze tra test black box e white box — 1 prova su 13 secondo la sintesi dell'utente."
 }

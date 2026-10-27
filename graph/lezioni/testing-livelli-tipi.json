@@ -74,5 +74,5 @@
     }
   ],
   "riepilogo": "Testing = eseguire per trovare failure; non prova l'assenza di bug (Dijkstra).\nError (umano) → fault (nel codice) → failure (osservabile).\nVerifica = conforme alla specifica; validazione = soddisfa l'utente.\nLivelli: unit, integration, system, acceptance (modello a V); regressione trasversale.\nSi smette con criteri decisi prima, non quando «non ci sono più bug».",
-  "perche_ti_serve": "Testing — Parte 2: il testing è presente in 13 prove su 13 secondo la sintesi dell'utente (3-5 pt)."
+  "perche_ti_serve": "Parte 2 Testing: livelli e tipi di test — 13 prove su 13 secondo la sintesi dell'utente."
 }

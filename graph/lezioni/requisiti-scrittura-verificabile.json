@@ -70,5 +70,5 @@
     }
   ],
   "riepilogo": "Schema: [ID] condizione, il sistema deve azione + vincolo misurabile + criterio di accettazione.\nAtomico (niente «e/o»), verificabile (niente parole vaghe), non ambiguo (estremi dichiarati).\nI NF si quantificano con una metrica (tempo, %, numero di errori).\nTest della verità: se non riesci a scrivere il test, riscrivi il requisito.",
-  "perche_ti_serve": "Teoria — Parte 3: i requisiti hanno frequenza alta secondo la sintesi dell'utente prove su 13 secondo la sintesi dell’utente (sintesi sulle 13 prove) 2017-2025 (specifica verificabile, test di accettazione)."
+  "perche_ti_serve": "Parte 3 Teoria: scrittura di requisiti verificabili e testabili — 6 prove su 13 secondo la sintesi dell'utente."
 }

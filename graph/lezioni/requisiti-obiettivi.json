@@ -72,5 +72,5 @@
     }
   ],
   "riepilogo": "La specifica dice COSA deve fare il sistema, non COME.\nÈ il contratto tra committente e team e la base di progetto e collaudo.\nFunzionali = servizi; non funzionali = qualità misurabili; vincoli = limiti imposti.\nTest rapido: tolto il requisito, il sistema fa una cosa in meno (F) o la fa peggio (NF)?",
-  "perche_ti_serve": "Teoria — Parte 3: i requisiti hanno frequenza alta secondo la sintesi dell'utente prove su 13 secondo la sintesi dell’utente (sintesi sulle 13 prove) 2017-2025."
+  "perche_ti_serve": "Parte 3 Teoria: obiettivi e requisiti del software — 6 prove su 13 secondo la sintesi dell'utente."
 }

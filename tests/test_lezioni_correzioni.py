@@ -5,6 +5,7 @@ I test leggono direttamente il contenuto testuale completo di ogni lezione
 """
 import glob
 import json
+import re
 
 import pytest
 
@@ -24,16 +25,29 @@ def _perche(id_):
     return lezione(id_).get('perche_ti_serve', '')
 
 
-# ---------------- Perché ti serve (ogni lezione, frequenze sulle 13 prove) ----------------
+def _tutti_perche():
+    out = []
+    for path in sorted(glob.glob(f'{LEZIONI}/*.json')):
+        obj = json.load(open(path, encoding='utf-8'))
+        out.append((path, obj.get('perche_ti_serve', '')))
+    return out
 
-def test_ogni_lezione_ha_perche_ti_serve_con_frequenze():
+
+# ---------------- Perché ti serve (ogni lezione, formato e frequenze) ----------------
+
+def test_ogni_lezione_ha_perche_ti_serve_corretto():
     file = sorted(glob.glob(f'{LEZIONI}/*.json'))
     assert len(file) == 75, f'attesi 75 file lezione, trovati {len(file)}'
-    for path in file:
-        obj = json.load(open(path, encoding='utf-8'))
-        p = obj.get('perche_ti_serve', '')
+    for path, p in _tutti_perche():
         assert p, f'{path}: manca perche_ti_serve'
-        assert 'prove su 13' in p, f'{path}: perche_ti_serve senza frequenza sulle 13 prove: {p[:90]!r}'
+        assert len(p) <= 200, f'{path}: perche_ti_serve troppo lungo ({len(p)}): {p[:90]!r}'
+        assert p.count('sintesi') == 1, f'{path}: "sintesi" non unica: {p[:90]!r}'
+        assert "’" not in p, f'{path}: apostrofo typografico: {p[:90]!r}'
+        assert 'utente prove' not in p, f'{path}: contiene "utente prove": {p[:90]!r}'
+        if 'su 13' in p:
+            idx = p.index('su 13')
+            assert re.search(r'\d', p[:idx]), f'{path}: "su 13" senza numero prima: {p[:90]!r}'
+        assert 'su 13' in p or 'prove 2017-2025' in p, f'{path}: perche_ti_serve senza frequenza sulle 13 prove: {p[:90]!r}'
 
 
 # ---------------- Testing ----------------

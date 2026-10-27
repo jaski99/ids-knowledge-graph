@@ -77,5 +77,5 @@
     }
   ],
   "riepilogo": "CI: integrare spesso su main; ogni push → build + test automatici; build rotta riparata subito.\nDelivery: pipeline fino a «sempre rilasciabile», rilascio con decisione umana.\nDeployment: rilascio in produzione automatico.\nPipeline a stadi (build, test, analisi, package, staging, produzione), build once deploy many.\nPrerequisiti: test automatici, Maven, SCM, monitoraggio e rollback.",
-  "perche_ti_serve": "Approfondimento: non risulta tra le prove su 13 secondo la sintesi dell'utente sulle 13 prove 2017-2025."
+  "perche_ti_serve": "Approfondimento: non compare nelle 13 prove 2017-2025 (sintesi dell'utente); utile per capire il processo di consegna."
 }
