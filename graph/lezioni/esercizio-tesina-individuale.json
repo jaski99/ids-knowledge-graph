@@ -1,0 +1,74 @@
+{
+  "intuizione": "La tesina non è un altro nome per lo scritto: la scheda ufficiale [S1] la descrive come lavoro individuale su un prodotto software, requisiti, UML e revisione con pattern. Separa ciò che la scheda dice dai dettagli che non specifica.",
+  "spiegazione": "## Che cosa è documentato\n\nLa scheda INF-36 2026/27 [S1] descrive una **tesina individuale**. Comprende la descrizione di un prodotto software, requisiti e diagrammi UML, oltre alla revisione del progetto con pattern. I criteri indicati sono precisione/correttezza, completezza/design/pattern ed «effetto wow».\n\nQuesta lezione non aggiunge scadenze, lunghezze, linguaggi, modalità di consegna o struttura obbligatoria. Se servono, sono **[da verificare sulla scheda S1]** o nelle istruzioni ufficiali aggiornate. Non trasferire pesi dello scritto alla tesina né calcolare un voto.\n\n## Perché ti serve\n\nLa scheda [S1] nomina la tesina individuale separatamente dallo scritto: preparare una descrizione di prodotto, requisiti, UML e revisione con pattern copre questa richiesta ufficiale. La sintesi storica dell’utente [D1] non specifica la tesina e non va usata per riempire i dettagli mancanti.\n\n## Un metodo di organizzazione, non un formato imposto\n\nCome supporto personale puoi: (1) definire il prodotto che intendi descrivere; (2) formulare requisiti; (3) selezionare diagrammi UML pertinenti; (4) rivedere il progetto motivando pattern. È una sequenza didattica coerente con i temi nominati, non una sequenza ufficialmente prescritta o un elenco esaustivo di artefatti. Non aggiungere consegne non presenti senza marcarle come scelte personali.\n\n## Criteri tradotti in controlli osservabili\n\n- **Precisione/correttezza:** cerca contraddizioni fra requisiti, diagrammi e descrizione; verifica che l’applicazione del pattern risponda al problema dichiarato.\n- **Completezza/design/pattern:** controlla che gli argomenti nominati siano rappresentati e che la revisione renda visibili decisione e motivazione. La scheda non specifica qui una checklist più granulare.\n- **«Effetto wow»:** la scheda usa questa espressione, ma la definizione operativa non è trovata nei documenti consultati. Non inventare una formula: resta **[da verificare sulla scheda S1]**.\n\nSono nomi di criteri, non pesi o promesse di valutazione. L’autoverifica trova omissioni ma non predice il giudizio del docente.\n\n## Confine con lo scritto\n\nLa scheda [S1] descrive separatamente scritto e tesina. Gli intervalli e i punti attribuiti alle prove storiche in `DATI_PROVE_GUERRA.md` sono una sintesi dell’utente [D1], non istruzioni per la tesina. Non trasferire la struttura storica in tre parti, punti, durata o soglie.\n\n## Esempio completo, completamento e autonomia\n\nEsempio completo: estrai dalla scheda i contenuti nominati. Completamento: associa i criteri senza inventare pesi. Autonomia: annota separatamente ciò che è presente, assente e da chiarire. Il prodotto specifico non è fornito qui: non ne inventiamo requisiti.\n\n```mermaid\nflowchart TD\n    A[Prodotto software] --> B[Requisiti]\n    A --> C[Diagrammi UML]\n    B --> D[Revisione con pattern]\n    C --> D\n    D --> E[Criteri della scheda]\n```\n\nQuesto flowchart è un promemoria dei temi menzionati, non un diagramma richiesto per la tesina. Numero di artefatti, modalità e pesi esatti non riportati restano **[da verificare sulla scheda S1]**.",
+  "analogia": "È come preparare una cartella di progetto con una lista di temi pubblicata. L’analogia smette di valere se si presume che la scheda sia una check-list tecnica completa: la fonte non definisce tutti i dettagli operativi.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Processo dei requisiti",
+      "collegamento": "La scheda nomina requisiti del prodotto; formula requisiti senza colmare i buchi con supposizioni.",
+      "nodo": "requisiti-processo-specifica"
+    },
+    {
+      "conoscenza": "Class diagram da testo",
+      "collegamento": "Tecnica utile per passare dalla descrizione a una vista UML, non l’unico diagramma dichiarato.",
+      "nodo": "esercizio-class-diagram-da-testo"
+    },
+    {
+      "conoscenza": "Pattern motivato",
+      "collegamento": "La scheda nomina la revisione con pattern, da collegare al problema e al progetto.",
+      "nodo": "esercizio-pattern-motivato-java"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Estrarre i contenuti",
+      "problema": "Leggi [S1] e annota attività e criteri esplicitamente nominati.",
+      "passi": [
+        "1. Registro che è una tesina individuale.",
+        "2. Registro prodotto software, requisiti e diagrammi UML.",
+        "3. Registro revisione del progetto con pattern.",
+        "4. Trascrivo precisione/correttezza, completezza/design/pattern ed «effetto wow».",
+        "5. Segno scadenze, pagine, formato e pesi esatti come [da verificare sulla scheda S1]."
+      ],
+      "soluzione": "Contenuti: prodotto software, requisiti, UML e revisione con pattern; criteri: precisione/correttezza, completezza/design/pattern ed effetto wow.",
+      "perche_funziona": "Ogni affermazione è ricondotta a [S1] e gli elementi mancanti non vengono inventati."
+    },
+    {
+      "titolo": "Controllo senza calcolare un voto",
+      "problema": "Una bozza contiene requisiti, un class diagram e una proposta di pattern. Costruisci un controllo qualitativo.",
+      "passi": [
+        "1. Precisione: cerca contraddizioni tra requisito e diagramma.",
+        "2. Completezza: verifica i contenuti nominati nella scheda.",
+        "3. Effetto wow: annota che manca una definizione operativa.",
+        "4. Non convertire il controllo in percentuali o voto."
+      ],
+      "soluzione": "Checklist qualitativa sui criteri nominati; definizione operativa di effetto wow da verificare.",
+      "perche_funziona": "La checklist rileva omissioni ma rispetta i limiti della fonte."
+    }
+  ],
+  "errori_comuni": [
+    "Aggiungere scadenze, pagine, linguaggi o consegne non riportati in [S1].",
+    "Trasferire alla tesina punti o durata della sintesi utente sulle prove scritte.",
+    "Inventare una definizione di «effetto wow» o preferenze del docente.",
+    "Confondere tesina e scritto, descritti separatamente."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quali contenuti della tesina sono nominati in [S1]?",
+      "risposta": "Descrizione di un prodotto software con requisiti e diagrammi UML e revisione del progetto con design pattern."
+    },
+    {
+      "domanda": "Quali criteri sono menzionati?",
+      "risposta": "Precisione/correttezza, completezza/design/pattern ed «effetto wow»; non aggiungere pesi o dettagli operativi."
+    },
+    {
+      "domanda": "Tesina e scritto coincidono?",
+      "risposta": "No: la scheda [S1] li descrive separatamente e la sintesi storica utente non specifica modalità della tesina."
+    },
+    {
+      "domanda": "Come si misura l’effetto wow?",
+      "risposta": "La definizione operativa non è trovata nei documenti qui disponibili; è da verificare sulla scheda [S1]."
+    }
+  ],
+  "riepilogo": "[S1]: prodotto software, requisiti, UML e revisione con pattern.\nCriteri: precisione/correttezza, completezza/design/pattern, «effetto wow».\nTesina e scritto sono distinti.\nScadenze, formato e pesi: [da verificare sulla scheda S1]."
+}

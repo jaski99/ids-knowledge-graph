@@ -1,0 +1,121 @@
+[
+  {
+    "id": "commenti-codice",
+    "title": "Commenti nel codice",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "I commenti chiariscono contratti, invarianti e motivazioni non ovvie; non devono ripetere ciò che il codice esprime. Categorie pratiche: documentazione API, commenti esplicativi/in-line e note temporanee come TODO/FIXME, da mantenere. La sintesi utente [D1] riporta il tema commenti nella teoria di una prova del 2022; gli originali non sono disponibili.",
+    "saper_fare": [
+      "Decidere se un commento aggiunge informazione o duplica il codice",
+      "Scrivere una nota breve per un invariante o una scelta non ovvia",
+      "Distinguere documentazione API, commento esplicativo e nota temporanea",
+      "Valutare un refactoring quando il commento compensa una struttura confusa"
+    ],
+    "prerequisiti": [
+      {
+        "id": "buone-pratiche-programmazione",
+        "forza": "hard",
+        "motivo": "Naming e leggibilità aiutano a decidere cosa richiede spiegazione."
+      },
+      {
+        "id": "refactoring",
+        "forza": "soft",
+        "motivo": "Un commento che spiega codice confuso può suggerire di chiarire la struttura."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: commenti",
+        "testo": "Spiega quando commentare e distingui tre categorie. Valuta un frammento Java senza parafrasare la logica ovvia.",
+        "soluzione": "Javadoc documenta il contratto API; un commento esplicativo chiarisce una ragione/invariante non ovvia; TODO/FIXME è una nota temporanea da mantenere. Non commentare `i++` con “incrementa i”."
+      }
+    ],
+    "tempo_studio_min": 25,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Il tema è riportato per una prova del 2022 nella sintesi dell’utente [D1], non verificata sugli originali."
+    },
+    "risorse": [
+      {
+        "titolo": "Google Java Style Guide (stile, non fonte d’esame)",
+        "url": "https://google.github.io/styleguide/javaguide.html",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 9"
+      }
+    ],
+    "checklist_ripasso": [
+      "Commenta contratti, motivazioni e invarianti non ovvi",
+      "Non parafrasare codice evidente",
+      "Javadoc per API quando appropriato",
+      "TODO/FIXME contestualizzati e temporanei",
+      "Se serve un commento lungo, valuta refactoring"
+    ]
+  },
+  {
+    "id": "analisi-statica",
+    "title": "Analisi statica del codice",
+    "area": 3,
+    "tipo": "concetto",
+    "sapere": "L’analisi statica esamina sorgente o rappresentazioni intermedie senza eseguire il programma e segnala possibili difetti, violazioni di regole o proprietà. Si distingue dall’ispezione manuale e dal testing dinamico, che esegue il programma su input. Un warning è un’indicazione da valutare, non una prova di errore o correttezza.",
+    "saper_fare": [
+      "Distinguere analisi automatica, ispezione manuale e test dinamico",
+      "Interpretare un warning senza scambiarlo per prova definitiva",
+      "Confrontare controllo statico e test su Java originale",
+      "Descrivere falsi positivi, falsi negativi e limiti"
+    ],
+    "prerequisiti": [
+      {
+        "id": "ispezione-codice",
+        "forza": "hard",
+        "motivo": "La distinzione dall’ispezione manuale è obiettivo centrale."
+      },
+      {
+        "id": "code-smell",
+        "forza": "soft",
+        "motivo": "Gli smell possono essere individuati da persone o regole statiche."
+      },
+      {
+        "id": "metrica-complessita-ciclomatica",
+        "forza": "soft",
+        "motivo": "Una misura può essere statica ma non prova il comportamento."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: analisi statica",
+        "testo": "Definisci analisi statica e confrontala con ispezione e testing dinamico. Spiega che cosa dimostra un warning.",
+        "soluzione": "Analizza sorgente o bytecode senza eseguirli; ispezione è revisione umana, test dinamico esegue su input. Un warning segnala un rischio/regola da valutare e non prova da solo né un bug né la correttezza globale."
+      }
+    ],
+    "tempo_studio_min": 25,
+    "priorita": {
+      "livello": "bassa",
+      "motivazione": "La sintesi dell’utente [D1] riporta il tema tra quelli minori; è dato della sintesi, non frequenza ufficiale verificata."
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "TSUI",
+        "capitolo_o_sezione": "cap. 10.5 (ispezioni; non equivale a trattazione completa dell’analisi automatica)"
+      }
+    ],
+    "checklist_ripasso": [
+      "Statica: analizza senza eseguire",
+      "Ispezione: revisione umana",
+      "Dinamica: esegue su input",
+      "Warning non prova bug né correttezza",
+      "Verifica contesto e limiti dello strumento"
+    ]
+  }
+]

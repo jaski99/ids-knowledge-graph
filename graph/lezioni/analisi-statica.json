@@ -1,0 +1,74 @@
+{
+  "intuizione": "L’analisi statica osserva il programma senza farlo girare: può segnalare percorsi sospetti o regole violate, ma non vede ogni comportamento concreto. È diversa dalla revisione umana e dal test che esegue il codice su input scelti.",
+  "spiegazione": "## Definizione e provenienza\n\nL’**analisi statica** esamina codice sorgente o una rappresentazione senza eseguire il programma. Può applicare regole sintattiche, tipi, analisi di flusso, controlli di nullabilità o metriche e restituire avvisi. La sintesi utente [D1] riporta il tema in una prova; gli originali non sono disponibili, quindi non attribuiamo definizioni o preferenze al docente.\n\nUn risultato è un’indicazione da interpretare. Un **falso positivo** è un warning che non corrisponde a un difetto nel contesto; un **falso negativo** è un difetto non rilevato. L’assenza di warning non dimostra l’assenza di bug.\n\n## Perché ti serve\n\nNella sintesi dell’utente [D1] l’analisi statica è riportata una volta, nel riepilogo della prova 2017-04, ed è classificata tra gli argomenti minori. È un dato della sintesi, non una frequenza verificata indipendentemente; la lezione chiarisce la distinzione utile tra ispezione e test.\n\n## Tre attività diverse\n\n| Attività | Che cosa fa | Evidenza | Limite |\n|---|---|---|---|\n| Analisi statica | Esamina codice o modello senza eseguirlo | Warning, violazioni di regole, metriche | Non osserva ogni risultato runtime |\n| Ispezione/revisione | Persone leggono codice o artefatti | Difetti individuati con ragionamento | Dipende da esperienza e attenzione |\n| Testing dinamico | Esegue su input e confronta risultati | Esiti osservati per quei test | Copre solo input e percorsi esercitati |\n\nUna pipeline può combinarle: analisi automatica, revisione e test. Non sono sostituti perfetti e nessuna, da sola, garantisce assenza di difetti.\n\n## Esempio Java originale: possibile null\n\n```java\nfinal class Sconto {\n    static int percentuale(String codice) {\n        if (codice.equals(\"VIP\")) return 10;\n        return 0;\n    }\n}\n```\n\nSe `codice` può essere `null`, la chiamata può causare `NullPointerException`. Un analizzatore potrebbe segnalarlo in base a tool, configurazione e informazioni disponibili. Una revisione può notare il rischio; un test `percentuale(null)` può osservarlo per quell’input. Nessuno dei due prova la correttezza di tutti gli usi. Una modifica possibile è `\"VIP\".equals(codice)`, ma la decisione dipende dal contratto: forse il chiamante deve vietare null.\n\n## Che cosa può cercare uno strumento\n\nEsempi: variabili non usate, flussi potenzialmente nulli, conversioni sospette, codice irraggiungibile, pattern di errore, stile o metriche configurate. Regole e severità dipendono dallo strumento. Una metrica come la complessità ciclomatica può essere calcolata staticamente, ma un valore elevato non dimostra automaticamente un bug. Non citiamo tool o soglie come requisiti d’esame non documentati.\n\n## Procedura per interpretare un warning\n\n1. Leggi regola e posizione; ricostruisci il percorso o l’assunzione segnalata.\n2. Controlla contratto e valori che possono raggiungere il codice.\n3. Classifica: difetto riproducibile, rischio plausibile, falso positivo o informazione insufficiente.\n4. Se osservabile, scrivi un test mirato; se strutturale, valuta revisione o refactoring.\n5. Sopprimi un avviso solo con motivazione e secondo le regole del progetto.\n\n## Esempio, completamento e autonomia\n\nEsempio svolto: il warning su `codice.equals` indica rischio di null; verifica il contratto e scegli test o guardia coerente. Nel completamento, valuta un warning su variabile non usata: può essere codice morto o limite dell’analisi. In autonomia confronta analisi statica, test e lettura manuale e annota che cosa ciascuno dimostra. La sintesi [D1] classifica il tema tra quelli minori: è un’informazione attribuita all’utente, non una statistica ufficiale.\n\n```mermaid\nflowchart LR\n    S[Codice sorgente] --> A[Analisi statica senza esecuzione]\n    S --> I[Ispezione manuale]\n    S --> T[Test dinamico con input]\n    A --> W[Warning da valutare]\n    T --> R[Risultato osservato]\n```\n",
+  "analogia": "È un revisore che legge una ricetta senza cucinarla e segnala passaggi ambigui. L’analogia smette di valere perché l’analizzatore applica regole formali e può esplorare automaticamente proprietà del codice, ma resta limitato da regole e modello.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Ispezione del codice",
+      "collegamento": "Entrambe possono trovare problemi senza eseguire; l’ispezione è umana, l’analisi può essere automatica.",
+      "nodo": "ispezione-codice"
+    },
+    {
+      "conoscenza": "Code smell",
+      "collegamento": "Uno smell è un indizio progettuale, può emergere da revisione o regole ma non è necessariamente un bug.",
+      "nodo": "code-smell"
+    },
+    {
+      "conoscenza": "Complessità ciclomatica",
+      "collegamento": "Una metrica può essere calcolata staticamente ma non dimostra il comportamento corretto.",
+      "nodo": "metrica-complessita-ciclomatica"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Warning di possibile null",
+      "problema": "Valuta `if (codice.equals(\"VIP\"))` senza assumere il contratto del parametro.",
+      "passi": [
+        "1. Se codice è null, la chiamata fallisce.",
+        "2. Cerca se il contratto vieta null; se non lo specifica, il comportamento è non definito.",
+        "3. Se null è vietato, verifica che i chiamanti lo garantiscano; altrimenti definisci il comportamento.",
+        "4. Aggiungi test mirato e una guardia coerente con il contratto.",
+        "5. Valuta il warning nel contesto: non è prova definitiva."
+      ],
+      "soluzione": "Il rischio esiste se null può arrivare. Possibili soluzioni: controllo esplicito o `\"VIP\".equals(codice)`, secondo il contratto.",
+      "perche_funziona": "La soluzione distingue il difetto condizionale dalle assunzioni non fornite."
+    },
+    {
+      "titolo": "Statico, ispezione o dinamico?",
+      "problema": "Una regola segnala variabile non usata; un revisore legge il metodo; un test esegue un input.",
+      "passi": [
+        "1. Il warning deriva da analisi statica senza esecuzione.",
+        "2. La lettura del revisore è ispezione manuale.",
+        "3. L’esecuzione di input è test dinamico.",
+        "4. Confronta risultati: possono trovare problemi diversi e nessuno copre tutto."
+      ],
+      "soluzione": "Sono tre attività distinte, complementari; il warning va verificato nel contesto.",
+      "perche_funziona": "Classifica il metodo in base a come produce evidenza, non al nome dello strumento."
+    }
+  ],
+  "errori_comuni": [
+    "Dire che analisi statica esegue il programma: quello è testing dinamico.",
+    "Confondere tool automatico e ispezione manuale.",
+    "Trattare warning o assenza di warning come prova definitiva.",
+    "Credere che una metrica elevata dimostri automaticamente un bug."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Che cosa definisce l’analisi statica?",
+      "risposta": "Esamina il codice o una rappresentazione senza eseguire il programma e segnala proprietà/rischi secondo regole configurate."
+    },
+    {
+      "domanda": "Come differisce da un test dinamico?",
+      "risposta": "Il test esegue il programma su input e osserva risultati; l’analisi statica non lo esegue."
+    },
+    {
+      "domanda": "Un warning dimostra un bug?",
+      "risposta": "No: è un’indicazione da valutare; può essere falso positivo e l’assenza di warning non dimostra correttezza."
+    },
+    {
+      "domanda": "Che differenza c’è tra analisi statica e ispezione?",
+      "risposta": "La prima può essere automatizzata su regole; l’ispezione è una revisione umana. Entrambe possono essere complementari."
+    }
+  ],
+  "riepilogo": "Statica analizza senza eseguire; ispezione è umana; dinamica esegue input.\nUn warning è un segnale, non una prova di bug o correttezza.\nVerifica contratto, contesto e limiti dello strumento.\nTema riportato nella sintesi utente [D1], non verificato sugli originali."
+}
