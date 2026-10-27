@@ -1,0 +1,70 @@
+{
+  "intuizione": "I pattern ricorrenti nelle prove (Decorator, Template Method, Observer, Factory, Strategy) si riconoscono dallo scenario: non si nomina mai il pattern, si descrive un problema operativo da cui ricavare la scelta.",
+  "spiegazione": "## Perché ti serve\n\nL'es. 1.4 di Design (4-5 pt, ~15-20 min) si presenta in ogni prova nota [D1 §1.3]: Decorator 6 prove, Template Method 4, Observer 1, Factory 2, Strategy 1 secondo la sintesi dell'utente. La consegna non dice mai il nome del pattern: descrive uno scenario (piazzole con corrente, aule con microfoni, mailing list Farmacia 2025, cioccolatini 'cioba', resistenza in 3 modalità) e chiede di scegliere, motivare, disegnare e implementare.\n\n## Definizione d'esame\n\n- **Decorator**: accessori opzionali combinabili che modificano costo/descrizione; evita l'esplosione di sottoclassi; Open/Closed.\n- **Template Method**: algoritmo a passi fissi con varianti in alcuni passi; ereditarietà, metodo template final.\n- **Observer**: evento che notifica un insieme variabile di interessati; iscrizione dinamica; basso accoppiamento.\n- **Simple Factory**: metodo (spesso static) che crea l'oggetto in base a un parametro; idioma, non GoF.\n- **Strategy**: famiglia di algoritmi intercambiabili scelti a runtime; composizione, elimina i condizionali.\n\n## Come scegliere (domande guida)\n\nChiedi sempre: qual è la variabilità? Chi decide? Uno o molti oggetti? L'algoritmo intero o solo alcuni passi? Le opzioni si sommano (Decorator) o si scelgono una alla volta (Strategy)?\n\n```mermaid\nclassDiagram\n    class Decorator {\n        <<pattern>>\n        +operazione()\n    }\n    class TemplateMethod {\n        <<pattern>>\n        +metodoTemplate(): void final\n    }\n    class Observer {\n        <<pattern>>\n        +attach(); +detach(); +notify()\n    }\n    class SimpleFactory {\n        <<idioma>>\n        +crea(Tipo): Prodotto\n    }\n    class Strategy {\n        <<pattern>>\n        +esegui(): Result\n    }\n```\n\n## Motivazione e limiti (validi per tutti)\n\nOgni esempio indica il principio SOLID soddisfatto, l'alternativa scartata e i limiti: nessun pattern è la risposta giusta in assoluto, va giustificato sullo scenario concreto.",
+  "analogia": "È come scegliere l'attrezzo in cassetta: il cacciavite non serve per tutto. L'analogia smette di valere quando due pattern si assomigliano (Decorator vs Strategy: si sommano o si scelgono?) e serve l'analisi dello scenario, non l'assonanza delle parole.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Design pattern: introduzione",
+      "collegamento": "Nome, problema, soluzione e conseguenze di ogni pattern.",
+      "nodo": "design-pattern-introduzione"
+    },
+    {
+      "conoscenza": "Principi SOLID",
+      "collegamento": "Ogni pattern si giustifica con il principio che applica (es. Strategy → OCP, DIP).",
+      "nodo": "principi-solid"
+    },
+    {
+      "conoscenza": "UML delle classi",
+      "collegamento": "Il class diagram del pattern deve usare associazioni, molteplicità e navigabilità corrette.",
+      "nodo": "uml-diagramma-classi"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Decorator — piazzole del mercato con accessori",
+      "problema": "Mercato ambulanti: piazzola con costo base più accessori opzionali combinabili (corrente, tettoia, posto auto). Calcola il costo totale. Scenario ricostruito dalla sintesi dell'utente.",
+      "passi": [
+        "1) Indizio: accessori combinabili che sommano il costo → composizione dinamica.",
+        "2) Scelta: Decorator; alternativa scartata: sottoclasse per ogni combinazione (2^n classi).",
+        "3) Java minimo: interfaccia Piazzola, base, decoratore astratto, Corrente e Tettoia concreti.",
+        "4) Verifica: new Tettoia(new Corrente(new Base(20))).costo() = 40 + 10 + 15 = 65.0.",
+        "5) Limiti: molti oggetti piccoli; ordine di avvolgimento può influire."
+      ],
+      "soluzione": "Decorator soddisfa Open/Closed: nuovo accessorio = nuova classe, PiazzolaBase invariata.\n\n## Implementazione Java minima (compilabile)\n```java\ninterface Piazzola {\n    double costo();\n}\nclass PiazzolaBase implements Piazzola {\n    private final double mq;\n    PiazzolaBase(double mq) { this.mq = mq; }\n    public double costo() { return 2.0 * mq; }\n}\nabstract class Accessorio implements Piazzola {\n    protected final Piazzola p;\n    Accessorio(Piazzola p) { this.p = p; }\n}\nclass Corrente extends Accessorio {\n    Corrente(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 10.0; }\n}\nclass Tettoia extends Accessorio {\n    Tettoia(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 15.0; }\n}\npublic class MercatoDemo {\n    public static void main(String[] args) {\n        Piazzola piazzola = new Tettoia(new Corrente(new PiazzolaBase(20.0)));\n        System.out.println(piazzola.costo()); // fa 65.0\n    }\n}\n```\n",
+      "perche_funziona": "Ogni accessorio È una Piazzola E HA una Piazzola: costo = costo avvolto + supplemento."
+    },
+    {
+      "titolo": "Observer — mailing list promozioni Farmacia 2025",
+      "problema": "Farmacia: pubblicare una promozione e avvisare tutti i clienti iscritti, con iscrizione/disiscrizione in qualsiasi momento. Scenario ricostruito dalla sintesi dell'utente (prova 5/11/2025).",
+      "passi": [
+        "1) Indizio: uno-a-molti con iscrizione dinamica.",
+        "2) Scelta: Observer; alternativa scartata: polling dei clienti.",
+        "3) Java minimo: interfaccia Iscritto, MailingList con lista di iscritti, Cliente che stampa.",
+        "4) Motivazione SOLID: OCP e basso accoppiamento verso l'interfaccia.",
+        "5) Limiti: ordine di notifica non garantito, rischio memory leak."
+      ],
+      "soluzione": "Observer è il core d'esame della prova 2025 (4 pt); java.util.Observable/Observer deprecati, si usano listener.\n\n## Implementazione Java minima (compilabile)\n```java\ninterface Iscritto {\n    void notifica(String promozione);\n}\nimport java.util.ArrayList;\nimport java.util.List;\nclass MailingList {\n    private final List<Iscritto> iscritti = new ArrayList<>();\n    void iscrivi(Iscritto i) { iscritti.add(i); }\n    void disiscrivi(Iscritto i) { iscritti.remove(i); }\n    void pubblica(String promozione) {\n        for (Iscritto i : iscritti) i.notifica(promozione);\n    }\n}\nclass Cliente implements Iscritto {\n    private final String email;\n    Cliente(String email) { this.email = email; }\n    public void notifica(String promozione) {\n        System.out.println(\"Mail a \" + email + \": \" + promozione);\n    }\n}\n```\n",
+      "perche_funziona": "Il Subject dipende solo dall'interfaccia Observer, non dalle classi concrete dei destinatari."
+    }
+  ],
+  "errori_comuni": [
+    "Scegliere lo Strategy quando le opzioni si sommano (è Decorator).",
+    "Dimenticare i limiti del pattern (chiesti esplicitamente nell'es. 1.4).",
+    "Usare java.util.Observable senza segnalarlo deprecato."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quale parola chiave suggerisce Decorator invece di Strategy?",
+      "risposta": "Accessori/opzioni che si sommano insieme (combinabili), non un algoritmo scelto uno alla volta."
+    },
+    {
+      "domanda": "Perché il metodo template va dichiarato final?",
+      "risposta": "Per fissare la sequenza dei passi e lasciare alle sottoclassi solo i passi variabili (inversione di controllo)."
+    },
+    {
+      "domanda": "Observer in Java: quali classi JDK sono deprecate?",
+      "risposta": "java.util.Observable e java.util.Observer (deprecati da Java 9); si preferiscono listener o PropertyChangeListener."
+    }
+  ],
+  "riepilogo": "Scenario → pattern → motivazione SOLID → alternativa scartata → limiti → class diagram → Java minimo. Ogni esempio è marcato 'scenario ricostruito dalla sintesi dell'utente'."
+}

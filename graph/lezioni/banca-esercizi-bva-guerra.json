@@ -1,0 +1,87 @@
+{
+  "intuizione": "Le 13 funzioni a scaglioni delle prove 2017-2025 si risolvono sempre allo stesso modo: partizione del dominio in classi di equivalenza, valori limite sui bordi, un test per classe non valida e output atteso calcolato dalle formule certe della sintesi.",
+  "spiegazione": "## Perché ti serve\n\nLa Parte 2 Testing vale 3-5 pt in 10-20 min ed è presente in 13 prove su 13 secondo la sintesi dell'utente [D1 §1.3]: è la parte più meccanica e redditizia dell'esame. La consegna chiede sempre equivalence class e boundary conditions sul parametro principale di una funzione a scaglioni.\n\n## Definizione d'esame\n\n- **Classe di equivalenza** = sottoinsieme del dominio di un input per cui la specifica prevede lo stesso comportamento; basta un rappresentante per classe.\n- **Classe valida** = input ammesso, una per ogni regola di calcolo diversa (ogni scaglione).\n- **Classe non valida** = input fuori dal dominio (sotto il minimo, sopra il massimo, valori vietati); una sola classe non valida per test, altrimenti un controllo mancante resta nascosto (error masking).\n- **Boundary value analysis** = testare esattamente ai bordi delle classi, dove il codice sbaglia più spesso (``<`` al posto di ``<=``).\n\n## Procedura in 5 passi\n\n**(0) Precondizioni, unità e parametro principale.** Dichiaro cosa è gestito e cosa no, le unità di misura e quale parametro varia (il principale); i valori negativi entrano solo come assunzione per esercitarsi.\n\n**(1) Classi valide per fascia.** Una classe per ogni scaglione della specifica, partizione disgiunta che copre il dominio gestito.\n\n**(2) Classi non valide.** Oltre il limite non gestito e valori vietati; mai due non valide nello stesso test.\n\n**(3) Valori limite.** Esattamente quelli della sintesi dell'utente (es. 50, 51, 150, 151, 500, 501); dove la sintesi non li dà (es. ``computeCarSharingFee``) sono derivati dalla regola e marcati ``derivati``.\n\n**(4) Test minimi.** Tabella con input, classi, output atteso calcolato solo con formule certe; le formule 'probabile' o 'mancante' restano ``[da verificare]``.\n\n**(5) Verifica.** Ogni scaglione ha un test valido; ogni controllo d'errore un test con una sola non valida.\n\n```mermaid\nflowchart TD\n    A[Specifica della funzione] --> B[Parametro principale e unità]\n    B --> C[Classi valide: una per scaglione]\n    C --> D[Classi non valide: fuori dominio]\n    C --> E[Valori limite ai bordi]\n    D --> F[Un test per NV, resto valido]\n    E --> G[Test sui valori di confine]\n    F --> H[Output atteso da formule certe]\n    G --> H\n```\n\n## Formule incerte\n\n``costoPulizia`` (151-500 mq, 'probabile costo2') e ``costoconsegna`` (2001-5000 m, formula mancante) sono segnati ``[da verificare]``: non ne uso l'output come certo né li presento come fatti del docente.\n\n## Come si presenta all'esame\n\nScrivi precondizioni e ipotesi, poi tabella classi, valori limite e test minimi con output atteso. Ogni output deve essere giustificato dalla formula; se la formula è incerta, scrivi esplicitamente ``[da verificare]`` invece di inventare un numero.",
+  "analogia": "È come un sondaggio: invece di intervistare tutti, scelgo un rappresentante per ogni gruppo che si comporta allo stesso modo, e provo anche qualcuno fuori target per vedere se viene scartato. L'analogia smette di valere quando il codice ha un bug proprio su un valore di bordo: da qui la BVA.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Classi di equivalenza",
+      "collegamento": "Le classi di equivalenza partizionano il dominio; qui servono come input della procedura.",
+      "nodo": "classi-equivalenza"
+    },
+    {
+      "conoscenza": "Boundary Value Analysis",
+      "collegamento": "La BVA fornisce i valori limite da testare sui bordi delle classi.",
+      "nodo": "boundary-value-analysis"
+    },
+    {
+      "conoscenza": "Black box vs white box",
+      "collegamento": "Le classi si ricavano solo dalla specifica, tecnica black box.",
+      "nodo": "black-box-vs-white-box"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "calcolaCostoSpedizione(numero, peso, tariffa) — prova 5/11/2025",
+      "problema": "double calcolaCostoSpedizione(int numero, int peso, int tariffa): 2 EUR fino a 50 pagine incluso; tariffa·peso·numero per 51-150; 450·peso·numero per 151-500; oltre 500 pagine o oltre 1 kg non gestiti. Trova classi e boundary.",
+      "passi": [
+        "(0) Precondizioni: numero = pagine ≥ 1, peso in grammi ≥ 1, tariffa in centesimi ≥ 1. Ipotesi: non gestito → -1; output in euro (centesimi ÷ 100). Parametro principale: numero.",
+        "(1) Classi valide: C1 1-50 → 2,00 €; C2 51-150 → tariffa·peso·numero/100; C3 151-500 → 450·peso·numero/100.",
+        "(2) Classi non valide: numero ≤ 0, numero > 500; peso ≤ 0, peso > 1000; tariffa ≤ 0 (negativi solo come assunzione per esercitarsi).",
+        "(3) Valori limite: 50, 51, 150, 151, 500, 501 (sintesi dell'utente).",
+        "(4) Test minimi: validi (25,2,10)→2,00 €; (100,2,10)→20,00 €; (300,2,10)→2700,00 €. Non validi: (-5,2,10), (700,2,10), (100,0,10), (100,1500,10), (100,2,0) → -1. Boundary: (50)→2,00 €; (51)→10,20 €; (150)→30,00 €; (151)→1359,00 €; (500)→4500,00 €; (501)→-1.",
+        "(5) Verifica: tutti gli output usano formule certe della sintesi."
+      ],
+      "soluzione": "10 classi (C1-C10), 6 valori limite, 14 test minimi; nessuna formula incerta.",
+      "perche_funziona": "Ogni scaglione ha un test valido e ogni controllo d'errore un test con una sola NV, quindi ogni fallimento è diagnostico."
+    },
+    {
+      "titolo": "costoPulizia(dimensione, costo1, costo2, cf) — prova 2021-02",
+      "problema": "double costoPulizia(int dimensione, float costo1, float costo2, float cf): cf se < 50 mq; cf+dimensione·costo1 per 50-150; cf+dimensione·costo1 (probabile costo2) per 151-500; oltre 500 non gestito.",
+      "passi": [
+        "(0) Precondizioni: dimensione ≥ 1 mq; costo1, costo2, cf ≥ 0. Ipotesi: non gestito → -1. Parametro principale: dimensione.",
+        "(1) Classi valide: V1 1-49 → cf; V2 50-150 → cf+dimensione·costo1; V3 151-500 → cf+dimensione·costo2.",
+        "(2) Classi non valide: dimensione < 1, dimensione > 500.",
+        "(3) Valori limite: 49, 50, 150, 151, 500, 501 (sintesi dell'utente).",
+        "(4) Test minimi con output certo: (49)→cf; (50)→cf+50·costo1; (150)→cf+150·costo1. Per (151) e (500) la formula è 'probabile costo2': output [da verificare].",
+        "(5) Verifica: output certi solo per V1 e V2; V3 resta [da verificare] finché la formula non è confermata."
+      ],
+      "soluzione": "6 classi, 6 valori limite, 8 test minimi; formula V3 segnata [da verificare].",
+      "perche_funziona": "Separare le formule certe da quelle probabili impedisce di presentare un'ipotesi come risultato dell'esame."
+    },
+    {
+      "titolo": "costoconsegna(distanza, costo1, costo2) — prova 2021-04",
+      "problema": "double costoconsegna(int distanza, float costo1, float costo2): distanza·costo1 se ≤ 2000 m; formula mancante per 2001-5000 (probabile costo2); oltre 5000 non gestito.",
+      "passi": [
+        "(0) Precondizioni: distanza ≥ 1 m; costo1, costo2 ≥ 0. Ipotesi: non gestito → -1. Parametro principale: distanza.",
+        "(1) Classi valide: V1 1-2000 → distanza·costo1; V2 2001-5000 → [da verificare: formula mancante].",
+        "(2) Classi non valide: distanza < 1, distanza > 5000.",
+        "(3) Valori limite: 1999, 2000, 2001, 4999, 5000, 5001 (sintesi dell'utente).",
+        "(4) Test minimi: (1999)→1999·costo1; (2000)→2000·costo1 certi. Per 2001-5000 l'output è [da verificare] finché la formula non si conosce.",
+        "(5) Verifica: V2 è interamente segnato [da verificare]; nessun output inventato."
+      ],
+      "soluzione": "4 classi, 6 valori limite, 8 test minimi; formula 2001-5000 segnata [da verificare].",
+      "perche_funziona": "Segnalare la formula mancante è parte corretta della risposta: all'esame si dichiara ciò che non si sa."
+    }
+  ],
+  "errori_comuni": [
+    "Dimenticare le classi non valide degli altri parametri (peso, tariffa) concentrandosi solo sul principale.",
+    "Mettere due valori non validi nello stesso test: il -1 non dice quale controllo ha funzionato (error masking).",
+    "Usare una formula 'probabile' o 'mancante' come se fosse certa: va marcata '[da verificare]'.",
+    "Confondere il bordo incluso con quello escluso (≤ 50 vs < 50)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quante classi valide ha calcolaCostoSpedizione(numero, peso, tariffa) per il parametro principale numero?",
+      "risposta": "Tre: 1-50 (2 EUR), 51-150 (tariffa·peso·numero), 151-500 (450·peso·numero)."
+    },
+    {
+      "domanda": "Perché mai due classi non valide nello stesso test?",
+      "risposta": "Error masking: il primo controllo che scatta nasconde gli altri, quindi un controllo mancante sul secondo parametro resterebbe non rilevato."
+    },
+    {
+      "domanda": "costoPulizia per 151-500 mq ha un output certo?",
+      "risposta": "No: la sintesi segnala 'probabile costo2', cioè la formula è [da verificare]; l'output va dichiarato incerto, non inventato."
+    }
+  ],
+  "riepilogo": "Tre passi fissi: classi valide (una per scaglione), classi non valide (una per test), valori limite ai bordi. Output atteso solo da formule certe; tutto il resto è '[da verificare]' o 'assunzione per esercitarsi'."
+}
