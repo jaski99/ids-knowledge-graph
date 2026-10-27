@@ -84,5 +84,6 @@
       "risposta": "Perché in Java && è cortocircuitato: la seconda condizione è valutata solo se la prima è vera, quindi nel grafo ci sono due nodi decisione distinti."
     }
   ],
-  "riepilogo": "V(G) = numero di cammini linearmente indipendenti del CFG.\nTre formule da far coincidere: E − N + 2, predicati + 1, regioni (con l'esterna).\nif/while/for/case/?: valgono +1; && e || +1 se si separano le condizioni.\nSoglia indicativa 10; V(G) = test della basis path, limite superiore per la decision coverage."
+  "riepilogo": "V(G) = numero di cammini linearmente indipendenti del CFG.\nTre formule da far coincidere: E − N + 2, predicati + 1, regioni (con l'esterna).\nif/while/for/case/?: valgono +1; && e || +1 se si separano le condizioni.\nSoglia indicativa 10; V(G) = test della basis path, limite superiore per la decision coverage.",
+  "perche_ti_serve": "Parte 2 Testing: metrica complessità ciclomatica V(G) — parte del white box (4 prove su 13 secondo la sintesi dell'utente), V(G) non indicata esplicitamente."
 }

@@ -84,5 +84,6 @@
       "risposta": "Temi di una GUI (chiaro/scuro con bottoni, campi, menu coerenti); driver JDBC che forniscono Connection, Statement e ResultSet della stessa implementazione."
     }
   ],
-  "riepilogo": "Abstract Factory (creazionale, di oggetto): interfaccia con un metodo creaX() per ogni prodotto di una famiglia.\nUna ConcreteFactory per variante → prodotti sempre coerenti, client legato solo alle interfacce.\nNuova famiglia facile; nuovo tipo di prodotto = modifica di tutte le factory.\nScelta della famiglia una sola volta (iniezione della factory).\nUn prodotto per sottoclasse → Factory Method; famiglia → Abstract Factory."
+  "riepilogo": "Abstract Factory (creazionale, di oggetto): interfaccia con un metodo creaX() per ogni prodotto di una famiglia.\nUna ConcreteFactory per variante → prodotti sempre coerenti, client legato solo alle interfacce.\nNuova famiglia facile; nuovo tipo di prodotto = modifica di tutte le factory.\nScelta della famiglia una sola volta (iniezione della factory).\nUn prodotto per sottoclasse → Factory Method; famiglia → Abstract Factory.",
+  "perche_ti_serve": "Approfondimento: fabbrica di famiglie, non citata nelle prove 2017-2025; utile per capire le fabbriche di prodotti (sintesi dell'utente)."
 }

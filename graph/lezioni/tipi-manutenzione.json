@@ -75,5 +75,6 @@
       "risposta": "Che, man mano che un sistema evolve, la sua complessità aumenta a meno che non si dedichi lavoro esplicito a ridurla (refactoring, manutenzione preventiva)."
     }
   ],
-  "riepilogo": "Manutenzione = modifiche dopo il rilascio; è la fase più lunga e costosa.\nCorrettiva (difetti), adattiva (ambiente), perfettiva (nuove esigenze), preventiva (struttura).\nChiediti perché cambi il codice; la correttiva è una parte minoritaria.\nLehman: cambiamento continuo e complessità crescente.\nProcesso: richiesta, analisi dell'impatto, approvazione, modifica, regressione, rilascio."
+  "riepilogo": "Manutenzione = modifiche dopo il rilascio; è la fase più lunga e costosa.\nCorrettiva (difetti), adattiva (ambiente), perfettiva (nuove esigenze), preventiva (struttura).\nChiediti perché cambi il codice; la correttiva è una parte minoritaria.\nLehman: cambiamento continuo e complessità crescente.\nProcesso: richiesta, analisi dell'impatto, approvazione, modifica, regressione, rilascio.",
+  "perche_ti_serve": "Parte 3 Teoria: tipi di manutenzione e post-vendita — 2 prove su 13 secondo la sintesi dell'utente."
 }

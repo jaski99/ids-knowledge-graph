@@ -83,5 +83,6 @@
       "risposta": "Quando il problema che risolve non c'è o non è prevedibile: aggiunge indirezione e classi senza benefici (over-engineering), peggiorando leggibilità e manutenibilità."
     }
   ],
-  "riepilogo": "Pattern = soluzione riusabile a un problema ricorrente: nome, problema, soluzione, conseguenze.\nGoF 1994: 23 pattern, creazionali / strutturali / comportamentali; ambito classe (extends) o oggetto (composizione).\nPrincipi: programma per interfacce, preferisci la composizione.\nAll'esame (1.4): riconoscere dallo scenario, motivare, class diagram, Java minimo, limiti.\nSenza il problema, un pattern è solo complessità."
+  "riepilogo": "Pattern = soluzione riusabile a un problema ricorrente: nome, problema, soluzione, conseguenze.\nGoF 1994: 23 pattern, creazionali / strutturali / comportamentali; ambito classe (extends) o oggetto (composizione).\nPrincipi: programma per interfacce, preferisci la composizione.\nAll'esame (1.4): riconoscere dallo scenario, motivare, class diagram, Java minimo, limiti.\nSenza il problema, un pattern è solo complessità.",
+  "perche_ti_serve": "Approfondimento: panoramica, non è una domanda a sé nelle prove 2017-2025; utile per capire i pattern di design."
 }

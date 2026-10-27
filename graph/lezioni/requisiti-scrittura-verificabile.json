@@ -69,5 +69,6 @@
       "risposta": "Perché così ha un solo criterio di accettazione: se il test fallisce si sa esattamente cosa non funziona, si può tracciare e modificare singolarmente e assegnargli una priorità propria."
     }
   ],
-  "riepilogo": "Schema: [ID] condizione, il sistema deve azione + vincolo misurabile + criterio di accettazione.\nAtomico (niente «e/o»), verificabile (niente parole vaghe), non ambiguo (estremi dichiarati).\nI NF si quantificano con una metrica (tempo, %, numero di errori).\nTest della verità: se non riesci a scrivere il test, riscrivi il requisito."
+  "riepilogo": "Schema: [ID] condizione, il sistema deve azione + vincolo misurabile + criterio di accettazione.\nAtomico (niente «e/o»), verificabile (niente parole vaghe), non ambiguo (estremi dichiarati).\nI NF si quantificano con una metrica (tempo, %, numero di errori).\nTest della verità: se non riesci a scrivere il test, riscrivi il requisito.",
+  "perche_ti_serve": "Parte 3 Teoria: requisiti verificabili e testabili — 6 prove su 13 secondo la sintesi dell'utente."
 }

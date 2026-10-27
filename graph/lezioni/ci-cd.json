@@ -76,5 +76,6 @@
       "risposta": "L'artefatto viene costruito una sola volta e lo stesso binario viene promosso negli ambienti successivi (staging, produzione), così ciò che è stato testato è esattamente ciò che si rilascia."
     }
   ],
-  "riepilogo": "CI: integrare spesso su main; ogni push → build + test automatici; build rotta riparata subito.\nDelivery: pipeline fino a «sempre rilasciabile», rilascio con decisione umana.\nDeployment: rilascio in produzione automatico.\nPipeline a stadi (build, test, analisi, package, staging, produzione), build once deploy many.\nPrerequisiti: test automatici, Maven, SCM, monitoraggio e rollback."
+  "riepilogo": "CI: integrare spesso su main; ogni push → build + test automatici; build rotta riparata subito.\nDelivery: pipeline fino a «sempre rilasciabile», rilascio con decisione umana.\nDeployment: rilascio in produzione automatico.\nPipeline a stadi (build, test, analisi, package, staging, produzione), build once deploy many.\nPrerequisiti: test automatici, Maven, SCM, monitoraggio e rollback.",
+  "perche_ti_serve": "Approfondimento: pipeline di consegna, non tema d'esame storico nelle prove 2017-2025; utile per capire il processo di rilascio (sintesi dell'utente)."
 }

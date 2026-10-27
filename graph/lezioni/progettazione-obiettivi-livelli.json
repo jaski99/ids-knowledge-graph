@@ -64,5 +64,6 @@
       "risposta": "Perché le funzioni si possono realizzare con molte architetture diverse, mentre qualità come prestazioni, disponibilità, sicurezza e modificabilità dipendono da come il sistema è diviso in componenti, distribuito e collegato."
     }
   ],
-  "riepilogo": "Progettazione = COME: dai requisiti a una soluzione implementabile.\nAlto livello: componenti, interfacce, stile, distribuzione (guidato dai NF).\nDettaglio: classi, metodi, algoritmi, dati, pattern.\nPrincipi: astrazione, modularità, information hiding, alta coesione e basso accoppiamento."
+  "riepilogo": "Progettazione = COME: dai requisiti a una soluzione implementabile.\nAlto livello: componenti, interfacce, stile, distribuzione (guidato dai NF).\nDettaglio: classi, metodi, algoritmi, dati, pattern.\nPrincipi: astrazione, modularità, information hiding, alta coesione e basso accoppiamento.",
+  "perche_ti_serve": "Approfondimento: pianificazione, non tema distinto nelle prove 2017-2025; utile per capire la pianificazione del progetto (sintesi dell'utente)."
 }

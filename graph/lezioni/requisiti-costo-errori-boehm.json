@@ -66,5 +66,6 @@
       "risposta": "Revisioni/ispezioni dell'SRS con checklist, prototipazione con il committente, scrittura anticipata dei test di accettazione; inoltre coinvolgimento continuo degli stakeholder, modellazione con casi d'uso, tracciabilità e iterazioni brevi."
     }
   ],
-  "riepilogo": "Il costo di correzione cresce lungo il ciclo di vita (curva di Boehm).\nIn esercizio fino a circa 100x rispetto a requisiti/progetto nei sistemi grandi.\nCausa: il difetto si propaga in progetto, codice, test, documentazione e dati.\nContromisure: ispezioni, prototipi, stakeholder coinvolti, test anticipati, tracciabilità, iterazioni brevi."
+  "riepilogo": "Il costo di correzione cresce lungo il ciclo di vita (curva di Boehm).\nIn esercizio fino a circa 100x rispetto a requisiti/progetto nei sistemi grandi.\nCausa: il difetto si propaga in progetto, codice, test, documentazione e dati.\nContromisure: ispezioni, prototipi, stakeholder coinvolti, test anticipati, tracciabilità, iterazioni brevi.",
+  "perche_ti_serve": "Parte 3 Teoria: errori nei requisiti e costo del cambiamento — 6 prove su 13 secondo la sintesi dell'utente."
 }

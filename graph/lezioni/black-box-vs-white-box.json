@@ -71,5 +71,6 @@
       "risposta": "Sistema e accettazione: lì si verifica il prodotto contro i requisiti e il cliente o il tester spesso non ha accesso al codice o non avrebbe senso coprirne la struttura riga per riga."
     }
   ],
-  "riepilogo": "Black box: test dalla specifica (classi di equivalenza, BVA); white box: test dal codice (statement, decision, condition, MC/DC, path).\nBlack box trova ciò che manca, white box trova ciò che non è mai eseguito.\nSi usano insieme: prima black box, poi copertura misurata e test per i rami scoperti.\nCopertura 100% non significa assenza di bug.\nAll'esame: Parte 2 = black box; definizioni e CFG white box nella Parte 3."
+  "riepilogo": "Black box: test dalla specifica (classi di equivalenza, BVA); white box: test dal codice (statement, decision, condition, MC/DC, path).\nBlack box trova ciò che manca, white box trova ciò che non è mai eseguito.\nSi usano insieme: prima black box, poi copertura misurata e test per i rami scoperti.\nCopertura 100% non significa assenza di bug.\nAll'esame: Parte 2 = black box; definizioni e CFG white box nella Parte 3.",
+  "perche_ti_serve": "Parte 2 Testing: differenze tra test black box e white box — 1 prova su 13 secondo la sintesi dell'utente."
 }

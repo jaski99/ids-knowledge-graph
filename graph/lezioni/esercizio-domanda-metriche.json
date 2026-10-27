@@ -76,5 +76,6 @@
       "risposta": "Una metrica isolata non misura la qualità e, se diventa un obiettivo, viene manipolata (legge di Goodhart)."
     }
   ],
-  "riepilogo": "Scaletta: definizione/scopo → classificazione → metrica scelta → interpretazione → limiti.\nLa metrica scelta va con formula, mini-esempio numerico verificabile e soglia.\nMcCabe (for + if → V = 3) è la scelta più rapida; CK/LCOM se la domanda è OO.\n10-15 righe, 10-15 minuti."
+  "riepilogo": "Scaletta: definizione/scopo → classificazione → metrica scelta → interpretazione → limiti.\nLa metrica scelta va con formula, mini-esempio numerico verificabile e soglia.\nMcCabe (for + if → V = 3) è la scelta più rapida; CK/LCOM se la domanda è OO.\n10-15 righe, 10-15 minuti.",
+  "perche_ti_serve": "Parte 3 Teoria: metriche software — 1 prova su 13 secondo la sintesi dell'utente (2019-02)."
 }

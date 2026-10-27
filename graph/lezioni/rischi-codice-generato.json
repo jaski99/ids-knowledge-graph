@@ -69,5 +69,6 @@
       "risposta": "Usando una PreparedStatement con parametri invece della concatenazione di stringhe, e validando l'input."
     }
   ],
-  "riepilogo": "Opportunità: produttività, prototipi, API nuove, documentazione.\nRischi: allucinazioni, casi limite, vulnerabilità, dipendenze inventate, prompt injection.\nE inoltre: licenze, debito tecnico, eccesso di fiducia, riservatezza dei dati.\nOgni rischio ha una mitigazione classica: test EC/BVA, review, analisi statica, permessi minimi.\nNon si fa commit di codice che non si sa spiegare."
+  "riepilogo": "Opportunità: produttività, prototipi, API nuove, documentazione.\nRischi: allucinazioni, casi limite, vulnerabilità, dipendenze inventate, prompt injection.\nE inoltre: licenze, debito tecnico, eccesso di fiducia, riservatezza dei dati.\nOgni rischio ha una mitigazione classica: test EC/BVA, review, analisi statica, permessi minimi.\nNon si fa commit di codice che non si sa spiegare.",
+  "perche_ti_serve": "Approfondimento: area ufficiale 2026/27 (1 CFU [S1]), assente nelle prove 2017-2025 (sintesi dell'utente); utile per capire i rischi del codice generato da AI."
 }

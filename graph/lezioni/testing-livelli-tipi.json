@@ -73,5 +73,6 @@
       "risposta": "Perché va ripetuto a ogni modifica sull'intera suite: a mano sarebbe troppo costoso, mentre con JUnit e una pipeline CI si esegue in pochi minuti a ogni push."
     }
   ],
-  "riepilogo": "Testing = eseguire per trovare failure; non prova l'assenza di bug (Dijkstra).\nError (umano) → fault (nel codice) → failure (osservabile).\nVerifica = conforme alla specifica; validazione = soddisfa l'utente.\nLivelli: unit, integration, system, acceptance (modello a V); regressione trasversale.\nSi smette con criteri decisi prima, non quando «non ci sono più bug»."
+  "riepilogo": "Testing = eseguire per trovare failure; non prova l'assenza di bug (Dijkstra).\nError (umano) → fault (nel codice) → failure (osservabile).\nVerifica = conforme alla specifica; validazione = soddisfa l'utente.\nLivelli: unit, integration, system, acceptance (modello a V); regressione trasversale.\nSi smette con criteri decisi prima, non quando «non ci sono più bug».",
+  "perche_ti_serve": "Approfondimento: livelli e tipi di test, non tema distinto nelle prove 2017-2025; utile per capire il testing meccanico."
 }

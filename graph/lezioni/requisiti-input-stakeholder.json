@@ -69,5 +69,6 @@
       "risposta": "Si rende esplicito, si analizzano le alternative (anche con prototipi o workshop), si fa decidere al committente secondo le priorità (es. MoSCoW) e si documenta il requisito risultante e la motivazione."
     }
   ],
-  "riepilogo": "Input: stakeholder, documenti, normative, sistemi esistenti, dominio.\nStakeholder = chiunque abbia interesse nel sistema, non solo gli utenti.\nTecniche: intervista, questionario, osservazione, workshop, prototipo, analisi documenti; si combinano.\nConflitti e requisiti impliciti vanno resi espliciti e decisi con il committente."
+  "riepilogo": "Input: stakeholder, documenti, normative, sistemi esistenti, dominio.\nStakeholder = chiunque abbia interesse nel sistema, non solo gli utenti.\nTecniche: intervista, questionario, osservazione, workshop, prototipo, analisi documenti; si combinano.\nConflitti e requisiti impliciti vanno resi espliciti e decisi con il committente.",
+  "perche_ti_serve": "Parte 3 Teoria: elicitation dagli stakeholder — 6 prove su 13 secondo la sintesi dell'utente."
 }

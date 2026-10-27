@@ -70,5 +70,6 @@
       "risposta": "Il component diagram descrive l'architettura logica (parti software e interfacce); il deployment descrive l'architettura fisica (dove vengono eseguiti gli artefatti e come sono collegati i nodi)."
     }
   ],
-  "riepilogo": "Component: parti sostituibili + interfacce fornite (lollipop) e richieste (socket).\nDeployment: nodi (device, execution environment), artefatti, percorsi con protocollo.\nClassi → realizzano componenti → manifestati da artefatti → installati su nodi.\nIl deployment mostra le scelte per disponibilità, sicurezza, prestazioni."
+  "riepilogo": "Component: parti sostituibili + interfacce fornite (lollipop) e richieste (socket).\nDeployment: nodi (device, execution environment), artefatti, percorsi con protocollo.\nClassi → realizzano componenti → manifestati da artefatti → installati su nodi.\nIl deployment mostra le scelte per disponibilità, sicurezza, prestazioni.",
+  "perche_ti_serve": "Approfondimento: componenti e deployment, non tra i 5 diagrammi richiesti nelle prove 2017-2025; utile per capire il contesto di deployment (sintesi dell'utente)."
 }

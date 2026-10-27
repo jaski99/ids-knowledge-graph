@@ -84,5 +84,6 @@
       "risposta": "L'AI accelera la scrittura del codice ma sposta il lavoro su specifica e verifica; la responsabilità resta dello sviluppatore e le tecniche dell'ingegneria del software diventano ancora più importanti."
     }
   ],
-  "riepilogo": "Schema: definizioni → usi → opportunità → rischi → verifica → conclusione.\nOgni rischio con la sua contromisura del corso (BVA, copertura, review, CI, licenze).\nAlmeno un esempio concreto, es. bug sul limite 40 trovato dalla BVA.\nConclusione: specifica e verifica diventano il collo di bottiglia; responsabilità umana."
+  "riepilogo": "Schema: definizioni → usi → opportunità → rischi → verifica → conclusione.\nOgni rischio con la sua contromisura del corso (BVA, copertura, review, CI, licenze).\nAlmeno un esempio concreto, es. bug sul limite 40 trovato dalla BVA.\nConclusione: specifica e verifica diventano il collo di bottiglia; responsabilità umana.",
+  "perche_ti_serve": "Approfondimento: area ufficiale 2026/27 (1 CFU [S1]), assente nelle prove 2017-2025 (sintesi dell'utente); utile per capire l'estensione AI-native."
 }

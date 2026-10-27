@@ -71,5 +71,6 @@
       "risposta": "I requisiti utente sono in linguaggio naturale e ad alto livello, pensati per il committente; i requisiti di sistema li dettagliano in modo preciso e verificabile per gli sviluppatori."
     }
   ],
-  "riepilogo": "La specifica dice COSA deve fare il sistema, non COME.\nÈ il contratto tra committente e team e la base di progetto e collaudo.\nFunzionali = servizi; non funzionali = qualità misurabili; vincoli = limiti imposti.\nTest rapido: tolto il requisito, il sistema fa una cosa in meno (F) o la fa peggio (NF)?"
+  "riepilogo": "La specifica dice COSA deve fare il sistema, non COME.\nÈ il contratto tra committente e team e la base di progetto e collaudo.\nFunzionali = servizi; non funzionali = qualità misurabili; vincoli = limiti imposti.\nTest rapido: tolto il requisito, il sistema fa una cosa in meno (F) o la fa peggio (NF)?",
+  "perche_ti_serve": "Parte 3 Teoria: obiettivi e requisiti del software — 6 prove su 13 secondo la sintesi dell'utente."
 }

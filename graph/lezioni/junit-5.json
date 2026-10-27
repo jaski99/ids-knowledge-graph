@@ -83,5 +83,6 @@
       "risposta": "Il suo esito non deve dipendere da altri test o dal loro ordine: prepara da sé il proprio stato (fixture) e non lascia effetti collaterali."
     }
   ],
-  "riepilogo": "@Test + Arrange-Act-Assert; assertEquals(atteso, ottenuto[, delta]), assertThrows, assertAll.\n@BeforeEach/@AfterEach per test, @BeforeAll/@AfterAll una volta (static).\n@ParameterizedTest + @CsvSource = tabella EC/BVA eseguibile.\nTDD: red → green → refactor. FIRST: fast, independent, repeatable, self-validating, timely.\nCon Maven: src/test/java e mvn test."
+  "riepilogo": "@Test + Arrange-Act-Assert; assertEquals(atteso, ottenuto[, delta]), assertThrows, assertAll.\n@BeforeEach/@AfterEach per test, @BeforeAll/@AfterAll una volta (static).\n@ParameterizedTest + @CsvSource = tabella EC/BVA eseguibile.\nTDD: red → green → refactor. FIRST: fast, independent, repeatable, self-validating, timely.\nCon Maven: src/test/java e mvn test.",
+  "perche_ti_serve": "Approfondimento: JUnit 5, esecuzione test automatici, non tema distinto nelle prove 2017-2025; utile per capire il testing meccanico."
 }

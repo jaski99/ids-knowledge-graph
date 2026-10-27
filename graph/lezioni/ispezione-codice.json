@@ -75,5 +75,6 @@
       "risposta": "Stringhe confrontate con == invece di equals; risorse non chiuse; catch vuoti; limiti dei cicli sbagliati; parametri pubblici non validati."
     }
   ],
-  "riepilogo": "Ispezione = verifica statica fatta da persone, senza eseguire, su codice o qualsiasi artefatto.\nFagan: moderatore, autore, lettore, ispettori, segretario.\nFasi: pianificazione, overview, preparazione, riunione, rework, follow-up; checklist e metriche.\nForme leggere: walkthrough, code review su pull request, pair programming.\nComplementare al testing: trova difetti presto e a basso costo."
+  "riepilogo": "Ispezione = verifica statica fatta da persone, senza eseguire, su codice o qualsiasi artefatto.\nFagan: moderatore, autore, lettore, ispettori, segretario.\nFasi: pianificazione, overview, preparazione, riunione, rework, follow-up; checklist e metriche.\nForme leggere: walkthrough, code review su pull request, pair programming.\nComplementare al testing: trova difetti presto e a basso costo.",
+  "perche_ti_serve": "Approfondimento: review statica, non tema distinto nelle prove 2017-2025; utile per capire code smell e refactoring (sintesi dell'utente)."
 }

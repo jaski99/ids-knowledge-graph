@@ -81,5 +81,6 @@
       "risposta": "Con code review, metriche (V(G), WMC, LCOM, CBO) e strumenti di analisi statica che applicano regole."
     }
   ],
-  "riepilogo": "Smell = sintomo di cattiva struttura, non bug; va valutato.\nDuplicated Code, Long Method, Large Class, Long Parameter List, Feature Envy.\nSwitch Statements, Shotgun Surgery, Divergent Change, Data Class, Primitive Obsession.\nOgni smell ha un refactoring associato; molti si curano con pattern.\nSi trovano con review, metriche e analisi statica."
+  "riepilogo": "Smell = sintomo di cattiva struttura, non bug; va valutato.\nDuplicated Code, Long Method, Large Class, Long Parameter List, Feature Envy.\nSwitch Statements, Shotgun Surgery, Divergent Change, Data Class, Primitive Obsession.\nOgni smell ha un refactoring associato; molti si curano con pattern.\nSi trovano con review, metriche e analisi statica.",
+  "perche_ti_serve": "Parte 3 Teoria: code smell e refactoring — 2 prove su 13 secondo la sintesi dell'utente."
 }

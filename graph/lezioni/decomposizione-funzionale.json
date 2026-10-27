@@ -63,5 +63,6 @@
       "risposta": "L'accoppiamento sui dati condivisi: un cambiamento nella struttura dei dati si propaga a tutte le funzioni che li usano, rendendo costosa la manutenzione."
     }
   ],
-  "riepilogo": "Top-down: funzione principale → sottofunzioni → foglie implementabili.\nAlbero di verbi + flussi di dati (DFD).\nContro: dati condivisi e accoppiati; gli oggetti li incapsulano.\nResta utile per scomporre metodi complessi e descrivere processi."
+  "riepilogo": "Top-down: funzione principale → sottofunzioni → foglie implementabili.\nAlbero di verbi + flussi di dati (DFD).\nContro: dati condivisi e accoppiati; gli oggetti li incapsulano.\nResta utile per scomporre metodi complessi e descrivere processi.",
+  "perche_ti_serve": "Approfondimento: tecnica di analisi, non tema distinto nelle prove 2017-2025; utile per capire il class diagram (sintesi dell'utente)."
 }

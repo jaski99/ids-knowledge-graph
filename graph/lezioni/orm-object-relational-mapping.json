@@ -73,5 +73,6 @@
       "risposta": "Si carica una lista di N entità con una query e poi, accedendo a un'associazione lazy di ciascuna, si eseguono altre N query. Si evita con fetch join, entity graph o batch fetching, oppure con query di proiezione/aggregazione quando non servono le entità."
     }
   ],
-  "riepilogo": "ORM: traduce classi e associazioni in tabelle e FK (impedance mismatch).\nJPA/Jakarta Persistence = specifica, Hibernate = implementazione; @Entity, @Id, @ManyToOne, @OneToMany(mappedBy).\nFK sul lato molti; ereditarietà SINGLE_TABLE, JOINED, TABLE_PER_CLASS.\nLAZY/EAGER; N+1 → fetch join."
+  "riepilogo": "ORM: traduce classi e associazioni in tabelle e FK (impedance mismatch).\nJPA/Jakarta Persistence = specifica, Hibernate = implementazione; @Entity, @Id, @ManyToOne, @OneToMany(mappedBy).\nFK sul lato molti; ereditarietà SINGLE_TABLE, JOINED, TABLE_PER_CLASS.\nLAZY/EAGER; N+1 → fetch join.",
+  "perche_ti_serve": "Approfondimento: persistenza oggetti-relazionale, non tema distinto nelle prove 2017-2025; utile per capire la persistenza dati (sintesi dell'utente)."
 }

@@ -75,5 +75,6 @@
       "risposta": "I valori appena fuori dal dominio (min − ε, max + ε) individuati dalla BVA sono quelli che i controlli difensivi devono respingere: i test di boundary verificano che le precondizioni usino gli operatori giusti."
     }
   ],
-  "riepilogo": "Fail fast: controlla presto gli input esterni e segnala in modo esplicito.\nEccezioni (IllegalArgumentException, IllegalStateException, requireNonNull) per errori del chiamante o dell'ambiente.\nassert (solo con -ea) per invarianti interni; mai per parametri pubblici, mai con effetti collaterali.\nValori d'errore (-1) solo se documentati nel contratto.\nOgni controllo difensivo ha il suo test."
+  "riepilogo": "Fail fast: controlla presto gli input esterni e segnala in modo esplicito.\nEccezioni (IllegalArgumentException, IllegalStateException, requireNonNull) per errori del chiamante o dell'ambiente.\nassert (solo con -ea) per invarianti interni; mai per parametri pubblici, mai con effetti collaterali.\nValori d'errore (-1) solo se documentati nel contratto.\nOgni controllo difensivo ha il suo test.",
+  "perche_ti_serve": "Approfondimento: controlli e precondizioni, non tema distinto nelle prove 2017-2025; utile per capire controlli difensivi (sintesi dell'utente)."
 }

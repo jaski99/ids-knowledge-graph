@@ -81,5 +81,6 @@
       "risposta": "Creare un'unica istanza all'avvio (composition root) e iniettarla tramite costruttore nelle classi che la usano (dependency injection)."
     }
   ],
-  "riepilogo": "Singleton (creazionale): una sola istanza + accesso globale.\nCostruttore private, campo private static, getInstance() public static.\nLazy semplice non thread-safe → eager, holder idiom o enum.\nLimiti: stato globale, accoppiamento nascosto, test difficili, viola SRP.\nAlternativa: un'istanza creata all'avvio e iniettata."
+  "riepilogo": "Singleton (creazionale): una sola istanza + accesso globale.\nCostruttore private, campo private static, getInstance() public static.\nLazy semplice non thread-safe → eager, holder idiom o enum.\nLimiti: stato globale, accoppiamento nascosto, test difficili, viola SRP.\nAlternativa: un'istanza creata all'avvio e iniettata.",
+  "perche_ti_serve": "Approfondimento: istanza unica, non citata nelle prove 2017-2025; utile per capire il pattern Singleton."
 }

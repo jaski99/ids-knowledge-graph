@@ -83,5 +83,6 @@
       "risposta": "Comparator passato a List.sort o Collections.sort: l'algoritmo di ordinamento delega il confronto alla strategia."
     }
   ],
-  "riepilogo": "Strategy (comportamentale): famiglia di algoritmi intercambiabili dietro un'interfaccia.\nIl Context ha una Strategy e le delega il calcolo; il client sceglie quale.\nElimina gli if sul tipo di algoritmo; OCP, SRP, cambio a runtime; lambda in Java.\nLimite: il client deve conoscere le strategie; più oggetti.\nStrategy = composizione; Template Method = ereditarietà; State = transizioni interne."
+  "riepilogo": "Strategy (comportamentale): famiglia di algoritmi intercambiabili dietro un'interfaccia.\nIl Context ha una Strategy e le delega il calcolo; il client sceglie quale.\nElimina gli if sul tipo di algoritmo; OCP, SRP, cambio a runtime; lambda in Java.\nLimite: il client deve conoscere le strategie; più oggetti.\nStrategy = composizione; Template Method = ereditarietà; State = transizioni interne.",
+  "perche_ti_serve": "Parte 1 Design: Strategy e varianti di algoritmo — 1 prova su 13 secondo la sintesi dell'utente."
 }

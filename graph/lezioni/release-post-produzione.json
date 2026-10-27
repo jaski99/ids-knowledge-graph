@@ -75,5 +75,6 @@
       "risposta": "Per poter installare lo stesso artefatto testato in ambienti diversi cambiando solo la configurazione, senza ricompilare, e per non inserire segreti nel codice versionato."
     }
   ],
-  "riepilogo": "Rilascio graduale: alpha (interno) → beta (utenti reali) → RC (candidata) → GA.\nPrima del rilascio: feature freeze, tag, changelog e note, configurazione separata dal codice.\nPost-produzione: installazione, supporto a livelli, segnalazioni e change request, patch, monitoraggio, EOL.\nLe segnalazioni alimentano la manutenzione (correttiva, adattiva, perfettiva)."
+  "riepilogo": "Rilascio graduale: alpha (interno) → beta (utenti reali) → RC (candidata) → GA.\nPrima del rilascio: feature freeze, tag, changelog e note, configurazione separata dal codice.\nPost-produzione: installazione, supporto a livelli, segnalazioni e change request, patch, monitoraggio, EOL.\nLe segnalazioni alimentano la manutenzione (correttiva, adattiva, perfettiva).",
+  "perche_ti_serve": "Parte 3 Teoria: release e post-produzione del software — 2 prove su 13 secondo la sintesi dell'utente."
 }

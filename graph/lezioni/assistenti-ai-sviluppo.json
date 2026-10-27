@@ -77,5 +77,6 @@
       "risposta": "Il completamento suggerisce righe mentre si scrive; la chat risponde a domande sul codice; l'agente esegue in autonomia un compito in più passi modificando file ed eseguendo comandi."
     }
   ],
-  "riepilogo": "Usi: generazione, comprensione di codice legacy, modifiche e refactoring, test.\nPrompt efficace: contesto, compito piccolo, specifica con limiti, casi EC + BVA, formato, vincoli.\nFlusso: branch, test verdi, prompt, lettura del diff, test, commit piccolo.\nVerifica sempre: attesi dalla specifica, spiegazioni confermate da test."
+  "riepilogo": "Usi: generazione, comprensione di codice legacy, modifiche e refactoring, test.\nPrompt efficace: contesto, compito piccolo, specifica con limiti, casi EC + BVA, formato, vincoli.\nFlusso: branch, test verdi, prompt, lettura del diff, test, commit piccolo.\nVerifica sempre: attesi dalla specifica, spiegazioni confermate da test.",
+  "perche_ti_serve": "Approfondimento: area ufficiale 2026/27 (1 CFU [S1]), assente nelle prove 2017-2025 (sintesi dell'utente); utile per capire l'estensione AI-native."
 }

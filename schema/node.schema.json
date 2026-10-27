@@ -321,6 +321,10 @@
           "type": "string",
           "minLength": 40,
           "maxLength": 800
+        },
+        "perche_ti_serve": {
+          "type": "string",
+          "minLength": 20
         }
       }
     }

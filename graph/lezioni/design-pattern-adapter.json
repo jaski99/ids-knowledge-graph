@@ -82,5 +82,6 @@
       "risposta": "Dependency Inversion (il client dipende dall'astrazione) e Open/Closed (cambiare fornitore significa aggiungere un adapter senza modificare il client)."
     }
   ],
-  "riepilogo": "Adapter (strutturale): converte l'interfaccia di una classe esistente in quella attesa dal client.\nRuoli: Target, Adaptee, Adapter, Client.\nObject adapter (composizione) preferito al class adapter (ereditarietà).\nTraduce nomi, dati ed errori; isola il fornitore (DIP, OCP).\nAdapter cambia l'interfaccia, Decorator la mantiene, Facade la semplifica."
+  "riepilogo": "Adapter (strutturale): converte l'interfaccia di una classe esistente in quella attesa dal client.\nRuoli: Target, Adaptee, Adapter, Client.\nObject adapter (composizione) preferito al class adapter (ereditarietà).\nTraduce nomi, dati ed errori; isola il fornitore (DIP, OCP).\nAdapter cambia l'interfaccia, Decorator la mantiene, Facade la semplifica.",
+  "perche_ti_serve": "Approfondimento: adattatore di interfaccia, non citato nelle prove 2017-2025; utile per capire l'adattamento di interfacce (sintesi dell'utente)."
 }
