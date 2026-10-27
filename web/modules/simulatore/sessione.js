@@ -18,8 +18,11 @@ export function sessioneValida(data) {
   if (!data || data.versione !== 1) return false;
   if (data.fase !== 'svolgimento' && data.fase !== 'correzione') return false;
   const p = data.prova;
+  const puntiOk = (Number.isFinite(p?.puntiTotali) && p.puntiTotali > 0)
+    || (p?.puntiTotali === null && p?.calcolaVoto === false);
   if (!p || !Array.isArray(p.parti) || p.parti.length === 0 || !Number.isFinite(p.durataMs) || p.durataMs <= 0
-    || !Number.isFinite(p.puntiTotali) || p.puntiTotali <= 0 || typeof p.coperta !== 'boolean') return false;
+    || !puntiOk || typeof p.coperta !== 'boolean') return false;
+  if (p.modalita !== undefined && p.modalita !== 'allenamento' && p.modalita !== 'simulazione') return false;
   if (!p.parti.every((parte) => parte && typeof parte.id === 'string' && typeof parte.titolo === 'string'
     && Array.isArray(parte.quesiti) && Array.isArray(parte.mancanti)
     && parte.quesiti.every((q) => typeof q?.id === 'string' && Array.isArray(q.consegne) && q.consegne.length > 0
