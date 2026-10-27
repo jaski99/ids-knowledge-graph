@@ -168,7 +168,8 @@ progress { width: 100%; height: .6rem; accent-color: var(--c, var(--acc)); }
   h1 { font-size: 1.05rem; }
   #course { margin: .1rem 0; }
   .panel { margin-bottom: .5rem; }
-  .graph-wrap, .legend { display: none; }
+  #cy { height: 42vh; min-height: 240px; }
+  .legend { font-size: .85rem; }
   .graph-mobile-list { display: block; }
   .graph-mobile-items { gap: .45rem; }
   .graph-mobile-row { padding: .2rem; }
@@ -323,3 +324,27 @@ html[data-theme="dark"] .md pre.code .hljs-meta { color: var(--analogy); }
   .ls-nav.top .hide-sm { display: none; }
   .ls-nav.top .btn { min-width: 44px; }
 }
+
+/* Percorsi tematici e legenda: segnali non affidati al solo colore. */
+.edge-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: .6rem; font-size: .9rem; }
+.edge-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.edge-sample { width: 2rem; border-top: 2px solid var(--muted); }
+.edge-sample.soft { border-top-style: dashed; }
+.exam-paths { margin: 0 0 1.25rem; }
+.exam-path { border: 1px solid var(--line); background: var(--card); border-radius: 8px; margin: .45rem 0; padding: .3rem .7rem; }
+.exam-path summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 650; }
+.exam-path summary::before { content: '▸'; margin-right: .5rem; }
+.exam-path[open] summary::before { content: '▾'; }
+.exam-path ol { padding-left: 1.5rem; }
+.exam-path li { padding: .15rem 0 .45rem; }
+.exam-path li p { margin: .15rem 0; }
+.compact-link { min-height: 0; }
+.mastery { border: 1px solid var(--line); }
+.mastery-counts { padding-left: 1.2rem; font-size: .85rem; }
+.exercise textarea { display: block; width: 100%; min-height: 6rem; margin-top: .25rem; padding: .6rem; font: inherit; color: var(--input-fg); background: var(--input-bg); border: 1px solid var(--muted); border-radius: 8px; resize: vertical; }
+.exercise-assessment { display: flex; flex-wrap: wrap; gap: .5rem; }
+.exercise-assessment [aria-pressed="true"] { outline: 3px solid var(--acc); }
+.backup-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.backup-import { display: block; margin: .8rem 0 .4rem; }
+.backup-import input { display: block; max-width: 100%; margin-top: .3rem; }
+.rip-filtri input[type="date"] { max-width: 100%; min-height: 44px; padding: .4rem; border: 1px solid var(--line); border-radius: 8px; color: var(--input-fg); background: var(--input-bg); font: inherit; }

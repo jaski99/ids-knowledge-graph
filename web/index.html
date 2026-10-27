@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1d4ed8">
   <title>Ingegneria del Software — Knowledge graph di studio</title>
   <meta name="description" content="Grafo delle conoscenze, percorso di studio e checklist di ripasso per Ingegneria del Software (UNIMORE).">
   <!-- Percorsi provati in ordine: copia generata da build.sh, poi sorgente nel repo. Override: ?graph=URL -->
@@ -17,13 +19,14 @@
     } catch (e) {}
   </script>
   <link rel="stylesheet" href="css/style.css">
-  <script defer src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
-  <script defer src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
-  <script defer src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
+  <script defer src="vendor/cytoscape.min.js"></script>
+  <script defer src="vendor/dagre.min.js"></script>
+  <script defer src="vendor/cytoscape-dagre.js"></script>
+  <link rel="stylesheet" href="vendor/highlight-github.min.css">
+  <script defer src="vendor/marked.min.js"></script>
+  <script defer src="vendor/purify.min.js"></script>
+  <script defer src="vendor/highlight.min.js"></script>
+  <script defer src="vendor/mermaid.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -40,7 +43,8 @@
   <div class="layout">
     <aside class="side" aria-label="Filtri e progresso">
       <details open class="panel"><summary><h2>Filtri</h2></summary><div id="filters"></div><p id="count" class="muted" aria-live="polite"></p></details>
-      <details open class="panel"><summary><h2>Progresso</h2></summary><div id="progress" aria-live="polite"></div></details>
+      <details open class="panel"><summary><h2>Progresso</h2></summary><div id="progress" aria-live="polite"></div><p id="outcome-status" class="muted" role="status"></p></details>
+      <div id="backup"></div>
     </aside>
     <main id="main">
       <p id="status" role="status">Caricamento…</p>
@@ -58,13 +62,16 @@
             <button type="button" id="zoom-out" class="btn" aria-label="Riduci il grafo">−</button>
             <button type="button" id="zoom-fit" class="btn" aria-label="Adatta il grafo allo schermo">Adatta</button>
           </div>
-          <canvas id="minimap" class="minimap" aria-label="Minimappa del grafo. Clicca per spostare la vista."></canvas>
+          <canvas id="minimap" class="minimap" tabindex="0" aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown" aria-label="Minimappa del grafo. Clicca o usa le frecce per spostare la vista."></canvas>
         </div>
         <div id="graph-mobile-list" class="graph-mobile-list" aria-label="Elenco touch dei nodi"></div>
-        <p class="legend muted">Ingrandisci (rotellina o pizzico) per leggere i nomi · colore = area · dimensione = priorità, più grande vuol dire più alta · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato · al clic si illumina il percorso dei prerequisiti</p>
+        <div class="edge-legend" role="group" aria-label="Legenda dei prerequisiti"><span><i class="edge-sample hard" aria-hidden="true"></i> Hard: indispensabile</span><span><i class="edge-sample soft" aria-hidden="true"></i> Soft: utile</span></div>
+        <p class="legend muted">Ingrandisci (rotellina o pizzico) per leggere i nomi · colore = area · dimensione = priorità, più grande vuol dire più alta · ● concetto · ▬ abilità · ◆ tipo d'esercizio · linea piena = prerequisito indispensabile, tratteggiata = utile · bordo verde = completato · al clic si illumina il percorso dei prerequisiti, visibile anche se non corrisponde ai filtri</p>
       </section>
       <section role="tabpanel" id="view-percorso" aria-labelledby="tab-percorso" hidden>
         <p class="muted">Ordine topologico: ogni nodo viene dopo i suoi prerequisiti; a parità di vincoli prima la priorità alta. Le spunte restano salvate in questo browser.</p>
+        <div id="exam-paths" class="exam-paths"></div>
+        <h2>Percorso completo</h2>
         <div id="path"></div>
       </section>
       <section role="tabpanel" id="view-ripasso" aria-labelledby="tab-ripasso" hidden>

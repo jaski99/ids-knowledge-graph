@@ -1,0 +1,15 @@
+{
+  "name": "Ingegneria del Software · Knowledge graph",
+  "short_name": "IdS Graph",
+  "description": "Grafo, lezioni e strumenti di studio locali per Ingegneria del Software.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6f3",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

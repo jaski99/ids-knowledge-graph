@@ -13,10 +13,10 @@ export function createFiltersView(root, graph, { onChange, initial }) {
     h('input', { type: 'radio', name: 'stato-studio', value: val, checked: f.stato === val, onchange: () => { f.stato = val; emit(); } }),
     ' ', label);
   root.append(
-    h('label', { class: 'search' }, h('span', { class: 'sr-only' }, 'Cerca nel titolo, nel sapere e nella lezione'),
+    h('label', { class: 'search' }, h('span', { class: 'sr-only' }, 'Cerca nei nodi, esercizi, domande e lezioni'),
       h('input', {
         id: 'search', type: 'search', autocomplete: 'off',
-        placeholder: 'Cerca titolo, sapere, lezione…  (/)',
+        placeholder: 'Cerca nodi, esercizi, domande…  (/)',
         'aria-keyshortcuts': '/',
         oninput: (e) => { clearTimeout(t); t = setTimeout(() => { f.q = e.target.value; emit(); }, 120); },
       })),
@@ -24,6 +24,7 @@ export function createFiltersView(root, graph, { onChange, initial }) {
     group('Tipo', 'tipi', Object.entries(TIPO_LABEL)),
     group('Priorità', 'priorita', Object.entries(PRIO_LABEL)),
     h('fieldset', {}, h('legend', {}, 'Stato'),
-      stato('tutti', 'Tutti'), stato('aperti', 'Da studiare'), stato('fatti', 'Già studiati')),
+      stato('tutti', 'Tutti'), stato('aperti', 'Da studiare'), stato('fatti', 'Già studiati'),
+      stato('ora', 'Da fare ora'), stato('sbagliati', 'Sbagliati o parziali'), stato('alta', 'Alta priorità')),
   );
 }

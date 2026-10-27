@@ -73,6 +73,7 @@ export function avviaModuli(ctx) {
         document: doc,
         now: ctx.now,
         confirm: ctx.confirm,
+        getEsiti: ctx.getEsiti,
       });
       destroy = typeof teardown === 'function' ? teardown : () => {};
       return true;

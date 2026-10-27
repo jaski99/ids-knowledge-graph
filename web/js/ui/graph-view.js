@@ -32,7 +32,7 @@ export function createGraphView(container, graph, { onSelect, onOpen }) {
       { selector: 'edge.soft', style: { 'line-style': 'dashed', 'line-dash-pattern': [6, 4] } },
       { selector: 'edge.on-path', style: { width: 3.2, opacity: 1, 'line-color': '#1e3a8a', 'target-arrow-color': '#1e3a8a', 'z-index': 9 } },
       { selector: 'edge.dim', style: { opacity: 0.15 } },
-      { selector: '.faded', style: { opacity: 0.12 } },
+      { selector: '.faded', style: { display: 'none' } },
     ],
   });
   g.on('tap', 'node', (ev) => onSelect(ev.target.id()));

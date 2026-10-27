@@ -17,6 +17,12 @@ export function minimapTransform(bounds, width, height, pad = 8) {
   };
 }
 
+/** Spostamento da tastiera: la minimappa non richiede un puntatore. */
+export function minimapKeyDelta(key, width, height) {
+  const x = Math.max(40, width / 3), y = Math.max(40, height / 3);
+  return ({ ArrowLeft: [x, 0], ArrowRight: [-x, 0], ArrowUp: [0, y], ArrowDown: [0, -y] })[key] || null;
+}
+
 /** Pan di Cytoscape che centra `model` nel viewport. */
 export function panToCenter(model, zoom, viewW, viewH) {
   return { x: viewW / 2 - model.x * zoom, y: viewH / 2 - model.y * zoom };
@@ -41,9 +47,10 @@ export function createMinimap(canvas, cy, { pad = 6 } = {}) {
     if (!bb || !Number.isFinite(bb.x1) || !Number.isFinite(bb.x2) || bb.x2 <= bb.x1) return;
     const map = minimapTransform(bb, w, h, pad * dpr);
     cy.nodes().forEach((n) => {
+      if (n.hasClass('faded')) return;
       const p = map.toCanvas(n.position().x, n.position().y);
       ctx.fillStyle = n.data('color') || '#1e40af';
-      ctx.globalAlpha = n.hasClass('faded') || n.hasClass('dim') ? 0.35 : 1;
+      ctx.globalAlpha = n.hasClass('dim') ? 0.35 : 1;
       ctx.beginPath();
       ctx.arc(p.x, p.y, Math.max(2.2 * dpr, 2), 0, Math.PI * 2);
       ctx.fill();
@@ -64,14 +71,23 @@ export function createMinimap(canvas, cy, { pad = 6 } = {}) {
     const model = map.toModel((ev.clientX - rect.left) * (canvas.width / rect.width), (ev.clientY - rect.top) * (canvas.height / rect.height));
     cy.pan(panToCenter(model, cy.zoom(), cy.width(), cy.height()));
   };
+  const onKey = (ev) => {
+    const delta = minimapKeyDelta(ev.key, cy.width(), cy.height());
+    if (!delta) return;
+    const pan = cy.pan();
+    cy.pan({ x: pan.x + delta[0], y: pan.y + delta[1] });
+    ev.preventDefault();
+  };
   cy.on('render pan zoom resize', draw);
   canvas.addEventListener('pointerdown', onPointer);
+  canvas.addEventListener('keydown', onKey);
   draw();
   return {
     redraw: draw,
     destroy() {
       cy.off('render pan zoom resize', draw);
       canvas.removeEventListener('pointerdown', onPointer);
+      canvas.removeEventListener('keydown', onKey);
     },
   };
 }

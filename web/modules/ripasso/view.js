@@ -8,6 +8,8 @@ import { costruisciMazzo, codaStudio, filtraCarte, PRIORITA, prossimaScadenza } 
 import { applicaVoto, formatIntervallo, intervalloPrevisto, VOTI } from './sm2.js';
 import { padronanzaPerArea, riepilogoCarte, serieDiStudio, statoCarta } from './statistiche.js';
 import { cancellaStato, conRevisione, leggiStato, salvaStato, statoVuoto } from './store.js';
+import { createAttemptStore, leggiTentativi } from '../../js/core/attempts.js';
+import { carteDaTentativi, leggiDataEsame, pianificaCoda, salvaDataEsame } from '../../js/core/review-plan.js';
 
 const CSS_HREF = 'modules/ripasso/style.css';
 const ETICHETTE_VOTO = { ancora: 'Ancora', difficile: 'Difficile', bene: 'Bene', facile: 'Facile' };
@@ -37,7 +39,12 @@ export function createRipassoView() {
       const ask = ctx.confirm || ((msg) => root.ownerDocument.defaultView?.confirm(msg));
       const oggi = () => toIsoDay(new Date(now()));
 
-      const mazzo = costruisciMazzo(graph.nodi);
+      const attemptStore = createAttemptStore(storage);
+      let tentativi = leggiTentativi(storage);
+      const esiti = ctx.getEsiti?.() || [];
+      const mazzo = [...costruisciMazzo(graph.nodi), ...carteDaTentativi(graph.nodi, tentativi)];
+      let dataEsame = leggiDataEsame(storage);
+      let erroreData = '';
       const titoloArea = new Map((graph.aree || []).map((a) => [a.id, a.titolo]));
 
       let dati = leggiStato(storage);
@@ -50,7 +57,11 @@ export function createRipassoView() {
       const persist = () => { saveOk = salvaStato(storage, dati); };
       const carteFiltrate = () => filtraCarte(mazzo, dati.filtri);
       const ricostruisciCoda = () => {
-        coda = codaStudio(carteFiltrate(), dati.carte, oggi());
+        // Conserva l'ordinamento per priorità e scadenza, poi alterna argomenti e anticipa gli errori.
+        const ordinate = codaStudio(carteFiltrate(), dati.carte, oggi());
+        const inCoda = new Set(ordinate.map((c) => c.id));
+        const future = carteFiltrate().filter((c) => dati.carte[c.id] && !inCoda.has(c.id));
+        coda = pianificaCoda([...ordinate, ...future], dati.carte, oggi(), { tentativi, esiti, dataEsame });
         pos = 0;
         rivelata = false;
       };
@@ -82,6 +93,10 @@ export function createRipassoView() {
         const giorno = oggi();
         dati = conRevisione(dati, carta.id, applicaVoto(dati.carte[carta.id] || null, voto, giorno), giorno);
         persist();
+        if (carta.tipo === 'esercizio') {
+          attemptStore.assess(carta.nodoId, carta.indice, voto === 'ancora' ? 'da-rivedere' : 'corretto');
+          tentativi = leggiTentativi(storage);
+        }
         visteSessione += 1;
         // "Ancora" scade oggi: la carta torna in fondo a questa sessione, non subito in faccia.
         if (voto === 'ancora') coda.push(carta);
@@ -116,15 +131,14 @@ export function createRipassoView() {
             h('a', { class: 'btn', href: '#/' }, '← Grafo'),
             h('h1', { id: 'ripasso-titolo', tabindex: '-1' }, 'Ripasso a flashcard')),
           h('p', { class: 'rip-lead' },
-            'Domande di autoverifica e punti di checklist di ogni nodo, ripresentati con ripetizione spaziata (SM-2). '
-            + 'I progressi restano in questo browser.'),
+            'Ripassa domande, checklist ed esercizi tentati con SM-2. Gli errori hanno precedenza, i temi si alternano. I progressi restano in questo browser.'),
           saveOk ? null : h('p', { class: 'rip-err', role: 'status' },
             'Il browser non ha salvato i progressi: se ricarichi la pagina il ripasso ricomincia da capo.'),
           h('section', { class: 'rip-stats', 'aria-label': 'Riepilogo del mazzo' },
             stat('ripasso-dovute', String(riepilogo.dovute), 'carte dovute oggi'),
             stat('ripasso-nuove', String(riepilogo.nuove), 'carte nuove'),
             stat('ripasso-serie', String(serie), serie === 1 ? 'giorno di serie' : 'giorni di serie'),
-            stat('ripasso-padronanza', `${riepilogo.percentualePadronanza}%`, 'padronanza del mazzo')),
+            stat('ripasso-padronanza', `${riepilogo.percentualePadronanza}%`, 'padronanza provvisoria del mazzo')),
         ];
       }
 
@@ -151,6 +165,14 @@ export function createRipassoView() {
               id: 'ripasso-filtro-priorita',
               onchange: (e) => cambiaFiltri({ ...dati.filtri, priorita: e.target.value === '' ? null : e.target.value }),
             }, opzioniPriorita)),
+          h('label', {}, 'Data d’esame (facoltativa)',
+            h('input', { type: 'date', id: 'ripasso-data-esame', value: dataEsame || '', onchange: (e) => {
+              const valore = e.target.value;
+              if (!salvaDataEsame(storage, valore)) erroreData = 'Data non valida o non salvata.';
+              else { dataEsame = valore || null; erroreData = dataEsame && dataEsame < oggi() ? 'La data è passata: nessun ripasso viene anticipato.' : ''; }
+              ricostruisciCoda(); draw('#ripasso-data-esame');
+            } })),
+          h('p', { class: 'muted rip-filtri-nota', role: 'status' }, erroreData || (dataEsame ? 'Le carte previste dopo la data vengono anticipate.' : 'Senza data si segue la normale scadenza SM-2.')),
           h('p', { class: 'muted rip-filtri-nota' }, `${carteFiltrate().length} carte nel filtro · ${mazzo.length} in tutto il mazzo`));
       }
 
@@ -175,20 +197,22 @@ export function createRipassoView() {
           stato?.revisioni ? `Ultimo intervallo: ${formatIntervallo(stato.intervallo)}` : null,
         ].filter(Boolean);
         const eDomanda = carta.tipo === 'domanda';
+        const eEsercizio = carta.tipo === 'esercizio';
 
         return h('section', { class: 'rip-carta', id: 'ripasso-carta', 'aria-label': 'Flashcard corrente' },
           h('p', { class: 'rip-sessione muted', id: 'ripasso-sessione', role: 'status' },
             `Carta ${pos + 1} di ${coda.length} in questa sessione · ${visteSessione} già ripassate`),
           h('p', { class: 'rip-meta' }, meta.map((m) => h('span', { class: 'rip-chip' }, m))),
           h('h2', { class: 'rip-nodo' }, carta.nodoTitolo),
-          h('p', { class: 'rip-tipo muted' }, eDomanda
-            ? 'Domanda di autoverifica — rispondi a voce o per iscritto, poi mostra la risposta.'
-            : 'Punto di checklist — prova a spiegarlo, poi mostra il riferimento del nodo.'),
+          h('p', { class: 'rip-tipo muted' }, eEsercizio
+            ? 'Esercizio già tentato — riprova, poi confronta la soluzione.'
+            : eDomanda ? 'Domanda di autoverifica — rispondi a voce o per iscritto, poi mostra la risposta.'
+              : 'Punto di checklist — prova a spiegarlo, poi mostra il riferimento del nodo.'),
           h('div', { class: 'rip-domanda', id: 'ripasso-domanda', tabindex: '-1' }, carta.domanda),
           rivelata
             ? [
               h('div', { class: 'rip-risposta', id: 'ripasso-risposta', tabindex: '-1' },
-                h('h3', {}, eDomanda ? 'Risposta' : 'Riferimento dal nodo (campo «sapere»)'),
+                h('h3', {}, eEsercizio ? 'Soluzione dell’esercizio' : eDomanda ? 'Risposta' : 'Riferimento dal nodo (campo «sapere»)'),
                 h('div', { class: 'rip-risposta-testo' }, carta.risposta)),
               h('p', { class: 'muted' }, 'Come è andata? Il voto decide tra quanto rivedrai questa carta.'),
               votiPossibili(carta),
@@ -222,8 +246,8 @@ export function createRipassoView() {
         const righe = padronanzaPerArea(mazzo, dati.carte, graph.aree);
         if (!righe.length) return null;
         return h('section', { class: 'rip-aree', 'aria-label': 'Padronanza per area' },
-          h('h2', {}, 'Padronanza per area'),
-          h('p', { class: 'muted' }, 'Padroneggiata = almeno due ripetizioni riuscite di fila (intervallo di 6 giorni).'),
+          h('h2', {}, 'Padronanza provvisoria per area'),
+          h('p', { class: 'muted' }, 'Una carta con almeno due ripetizioni riuscite di fila è un indicatore provvisorio, non una certificazione.'),
           h('ul', { class: 'rip-aree-lista' },
             righe.map((r) => h('li', { class: 'rip-area', 'data-area': String(r.area) },
               h('span', { class: 'rip-area-nome' }, `${r.area}. ${r.titolo}`),
@@ -238,8 +262,8 @@ export function createRipassoView() {
         const serie = serieDiStudio(dati.giorni, giorno);
         return h('div', {},
           ...intestazione(riepilogo, serie),
-          sezioneFiltri(),
           sezioneCarta(),
+          sezioneFiltri(),
           sezioneAree(),
           h('p', { class: 'rip-reset' },
             h('button', { type: 'button', class: 'btn', id: 'ripasso-azzera', onclick: azzera },
