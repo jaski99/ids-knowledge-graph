@@ -219,7 +219,7 @@ body.lesson-mode > header, body.lesson-mode > .layout, body.lesson-mode > .skip 
 .lesson .btn, .lesson summary, .lesson .badges, .lesson .check { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 .lesson h1 { font-size: 2rem; line-height: 1.2; margin: 1.1rem 0 .6rem; letter-spacing: -0.02em; overflow-wrap: anywhere; }
 .lesson h1:focus { outline: none; }
-.lesson h2, .lesson h3 { overflow-wrap: anywhere; }
+.lesson h2, .lesson h3, .lesson li, .lesson a { overflow-wrap: anywhere; }
 .lesson p { margin: 0.85em 0; }
 .ls { margin: 2rem 0; }
 .ls > h2 { display: block; font-size: 1.35rem; margin: 0 0 .6rem; font-weight: 650; }
