@@ -68,5 +68,5 @@
     }
   ],
   "riepilogo": "Schema: definizione → fasi con output → SRS → qualità → esempio → perché conta.\nFasi: elicitazione, analisi, specifica, validazione, gestione; processo iterativo.\nElenchi numerati, un esempio dal dominio d'esame, 8-10 minuti per 3 punti.\nAdatta i mattoni alla variante (F/NF, errori e Boehm, elicitazione, SRS).",
-  "perche_ti_serve": "Parte 3 Teoria: domande sul processo e sui requisiti — 6 prove su 13 secondo la sintesi dell'utente."
+  "perche_ti_serve": "Parte 3 Teoria: domande su processo e requisiti — 6 prove su 13 secondo la sintesi dell'utente."
 }

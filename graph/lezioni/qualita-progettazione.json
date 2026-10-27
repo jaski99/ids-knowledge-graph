@@ -67,5 +67,5 @@
     }
   ],
   "riepilogo": "Qualità esterne (osservate) vs attributi interni (misurabili sul progetto).\nISO 9126: funzionalità, affidabilità, usabilità, efficienza, manutenibilità, portabilità.\nISO 25010:2011: 8 caratteristiche (+ compatibilità, sicurezza); revisione 2023: 9.\nCoesione alta e accoppiamento basso → manutenibilità, testabilità, riuso.",
-  "perche_ti_serve": "Parte 1 Design: qualita del progetto e coerenza tra diagrammi — richiesto nelle prove di design (sintesi dell'utente sulle 13 prove 2017-2025)."
+  "perche_ti_serve": "Parte 1 Design: qualità del progetto e coerenza tra diagrammi — richiesto nelle prove di design (sintesi dell'utente sulle 13 prove 2017-2025)."
 }

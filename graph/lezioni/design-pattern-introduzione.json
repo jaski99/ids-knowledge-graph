@@ -84,5 +84,5 @@
     }
   ],
   "riepilogo": "Pattern = soluzione riusabile a un problema ricorrente: nome, problema, soluzione, conseguenze.\nGoF 1994: 23 pattern, creazionali / strutturali / comportamentali; ambito classe (extends) o oggetto (composizione).\nPrincipi: programma per interfacce, preferisci la composizione.\nAll'esame (1.4): riconoscere dallo scenario, motivare, class diagram, Java minimo, limiti.\nSenza il problema, un pattern è solo complessità.",
-  "perche_ti_serve": "Approfondimento: non compare come nodo distinto nelle 13 prove 2017-2025 (sintesi dell'utente); utile per capire i pattern di design."
+  "perche_ti_serve": "Approfondimento: panoramica, non nodo distinto nelle prove 2017-2025; utile per capire i pattern di design (sintesi dell'utente)."
 }

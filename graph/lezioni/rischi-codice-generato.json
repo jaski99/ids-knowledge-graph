@@ -70,5 +70,5 @@
     }
   ],
   "riepilogo": "Opportunità: produttività, prototipi, API nuove, documentazione.\nRischi: allucinazioni, casi limite, vulnerabilità, dipendenze inventate, prompt injection.\nE inoltre: licenze, debito tecnico, eccesso di fiducia, riservatezza dei dati.\nOgni rischio ha una mitigazione classica: test EC/BVA, review, analisi statica, permessi minimi.\nNon si fa commit di codice che non si sa spiegare.",
-  "perche_ti_serve": "Approfondimento: non compare nelle 13 prove 2017-2025 (sintesi dell'utente); utile per capire l'area AI-native."
+  "perche_ti_serve": "Approfondimento: codice generato da AI, area 2026/27 non storica nelle prove 2017-2025; utile per capire i rischi dell'AI-native (sintesi dell'utente)."
 }

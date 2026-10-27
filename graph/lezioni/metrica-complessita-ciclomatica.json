@@ -85,5 +85,5 @@
     }
   ],
   "riepilogo": "V(G) = numero di cammini linearmente indipendenti del CFG.\nTre formule da far coincidere: E − N + 2, predicati + 1, regioni (con l'esterna).\nif/while/for/case/?: valgono +1; && e || +1 se si separano le condizioni.\nSoglia indicativa 10; V(G) = test della basis path, limite superiore per la decision coverage.",
-  "perche_ti_serve": "Parte 2 Testing: metrica complessita ciclomatica V(G) — 4 prove su 13 secondo la sintesi dell'utente."
+  "perche_ti_serve": "Parte 2 Testing: metrica complessità ciclomatica V(G) — parte del white box (4 prove su 13 secondo la sintesi dell'utente), V(G) non indicata esplicitamente."
 }

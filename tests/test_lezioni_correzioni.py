@@ -50,6 +50,20 @@ def test_ogni_lezione_ha_perche_ti_serve_corretto():
         assert 'su 13' in p or 'prove 2017-2025' in p, f'{path}: perche_ti_serve senza frequenza sulle 13 prove: {p[:90]!r}'
 
 
+def test_perche_ti_serve_accenti_e_method():
+    """Fallisce se un perche_ti_serve usa parole senza accento (complessita,
+    qualita, responsabilita, entita, attivita, priorita, perche, piu, gia, puo)
+    o la parola inglese 'method' invece di 'metodo'."""
+    parole_senza_accento = [
+        'complessita', 'qualita', 'responsabilita', 'entita', 'attivita',
+        'priorita', 'perche', 'piu', 'gia', 'puo',
+    ]
+    for path, p in _tutti_perche():
+        for parola in parole_senza_accento:
+            assert parola not in p, f'{path}: "{parola}" senza accento: {p[:90]!r}'
+        assert 'method' not in p.lower(), f'{path}: contiene "method": {p[:90]!r}'
+
+
 # ---------------- Testing ----------------
 
 def test_classi_equivalenza_passo_zero():

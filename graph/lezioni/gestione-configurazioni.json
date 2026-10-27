@@ -75,5 +75,5 @@
     }
   ],
   "riepilogo": "SCM: identifica, controlla, traccia e verifica tutti gli elementi di configurazione e le loro versioni.\nCI = artefatto sotto controllo; baseline = insieme approvato di CI, cambia solo con change control.\nAttività: identificazione, change control (CR, CCB), status accounting, audit (+ build/release).\nStrumenti: Git (versioni, tag), Maven (dipendenze), CI, issue tracker e pull request.",
-  "perche_ti_serve": "Approfondimento: non compare nelle 13 prove 2017-2025 (sintesi dell'utente); utile per capire il controllo delle versioni."
+  "perche_ti_serve": "Approfondimento: controllo versione, non tema distinto nelle prove 2017-2025; utile per capire il controllo delle versioni (sintesi dell'utente)."
 }
