@@ -163,3 +163,14 @@ def test_perche_ti_serve_in_cima_e_assente_nelle_banche(browser, base_url, vp):
         assert page.locator("article.lesson section.ls").first.get_attribute("id") == "sec-perche"
         assert "Perché ti serve" in page.inner_text("nav.toc")
     ctx.close()
+
+
+@pytest.mark.parametrize("nid", ["orm-object-relational-mapping", "principi-solid", "clean-architecture-coesione-componenti"])
+def test_link_lunghi_senza_scroll_orizzontale_mobile(browser, base_url, nid):
+    """Regressione QA: URL lunghi nelle fonti non devono allargare la pagina a 390px."""
+    page = browser.new_page(viewport=VIEWPORTS["mobile"])
+    page.goto(f"{base_url}#/lezione/{nid}")
+    page.wait_for_selector("#sec-approfondimento a")
+    page.wait_for_timeout(500)
+    assert page.evaluate("document.documentElement.scrollWidth") <= 390
+    page.close()
