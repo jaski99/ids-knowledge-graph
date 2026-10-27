@@ -339,6 +339,28 @@
         "cfu": 3.5,
         "nodi": [
           {
+            "id": "banca-esercizi-pattern-guerra",
+            "parti_esame": [
+              "Design"
+            ],
+            "frequenze": [
+              "pattern-decorator",
+              "pattern-template-method",
+              "pattern-factory",
+              "pattern-observer",
+              "pattern-strategy"
+            ]
+          },
+          {
+            "id": "clean-architecture-accoppiamento-componenti",
+            "parti_esame": [
+              "Teoria"
+            ],
+            "frequenze": [
+              "teoria-clean-architecture"
+            ]
+          },
+          {
             "id": "clean-architecture-coesione-componenti",
             "parti_esame": [
               "Teoria"
@@ -377,6 +399,16 @@
               "Tesina"
             ],
             "frequenze": []
+          },
+          {
+            "id": "design-pattern-builder",
+            "parti_esame": [
+              "Design",
+              "Tesina"
+            ],
+            "frequenze": [
+              "pattern-builder"
+            ]
           },
           {
             "id": "design-pattern-composite",
@@ -535,6 +567,13 @@
             ]
           },
           {
+            "id": "esercizio-tesina-individuale",
+            "parti_esame": [
+              "Tesina"
+            ],
+            "frequenze": []
+          },
+          {
             "id": "metrica-complessita-ciclomatica",
             "parti_esame": [
               "Teoria"
@@ -639,6 +678,14 @@
             ]
           },
           {
+            "id": "uml-diagramma-package",
+            "parti_esame": [
+              "Design",
+              "Tesina"
+            ],
+            "frequenze": []
+          },
+          {
             "id": "uml-diagramma-sequenza",
             "parti_esame": [
               "Design",
@@ -665,6 +712,48 @@
         "area": 3,
         "cfu": 1.5,
         "nodi": [
+          {
+            "id": "analisi-statica",
+            "parti_esame": [
+              "Teoria"
+            ],
+            "frequenze": [
+              "teoria-analisi-statica"
+            ]
+          },
+          {
+            "id": "banca-domande-teoria-guerra",
+            "parti_esame": [
+              "Teoria"
+            ],
+            "frequenze": [
+              "teoria-ottimizzazione",
+              "teoria-requisiti",
+              "teoria-clean-architecture",
+              "teoria-coesione",
+              "teoria-debugging",
+              "teoria-white-box",
+              "teoria-mcdc",
+              "teoria-simple-factory",
+              "teoria-observer-java",
+              "teoria-refactoring",
+              "teoria-commenti",
+              "teoria-post-vendita",
+              "teoria-analisi-statica",
+              "teoria-solid",
+              "teoria-metriche",
+              "teoria-black-white"
+            ]
+          },
+          {
+            "id": "banca-esercizi-bva-guerra",
+            "parti_esame": [
+              "Testing"
+            ],
+            "frequenze": [
+              "testing-black-box"
+            ]
+          },
           {
             "id": "black-box-vs-white-box",
             "parti_esame": [
@@ -710,6 +799,15 @@
               "Teoria"
             ],
             "frequenze": []
+          },
+          {
+            "id": "commenti-codice",
+            "parti_esame": [
+              "Teoria"
+            ],
+            "frequenze": [
+              "teoria-commenti"
+            ]
           },
           {
             "id": "complessita-ciclomatica",
@@ -2255,6 +2353,11 @@
           "id": "uml-diagramma-classi",
           "forza": "soft",
           "motivo": "Notazione per il class diagram."
+        },
+        {
+          "id": "design-pattern-builder",
+          "forza": "soft",
+          "motivo": "Builder compare insieme a Decorator nella prova 2018-01-30 (studio dentistico) secondo la sintesi dell'utente."
         }
       ],
       "esercizi": [
@@ -5266,6 +5369,11 @@
           "id": "esercizio-class-diagram-da-testo",
           "forza": "hard",
           "motivo": "La coerenza si valuta rispetto al class diagram."
+        },
+        {
+          "id": "uml-diagramma-package",
+          "forza": "soft",
+          "motivo": "Il package diagram organizza le classi del modello: deve restare coerente con il class diagram."
         }
       ],
       "esercizi": [
@@ -8567,6 +8675,21 @@
           "id": "tipi-manutenzione",
           "forza": "soft",
           "motivo": "Tema della banca."
+        },
+        {
+          "id": "commenti-codice",
+          "forza": "soft",
+          "motivo": "Tema «commenti» riportato in 1 prova su 13 (2022-01) secondo la sintesi dell'utente."
+        },
+        {
+          "id": "analisi-statica",
+          "forza": "soft",
+          "motivo": "Tema «analisi statica» riportato in 1 prova su 13 (2017-04) secondo la sintesi dell'utente."
+        },
+        {
+          "id": "clean-architecture-accoppiamento-componenti",
+          "forza": "soft",
+          "motivo": "Le domande di Clean Architecture includono l'accoppiamento tra componenti (ADP/SDP/SAP) secondo la sintesi dell'utente."
         }
       ],
       "esercizi": [

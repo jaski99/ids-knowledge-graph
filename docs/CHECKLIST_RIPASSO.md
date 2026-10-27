@@ -122,13 +122,6 @@
 - [ ] Messaggio = operazione della classe destinataria
 - [ ] Trappola: messaggi verso classi non associate/navigabili
 
-### Esercizio d'esame: sequence, activity e state coerenti con le classi (priorità ALTA)
-
-- [ ] Checklist finale: ogni messaggio è un'operazione?
-- [ ] Ogni messaggio segue un'associazione navigabile?
-- [ ] Stati = valori dell'enum?
-- [ ] Azioni dell'activity = casi d'uso/operazioni?
-
 ### Obiettivi della progettazione: alto livello e dettaglio (priorità MEDIA)
 
 - [ ] Alto livello = componenti + interfacce
@@ -240,15 +233,6 @@
 - [ ] Trappola: dimenticare i LIMITI (chiesti esplicitamente)
 - [ ] Java minimo: interfaccia + 2 classi + metodo chiave
 
-### Banca esercizi: pattern di progettazione (prove Guerra) (priorità ALTA)
-
-- [ ] Accessori combinabili con costo → Decorator
-- [ ] Stessi passi con varianti → Template Method
-- [ ] Iscriviti/avvisa → Observer
-- [ ] Creazione con switch → Simple Factory
-- [ ] Algoritmo scelto a runtime → Strategy
-- [ ] Scrivere sempre i LIMITI del pattern scelto
-
 ### Esercizio d'esame: riconoscere il pattern dal codice (priorità ALTA)
 
 - [ ] static + switch + new → Simple Factory
@@ -318,6 +302,13 @@
 - [ ] «import» e «access» specificano l’accesso
 - [ ] Package ≠ componente ≠ deployment
 
+### Esercizio d'esame: sequence, activity e state coerenti con le classi (priorità ALTA)
+
+- [ ] Checklist finale: ogni messaggio è un'operazione?
+- [ ] Ogni messaggio segue un'associazione navigabile?
+- [ ] Stati = valori dell'enum?
+- [ ] Azioni dell'activity = casi d'uso/operazioni?
+
 ### Esercizio: tesina individuale del corso (priorità ALTA)
 
 - [ ] Prodotto software
@@ -333,6 +324,15 @@
 - [ ] Validazione degli invarianti
 - [ ] Studio dentistico ricostruito da [D1]
 - [ ] Builder ≠ Factory ≠ Decorator
+
+### Banca esercizi: pattern di progettazione (prove Guerra) (priorità ALTA)
+
+- [ ] Accessori combinabili con costo → Decorator
+- [ ] Stessi passi con varianti → Template Method
+- [ ] Iscriviti/avvisa → Observer
+- [ ] Creazione con switch → Simple Factory
+- [ ] Algoritmo scelto a runtime → Strategy
+- [ ] Scrivere sempre i LIMITI del pattern scelto
 
 ### Object Relational Mapping, problematiche e JPA/Hibernate (priorità BASSA)
 

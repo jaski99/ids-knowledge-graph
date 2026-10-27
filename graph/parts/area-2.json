@@ -1166,6 +1166,11 @@
         "id": "esercizio-class-diagram-da-testo",
         "forza": "hard",
         "motivo": "La coerenza si valuta rispetto al class diagram."
+      },
+      {
+        "id": "uml-diagramma-package",
+        "forza": "soft",
+        "motivo": "Il package diagram organizza le classi del modello: deve restare coerente con il class diagram."
       }
     ],
     "esercizi": [

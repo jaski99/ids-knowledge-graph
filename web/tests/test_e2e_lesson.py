@@ -56,6 +56,13 @@ def test_lezione_render_completo(browser, base_url, vp, nid):
     assert page.locator("header h1").first.is_hidden() or not page.locator("body > header").is_visible()
     # markdown: sottotitoli e codice evidenziato
     assert page.locator(".spiegazione .md h2").count() >= 2
+    # «perché ti serve»: mostrato in cima alla lezione quando il dato esiste
+    why = (node["lezione"].get("perche_ti_serve") or "").strip()
+    if why:
+        assert page.locator("#sec-perche").is_visible()
+        assert why in page.inner_text("#sec-perche")
+    else:
+        assert page.locator("#sec-perche").count() == 0
     if "```java" in node["lezione"]["spiegazione"]:
         page.wait_for_selector(".md pre.code code.language-java .hljs-keyword")
     # mermaid: tutti i diagrammi diventano SVG, nessun errore di sintassi
@@ -134,4 +141,25 @@ def test_flusso_studio_segna_e_prossima_e_riprendi(browser, base_url, vp):
     assert t2 in page.inner_text("#resume .btn.primary")
     assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1
     assert not errors
+    ctx.close()
+
+
+@pytest.mark.parametrize("vp", list(VIEWPORTS))
+def test_perche_ti_serve_in_cima_e_assente_nelle_banche(browser, base_url, vp):
+    """I-1: il «perché ti serve» è la prima sezione delle lezioni che lo hanno; le banche non lo mostrano."""
+    ctx = browser.new_context(viewport=VIEWPORTS[vp], is_mobile=vp == "mobile", has_touch=vp == "mobile")
+    page = ctx.new_page()
+    for nid in ("boundary-value-analysis", "uml-diagramma-package", "banca-esercizi-bva-guerra"):
+        node = next(n for n in GRAPH["nodi"] if n["id"] == nid)
+        why = (node["lezione"].get("perche_ti_serve") or "").strip()
+        page.goto(f"{base_url}#/lezione/{nid}")
+        page.wait_for_function(f"document.querySelector('#lesson-title')?.innerText === {json.dumps(node['title'])}")
+        if nid.startswith("banca-"):
+            assert not why and page.locator("#sec-perche").count() == 0
+            continue
+        assert why, f"{nid}: manca perche_ti_serve nel grafo"
+        sec = page.locator("#sec-perche")
+        assert sec.is_visible() and why in sec.inner_text()
+        assert page.locator("article.lesson section.ls").first.get_attribute("id") == "sec-perche"
+        assert "Perché ti serve" in page.inner_text("nav.toc")
     ctx.close()

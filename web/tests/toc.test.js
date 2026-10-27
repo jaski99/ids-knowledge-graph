@@ -22,5 +22,6 @@ test('sectionMeter normalizza indice e rapporto', () => {
 
 test('etichette italiane delle sezioni', () => {
   assert.equal(sectionLabel('sec-errori'), 'Errori comuni');
+  assert.equal(sectionLabel('sec-perche'), 'Perché ti serve');
   assert.equal(sectionLabel('sconosciuta'), 'sconosciuta');
 });

@@ -1,7 +1,7 @@
 name: Pages
 on:
   push:
-    branches: [main, 'arena/**']
+    branches: [main, 'arena/**', 'integ/**']
   workflow_dispatch:
 permissions:
   contents: read
