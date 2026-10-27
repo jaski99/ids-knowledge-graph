@@ -1,60 +1,37 @@
-# STATUS — 24/10/2026 (Fase 1)
+# STATUS — round 2
 
-## Fatto
-- Reverse engineering di os-taxonomy → `docs/TAXONOMY_NOTES.md`.
-- Contratti e schema: `docs/CONTRACTS.md`, `schema/node.schema.json`.
-- Programma ufficiale (sito docente) → `docs/SYLLABUS.md`; testi di riferimento mappati sulle aree.
-- Schema v2: prerequisiti `{id, forza, motivo}`, esercizi svolti `{tipo_esame, testo, soluzione}`, `checklist_ripasso` opzionale.
-- Pipeline: `graph/meta.json` + `graph/parts/area-N.json` → `python scripts/kg.py build` → `graph/graph.json`. 5 nodi seed (aree 1-3) nei part, risorse verificate (HTTP 200).
-- `scripts/kg.py` (libreria), `scripts/topo.py`, `scripts/check_urls.py`; 18 test pytest verdi.
+Il piano vincolante è [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md); il suo §3 definisce lo scope esclusivo dei worker e il §6 l'ordine di merge. Il presente stato descrive il lavoro X1 e le attività ancora da integrare, non certifica lo stato degli altri rami.
 
-## Mancante / aperto
-- Formato d'esame sconosciuto (non trovato; l'utente non lo conosce ancora): priorità motivate da programma + testi. Da aggiornare appena noto.
-- Aree 4 e 5 senza nodi.
+## Base e lavoro X1
 
-## Rami proposti (indipendenti, ognuno tocca solo i propri nodi)
-| ramo | contenuto | note |
-|---|---|---|
-| `feat/contenuti-a` | aree 1-2: requisiti, casi d'uso, SRS, architettura e stili, decomposizione funzionale, ORM/JPA/Hibernate, qualità e metriche, coesione/accoppiamento, UML (classi, sequenza, attività, stati), design pattern GoF principali | scrive solo `graph/parts/area-1.json`, `area-2.json`; riusa seed `requisiti-obiettivi`, `uml-casi-uso`, `coesione-accoppiamento`, `design-pattern-introduzione` |
-| `feat/contenuti-b` | aree 3-5: best practice, refactoring, testing/ispezione, path analysis, BVA, JUnit, programmazione difensiva, Maven, Git, configuration management, post-produzione, licenze, IdS AI-native | scrive solo `graph/parts/area-3..5.json`; può dipendere da id di area 1-2 già su main |
-| `feat/webapp` | sito statico in italiano che legge `graph/graph.json` (grafo, filtro per area/tipo/priorità, ordine topologico, spunta esercizi in localStorage) | solo `web/`; legge `graph/graph.json`, non lo modifica |
+- Il grafo di partenza contiene i nodi esistenti nelle cinque aree, con lezioni v3 e archi derivati dai prerequisiti. I nodi nuovi di X2 e X3 **non** sono creati da X1.
+- [SYLLABUS.md](SYLLABUS.md) separa la scheda ufficiale 2026/27 [S1], la pagina docente [S2], la trascrizione di terzi del 13/01/2017 [S6] e la sintesi dell'utente [D1]. La scheda riporta l'area AI-native come ufficiale, la tesina e pesi incoerenti; la discrepanza bibliografica resta annotata, senza cambiare le chiavi `testi`.
+- [EXAM_FORMAT.md](EXAM_FORMAT.md) registra separatamente le versioni. Le priorità e la mappatura programma → nodi sono nei dati sorgente; `scripts/gen_docs.py` genera anche [NODES.md](NODES.md), compresa la sezione dei nodi non mappati.
+- [CONTRACTS.md](CONTRACTS.md) documenta part con suffisso, campi della mappatura, banche ed esiti condivisi tra worker. Le frequenze sono attribuite alla sintesi dell'utente, non sono statistiche ufficiali.
 
-Ordine di merge suggerito: contenuti-a → contenuti-b → webapp (la webapp può partire subito sui seed).
+## Da fare da parte degli altri worker
+
+- **X4:** correzioni didattiche delle lezioni esistenti.
+- **X2:** sei nodi di programma mancanti; **X3:** tre banche di esercizi/teoria. Nessun nuovo ID deve essere duplicato.
+- **X6:** profili e persistenza del simulatore; **X5:** app, accessibilità e CI con Node e Playwright. I formati delle prove rimangono separati.
+- **Integrazione:** archi fra i nuovi nodi o verso quelli esistenti, mappatura dei nove nuovi ID in `programma`, rigenerazione dei file condivisi e controlli finali. Ordine: **X1 → X4 → X2 → X3 → X6 → X5 → integrazione**.
+
+## Controlli e limiti noti
+
+Prima del push il piano richiede build del grafo, documenti e web, poi check, test Node e `pytest -q` con Playwright: **0 falliti e 0 saltati**, senza filtri né deroghe. I risultati effettivi e le eventuali richieste fuori scope vanno indicati nel report del worker.
+
+Il piano §7 documenta cinque e2e già falliti sulla base precedente: tre relativi a schermate/grafo, assegnati a **X5**, e due al ripristino del simulatore, assegnati a **X6**. Anche la suite X1 con Playwright ha riportato **220 passati, 5 falliti, 0 saltati**: i medesimi cinque test. In questa esecuzione due controlli di schermata si sono fermati sul canvas e quello desktop sulla visibilità dell'indice della lezione; entrambi i test del simulatore attendono l'input dopo il reload. Node: **81 passati, 0 falliti, 0 saltati**. Il vincolo di zero fallimenti blocca il push finché i responsabili non correggono i problemi fuori scope.
+
+La CI Pages esistente si attiva sui push a `main` e non esegue ancora la suite completa Node/Playwright; la sua correzione è di X5, quindi non si può dichiarare verde una CI di questo ramo. `scripts/check_urls.py` e i controlli diretti sulle fonti hanno incontrato le restrizioni di rete del sandbox: questo non dimostra che gli URL non esistano. Per gli e2e sono stati usati Playwright 1.63, Chromium 153 dal registro npm e un mirror locale delle versioni CDN, senza cambiare test o app; la suite è stata eseguita su una replica dei file per non scrivere screenshot fuori scope. L'installazione standard `playwright install --with-deps chromium` è stata bloccata dalle restrizioni di rete.
 
 ## Comandi
+
+```sh
+python scripts/kg.py build && python scripts/gen_docs.py && sh web/build.sh
+python scripts/kg.py check && python scripts/gen_docs.py check
+npm test --prefix web
+pytest -q
+python scripts/check_urls.py  # online, fuori dai test offline
 ```
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/python scripts/kg.py build
-.venv/bin/pytest -q
-cd scripts && ../.venv/bin/python topo.py && ../.venv/bin/python check_urls.py
-```
 
-## Fase 3 — 24/10/2026
-- Prerequisiti cross-area aggiunti (testing/refactoring → progettazione, debugging → testing, area 4-5 → testing/refactoring/requisiti), nessun ciclo.
-- Motivazioni di priorità riscritte sulle prove reali (2016/17, 9/6/2022, 27/1/2023, 5/11/2025); `nota_esame` e `trappole` in `meta.json`.
-- Chiave testo `MARTIN` (Clean Architecture, extra, non del prof) usata in `clean-architecture-coesione-componenti`.
-- Ordine topologico: a parità di vincoli priorità alta prima (Python e web app identici, testato).
-- `scripts/gen_docs.py` → `docs/PIANO_STUDIO.md`, `docs/CHECKLIST_RIPASSO.md` (test di aggiornamento).
-- UX da test Playwright 390x844 e 1280x800: pannelli compatti su mobile, layout grafo orientato al contenitore, nota esame richiudibile, trappole nella vista Ripasso.
-
-## Fase 4 — 24/10/2026: lezioni complete (schema v3)
-- Obiettivo: imparare tutto dal grafo senza aprire i libri. Ogni nodo riceve una `lezione` (vedi CONTRACTS.md).
-- Lezioni in `graph/lezioni/<id>.json` (un file per nodo → nessun conflitto tra rami); `kg.py build` le fonde nei nodi.
-- Pilota (modello di qualità): `esercizio-black-box-scaglioni`, `design-pattern-observer`.
-- Web app: vista **Lezione** a pagina intera (`#/lezione/<id>`): markdown (marked + DOMPurify), mermaid, codice evidenziato (highlight.js), passi degli esempi svelati uno alla volta, autoverifica con risposte nascoste, Precedente/Successivo secondo il percorso. Test node + e2e Playwright (390x844, 1280x800) in `web/tests/test_e2e_lesson.py` (saltato se Playwright manca).
-- `tests/test_lezioni.py::test_lezioni_complete` **fallisce finché ci sono nodi senza lezione** (73): usare `KG_ALLOW_TODO=1 pytest -q` durante la stesura.
-
-### Rami contenuti proposti (bilanciati: 24 / 24 / 25 nodi; ognuno crea solo i propri `graph/lezioni/<id>.json`)
-| ramo | tema | file da creare |
-|---|---|---|
-| `feat/lezioni-a` | requisiti, UML, architettura, qualità (aree 1-2) | `graph/lezioni/<id>.json` per: `casi-uso-descrizione-testuale`, `esercizio-domanda-processo-requisiti`, `esercizio-use-case-da-testo`, `requisiti-costo-errori-boehm`, `requisiti-input-stakeholder`, `requisiti-obiettivi`, `requisiti-processo-specifica`, `requisiti-scrittura-verificabile`, `uml-casi-uso`, `decomposizione-funzionale`, `esercizio-class-diagram-da-testo`, `esercizio-diagrammi-coerenti`, `progettazione-obiettivi-livelli`, `stili-architetturali`, `uml-associazioni-molteplicita`, `uml-componenti-deployment`, `uml-diagramma-attivita`, `uml-diagramma-classi`, `uml-diagramma-sequenza`, `uml-diagramma-stati`, `coesione-accoppiamento`, `qualita-progettazione`, `clean-architecture-coesione-componenti`, `orm-object-relational-mapping` |
-| `feat/lezioni-b` | design pattern, SOLID, metriche, code smell e refactoring (aree 2-3) | `graph/lezioni/<id>.json` per: `design-pattern-introduzione`, `design-pattern-simple-factory`, `design-pattern-factory-method`, `design-pattern-abstract-factory`, `design-pattern-singleton`, `design-pattern-adapter`, `design-pattern-composite`, `design-pattern-decorator`, `design-pattern-state`, `design-pattern-strategy`, `design-pattern-template-method`, `riconoscere-pattern-scenario`, `esercizio-pattern-motivato-java`, `esercizio-riconosci-pattern-dal-codice`, `principi-solid`, `metriche-software`, `metrica-complessita-ciclomatica`, `esercizio-domanda-metriche`, `code-smell`, `refactoring`, `domanda-refactoring`, `complessita-ciclomatica`, `buone-pratiche-programmazione`, `ottimizzazione-codice` |
-| `feat/lezioni-c` | testing, strumenti, rilascio e manutenzione, IdS AI-native (aree 3-5) | `graph/lezioni/<id>.json` per: `black-box-vs-white-box`, `boundary-value-analysis`, `classi-equivalenza`, `criteri-copertura`, `debugging`, `esercizio-white-box-copertura`, `git-versionamento`, `grafo-flusso-controllo`, `ispezione-codice`, `junit-5`, `maven`, `programmazione-difensiva`, `testing-livelli-tipi`, `ci-cd`, `compatibilita-licenze`, `gestione-configurazioni`, `licenze-software`, `release-post-produzione`, `tipi-manutenzione`, `versionamento-semantico`, `assistenti-ai-sviluppo`, `domanda-ids-ai-native`, `llm-agenti-ciclo-vita`, `rischi-codice-generato`, `verifica-umana-codice-ai` |
-
-Nessun ramo modifica `graph/parts/*.json`, `meta.json`, `schema/` o `web/`; al merge rieseguire `kg.py build` (conflitti su `graph.json` si risolvono rigenerandolo). Merge in qualsiasi ordine.
-
-## Fase 5 — 24/10/2026: QA studente su 75 lezioni (390x844, 1280x800)
-- Script Playwright su tutte le 75 lezioni × 2 viewport: console pulita, mermaid visibili, codice evidenziato, passi/soluzioni, autoverifica, Precedente/Successivo = percorso, nessun overflow, apertura ≤0,35 s.
-- Fix: i diagrammi mermaid nelle soluzioni nascoste (11 lezioni) si rompevano (translate NaN) → disegnati solo quando visibili.
-- Fix: blocco comandi git evidenziato (bash); scroll in cima subito al cambio lezione.
-- UX: "✓ Segna come studiato e vai alla prossima" (salta le già studiate), barra "Riprendi / Prossima da studiare" in home, "← Percorso" torna al percorso sulla lezione corrente, barra superiore compatta su mobile.
+I file generati `graph/graph.json`, `docs/NODES.md`, `docs/PIANO_STUDIO.md` e `docs/CHECKLIST_RIPASSO.md` sono condivisi: si rigenerano dagli script; il coordinatore risolve eventuali conflitti rigenerandoli, mai a mano.

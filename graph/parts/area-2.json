@@ -354,8 +354,8 @@
     ],
     "tempo_studio_min": 60,
     "priorita": {
-      "livello": "alta",
-      "motivazione": "Domanda di Parte 3 nel 2016/17 ('software metrics e una metrica a scelta'); base per coesione/accoppiamento e complessità."
+      "livello": "media",
+      "motivazione": "Metriche ha frequenza bassa nella sintesi dell'utente [D1]: il tema generale è riportato in 1 prova su 13, non necessariamente questa metrica specifica. Le metriche figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -428,8 +428,8 @@
     ],
     "tempo_studio_min": 40,
     "priorita": {
-      "livello": "alta",
-      "motivazione": "La 'metrica a scelta' più facile per la domanda del 2016/17; si collega al diagramma di flusso richiesto nella domanda 3.3 del 5/11/2025."
+      "livello": "media",
+      "motivazione": "Metriche ha frequenza bassa nella sintesi dell'utente [D1]: il tema generale è riportato in 1 prova su 13, non necessariamente questa metrica specifica. Le metriche figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -486,8 +486,8 @@
     ],
     "tempo_studio_min": 25,
     "priorita": {
-      "livello": "alta",
-      "motivazione": "Domanda di Parte 3 nel 2016/17 ('software metrics e una metrica a scelta'); non ripresa nelle prove 2022, 2023, 2025."
+      "livello": "media",
+      "motivazione": "Metriche ha frequenza bassa nella sintesi dell'utente [D1]: il tema generale è riportato in 1 prova su 13, non necessariamente questa metrica specifica. Le metriche figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -630,7 +630,7 @@
     "tempo_studio_min": 90,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Class diagram nel 2016/17 (3 pt con use case) e nel 5/11/2025 (5 pt, con proprietà, operazioni, direzione e molteplicità); serve anche per l'es. 1.4 di ogni prova."
+      "motivazione": "Il class diagram è indicato come sempre presente e valutato 4–6 punti nella sintesi dell'utente [D1]; la ricostruzione fornita del 5/11/2025 riporta 5 punti per le classi. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -709,7 +709,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Il 5/11/2025 l'es. 1.1 (5 pt) chiede esplicitamente direzione e molteplicità delle associazioni."
+      "motivazione": "Il class diagram è indicato come sempre presente e valutato 4–6 punti nella sintesi dell'utente [D1]; la ricostruzione fornita del 5/11/2025 riporta 5 punti per le classi. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -790,7 +790,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Class diagram nel 2016/17 (es. 1.1, 3 pt) e nel 5/11/2025 (es. 1.1, 5 pt, con direzione e molteplicità)."
+      "motivazione": "Il class diagram è indicato come sempre presente e valutato 4–6 punti nella sintesi dell'utente [D1]; la ricostruzione fornita del 5/11/2025 riporta 5 punti per le classi. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -861,7 +861,7 @@
     "tempo_studio_min": 75,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Sequence diagram nel 2016/17 (es. 1.2, 3 pt) e nel 5/11/2025 (ordine con tessera fedeltà, es. 1.2), valutato sulla coerenza con le classi."
+      "motivazione": "Sequence, activity e state sono indicati come quasi sempre presenti nella sintesi dell'utente [D1], senza conteggi puntuali per il singolo diagramma. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -936,7 +936,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Activity diagram nel 2016/17 (es. 1.3, 2 pt) e nel 5/11/2025 (intera applicazione, dentro l'es. 1.2 da 5 pt)."
+      "motivazione": "Sequence, activity e state sono indicati come quasi sempre presenti nella sintesi dell'utente [D1], senza conteggi puntuali per il singolo diagramma. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1006,7 +1006,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "State diagram richiesto nella prova più recente, 5/11/2025 (stati di un acquisto, es. 1.2 da 5 pt); base del pattern State."
+      "motivazione": "Sequence, activity e state sono indicati come quasi sempre presenti nella sintesi dell'utente [D1], senza conteggi puntuali per il singolo diagramma. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1178,7 +1178,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Es. 1.2 valutato sulla coerenza con le classi: 2016/17 (sequence 3 pt + activity 2 pt) e 5/11/2025 (sequence + activity + state, 5 pt)."
+      "motivazione": "Il class diagram è indicato come sempre presente e valutato 4–6 punti nella sintesi dell'utente [D1]; la ricostruzione fornita del 5/11/2025 riporta 5 punti per le classi. UML è nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1244,8 +1244,8 @@
     ],
     "tempo_studio_min": 50,
     "priorita": {
-      "livello": "alta",
-      "motivazione": "Servono a giustificare il pattern dell'es. 1.4 (tutte le prove) e sono la base di REP/CCP/CRP (domanda 9/6/2022 e 27/1/2023)."
+      "livello": "media",
+      "motivazione": "SOLID ha frequenza media nella sintesi dell'utente [D1] ed è riportato in 1 prova su 13; i principi supportano la qualità della progettazione trattata nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1342,7 +1342,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domanda 3.2 sia il 9/6/2022 sia il 27/1/2023 (coesione dei componenti: REP, CCP, CRP) (2022/2023: solo sintesi dell'utente): domanda ricorrente."
+      "motivazione": "La sintesi dell'utente [D1] riporta Clean Architecture in 3 prove su 13 e coesione in 1 prova su 13, come temi generali; coesione e accoppiamento figurano nel programma [S1] e nella pagina docente [S2]. Martin è un riferimento extra."
     },
     "risorse": [
       {
@@ -1487,7 +1487,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Soluzione ufficiale dell'es. 1.4 del 2016/17 (biblioteca: settori/scaffali/documenti, 5 pt)."
+      "motivazione": "Composite è la soluzione indicata come ufficiale nel fac-simile 2016/17 fornito dall'utente; la struttura della prova storica [S6], fonte terza, è compatibile ma non prova una preferenza del docente. I pattern figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1564,7 +1564,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Soluzione dell'es. 1.4 della prova più recente, 5/11/2025 (mailing list e promozioni, 4 pt)."
+      "motivazione": "Observer nel design: 1 prova su 13 secondo la sintesi dell'utente [D1]; i design pattern sono nel programma [S1] e nella pagina docente [S2], senza graduatoria ufficiale."
     },
     "risorse": [
       {
@@ -1637,7 +1637,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Mai soluzione dell'es. 1.4 nelle prove note, ma è il pattern 'algoritmi alternativi' più vicino al Template Method (2023): va saputo distinguere."
+      "motivazione": "Strategy: 1 prova su 13 secondo la sintesi dell'utente [D1]; i design pattern sono nel programma [S1] e nella pagina docente [S2], senza graduatoria ufficiale."
     },
     "risorse": [
       {
@@ -1713,7 +1713,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Soluzione dell'es. 1.4 della prova 9/6/2022 (accessori opzionali delle piazzole con costo) (2022/2023: solo sintesi dell'utente)."
+      "motivazione": "Decorator: 6 prove su 13 secondo la sintesi dell'utente [D1]; i design pattern sono nel programma [S1] e nella pagina docente [S2], senza graduatoria ufficiale."
     },
     "risorse": [
       {
@@ -1785,7 +1785,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Soluzione dell'es. 1.4 della prova 27/1/2023 (algoritmo a passi con varianti) (2022/2023: solo sintesi dell'utente)."
+      "motivazione": "Template Method: 4 prove su 13 secondo la sintesi dell'utente [D1]; i design pattern sono nel programma [S1] e nella pagina docente [S2], senza graduatoria ufficiale."
     },
     "risorse": [
       {
@@ -1857,7 +1857,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domanda 3.2 del 5/11/2025 (2 pt): riconoscere la Simple Factory dal codice e pro/contro del metodo static."
+      "motivazione": "Simple Factory/`static` è un tema teorico in 1 prova su 13 secondo la sintesi dell'utente [D1]; Factory generico è riportato in 2 prove su 13, senza precisare sempre la variante. I pattern figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1928,8 +1928,8 @@
     ],
     "tempo_studio_min": 35,
     "priorita": {
-      "livello": "alta",
-      "motivazione": "Variante da distinguere dalla Simple Factory chiesta nella domanda 3.2 del 5/11/2025 (codice SimpleSushiFactory e metodo static)."
+      "livello": "media",
+      "motivazione": "La sintesi dell'utente [D1] cita Factory genericamente ma non nomina esplicitamente Factory Method o Abstract Factory; i design pattern in generale restano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -1999,8 +1999,8 @@
     ],
     "tempo_studio_min": 35,
     "priorita": {
-      "livello": "alta",
-      "motivazione": "Non chiesto direttamente; serve per il confronto Simple Factory / Factory Method / Abstract Factory, utile per la domanda 3.2 del 5/11/2025 sulla Simple Factory."
+      "livello": "media",
+      "motivazione": "La sintesi dell'utente [D1] cita Factory genericamente ma non nomina esplicitamente Factory Method o Abstract Factory; i design pattern in generale restano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -2307,7 +2307,7 @@
     "tempo_studio_min": 50,
     "priorita": {
       "livello": "alta",
-      "motivazione": "In tutte le prove note l'es. 1.4 (4-5 pt) parte da uno scenario: Composite (2016/17), Decorator (9/6/2022), Template Method (27/1/2023), Observer (5/11/2025)."
+      "motivazione": "Secondo la sintesi dell'utente [D1], Decorator ricorre in 6 prove su 13, Template Method in 4 prove su 13, Factory generico in 2 prove su 13, Observer e Strategy in 1 prova su 13 ciascuno; i conteggi possono sovrapporsi. I pattern sono nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -2391,7 +2391,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Es. 1.4 in tutte le prove note: Composite 2016/17 (5 pt), Decorator 2022, Template Method 2023, Observer 5/11/2025 (4 pt)."
+      "motivazione": "Secondo la sintesi dell'utente [D1], Decorator ricorre in 6 prove su 13, Template Method in 4 prove su 13, Factory generico in 2 prove su 13, Observer e Strategy in 1 prova su 13 ciascuno; i conteggi possono sovrapporsi. I pattern sono nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {

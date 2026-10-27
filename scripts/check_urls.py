@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-"""Controllo online delle risorse (HEAD, fallback GET). Non fa parte dei test offline.
-Uscita 1 se almeno un URL risponde 404/410 o non e' raggiungibile."""
+"""Controlla online gli URL di `risorse` nei nodi (HEAD, fallback GET).
+
+Non legge URL da syllabus o metadati e non fa parte dei test offline.
+Uscita 1 se un URL risponde con errore o non è raggiungibile: problemi di rete,
+restrizioni del sandbox e risposte dei siti non dimostrano che la risorsa non esista.
+"""
 import sys, urllib.request, urllib.error
 from kg import load_graph
 

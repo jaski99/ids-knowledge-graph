@@ -7,6 +7,12 @@ from kg import load_graph, load_schema, topo_order, build, dumps, load_parts, GR
 G = load_graph()
 NODES = G["nodi"]
 IDS = [n["id"] for n in NODES]
+PART_NAME = re.compile(r"area-([1-5])(?:-[a-z0-9]+)?\.json")
+
+
+def part_area(name):
+    match = PART_NAME.fullmatch(name)
+    return int(match.group(1)) if match else None
 
 
 def test_schema_is_valid():
@@ -70,10 +76,27 @@ def test_graph_json_is_up_to_date():
 
 def test_parts_naming_and_area():
     for name, nodes in load_parts().items():
-        m = re.fullmatch(r"area-([1-5])(-[a-z0-9]+)?\.json", name)
-        assert m, f"nome part non valido: {name}"
+        area = part_area(name)
+        assert area is not None, f"nome part non valido: {name}"
         assert isinstance(nodes, list)
-        assert all(n["area"] == int(m.group(1)) for n in nodes), name
+        assert all(n["area"] == area for n in nodes), name
+
+
+@pytest.mark.parametrize("name, area", [
+    ("area-1.json", 1),
+    ("area-2-r2.json", 2),
+    ("area-3-banche.json", 3),
+    ("area-4-v1.json", 4),
+    ("area-5.json", 5),
+    ("area-0.json", None),
+    ("area-6-r2.json", None),
+    ("area-2-R2.json", None),
+    ("area-3-.json", None),
+    ("area-2-r2-banche.json", None),
+    ("area-2-r2.txt", None),
+])
+def test_parts_filename_base_e_suffissi(name, area):
+    assert part_area(name) == area
 
 
 def test_skill_nodes_have_worked_exercises():

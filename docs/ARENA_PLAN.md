@@ -1,23 +1,16 @@
-# Piano di lavoro Arena (divide et impera)
+# Piano di lavoro Arena — round 2
 
-Repo: https://github.com/jaski99/ids-knowledge-graph  (main = codice integrato, Pages da main)
-Regola: i worker NON modificano graph/, scripts/, schema/ (contenuti e dati sono congelati). Solo web/ e test.
+Il piano vincolante, inclusi ID, confini, contratti e ordine di integrazione, è [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md). Questo documento è un indice, non una versione alternativa del piano.
 
-## Contratti condivisi
-- Dati: `web/` legge `graph/graph.json` (schema in schema/node.schema.json, docs/CONTRACTS.md). Nessun cambio di formato.
-- Punto di aggancio viste: `web/js/registry.js` con `register({id, titolo, render(container, ctx)})` e `getAll()`. Lo crea il worker A al primo commit; il worker B lo usa (se non c'e' ancora, lo crea identico e minimo).
-- Stato utente: solo localStorage, chiavi con prefisso `ids.` (`ids.progress`, `ids.ripasso`, `ids.simulatore`).
-- Test: `pytest` (root), `node --test web/tests`, Playwright e2e se presenti. Tutti verdi prima del push.
-
-## Worker
-| id | ramo | scope (solo questi file) |
+| Worker | Responsabilità | Scope preciso |
 |---|---|---|
-| A | feat/ux-lettore | web/ tranne web/js/simulatore*, web/js/ripasso*: lettore lezioni, grafo, ricerca, filtri, tema, accessibilita', mobile, web/ARCHITECTURE.md |
-| B | feat/simulatore-ripasso | web/js/simulatore/**, web/js/ripasso/**, relativi test; aggancio solo via registry.js |
-| Main | main | integra i rami, lancia tutti i test, deploy Pages, report |
+| X1 | Programma, priorità, mappatura e NODES | [Piano §3, X1](IMPROVEMENT_PLAN.md) |
+| X2 | Nuovi nodi di programma e relative lezioni | [Piano §2–3, X2](IMPROVEMENT_PLAN.md) |
+| X3 | Banche di esercizi e domande | [Piano §2–3, X3](IMPROVEMENT_PLAN.md) |
+| X4 | Correzioni delle lezioni esistenti | [Piano §3, X4](IMPROVEMENT_PLAN.md) |
+| X5 | Web app e CI | [Piano §3, X5](IMPROVEMENT_PLAN.md) |
+| X6 | Simulatore d'esame | [Piano §3, X6](IMPROVEMENT_PLAN.md) |
 
-## Qualita' richiesta
-SOLID, moduli piccoli e coesi, basso accoppiamento (dipendenze iniettate, niente globali), aperto/chiuso, test per ogni modulo, nomi coerenti, niente codice morto. Testi visibili in italiano. Mai inventare contenuti o URL.
+I worker operano solo sul proprio ramo di sessione `arena/*`, senza aprire o fondere PR; il coordinatore integra nell'ordine **X1 → X4 → X2 → X3 → X6 → X5 → integrazione**. Nessun worker tocca file fuori dal proprio scope: se necessari, li segnala. I nuovi nodi usano part separati; archi fra worker e mappatura dei nuovi ID sono compito dell'integrazione.
 
-## Consegna di ogni worker
-Codice + test + screenshot mobile 390x844 e desktop 1440x900 in docs/screens/, push sul proprio ramo, riepilogo breve (cosa fatto, come testare, limiti).
+Contratti tecnici: [CONTRACTS.md](CONTRACTS.md). Fonti e formati separati: [SYLLABUS.md](SYLLABUS.md), [EXAM_FORMAT.md](EXAM_FORMAT.md). I file generati si rigenerano, non si risolvono a mano; i test completi e le limitazioni vanno riportati secondo il piano.
