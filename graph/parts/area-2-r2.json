@@ -1,0 +1,266 @@
+[
+  {
+    "id": "uml-diagramma-package",
+    "title": "Diagramma UML dei package",
+    "area": 2,
+    "tipo": "abilita",
+    "sapere": "Un package UML raggruppa elementi del modello e ne definisce un namespace. Una dipendenza indica che un elemento del package sorgente usa elementi del package destinazione; «import» e «access» ne precisano la semantica. Il package diagram descrive organizzazione logica, non componenti distribuibili o nodi di deployment.",
+    "saper_fare": [
+      "Raggruppare classi in package coerenti",
+      "Disegnare dipendenze con verso e stereotipo quando noto",
+      "Distinguere package, componenti e deployment",
+      "Ricavare una proposta di package da una traccia Farmacia"
+    ],
+    "prerequisiti": [
+      {
+        "id": "uml-diagramma-classi",
+        "forza": "hard",
+        "motivo": "Le classi del modello sono gli elementi da organizzare."
+      },
+      {
+        "id": "decomposizione-funzionale",
+        "forza": "soft",
+        "motivo": "Le responsabilità individuate suggeriscono gruppi logici."
+      },
+      {
+        "id": "coesione-accoppiamento",
+        "forza": "soft",
+        "motivo": "Coesione e dipendenze aiutano a valutare i confini."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio UML: package da testo",
+        "testo": "Farmacia didattica: raggruppa Cliente, Ordine, Prodotto, Magazzino e ServizioNotifiche e indica le dipendenze. Proposta di modellazione, non testo d’esame originale.",
+        "soluzione": "1) Propongo package dominio, applicazione e infrastruttura. 2) L’applicazione usa classi del dominio e contratti esterni. 3) Traccio la freccia dal client al package usato. 4) Ogni raggruppamento è una proposta didattica, non un fatto della prova."
+      }
+    ],
+    "tempo_studio_min": 35,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "Il package diagram è nominato nel programma ufficiale 2026/27 [S1]; non gli attribuisco frequenze storiche."
+    },
+    "risorse": [
+      {
+        "titolo": "Scheda INF-36 2026/27 [S1]",
+        "url": "https://unimore.coursecatalogue.cineca.it/corsi/2024/10296/insegnamenti/2026/27351/2022/10001?schemaid=22867",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "FOWLER"
+      },
+      {
+        "libro": "UMLCLASS"
+      }
+    ],
+    "checklist_ripasso": [
+      "Package = raggruppamento logico",
+      "Freccia dal package dipendente a quello usato",
+      "«import» e «access» specificano l’accesso",
+      "Package ≠ componente ≠ deployment"
+    ]
+  },
+  {
+    "id": "esercizio-tesina-individuale",
+    "title": "Esercizio: tesina individuale del corso",
+    "area": 2,
+    "tipo": "tipo_esercizio",
+    "sapere": "La scheda ufficiale INF-36 2026/27 [S1] descrive una tesina individuale su un prodotto software con requisiti e diagrammi UML e una revisione del progetto con pattern. Criteri indicati: precisione/correttezza, completezza/design/pattern ed «effetto wow». I dettagli operativi non specificati restano da verificare sulla scheda [S1].",
+    "saper_fare": [
+      "Riformulare solo i contenuti della tesina riportati in [S1]",
+      "Organizzare requisiti, UML e revisione con pattern senza inventare deliverable",
+      "Controllare i criteri nominati senza trasformarli in pesi o voto",
+      "Separare dati della scheda da dettagli da verificare"
+    ],
+    "prerequisiti": [
+      {
+        "id": "requisiti-processo-specifica",
+        "forza": "hard",
+        "motivo": "La descrizione del prodotto include requisiti."
+      },
+      {
+        "id": "esercizio-class-diagram-da-testo",
+        "forza": "hard",
+        "motivo": "La scheda menziona diagrammi UML."
+      },
+      {
+        "id": "esercizio-pattern-motivato-java",
+        "forza": "hard",
+        "motivo": "La revisione del progetto usa pattern."
+      },
+      {
+        "id": "uml-diagramma-package",
+        "forza": "soft",
+        "motivo": "Utile per il programma UML, non indicato come deliverable specifico della tesina."
+      },
+      {
+        "id": "uml-diagramma-sequenza",
+        "forza": "soft",
+        "motivo": "Conoscenza UML di supporto, non deliverable qui attribuito alla scheda."
+      },
+      {
+        "id": "uml-diagramma-attivita",
+        "forza": "soft",
+        "motivo": "Conoscenza UML di supporto, non deliverable qui attribuito alla scheda."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio: pianificazione tesina [S1]",
+        "testo": "Usa solo la scheda [S1]: elenca i contenuti e i criteri nominati. Non aggiungere scadenze, pagine, pesi o deliverable.",
+        "soluzione": "1) Prodotto software. 2) Requisiti e diagrammi UML. 3) Revisione del progetto con pattern. 4) Criteri: precisione/correttezza, completezza/design/pattern, «effetto wow». 5) Dettagli operativi non specificati: [da verificare sulla scheda S1]."
+      }
+    ],
+    "tempo_studio_min": 30,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "La tesina individuale è indicata dalla scheda ufficiale INF-36 2026/27 [S1]; dettagli non presenti restano da verificare."
+    },
+    "risorse": [
+      {
+        "titolo": "Scheda INF-36 2026/27 [S1]",
+        "url": "https://unimore.coursecatalogue.cineca.it/corsi/2024/10296/insegnamenti/2026/27351/2022/10001?schemaid=22867",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [],
+    "checklist_ripasso": [
+      "Prodotto software",
+      "Requisiti e diagrammi UML",
+      "Revisione del progetto con pattern",
+      "Criteri nominati, senza inventare pesi",
+      "Scadenze e formati: [da verificare sulla scheda S1]"
+    ]
+  },
+  {
+    "id": "clean-architecture-accoppiamento-componenti",
+    "title": "Clean Architecture: accoppiamento tra componenti",
+    "area": 2,
+    "tipo": "concetto",
+    "sapere": "ADP (Acyclic Dependencies Principle), SDP (Stable Dependencies Principle) e SAP (Stable Abstractions Principle) guidano le dipendenze tra componenti. L’instabilità I = Ce/(Ca+Ce) confronta dipendenze uscenti e totali; l’astrattezza A confronta tipi astratti e tipi totali. La sequenza principale è A+I=1; D=|A+I−1| descrive la distanza, non è soglia universale. Martin è riferimento extra [MARTIN], non testo ufficiale.",
+    "saper_fare": [
+      "Enunciare ADP, SDP e SAP senza confonderli con REP/CCP/CRP",
+      "Calcolare Ca, Ce, I e A da un modello dichiarato",
+      "Interpretare sequenza principale e distanza senza inventare soglie"
+    ],
+    "prerequisiti": [
+      {
+        "id": "clean-architecture-coesione-componenti",
+        "forza": "hard",
+        "motivo": "Completa REP/CCP/CRP distinguendo accoppiamento tra componenti."
+      },
+      {
+        "id": "coesione-accoppiamento",
+        "forza": "soft",
+        "motivo": "Il lessico di dipendenze e qualità dei moduli è utile."
+      },
+      {
+        "id": "metriche-software",
+        "forza": "soft",
+        "motivo": "I e A sono indici da definire e interpretare con cautela."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "domanda teorica: accoppiamento tra componenti",
+        "testo": "Definisci ADP, SDP e SAP; distinguili da REP/CCP/CRP e spiega I e A.",
+        "soluzione": "ADP evita cicli; SDP fa dipendere da componenti più stabili; SAP associa stabilità ad astrazione. REP/CCP/CRP guidano coesione. I=Ce/(Ca+Ce), A=tipi astratti/totale; sequenza principale A+I=1 senza soglie universali."
+      },
+      {
+        "tipo_esame": "esercizio: indici da grafo didattico",
+        "testo": "Vendite dipende da tre componenti, due componenti dipendono da Vendite. Contiene un’interfaccia e quattro tipi totali. Calcola gli indici secondo le definizioni.",
+        "soluzione": "Assumendo Ce=3, Ca=2: I=3/5=0,6. A=1/4=0,25. D=|0,25+0,6−1|=0,15. Descrive il modello, non dà un giudizio automatico."
+      }
+    ],
+    "tempo_studio_min": 40,
+    "priorita": {
+      "livello": "media",
+      "motivazione": "ADP/SDP/SAP compaiono nella sintesi dell’utente [D1]; Martin è riferimento extra, non testo ufficiale del corso."
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "MARTIN"
+      }
+    ],
+    "checklist_ripasso": [
+      "ADP: dipendenze acicliche",
+      "SDP: dipendere da componenti più stabili",
+      "SAP: componenti stabili sufficientemente astratti",
+      "I=Ce/(Ca+Ce), A=astratti/totale, A+I=1",
+      "Nessuna soglia del docente attribuita"
+    ]
+  },
+  {
+    "id": "design-pattern-builder",
+    "title": "Design pattern Builder",
+    "area": 2,
+    "tipo": "abilita",
+    "sapere": "Builder separa la costruzione progressiva di un oggetto dalla sua rappresentazione, concentrando opzioni e validazione. È utile con più scelte o invarianti, non per ogni classe e non richiede sempre un Director. Builder/Decorator compaiono nella sintesi utente [D1] per lo studio dentistico; l’esempio qui è ricostruito, non originale.",
+    "saper_fare": [
+      "Riconoscere costruttori lunghi o parametri opzionali ambigui",
+      "Disegnare prodotto e builder con metodi fluenti e build()",
+      "Implementare validazione in Java",
+      "Dichiarare limiti e provenienza ricostruita"
+    ],
+    "prerequisiti": [
+      {
+        "id": "design-pattern-introduzione",
+        "forza": "hard",
+        "motivo": "Builder è un pattern e richiede lessico di intenti e ruoli."
+      },
+      {
+        "id": "design-pattern-simple-factory",
+        "forza": "soft",
+        "motivo": "Confrontare creazione di prodotto e sua configurazione."
+      },
+      {
+        "id": "design-pattern-decorator",
+        "forza": "soft",
+        "motivo": "Distinguere configurazione iniziale da aggiunte dinamiche."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "esercizio Java: Builder ricostruito",
+        "testo": "Studio dentistico ricostruito dalla sintesi utente [D1]: costruisci un fascicolo-visita con identificativo paziente, descrizione e importo non negativo. Campi e vincolo sono assunzioni didattiche.",
+        "soluzione": "Prodotto immutabile e builder annidato; metodi fluenti impostano i campi; build() controlla obbligatori e importo. Non è la consegna originale né una regola verificata del caso."
+      }
+    ],
+    "tempo_studio_min": 35,
+    "priorita": {
+      "livello": "bassa",
+      "motivazione": "Builder compare nella sintesi dell’utente [D1] una volta insieme a Decorator per lo studio dentistico; frequenza non verificata indipendentemente."
+    },
+    "risorse": [
+      {
+        "titolo": "Catalogo dei design pattern",
+        "url": "https://refactoring.guru/design-patterns/catalog",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "HFDP"
+      },
+      {
+        "libro": "GOF"
+      }
+    ],
+    "checklist_ripasso": [
+      "Prodotto separato dalla costruzione",
+      "Metodi fluenti e build()",
+      "Validazione degli invarianti",
+      "Studio dentistico ricostruito da [D1]",
+      "Builder ≠ Factory ≠ Decorator"
+    ]
+  }
+]

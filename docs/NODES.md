@@ -15,11 +15,13 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 | `requisiti-processo-specifica` | Processo di specifica dei requisiti e documento SRS | 1 | Specifica dei requisiti (2,5 CFU) | Teoria, Tesina | Requisiti, tema generale: 6 prove su 13 secondo la sintesi dell'utente [D1] | alta |
 | `requisiti-scrittura-verificabile` | Scrivere requisiti verificabili | 1 | Specifica dei requisiti (2,5 CFU) | Teoria, Tesina | Requisiti, tema generale: 6 prove su 13 secondo la sintesi dell'utente [D1] | media |
 | `uml-casi-uso` | Diagramma UML dei casi d'uso | 1 | Specifica dei requisiti (2,5 CFU) | Design, Tesina | Use case diagram: sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
+| `clean-architecture-accoppiamento-componenti` | Clean Architecture: accoppiamento tra componenti | 2 | — | — | — | media |
 | `clean-architecture-coesione-componenti` | Coesione dei componenti (Clean Architecture): REP, CCP, CRP | 2 | Progettazione (3,5 CFU) | Teoria | Clean Architecture, tema generale: 3 prove su 13 secondo la sintesi dell'utente [D1]<br>Coesione, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `coesione-accoppiamento` | Coesione e accoppiamento dei moduli | 2 | Progettazione (3,5 CFU) | Teoria | Coesione, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `decomposizione-funzionale` | Decomposizione funzionale | 2 | Progettazione (3,5 CFU) | — | — | bassa |
 | `design-pattern-abstract-factory` | Pattern Abstract Factory | 2 | Progettazione (3,5 CFU) | Design, Tesina | — | media |
 | `design-pattern-adapter` | Pattern Adapter | 2 | Progettazione (3,5 CFU) | Design, Tesina | — | media |
+| `design-pattern-builder` | Design pattern Builder | 2 | — | — | — | bassa |
 | `design-pattern-composite` | Pattern Composite | 2 | Progettazione (3,5 CFU) | Design, Tesina | — | alta |
 | `design-pattern-decorator` | Pattern Decorator | 2 | Progettazione (3,5 CFU) | Design, Tesina | Decorator nel design: 6 prove su 13 secondo la sintesi dell'utente [D1] | alta |
 | `design-pattern-factory-method` | Pattern Factory Method | 2 | Progettazione (3,5 CFU) | Design, Tesina | — | media |
@@ -35,6 +37,7 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 | `esercizio-domanda-metriche` | Esercizio d'esame: domanda teorica sulle metriche | 2 | Progettazione (3,5 CFU) | Teoria | Metriche, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | media |
 | `esercizio-pattern-motivato-java` | Esercizio d'esame: pattern motivato + class diagram + Java minimo | 2 | Progettazione (3,5 CFU) | Design, Tesina | Decorator nel design: 6 prove su 13 secondo la sintesi dell'utente [D1]<br>Template Method nel design: 4 prove su 13 secondo la sintesi dell'utente [D1]<br>Factory generico nel design: 2 prove su 13 secondo la sintesi dell'utente [D1]<br>Observer nel design: 1 prova su 13 secondo la sintesi dell'utente [D1]<br>Strategy nel design: 1 prova su 13 secondo la sintesi dell'utente [D1]<br>Builder nel design: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `esercizio-riconosci-pattern-dal-codice` | Esercizio d'esame: riconoscere il pattern dal codice | 2 | Progettazione (3,5 CFU) | Teoria | Simple Factory/static: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
+| `esercizio-tesina-individuale` | Esercizio: tesina individuale del corso | 2 | — | — | — | alta |
 | `metrica-complessita-ciclomatica` | Calcolare la complessità ciclomatica | 2 | Progettazione (3,5 CFU) | Teoria | Metriche, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | media |
 | `metriche-software` | Metriche software | 2 | Progettazione (3,5 CFU) | Teoria | Metriche, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | media |
 | `orm-object-relational-mapping` | Object Relational Mapping, problematiche e JPA/Hibernate | 2 | Progettazione (3,5 CFU) | — | — | bassa |
@@ -47,13 +50,16 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 | `uml-componenti-deployment` | Diagrammi UML di componenti e deployment | 2 | Progettazione (3,5 CFU) | — | — | bassa |
 | `uml-diagramma-attivita` | Diagramma UML di attività | 2 | Progettazione (3,5 CFU) | Design, Tesina | Activity diagram: quasi sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
 | `uml-diagramma-classi` | Diagramma UML delle classi | 2 | Progettazione (3,5 CFU) | Design, Tesina | Class diagram: sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
+| `uml-diagramma-package` | Diagramma UML dei package | 2 | — | — | — | media |
 | `uml-diagramma-sequenza` | Diagramma UML di sequenza | 2 | Progettazione (3,5 CFU) | Design, Tesina | Sequence diagram: quasi sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
 | `uml-diagramma-stati` | Diagramma UML degli stati (state machine) | 2 | Progettazione (3,5 CFU) | Design, Tesina | State diagram: quasi sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
+| `analisi-statica` | Analisi statica del codice | 3 | — | — | — | bassa |
 | `black-box-vs-white-box` | Black box e white box testing | 3 | Implementazione e testing (1,5 CFU) | Testing, Teoria | Testing black box a scaglioni: 13 prove su 13 secondo la sintesi dell'utente [D1]<br>White box, tema generale: 4 prove su 13 secondo la sintesi dell'utente [D1]<br>Differenze black/white: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `boundary-value-analysis` | Analisi dei valori limite (Boundary Value Analysis) | 3 | Implementazione e testing (1,5 CFU) | Testing | Testing black box a scaglioni: 13 prove su 13 secondo la sintesi dell'utente [D1] | alta |
 | `buone-pratiche-programmazione` | Buona programmazione e best practices | 3 | Implementazione e testing (1,5 CFU) | Teoria | Implementazione, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | media |
 | `classi-equivalenza` | Partizione in classi di equivalenza | 3 | Implementazione e testing (1,5 CFU) | Testing | Testing black box a scaglioni: 13 prove su 13 secondo la sintesi dell'utente [D1] | alta |
 | `code-smell` | Code smell | 3 | Implementazione e testing (1,5 CFU) | Teoria | — | media |
+| `commenti-codice` | Commenti nel codice | 3 | — | — | — | media |
 | `complessita-ciclomatica` | Path analysis e complessità ciclomatica di McCabe | 3 | Implementazione e testing (1,5 CFU) | Teoria | — | media |
 | `criteri-copertura` | Criteri di copertura: statement, decision, condition, MC/DC | 3 | Implementazione e testing (1,5 CFU) | Testing, Teoria | White box, tema generale: 4 prove su 13 secondo la sintesi dell'utente [D1]<br>MC/DC, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `debugging` | Debugging e processo di debugging | 3 | Implementazione e testing (1,5 CFU) | Teoria | Debugging, tema generale: 3 prove su 13 secondo la sintesi dell'utente [D1] | alta |
@@ -84,4 +90,9 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 
 ## Nodi non mappati
 
-Nessuno.
+- `clean-architecture-accoppiamento-componenti` — Clean Architecture: accoppiamento tra componenti (area 2)
+- `design-pattern-builder` — Design pattern Builder (area 2)
+- `esercizio-tesina-individuale` — Esercizio: tesina individuale del corso (area 2)
+- `uml-diagramma-package` — Diagramma UML dei package (area 2)
+- `analisi-statica` — Analisi statica del codice (area 3)
+- `commenti-codice` — Commenti nel codice (area 3)

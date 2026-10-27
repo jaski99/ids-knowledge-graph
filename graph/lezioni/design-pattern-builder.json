@@ -1,0 +1,75 @@
+{
+  "intuizione": "Builder è utile quando costruire un oggetto richiede più scelte coerenti: invece di passare argomenti indistinguibili, si nominano le opzioni e si verifica il risultato in un punto. Lo studio dentistico è uno scenario ricostruito, non una trascrizione della prova.",
+  "perche_ti_serve": "Parte 1 Design: Builder per oggetti con molte opzioni — 1 prova su 13 come Decorator/Builder secondo la sintesi dell'utente (2018-01).",
+  "spiegazione": "## Provenienza e intento\n\nLa sintesi dell’utente [D1] associa Builder/Decorator allo scenario dello studio dentistico (2018-01-30), ma gli originali non sono disponibili. Il caso seguente è **ricostruito a scopo didattico**: attributi, vincoli e classi sono assunzioni, non dettagli attestati della prova.\n\nBuilder separa la costruzione di un oggetto complesso dalla sua rappresentazione. Una forma comune ha prodotto immutabile, builder con metodi fluenti e `build()`. Un Director è opzionale e serve solo se si riutilizzano ricette predefinite.\n\n## Perché ti serve\n\nBuilder è riportato una volta nella sintesi dell’utente [D1], insieme a Decorator e allo scenario dentistico; gli originali non sono disponibili. Il caso ricostruito esercita la scelta e la motivazione, non riproduce una soluzione verificata.\n\n## Perché non un costruttore enorme?\n\nMolti parametri dello stesso tipo sono difficili da passare nell’ordine corretto; flag e `null` rendono la chiamata opaca. Il Builder nomina le scelte e concentra le verifiche. Ha però un costo in classi e codice: per pochi parametri obbligatori un costruttore semplice è spesso più chiaro.\n\n## Java originale: visita ricostruita\n\nAssunzioni didattiche: un fascicolo conserva identificativo paziente, descrizione e importo non negativo. Questa struttura non è riportata come tale nella sintesi [D1].\n\n```java\nimport java.math.BigDecimal;\nimport java.util.Objects;\nfinal class FascicoloVisita {\n  private final String pazienteId, descrizione;\n  private final BigDecimal importo;\n  private FascicoloVisita(Builder b) {\n    pazienteId=b.pazienteId; descrizione=b.descrizione; importo=b.importo;\n  }\n  static Builder builder() { return new Builder(); }\n  static final class Builder {\n    private String pazienteId, descrizione;\n    private BigDecimal importo=BigDecimal.ZERO;\n    Builder paziente(String id) { pazienteId=id; return this; }\n    Builder descrizione(String s) { descrizione=s; return this; }\n    Builder importo(BigDecimal v) { importo=v; return this; }\n    FascicoloVisita build() {\n      Objects.requireNonNull(pazienteId); Objects.requireNonNull(descrizione);\n      Objects.requireNonNull(importo);\n      if(importo.signum()<0) throw new IllegalArgumentException(\"importo negativo\");\n      return new FascicoloVisita(this);\n    }\n  }\n}\n```\n\nUso: `FascicoloVisita.builder().paziente(\"P-1\").descrizione(\"controllo\").importo(new BigDecimal(\"25.00\")).build();`. Il vincolo sul valore è un’assunzione del modello, non un dato originale.\n\n## Ruoli e notazione didattica\n\n- **Product:** `FascicoloVisita`, lo stato finale.\n- **Builder:** `FascicoloVisita.Builder`, raccoglie opzioni e costruisce.\n- **Client:** sceglie e chiama `build()`.\n- **Director:** assente; non è obbligatorio.\n\n```mermaid\nclassDiagram\n    class FascicoloVisita {\n      -String pazienteId\n      -String descrizione\n      -BigDecimal importo\n    }\n    class Builder {\n      +paziente(String) Builder\n      +descrizione(String) Builder\n      +importo(BigDecimal) Builder\n      +build() FascicoloVisita\n    }\n    Builder ..> FascicoloVisita : costruisce\n```\n\nÈ uno schema compatto: «costruisce» è un’etichetta illustrativa. Sul foglio usa notazione UML leggibile e le classi essenziali richieste.\n\n## Confronto e limiti\n\n**Factory** risponde soprattutto a “quale tipo concreto creo?”; **Builder** a “come configuro il prodotto?”. Possono collaborare. **Decorator** avvolge un oggetto per aggiungere comportamento dopo la costruzione; Builder non decora. Il Builder non garantisce da solo validità o immutabilità: il prodotto e `build()` devono far rispettare invarianti reali.\n\n## Fading didattico\n\nEsempio completo: determina prodotto, opzioni e invarianti. Completion problem: completa la guardia in `build()`. Esercizio autonomo: applica lo schema a campi opzionali davvero dichiarati, senza copiare proprietà dentistico non presenti. Se un caso ha poche opzioni, motiva perché non usare Builder.",
+  "analogia": "È come compilare una scheda d’ordine con campi nominati e un controllo prima dell’invio. L’analogia smette di valere perché Builder è codice tipizzato con invarianti: la scheda cartacea non garantisce immutabilità o correttezza.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Introduzione ai pattern",
+      "collegamento": "Intento, ruoli e limiti aiutano a decidere se Builder è necessario.",
+      "nodo": "design-pattern-introduzione"
+    },
+    {
+      "conoscenza": "Simple Factory",
+      "collegamento": "Factory seleziona un tipo di prodotto; Builder lo configura progressivamente.",
+      "nodo": "design-pattern-simple-factory"
+    },
+    {
+      "conoscenza": "Decorator",
+      "collegamento": "Decorator aggiunge comportamento avvolgendo l’oggetto durante l’uso.",
+      "nodo": "design-pattern-decorator"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Fascicolo-visita dentistico",
+      "problema": "Scenario ricostruito [D1], con ID, descrizione e importo non negativo come assunzioni.",
+      "passi": [
+        "1. Separo prodotto immutabile e builder temporaneo.",
+        "2. Espongo metodi fluenti nominati.",
+        "3. In build() controllo campi obbligatori e importo.",
+        "4. Creo il prodotto solo dopo la validazione.",
+        "5. Dichiaro che i campi e il vincolo sono ipotesi didattiche."
+      ],
+      "soluzione": "La chiamata `builder().paziente(...).descrizione(...).importo(...).build()` restituisce l’oggetto dopo i controlli.",
+      "perche_funziona": "Opzioni leggibili e validazione centralizzata rispettano le assunzioni dichiarate."
+    },
+    {
+      "titolo": "Builder o costruttore semplice?",
+      "problema": "CodiceFiscale ha un valore obbligatorio; PianoVisita didattico ha più scelte facoltative e vincoli.",
+      "passi": [
+        "1. Il costruttore di CodiceFiscale ha un solo argomento chiaro.",
+        "2. Le opzioni di PianoVisita rendono una lista posizionale ambigua.",
+        "3. Valuto un punto unico per i vincoli incrociati.",
+        "4. Uso Builder solo se chiarezza e controllo compensano codice aggiunto."
+      ],
+      "soluzione": "Costruttore semplice per il valore singolo; Builder è candidato per la configurazione articolata.",
+      "perche_funziona": "La selezione nasce dal problema e non dall’applicazione meccanica del pattern."
+    }
+  ],
+  "errori_comuni": [
+    "Usare Builder per ogni classe, anche con un costruttore breve.",
+    "Confondere Factory (scelta del tipo) con Builder (configurazione).",
+    "Dimenticare la validazione prima di restituire il prodotto.",
+    "Presentare campi dentistici ricostruiti come fatti dell’originale."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quale problema risolve Builder?",
+      "risposta": "Separa la costruzione progressiva di un oggetto con più scelte dalla rappresentazione e può centralizzare la validazione."
+    },
+    {
+      "domanda": "Quando basta un costruttore?",
+      "risposta": "Quando pochi parametri obbligatori rendono la chiamata chiara e non vi sono configurazioni complesse."
+    },
+    {
+      "domanda": "Come distingui Builder da Decorator?",
+      "risposta": "Builder configura e crea il prodotto; Decorator avvolge un oggetto compatibile per aggiungere comportamento durante l’uso."
+    },
+    {
+      "domanda": "Quali dettagli dentistici sono verificati?",
+      "risposta": "La sintesi utente cita lo scenario e Builder/Decorator; campi e regole qui mostrati sono ricostruzioni didattiche."
+    }
+  ],
+  "riepilogo": "Builder separa costruzione e prodotto e valida in build().\nÈ utile per configurazioni articolate, non obbligatorio per ogni classe.\nFactory seleziona; Decorator avvolge e aggiunge comportamento.\nStudio dentistico e Java sono ricostruiti da [D1]."
+}

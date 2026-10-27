@@ -1,0 +1,69 @@
+{
+  "intuizione": "Un commento è utile quando aggiunge una ragione, un vincolo o un contratto non visibile leggendo le istruzioni. Se racconta soltanto la riga, crea una seconda versione della stessa informazione che può diventare falsa dopo una modifica.",
+  "perche_ti_serve": "Parte 3 Teoria: quando e come commentare il codice — 1 prova su 13 secondo la sintesi dell'utente (2022-01).",
+  "spiegazione": "## Provenienza e idea centrale\n\nLa sintesi dell’utente [D1] riporta «commenti» tra i temi teorici associati a una prova del 2022; gli originali non sono disponibili. Non attribuiamo al docente una tassonomia o una risposta ufficiale. Qui si usa una classificazione pratica.\n\nUn commento è informazione testuale mantenuta insieme al programma. È utile se chiarisce un **contratto**, un **invariante**, una **ragione di progetto** o un fatto esterno necessario a interpretare una scelta. Non rende corretto il codice e non sostituisce nomi, tipi, metodi o test.\n\n## Perché ti serve\n\nLa sintesi dell’utente [D1] riporta il tema una volta tra i temi teorici di una prova del 2022; gli originali non sono disponibili. Questa è una risposta di studio, non una formulazione verificata né un’indicazione sui punti.\n\n## Tre categorie pratiche\n\n1. **Documentazione API:** descrive uso, parametri, risultato, eccezioni o condizioni di un metodo pubblico. In Java Javadoc (`/** ... */`) può essere trasformato in documentazione dagli strumenti.\n2. **Commento esplicativo:** annota una ragione non ovvia, un vincolo o un’invariante locale; va vicino al codice pertinente e mantenuto con esso.\n3. **Nota temporanea:** `TODO` o `FIXME` segnala lavoro incompleto o problema noto. Non è un sistema di issue, non deve occultare un difetto e richiede contesto e manutenzione.\n\nÈ una tassonomia didattica, non una lista normativa completa: convenzioni di progetto possono differire.\n\n## Quando commentare e quando migliorare il codice\n\n```java\nimport java.math.BigDecimal;\nimport java.util.Objects;\n\nfinal class Promozioni {\n    /** Restituisce il prezzo dopo aver verificato il codice promozionale. */\n    BigDecimal prezzoConPromozione(String codice) {\n        // Il controllo precede il calcolo perché i codici scaduti non vanno riutilizzati.\n        verificaNonScaduto(codice);\n        return calcolaPrezzo(codice);\n    }\n\n    private void verificaNonScaduto(String codice) {\n        Objects.requireNonNull(codice, \"codice\");\n    }\n\n    private BigDecimal calcolaPrezzo(String codice) {\n        return BigDecimal.ZERO; // valore dimostrativo, non regola di dominio\n    }\n}\n```\n\nIl commento esplicativo è giustificato solo se la motivazione non è già evidente da nome o requisito; il contratto deve corrispondere al comportamento reale. Esempio ridondante: `i++; // incrementa i`. Non spiega perché l’incremento avvenga. Una nota utile potrebbe dire che l’ordine di inserimento è conservato perché una specifica richiede di mostrare le righe in quell’ordine: si scrive solo se il requisito esiste davvero.\n\nSe un metodo è difficile da capire, prova a rinominare variabili, estrarre funzioni o separare responsabilità. Un commento lungo che parafrasa molti rami può segnalare che la struttura va chiarita. Non è una legge: la documentazione di un algoritmo complesso può essere necessaria, ma va distinta da una spiegazione di codice mal organizzato.\n\n## Regole di qualità\n\n- Scrivi note brevi, specifiche e vicine al codice che spiegano.\n- Descrivi il “perché” o un contratto, non ogni istruzione.\n- Aggiorna o rimuovi commenti divenuti falsi dopo una modifica.\n- Non inserire segreti o dati personali nei commenti.\n- Per TODO/FIXME annota contesto e segui le pratiche del team per tracciare il lavoro.\n\n```java\nfinal class LimiteOrdini {\n    private final int massimo;\n    LimiteOrdini(int massimo) {\n        if (massimo < 0) throw new IllegalArgumentException(\"massimo negativo\");\n        this.massimo = massimo;\n    }\n    boolean consente(int correnti) {\n        // Il massimo è incluso: il limite è raggiungibile.\n        return correnti <= massimo;\n    }\n}\n```\n\nLa nota sull’inclusività è utile solo se non è già chiara dal requisito o dal nome. Esempio completo: separa Javadoc, commento d’invariante e TODO. Completion problem: ricevi una nota “controlla disponibilità” e chiediti se spiega il perché o ripete la chiamata. Autonomia: commenta solo il contratto o la ragione che non emergono dalla struttura. Ogni commento resta da revisionare insieme al codice.\n\n```mermaid\nflowchart TD\n    C[Contratto API] --> J[Javadoc]\n    M[Motivazione non ovvia] --> I[Commento inline]\n    N[Attività temporanea] --> T[TODO o FIXME]\n```\n",
+  "analogia": "È una nota a margine in una ricetta che spiega perché un passaggio va fatto in un certo ordine, non la riscrittura di ogni gesto. L’analogia smette di valere perché il commento può diventare obsoleto mentre il codice continua a funzionare: va mantenuto e verificato.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Buone pratiche",
+      "collegamento": "Nomi e metodi coesi riducono i commenti ridondanti.",
+      "nodo": "buone-pratiche-programmazione"
+    },
+    {
+      "conoscenza": "Refactoring",
+      "collegamento": "Un commento lungo che racconta un metodo confuso può suggerire una ristrutturazione.",
+      "nodo": "refactoring"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Scegliere categoria e contenuto",
+      "problema": "Per API paga(importo), invariante locale e lavoro futuro, scegli commenti appropriati.",
+      "passi": [
+        "1. Documenta contratto, parametri e condizioni di paga con Javadoc quando è API esposta.",
+        "2. Spiega l’invariante non ovvio vicino al controllo che lo mantiene.",
+        "3. Usa TODO con contesto per una nota temporanea e segui la pratica del team.",
+        "4. Elimina le parafrasi di righe ovvie."
+      ],
+      "soluzione": "Javadoc per il contratto, commento inline per motivazione/invariante, TODO contestualizzato per lavoro temporaneo.",
+      "perche_funziona": "La forma segue lo scopo e riduce duplicazioni."
+    },
+    {
+      "titolo": "Commento o refactoring?",
+      "problema": "Un metodo lungo ha un commento di dieci righe che descrive tutti i rami.",
+      "passi": [
+        "1. Chiedo se il commento documenta un contratto esterno o parafrasa la logica.",
+        "2. Se parafrasa, valuto nomi migliori o metodi estratti.",
+        "3. Mantengo la motivazione che non emerge dalla struttura.",
+        "4. Dopo il cambiamento verifico il comportamento con i test disponibili."
+      ],
+      "soluzione": "La nota lunga è un indizio da valutare, non prova automatica di errore; migliora la struttura quando aiuta, conserva solo motivazioni non ovvie.",
+      "perche_funziona": "Distingue informazione di dominio dal rumore descrittivo senza usare commenti come sostituti del design."
+    }
+  ],
+  "errori_comuni": [
+    "Parafrasare ogni riga e duplicare il codice.",
+    "Lasciare commenti non aggiornati che contraddicono il comportamento.",
+    "Usare TODO come unica traccia di lavoro senza contesto.",
+    "Credere che Javadoc renda corretto un contratto non rispettato."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quando è utile un commento inline?",
+      "risposta": "Quando chiarisce motivazione, invariante o vincolo non evidente; va mantenuto breve e aggiornato."
+    },
+    {
+      "domanda": "Differenza fra Javadoc e parafrasi?",
+      "risposta": "Javadoc documenta uso e contratto di un elemento API; la parafrasi ripete ciò che il codice mostra già."
+    },
+    {
+      "domanda": "Come si gestisce TODO/FIXME?",
+      "risposta": "Si dà contesto, non si occulta un difetto e si aggiorna/rimuove quando risolto, seguendo il processo del team."
+    },
+    {
+      "domanda": "Un commento rende il codice autoesplicativo?",
+      "risposta": "Non necessariamente: se descrive logica complessa, valuta nomi e struttura migliori e conserva le sole motivazioni non ovvie."
+    }
+  ],
+  "riepilogo": "Commenta contratti, motivazioni e invarianti non ovvi.\nJavadoc documenta API; inline spiega scelte; TODO/FIXME sono note temporanee.\nNon parafrasare righe ovvie: migliora nomi e struttura.\nLa sintesi utente [D1] riporta il tema; gli originali non sono disponibili."
+}

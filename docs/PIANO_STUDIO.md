@@ -9,11 +9,11 @@ Ordine topologico dei nodi (ogni prerequisito prima del nodo che lo usa); a pari
 | area | nodi | alta | tempo |
 |---|---|---|---|
 | 1. Specifica dei requisiti | 9 | 6 | 6 h 45 min |
-| 2. Progettazione | 34 | 19 | 24 h 50 min |
-| 3. Implementazione e testing | 20 | 12 | 12 h 20 min |
+| 2. Progettazione | 38 | 20 | 27 h 10 min |
+| 3. Implementazione e testing | 22 | 12 | 13 h 10 min |
 | 4. Distribuzione e manutenzione | 7 | 0 | 3 h 00 min |
 | 5. Ingegneria del software AI-native | 5 | 0 | 2 h 20 min |
-| **Totale** | 75 | 37 | **49 h 15 min** |
+| **Totale** | 81 | 38 | **52 h 25 min** |
 
 ## Sessione 1 (2 h 15 min)
 
@@ -106,58 +106,70 @@ Ordine topologico dei nodi (ogni prerequisito prima del nodo che lo usa); a pari
 
 43. [ ] **Caratteristiche di qualità del progetto** (`qualita-progettazione`) — area 2, concetto, priorità MEDIA, 30 min. Prerequisiti: coesione-accoppiamento
 44. [ ] **Metriche software** (`metriche-software`) — area 2, concetto, priorità MEDIA, 60 min. Prerequisiti: qualita-progettazione, coesione-accoppiamento
-45. [ ] **Calcolare la complessità ciclomatica** (`metrica-complessita-ciclomatica`) — area 2, abilita, priorità MEDIA, 40 min. Prerequisiti: metriche-software
+45. [ ] **Clean Architecture: accoppiamento tra componenti** (`clean-architecture-accoppiamento-componenti`) — area 2, concetto, priorità MEDIA, 40 min. Prerequisiti: clean-architecture-coesione-componenti, coesione-accoppiamento, metriche-software
 
-## Sessione 17 (2 h 15 min)
+## Sessione 17 (1 h 45 min)
 
-46. [ ] **Esercizio d'esame: domanda teorica sulle metriche** (`esercizio-domanda-metriche`) — area 2, tipo_esercizio, priorità MEDIA, 25 min. Prerequisiti: metriche-software, metrica-complessita-ciclomatica
-47. [ ] **Stili architetturali** (`stili-architetturali`) — area 2, concetto, priorità MEDIA, 40 min. Prerequisiti: progettazione-obiettivi-livelli
-48. [ ] **Buona programmazione e best practices** (`buone-pratiche-programmazione`) — area 3, concetto, priorità MEDIA, 40 min. Prerequisiti: coesione-accoppiamento, principi-solid
-49. [ ] **Code smell** (`code-smell`) — area 3, concetto, priorità MEDIA, 30 min. Prerequisiti: buone-pratiche-programmazione, coesione-accoppiamento
+46. [ ] **Calcolare la complessità ciclomatica** (`metrica-complessita-ciclomatica`) — area 2, abilita, priorità MEDIA, 40 min. Prerequisiti: metriche-software
+47. [ ] **Esercizio d'esame: domanda teorica sulle metriche** (`esercizio-domanda-metriche`) — area 2, tipo_esercizio, priorità MEDIA, 25 min. Prerequisiti: metriche-software, metrica-complessita-ciclomatica
+48. [ ] **Stili architetturali** (`stili-architetturali`) — area 2, concetto, priorità MEDIA, 40 min. Prerequisiti: progettazione-obiettivi-livelli
 
-## Sessione 18 (2 h 00 min)
+## Sessione 18 (1 h 55 min)
 
-50. [ ] **Refactoring** (`refactoring`) — area 3, concetto, priorità ALTA, 45 min. Prerequisiti: code-smell, design-pattern-introduzione, principi-solid
-51. [ ] **Domanda d'esame: refactoring (cos'è, a cosa serve, rischi)** (`domanda-refactoring`) — area 3, tipo_esercizio, priorità ALTA, 30 min. Prerequisiti: refactoring, code-smell, metriche-software
-52. [ ] **Ottimizzazione del codice e ottimizzazione prematura** (`ottimizzazione-codice`) — area 3, concetto, priorità ALTA, 45 min. Prerequisiti: buone-pratiche-programmazione, refactoring, qualita-progettazione
+49. [ ] **Buona programmazione e best practices** (`buone-pratiche-programmazione`) — area 3, concetto, priorità MEDIA, 40 min. Prerequisiti: coesione-accoppiamento, principi-solid
+50. [ ] **Code smell** (`code-smell`) — area 3, concetto, priorità MEDIA, 30 min. Prerequisiti: buone-pratiche-programmazione, coesione-accoppiamento
+51. [ ] **Refactoring** (`refactoring`) — area 3, concetto, priorità ALTA, 45 min. Prerequisiti: code-smell, design-pattern-introduzione, principi-solid
 
-## Sessione 19 (1 h 55 min)
+## Sessione 19 (2 h 15 min)
 
-53. [ ] **Path analysis e complessità ciclomatica di McCabe** (`complessita-ciclomatica`) — area 3, abilita, priorità MEDIA, 35 min. Prerequisiti: grafo-flusso-controllo, metrica-complessita-ciclomatica
-54. [ ] **Esercizio d'esame: da codice a CFG e test minimi per la copertura** (`esercizio-white-box-copertura`) — area 3, tipo_esercizio, priorità ALTA, 40 min. Prerequisiti: criteri-copertura, grafo-flusso-controllo, complessita-ciclomatica
-55. [ ] **Controllo di versione con Git** (`git-versionamento`) — area 3, abilita, priorità MEDIA, 40 min. Prerequisiti: —
+52. [ ] **Domanda d'esame: refactoring (cos'è, a cosa serve, rischi)** (`domanda-refactoring`) — area 3, tipo_esercizio, priorità ALTA, 30 min. Prerequisiti: refactoring, code-smell, metriche-software
+53. [ ] **Ottimizzazione del codice e ottimizzazione prematura** (`ottimizzazione-codice`) — area 3, concetto, priorità ALTA, 45 min. Prerequisiti: buone-pratiche-programmazione, refactoring, qualita-progettazione
+54. [ ] **Commenti nel codice** (`commenti-codice`) — area 3, concetto, priorità MEDIA, 25 min. Prerequisiti: buone-pratiche-programmazione, refactoring
+55. [ ] **Path analysis e complessità ciclomatica di McCabe** (`complessita-ciclomatica`) — area 3, abilita, priorità MEDIA, 35 min. Prerequisiti: grafo-flusso-controllo, metrica-complessita-ciclomatica
 
-## Sessione 20 (2 h 15 min)
+## Sessione 20 (1 h 50 min)
 
-56. [ ] **Ispezione e revisione del codice** (`ispezione-codice`) — area 3, concetto, priorità MEDIA, 30 min. Prerequisiti: buone-pratiche-programmazione, code-smell
-57. [ ] **Programmazione difensiva e asserzioni** (`programmazione-difensiva`) — area 3, concetto, priorità MEDIA, 30 min. Prerequisiti: buone-pratiche-programmazione
-58. [ ] **Unit testing con JUnit 5** (`junit-5`) — area 3, abilita, priorità MEDIA, 40 min. Prerequisiti: boundary-value-analysis, testing-livelli-tipi, programmazione-difensiva
-59. [ ] **Debugging e processo di debugging** (`debugging`) — area 3, abilita, priorità ALTA, 35 min. Prerequisiti: testing-livelli-tipi, git-versionamento, junit-5, classi-equivalenza
+56. [ ] **Esercizio d'esame: da codice a CFG e test minimi per la copertura** (`esercizio-white-box-copertura`) — area 3, tipo_esercizio, priorità ALTA, 40 min. Prerequisiti: criteri-copertura, grafo-flusso-controllo, complessita-ciclomatica
+57. [ ] **Controllo di versione con Git** (`git-versionamento`) — area 3, abilita, priorità MEDIA, 40 min. Prerequisiti: —
+58. [ ] **Ispezione e revisione del codice** (`ispezione-codice`) — area 3, concetto, priorità MEDIA, 30 min. Prerequisiti: buone-pratiche-programmazione, code-smell
 
-## Sessione 21 (2 h 00 min)
+## Sessione 21 (1 h 45 min)
 
-60. [ ] **Gestione delle configurazioni (SCM)** (`gestione-configurazioni`) — area 4, concetto, priorità MEDIA, 35 min. Prerequisiti: git-versionamento
-61. [ ] **Licenze software: proprietarie, permissive e copyleft** (`licenze-software`) — area 4, concetto, priorità MEDIA, 30 min. Prerequisiti: —
-62. [ ] **Copyleft e compatibilità tra licenze** (`compatibilita-licenze`) — area 4, abilita, priorità MEDIA, 25 min. Prerequisiti: licenze-software
-63. [ ] **LLM e agenti nel ciclo di vita del software** (`llm-agenti-ciclo-vita`) — area 5, concetto, priorità MEDIA, 30 min. Prerequisiti: testing-livelli-tipi, requisiti-processo-specifica, gestione-configurazioni
+59. [ ] **Programmazione difensiva e asserzioni** (`programmazione-difensiva`) — area 3, concetto, priorità MEDIA, 30 min. Prerequisiti: buone-pratiche-programmazione
+60. [ ] **Unit testing con JUnit 5** (`junit-5`) — area 3, abilita, priorità MEDIA, 40 min. Prerequisiti: boundary-value-analysis, testing-livelli-tipi, programmazione-difensiva
+61. [ ] **Debugging e processo di debugging** (`debugging`) — area 3, abilita, priorità ALTA, 35 min. Prerequisiti: testing-livelli-tipi, git-versionamento, junit-5, classi-equivalenza
 
-## Sessione 22 (1 h 50 min)
+## Sessione 22 (2 h 00 min)
 
-64. [ ] **Assistenti AI per generazione, comprensione, modifica, refactoring e testing** (`assistenti-ai-sviluppo`) — area 5, abilita, priorità MEDIA, 30 min. Prerequisiti: llm-agenti-ciclo-vita, refactoring, junit-5, design-pattern-introduzione, git-versionamento
-65. [ ] **Opportunità, limiti e rischi del codice generato** (`rischi-codice-generato`) — area 5, concetto, priorità MEDIA, 30 min. Prerequisiti: llm-agenti-ciclo-vita, licenze-software, programmazione-difensiva
-66. [ ] **Verifica umana del codice generato** (`verifica-umana-codice-ai`) — area 5, abilita, priorità MEDIA, 30 min. Prerequisiti: rischi-codice-generato, ispezione-codice, boundary-value-analysis, criteri-copertura
-67. [ ] **Domanda d'esame: ingegneria del software AI-native** (`domanda-ids-ai-native`) — area 5, tipo_esercizio, priorità MEDIA, 20 min. Prerequisiti: rischi-codice-generato, verifica-umana-codice-ai, assistenti-ai-sviluppo, debugging
+62. [ ] **Gestione delle configurazioni (SCM)** (`gestione-configurazioni`) — area 4, concetto, priorità MEDIA, 35 min. Prerequisiti: git-versionamento
+63. [ ] **Licenze software: proprietarie, permissive e copyleft** (`licenze-software`) — area 4, concetto, priorità MEDIA, 30 min. Prerequisiti: —
+64. [ ] **Copyleft e compatibilità tra licenze** (`compatibilita-licenze`) — area 4, abilita, priorità MEDIA, 25 min. Prerequisiti: licenze-software
+65. [ ] **LLM e agenti nel ciclo di vita del software** (`llm-agenti-ciclo-vita`) — area 5, concetto, priorità MEDIA, 30 min. Prerequisiti: testing-livelli-tipi, requisiti-processo-specifica, gestione-configurazioni
 
-## Sessione 23 (1 h 55 min)
+## Sessione 23 (1 h 50 min)
 
-68. [ ] **Decomposizione funzionale** (`decomposizione-funzionale`) — area 2, abilita, priorità BASSA, 30 min. Prerequisiti: progettazione-obiettivi-livelli
-69. [ ] **Object Relational Mapping, problematiche e JPA/Hibernate** (`orm-object-relational-mapping`) — area 2, concetto, priorità BASSA, 60 min. Prerequisiti: progettazione-obiettivi-livelli, uml-associazioni-molteplicita
-70. [ ] **Diagrammi UML di componenti e deployment** (`uml-componenti-deployment`) — area 2, concetto, priorità BASSA, 25 min. Prerequisiti: stili-architetturali, uml-diagramma-classi
+66. [ ] **Assistenti AI per generazione, comprensione, modifica, refactoring e testing** (`assistenti-ai-sviluppo`) — area 5, abilita, priorità MEDIA, 30 min. Prerequisiti: llm-agenti-ciclo-vita, refactoring, junit-5, design-pattern-introduzione, git-versionamento
+67. [ ] **Opportunità, limiti e rischi del codice generato** (`rischi-codice-generato`) — area 5, concetto, priorità MEDIA, 30 min. Prerequisiti: llm-agenti-ciclo-vita, licenze-software, programmazione-difensiva
+68. [ ] **Verifica umana del codice generato** (`verifica-umana-codice-ai`) — area 5, abilita, priorità MEDIA, 30 min. Prerequisiti: rischi-codice-generato, ispezione-codice, boundary-value-analysis, criteri-copertura
+69. [ ] **Domanda d'esame: ingegneria del software AI-native** (`domanda-ids-ai-native`) — area 5, tipo_esercizio, priorità MEDIA, 20 min. Prerequisiti: rischi-codice-generato, verifica-umana-codice-ai, assistenti-ai-sviluppo, debugging
 
-## Sessione 24 (2 h 00 min)
+## Sessione 24 (2 h 10 min)
 
-71. [ ] **Build automation con Maven** (`maven`) — area 3, abilita, priorità BASSA, 30 min. Prerequisiti: junit-5
-72. [ ] **Integrazione e consegna continua (CI/CD)** (`ci-cd`) — area 4, concetto, priorità BASSA, 30 min. Prerequisiti: maven, gestione-configurazioni, junit-5
-73. [ ] **Versionamento semantico e changelog** (`versionamento-semantico`) — area 4, abilita, priorità BASSA, 15 min. Prerequisiti: gestione-configurazioni
-74. [ ] **Rilascio e post-produzione** (`release-post-produzione`) — area 4, concetto, priorità BASSA, 20 min. Prerequisiti: gestione-configurazioni, versionamento-semantico
-75. [ ] **Manutenzione del software: tipi e costi** (`tipi-manutenzione`) — area 4, concetto, priorità MEDIA, 25 min. Prerequisiti: release-post-produzione, refactoring, requisiti-costo-errori-boehm
+70. [ ] **Decomposizione funzionale** (`decomposizione-funzionale`) — area 2, abilita, priorità BASSA, 30 min. Prerequisiti: progettazione-obiettivi-livelli
+71. [ ] **Diagramma UML dei package** (`uml-diagramma-package`) — area 2, abilita, priorità MEDIA, 35 min. Prerequisiti: uml-diagramma-classi, decomposizione-funzionale, coesione-accoppiamento
+72. [ ] **Esercizio: tesina individuale del corso** (`esercizio-tesina-individuale`) — area 2, tipo_esercizio, priorità ALTA, 30 min. Prerequisiti: requisiti-processo-specifica, esercizio-class-diagram-da-testo, esercizio-pattern-motivato-java, uml-diagramma-package, uml-diagramma-sequenza, uml-diagramma-attivita
+73. [ ] **Design pattern Builder** (`design-pattern-builder`) — area 2, abilita, priorità BASSA, 35 min. Prerequisiti: design-pattern-introduzione, design-pattern-simple-factory, design-pattern-decorator
+
+## Sessione 25 (1 h 50 min)
+
+74. [ ] **Object Relational Mapping, problematiche e JPA/Hibernate** (`orm-object-relational-mapping`) — area 2, concetto, priorità BASSA, 60 min. Prerequisiti: progettazione-obiettivi-livelli, uml-associazioni-molteplicita
+75. [ ] **Diagrammi UML di componenti e deployment** (`uml-componenti-deployment`) — area 2, concetto, priorità BASSA, 25 min. Prerequisiti: stili-architetturali, uml-diagramma-classi
+76. [ ] **Analisi statica del codice** (`analisi-statica`) — area 3, concetto, priorità BASSA, 25 min. Prerequisiti: ispezione-codice, code-smell, metrica-complessita-ciclomatica
+
+## Sessione 26 (2 h 00 min)
+
+77. [ ] **Build automation con Maven** (`maven`) — area 3, abilita, priorità BASSA, 30 min. Prerequisiti: junit-5
+78. [ ] **Integrazione e consegna continua (CI/CD)** (`ci-cd`) — area 4, concetto, priorità BASSA, 30 min. Prerequisiti: maven, gestione-configurazioni, junit-5
+79. [ ] **Versionamento semantico e changelog** (`versionamento-semantico`) — area 4, abilita, priorità BASSA, 15 min. Prerequisiti: gestione-configurazioni
+80. [ ] **Rilascio e post-produzione** (`release-post-produzione`) — area 4, concetto, priorità BASSA, 20 min. Prerequisiti: gestione-configurazioni, versionamento-semantico
+81. [ ] **Manutenzione del software: tipi e costi** (`tipi-manutenzione`) — area 4, concetto, priorità MEDIA, 25 min. Prerequisiti: release-post-produzione, refactoring, requisiti-costo-errori-boehm
