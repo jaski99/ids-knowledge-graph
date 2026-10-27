@@ -86,5 +86,6 @@
       "risposta": "Perché misura quanti cammini indipendenti ci sono da capire e testare: un valore alto significa costi di test e di modifica alti e suggerisce di spezzare il metodo."
     }
   ],
-  "riepilogo": "Basis path testing: CFG → V(G) → V(G) cammini indipendenti → input e output attesi.\nOgni cammino nuovo inverte una decisione e aggiunge almeno un arco.\nGerarchia: statement ≤ decision ≤ basis path ≤ tutti i cammini.\nProva 2025: V(G) = 4; 1 test per statement, 2 per decision, 4 per basis path.\nAttenzione ai cammini non eseguibili e a % con i negativi in Java."
+  "riepilogo": "Basis path testing: CFG → V(G) → V(G) cammini indipendenti → input e output attesi.\nOgni cammino nuovo inverte una decisione e aggiunge almeno un arco.\nGerarchia: statement ≤ decision ≤ basis path ≤ tutti i cammini.\nProva 2025: V(G) = 4; 1 test per statement, 2 per decision, 4 per basis path.\nAttenzione ai cammini non eseguibili e a % con i negativi in Java.",
+  "perche_ti_serve": "Testing — Parte 2 / Teoria: la complessità ciclomatica V(G) appartiene al white box, ad alta frequenza secondo la sintesi dell'utente prove su 13 secondo la sintesi dell’utente (sintesi sulle 13 prove) 2017-2025."
 }

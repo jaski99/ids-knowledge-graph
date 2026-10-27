@@ -84,5 +84,6 @@
       "risposta": "Perché i punti caldi sono isolati in metodi o classi con responsabilità chiare e si possono sostituire senza toccare il resto, con i test che verificano la correttezza."
     }
   ],
-  "riepilogo": "Knuth: dimentica le piccole efficienze nel 97% dei casi, non perdere il 3% critico.\nMake it work, make it right, make it fast.\nMisura con profiler e benchmark; intervieni sui punti caldi (80/20).\nPrima algoritmo e strutture dati, poi micro-ottimizzazioni; test e nuova misura.\nAmdahl: S = 1 / ((1 − p) + p / s)."
+  "riepilogo": "Knuth: dimentica le piccole efficienze nel 97% dei casi, non perdere il 3% critico.\nMake it work, make it right, make it fast.\nMisura con profiler e benchmark; intervieni sui punti caldi (80/20).\nPrima algoritmo e strutture dati, poi micro-ottimizzazioni; test e nuova misura.\nAmdahl: S = 1 / ((1 − p) + p / s).",
+  "perche_ti_serve": "Approfondimento: non risulta tra le prove su 13 secondo la sintesi dell'utente sulle 13 prove 2017-2025."
 }

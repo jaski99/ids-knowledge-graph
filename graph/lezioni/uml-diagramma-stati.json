@@ -41,7 +41,7 @@
         "Stati finali: Rifiutata, Annullata, Utilizzata, Assenza portano a [*]."
       ],
       "soluzione": "```mermaid\nstateDiagram-v2\n    [*] --> InAttesa : prenota()\n    InAttesa --> Approvata : approva()\n    InAttesa --> Rifiutata : rifiuta()\n    InAttesa --> Annullata : annulla()\n    Approvata --> Annullata : annulla() [prima della data]\n    Approvata --> Utilizzata : registraPresenza()\n    Approvata --> Assenza : registraAssenza() / ambulante.incrementaAssenze()\n    Rifiutata --> [*]\n    Annullata --> [*]\n    Utilizzata --> [*]\n    Assenza --> [*]\n```",
-      "perche_funziona": "Ogni stato è una situazione d'attesa nominata con un participio; ogni evento è un'operazione di Prenotazione; la guardia traduce la regola temporale; l'azione sul contatore delle assenze collega lo stato alla sanzione dell'ambulante."
+      "perche_funziona": "Ogni stato è una situazione d'attesa nominata con un participio; ogni evento è un'operazione di Prenotazione; la guardia traduce la regola temporale; l'azione sul contatore delle assenze collega lo stato alla sanzione dell'ambulante.\n\n## Transizioni dal testo vs transizioni ipotetiche\n\nCostruisci lo state diagram in due passi. Prima elenca le transizioni **ricavate letteralmente dal testo** (evento, guardia e azione scritti o chiaramente impliciti). Poi, solo se il testo tace su qualcosa (es. «dopo quanto tempo scatta il sollecito?», «quante assenze scatenano la sanzione?»), aggiungi transizioni **ipotetiche** e segnala il valore come ipotesi: «ipotesi: 3 assenze → sanzione», «ipotesi: sollecito 7 giorni dopo la scadenza». All’esame, un’ipotesi dichiarata vale più di un valore inventato spacciato per certo."
     }
   ],
   "errori_comuni": [
@@ -69,5 +69,6 @@
       "risposta": "Evento di chiamata (un'operazione invocata), segnale (messaggio asincrono), evento temporale (after/at), evento di cambiamento (when condizione diventa vera)."
     }
   ],
-  "riepilogo": "Stati (participi, situazioni d'attesa), transizioni evento [guardia] / azione.\nIniziale e finale; self-transition se lo stato non cambia.\nStati = valori dell'enum stato; eventi = operazioni della classe.\nEventi anche temporali: after(15 giorni)."
+  "riepilogo": "Stati (participi, situazioni d'attesa), transizioni evento [guardia] / azione.\nIniziale e finale; self-transition se lo stato non cambia.\nStati = valori dell'enum stato; eventi = operazioni della classe.\nEventi anche temporali: after(15 giorni).",
+  "perche_ti_serve": "Design — Parte 1: lo state diagram è richiesto in quasi tutte le 13 prove su 13 secondo la sintesi dell'utente (quasi sempre, 1-2 pt); gli stati coincidono con i valori dell'attributo stato di una classe del class diagram."
 }

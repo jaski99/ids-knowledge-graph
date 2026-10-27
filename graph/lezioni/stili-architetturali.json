@@ -68,5 +68,6 @@
       "risposta": "In pipe and filter i dati scorrono in una catena fissa di trasformazioni, ognuna dipende dal formato dell'output della precedente; nell'architettura a eventi i componenti pubblicano eventi e chi è interessato si sottoscrive, senza un ordine fisso e senza conoscersi."
     }
   ],
-  "riepilogo": "Stile = tipi di componenti + connettori + vincoli.\nA livelli, client-server, pipe and filter, MVC, a eventi, repository.\nOgnuno favorisce qualità diverse: si sceglie in base ai requisiti NF.\nNei sistemi reali gli stili si combinano."
+  "riepilogo": "Stile = tipi di componenti + connettori + vincoli.\nA livelli, client-server, pipe and filter, MVC, a eventi, repository.\nOgnuno favorisce qualità diverse: si sceglie in base ai requisiti NF.\nNei sistemi reali gli stili si combinano.",
+  "perche_ti_serve": "Teoria — Parte 3: stili architetturali e clean architecture (separazione delle responsabilità) hanno frequenza media-alta secondo la sintesi dell'utente prove su 13 secondo la sintesi dell’utente (sintesi sulle 13 prove) 2017-2025."
 }

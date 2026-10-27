@@ -87,5 +87,6 @@
       "risposta": "Riusando i nomi delle classi del class diagram principale e mostrando quale classe esistente assume quale ruolo del pattern."
     }
   ],
-  "riepilogo": "1.4 = scelta + motivazione con limiti + class diagram + Java minimo (4-5 punti, 15-20 min).\nMotivazione: frase del testo, problema, alternativa scartata, vantaggi nel caso.\nDiagramma con i nomi del caso e molteplicità; coerenza con l'1.1.\nCodice: interfaccia, una classe concreta, metodo chiave, main d'uso.\nChecklist finale prima di consegnare."
+  "riepilogo": "1.4 = scelta + motivazione con limiti + class diagram + Java minimo (4-5 punti, 15-20 min).\nMotivazione: frase del testo, problema, alternativa scartata, vantaggi nel caso.\nDiagramma con i nomi del caso e molteplicità; coerenza con l'1.1.\nCodice: interfaccia, una classe concreta, metodo chiave, main d'uso.\nChecklist finale prima di consegnare.",
+  "perche_ti_serve": "Pattern — Design Parte 1: motivare la scelta di un pattern nello scenario rientra nelle prove di Design, richieste in 13 prove su 13 secondo la sintesi dell'utente."
 }

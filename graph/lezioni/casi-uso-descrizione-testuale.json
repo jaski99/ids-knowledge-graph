@@ -64,5 +64,6 @@
       "risposta": "Ogni passo in cui il sistema fa qualcosa diventa uno o più messaggi tra oggetti; le verifiche diventano chiamate a operazioni (es. puoPrendereInPrestito()), le estensioni diventano frammenti alt/opt. Così i messaggi corrispondono a operazioni del class diagram."
     }
   ],
-  "riepilogo": "Template: nome, attori, precondizioni, trigger, scenario principale, estensioni, postcondizioni.\nPassi numerati con soggetto (attore o sistema), un'azione ciascuno, niente if.\nEstensioni agganciate al passo (4a): condizione, azioni, dove si riprende.\nÈ il ponte verso sequence (messaggi), activity (flusso) e class diagram (operazioni)."
+  "riepilogo": "Template: nome, attori, precondizioni, trigger, scenario principale, estensioni, postcondizioni.\nPassi numerati con soggetto (attore o sistema), un'azione ciascuno, niente if.\nEstensioni agganciate al passo (4a): condizione, azioni, dove si riprende.\nÈ il ponte verso sequence (messaggi), activity (flusso) e class diagram (operazioni).",
+  "perche_ti_serve": "Design — Parte 1: il caso d'uso è richiesto in 13 prove su 13 secondo la sintesi dell'utente (sempre, 1-2 pt); la descrizione testuale ne dettaglia il flusso."
 }

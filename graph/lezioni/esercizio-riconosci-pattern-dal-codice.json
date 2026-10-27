@@ -83,5 +83,6 @@
       "risposta": "Rende sicura la creazione con più thread, ma impone il costo del lock a ogni chiamata anche dopo la creazione; alternative: inizializzazione eager, holder idiom, enum."
     }
   ],
-  "riepilogo": "Riconoscere il pattern dalle impronte nel codice, poi discutere la scelta implementativa.\nSingleton: costruttore private + static + getInstance. Decorator: implementa e contiene lo stesso tipo. Adapter: contiene un altro tipo e traduce.\nComposite: List del supertipo + ricorsione. Observer: lista di interfacce + ciclo di notifica. Template Method: final che chiama abstract.\nState vs Strategy: chi cambia il riferimento.\nRisposta: nome, ruoli, utilità, pro/contro motivati, errori nel codice."
+  "riepilogo": "Riconoscere il pattern dalle impronte nel codice, poi discutere la scelta implementativa.\nSingleton: costruttore private + static + getInstance. Decorator: implementa e contiene lo stesso tipo. Adapter: contiene un altro tipo e traduce.\nComposite: List del supertipo + ricorsione. Observer: lista di interfacce + ciclo di notifica. Template Method: final che chiama abstract.\nState vs Strategy: chi cambia il riferimento.\nRisposta: nome, ruoli, utilità, pro/contro motivati, errori nel codice.",
+  "perche_ti_serve": "Pattern — Design Parte 1: riconoscere il pattern dallo scenario è richiesto in quasi tutte le 13 prove su 13 secondo la sintesi dell'utente."
 }

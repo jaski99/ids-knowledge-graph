@@ -66,5 +66,6 @@
       "risposta": "Faccio un'ipotesi ragionevole e la scrivo esplicitamente sul foglio, così la scelta di modellazione è motivata e il docente vede che l'ambiguità è stata notata."
     }
   ],
-  "riepilogo": "Procedura: soggetti → attori, verbi → casi d'uso, filtro, relazioni, disegno.\nInclude = sempre (base → incluso); extend = «se…» (estensione → base).\nAttori anche non umani: tempo, dispositivi, sistemi esterni.\nDichiara le ipotesi; ricontrolla il caso di studio paragrafo per paragrafo."
+  "riepilogo": "Procedura: soggetti → attori, verbi → casi d'uso, filtro, relazioni, disegno.\nInclude = sempre (base → incluso); extend = «se…» (estensione → base).\nAttori anche non umani: tempo, dispositivi, sistemi esterni.\nDichiara le ipotesi; ricontrolla il caso di studio paragrafo per paragrafo.",
+  "perche_ti_serve": "Design — Parte 1: il diagramma dei casi d'uso è richiesto in 13 prove su 13 secondo la sintesi dell'utente (sempre, 1-2 pt)."
 }

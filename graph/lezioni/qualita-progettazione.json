@@ -66,5 +66,6 @@
       "risposta": "Gli attributi interni (coesione, accoppiamento, complessità, dimensione) sono misurabili sul progetto e sul codice e influenzano le qualità esterne (manutenibilità, testabilità, affidabilità, riuso), che si osservano solo usando o modificando il sistema; per questo le metriche li misurano come indicatori."
     }
   ],
-  "riepilogo": "Qualità esterne (osservate) vs attributi interni (misurabili sul progetto).\nISO 9126: funzionalità, affidabilità, usabilità, efficienza, manutenibilità, portabilità.\nISO 25010:2011: 8 caratteristiche (+ compatibilità, sicurezza); revisione 2023: 9.\nCoesione alta e accoppiamento basso → manutenibilità, testabilità, riuso."
+  "riepilogo": "Qualità esterne (osservate) vs attributi interni (misurabili sul progetto).\nISO 9126: funzionalità, affidabilità, usabilità, efficienza, manutenibilità, portabilità.\nISO 25010:2011: 8 caratteristiche (+ compatibilità, sicurezza); revisione 2023: 9.\nCoesione alta e accoppiamento basso → manutenibilità, testabilità, riuso.",
+  "perche_ti_serve": "Design — Parte 1: la qualità del progetto si valuta su class diagram, coerenza tra diagrammi e pattern; la Parte 1 Design è richiesta in 13 prove su 13 secondo la sintesi dell'utente."
 }

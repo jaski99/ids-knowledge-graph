@@ -104,5 +104,6 @@
       "risposta": "Lo segnalo come anomalia della specifica (salto di prezzo) senza cambiare i valori attesi: il test verifica la specifica così com'è, ma il problema va riportato a chi ha scritto i requisiti."
     }
   ],
-  "riepilogo": "Black box: si parte dalla specifica, non dal codice.\nRetta numerica → classi V (una per scaglione) e NV (fuori dominio).\nTest minimi: un valore centrale per classe, una sola NV per test.\nBVA su ogni classe valida: min-ε, min, min+ε, max-ε, max, max+ε, con ε dichiarato.\nOutput atteso per ogni test; segnala salti di prezzo e ambiguità."
+  "riepilogo": "Black box: si parte dalla specifica, non dal codice.\nRetta numerica → classi V (una per scaglione) e NV (fuori dominio).\nTest minimi: un valore centrale per classe, una sola NV per test.\nBVA su ogni classe valida: min-ε, min, min+ε, max-ε, max, max+ε, con ε dichiarato.\nOutput atteso per ogni test; segnala salti di prezzo e ambiguità.",
+  "perche_ti_serve": "Testing — Parte 2: il testing meccanico (classi di equivalenza e valori al confine) è richiesto in 13 prove su 13 secondo la sintesi dell'utente."
 }
