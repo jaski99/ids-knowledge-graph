@@ -1,0 +1,73 @@
+{
+  "intuizione": "Un package diagram risponde a una domanda architetturale: quali gruppi logici compongono il modello e chi dipende da chi? Prima si stabiliscono confini comprensibili, poi si tracciano dipendenze; la figura non dice dove gira il software.",
+  "spiegazione": "## Perché serve e provenienza\n\nIl **package diagram** organizza elementi UML in gruppi denominati package e rende visibili dipendenze fra gruppi. La scheda INF-36 2026/27 nomina il package diagram [S1]. La sintesi dell’utente sulle prove 2017–2025 [D1] non ne documenta la frequenza: non la attribuiamo.\n\n## Perché ti serve\n\nLa scheda ufficiale 2026/27 nomina il package diagram [S1]. La sintesi utente [D1] non fornisce una frequenza storica per questo diagramma: il motivo documentato qui è la copertura del programma. La Farmacia è il caso fil rouge ricostruito, non una soluzione originale.\n\n## Notazione essenziale\n\nIn UML un package si disegna come cartella con linguetta e nome; può contenere o elencare elementi. Una dipendenza è una freccia tratteggiata dalla sorgente al bersaglio: la sorgente usa il bersaglio. Gli stereotipi **«import»** e **«access»** precisano la visibilità dei membri importati. Disegna la notazione UML richiesta dalla consegna. Il Mermaid seguente è uno schema didattico, non la notazione normativa da copiare sul foglio.\n\n## Farmacia: confini e dipendenze\n\nLa Farmacia è uno scenario della sintesi dell’utente [D1]; la seguente organizzazione è una **ricostruzione didattica**, non una soluzione originale. I nomi dichiarati qui sono una scelta per l’esercizio.\n\n```mermaid\nflowchart LR\n    subgraph Dominio\n      Ordine\n      Prodotto\n      Cliente\n    end\n    subgraph Applicazione\n      GestioneOrdini\n    end\n    subgraph Infrastruttura\n      MagazzinoRepository\n      ServizioNotifiche\n    end\n    GestioneOrdini -.->|usa elementi| Dominio\n    GestioneOrdini -.->|usa contratti| Infrastruttura\n```\n\n`subgraph` mostra contenitori e le frecce il verso; non rende tutta la semantica UML. Sul foglio usa i simboli UML e aggiungi «import» o «access» solo se la semantica è scelta e richiesta.\n\n## Come leggere e disegnare\n\n1. Individua il package client, cioè quello che contiene codice che usa un elemento esterno.\n2. Disegna la dipendenza dal client al package usato; non invertire la freccia.\n3. «Import» rende i membri pubblici importati disponibili senza qualificarne il nome; «access» permette l’uso ma non esporta i nomi importati ai client del package sorgente.\n4. Traccia solo gli usi giustificati: l’esistenza di due package non implica una dipendenza.\n5. Controlla eventuali cicli e motiva i confini; il diagramma da solo non dimostra qualità o comportamento runtime.\n\n## Package, componenti e deployment\n\n**Package diagram**: raggruppamento logico del modello e dipendenze tra namespace. **Component diagram**: moduli con interfacce/porte e relazioni di realizzazione o uso; può rappresentare unità sostituibili. **Deployment diagram**: nodi di esecuzione, collocazione di artefatti/componenti e comunicazioni infrastrutturali. Un package può contenere classi ma non è per questo distribuibile; un componente può essere realizzato da elementi di più package; package non indica un server. Chiediti: raggruppo il modello, descrivo moduli con interfacce o colloco software su infrastruttura?\n\n## Esempio, completamento e autonomia\n\nProcedura: sottolinea gruppi e responsabilità, proponi package, assegna elementi, poi traccia dipendenze motivate. Nel completion problem lascia vuoti i nomi dei package e fai completare il verso delle frecce. Nell’esercizio autonomo giustifica ogni scelta con un fatto della traccia oppure marchiala come assunzione. La notazione Mermaid è semplificata; se la consegna non definisce un dettaglio di notazione, scrivi **[da verificare]** invece di inventare.",
+  "analogia": "Sono scaffali di un archivio: ogni cartella raccoglie documenti affini e un registro indica quale cartella consulta l’altra. L’analogia smette di valere quando si confondono cartelle logiche con server fisici: il package diagram non localizza il software.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Class diagram",
+      "collegamento": "Classi e interfacce sono gli elementi che organizzi nei package.",
+      "nodo": "uml-diagramma-classi"
+    },
+    {
+      "conoscenza": "Decomposizione funzionale",
+      "collegamento": "Responsabilità individuate nella scomposizione suggeriscono confini da verificare sul modello.",
+      "nodo": "decomposizione-funzionale"
+    },
+    {
+      "conoscenza": "Coesione e accoppiamento",
+      "collegamento": "Valuta se i gruppi sono coerenti e le dipendenze motivate.",
+      "nodo": "coesione-accoppiamento"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Farmacia: raggruppa il modello",
+      "problema": "Ricostruzione da Farmacia [D1]: organizza Cliente, Ordine, RigaOrdine, Prodotto e Magazzino.",
+      "passi": [
+        "1. Raggruppo Cliente, Ordine, RigaOrdine e Prodotto nel package dominio.",
+        "2. Metto il coordinamento dell’ordine in applicazione; repository e notifiche sono assunzioni di esempio.",
+        "3. Traccio dal coordinatore verso gli elementi/contratti che usa.",
+        "4. Non aggiungo cardinalità né spaccio i confini per dati originali."
+      ],
+      "soluzione": "Una proposta: dominio, applicazione e infrastruttura; la direzione va dal coordinatore al package usato. È una ricostruzione, non soluzione ufficiale.",
+      "perche_funziona": "Dichiara provenienza e motivazione dei confini, evitando di aggiungere dettagli non dati."
+    },
+    {
+      "titolo": "Verso della dipendenza",
+      "problema": "Report usa la classe Ordine del package Dominio; la traccia non parla di deployment.",
+      "passi": [
+        "1. Report è il client che usa Ordine.",
+        "2. Disegno Report → Dominio.",
+        "3. Aggiungo «import» o «access» solo se serve e la semantica è scelta.",
+        "4. Non invento nodi server."
+      ],
+      "soluzione": "Dipendenza tratteggiata Report → Dominio; nessun deployment diagram.",
+      "perche_funziona": "La freccia risponde alla dipendenza logica e non introduce infrastruttura non specificata."
+    }
+  ],
+  "errori_comuni": [
+    "Invertire la freccia: parte dal package che dipende.",
+    "Trattare Mermaid come notazione UML normativa.",
+    "Confondere package logico, componente distribuibile e nodo di deployment.",
+    "Presentare la suddivisione Farmacia come originale, benché sia ricostruita."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Qual è la differenza tra package e deployment diagram?",
+      "risposta": "Package mostra raggruppamenti logici e dipendenze; deployment colloca artefatti/componenti sui nodi di esecuzione."
+    },
+    {
+      "domanda": "In quale direzione punta una dipendenza?",
+      "risposta": "Dal package client che dipende verso il package che contiene l’elemento usato."
+    },
+    {
+      "domanda": "Che cosa precisano «import» e «access»?",
+      "risposta": "Sono stereotipi UML che qualificano la visibilità/accesso agli elementi del package bersaglio."
+    },
+    {
+      "domanda": "Che cosa prova la proposta Farmacia?",
+      "risposta": "È una soluzione didattica possibile, non la soluzione originale né una frequenza d’esame documentata."
+    }
+  ],
+  "riepilogo": "Package diagram = organizzazione logica e dipendenze.\nFreccia dal client al package usato; «import» e «access» qualificano l’uso.\nComponent = modulo; deployment = collocazione su nodi.\nFarmacia è ricostruita, non una soluzione originale verificata."
+}
