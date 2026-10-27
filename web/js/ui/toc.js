@@ -1,6 +1,7 @@
 // Indice della lezione e avanzamento di sezione. La geometria arriva già misurata, così i test non servono il DOM.
 
 export const SECTION_LABELS = {
+  perche: 'Perché ti serve',
   intuizione: 'Perché esiste',
   analogia: 'Analogia',
   prior: 'Collegamenti',

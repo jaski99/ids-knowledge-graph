@@ -216,6 +216,21 @@
         "id": "tipi-manutenzione",
         "forza": "soft",
         "motivo": "Tema della banca."
+      },
+      {
+        "id": "commenti-codice",
+        "forza": "soft",
+        "motivo": "Tema «commenti» riportato in 1 prova su 13 (2022-01) secondo la sintesi dell'utente."
+      },
+      {
+        "id": "analisi-statica",
+        "forza": "soft",
+        "motivo": "Tema «analisi statica» riportato in 1 prova su 13 (2017-04) secondo la sintesi dell'utente."
+      },
+      {
+        "id": "clean-architecture-accoppiamento-componenti",
+        "forza": "soft",
+        "motivo": "Le domande di Clean Architecture includono l'accoppiamento tra componenti (ADP/SDP/SAP) secondo la sintesi dell'utente."
       }
     ],
     "esercizi": [

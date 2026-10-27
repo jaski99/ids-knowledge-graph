@@ -18,6 +18,12 @@ export function lessonNav(order, id) {
 
 export const hasLesson = (n) => Boolean(n && n.lezione && n.lezione.spiegazione);
 
+/** Testo «perché ti serve» della lezione, ripulito; null se assente o vuoto (la sezione non si mostra). */
+export function whyItMatters(n) {
+  const text = n && n.lezione ? n.lezione.perche_ti_serve : null;
+  return typeof text === 'string' && text.trim() ? text.trim() : null;
+}
+
 /** Stato di un esempio svolto: passi mostrati uno alla volta, poi la soluzione. */
 export function createStepper(total) {
   let shown = 0;

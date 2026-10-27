@@ -2,7 +2,7 @@
 import { h, clear } from './dom.js';
 import { areaBadge, tipoBadge, prioBadge } from './badges.js';
 import { formatMinuti } from '../core/progress.js';
-import { lessonNav, hasLesson, createStepper, nextToStudy } from '../core/lesson.js';
+import { lessonNav, hasLesson, createStepper, nextToStudy, whyItMatters } from '../core/lesson.js';
 import { mdElement, renderMermaid, resetMermaid, setMermaidTheme } from './markdown.js';
 import { enhanceCodeBlocks } from './code-block.js';
 import { frameDiagrams, fitDiagrams } from './diagram.js';
@@ -63,7 +63,9 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
 
   function lessonBody(n) {
     const L = n.lezione;
+    const why = whyItMatters(n);
     return [
+      why ? block('perche', '🎯 Perché ti serve', h('p', { class: 'perche-ti-serve' }, why)) : null,
       block('intuizione', '💡 Perché esiste', h('p', {}, L.intuizione)),
       block('analogia', '🔁 Analogia', h('p', {}, L.analogia)),
       block('prior', '🧩 Cosa sai già e come si collega', h('ul', {}, L.collegamenti_prior.map((c) => h('li', {},

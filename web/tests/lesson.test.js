@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseRoute, lessonHash, lessonNav, hasLesson, createStepper, countFences, nextToStudy } from '../js/core/lesson.js';
+import { parseRoute, lessonHash, lessonNav, hasLesson, createStepper, countFences, nextToStudy, whyItMatters } from '../js/core/lesson.js';
 
 test('routing lezione: andata e ritorno, hash estranei ignorati', () => {
   assert.equal(lessonHash('design-pattern-observer'), '#/lezione/design-pattern-observer');
@@ -18,6 +18,12 @@ test('hasLesson', () => {
   assert.equal(hasLesson({ lezione: { spiegazione: '## x' } }), true);
   assert.equal(hasLesson({}), false);
   assert.equal(hasLesson(undefined), false);
+});
+test('whyItMatters: testo ripulito, null se assente o vuoto', () => {
+  assert.equal(whyItMatters({ lezione: { perche_ti_serve: '  Parte 2 Testing: 13 prove su 13. ' } }), 'Parte 2 Testing: 13 prove su 13.');
+  for (const n of [{ lezione: { perche_ti_serve: '   ' } }, { lezione: {} }, { lezione: null }, {}, undefined, { lezione: { perche_ti_serve: 42 } }]) {
+    assert.equal(whyItMatters(n), null);
+  }
 });
 test('stepper: passi uno alla volta, poi soluzione', () => {
   const s = createStepper(2);

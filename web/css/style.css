@@ -223,9 +223,11 @@ body.lesson-mode > header, body.lesson-mode > .layout, body.lesson-mode > .skip 
 .lesson p { margin: 0.85em 0; }
 .ls { margin: 2rem 0; }
 .ls > h2 { display: block; font-size: 1.35rem; margin: 0 0 .6rem; font-weight: 650; }
-.ls.intuizione, .ls.analogia, .ls.errori, .ls.riepilogo {
+.ls.perche, .ls.intuizione, .ls.analogia, .ls.errori, .ls.riepilogo {
   border: 1px solid var(--line); border-left-width: 4px; border-radius: 12px; padding: 1rem 1.1rem;
 }
+.ls.perche { margin-top: 1.2rem; background: var(--card); border-left-color: var(--acc); }
+.ls.perche > p { margin: 0; font-weight: 500; }
 .ls.intuizione { background: color-mix(in srgb, var(--idea) 12%, var(--card)); border-left-color: var(--idea); }
 .ls.analogia { background: color-mix(in srgb, var(--analogy) 16%, var(--card)); border-left-color: var(--analogy); }
 .ls.errori { background: var(--danger-bg); color: var(--danger-fg); border-left-color: var(--danger-fg); }

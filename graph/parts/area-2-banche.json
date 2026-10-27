@@ -52,6 +52,11 @@
         "id": "uml-diagramma-classi",
         "forza": "soft",
         "motivo": "Notazione per il class diagram."
+      },
+      {
+        "id": "design-pattern-builder",
+        "forza": "soft",
+        "motivo": "Builder compare insieme a Decorator nella prova 2018-01-30 (studio dentistico) secondo la sintesi dell'utente."
       }
     ],
     "esercizi": [
