@@ -15,6 +15,7 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 | `requisiti-processo-specifica` | Processo di specifica dei requisiti e documento SRS | 1 | Specifica dei requisiti (2,5 CFU) | Teoria, Tesina | Requisiti, tema generale: 6 prove su 13 secondo la sintesi dell'utente [D1] | alta |
 | `requisiti-scrittura-verificabile` | Scrivere requisiti verificabili | 1 | Specifica dei requisiti (2,5 CFU) | Teoria, Tesina | Requisiti, tema generale: 6 prove su 13 secondo la sintesi dell'utente [D1] | media |
 | `uml-casi-uso` | Diagramma UML dei casi d'uso | 1 | Specifica dei requisiti (2,5 CFU) | Design, Tesina | Use case diagram: sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
+| `banca-esercizi-pattern-guerra` | Banca esercizi: pattern di progettazione (prove Guerra) | 2 | — | — | — | alta |
 | `clean-architecture-accoppiamento-componenti` | Clean Architecture: accoppiamento tra componenti | 2 | — | — | — | media |
 | `clean-architecture-coesione-componenti` | Coesione dei componenti (Clean Architecture): REP, CCP, CRP | 2 | Progettazione (3,5 CFU) | Teoria | Clean Architecture, tema generale: 3 prove su 13 secondo la sintesi dell'utente [D1]<br>Coesione, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `coesione-accoppiamento` | Coesione e accoppiamento dei moduli | 2 | Progettazione (3,5 CFU) | Teoria | Coesione, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
@@ -54,6 +55,8 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 | `uml-diagramma-sequenza` | Diagramma UML di sequenza | 2 | Progettazione (3,5 CFU) | Design, Tesina | Sequence diagram: quasi sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
 | `uml-diagramma-stati` | Diagramma UML degli stati (state machine) | 2 | Progettazione (3,5 CFU) | Design, Tesina | State diagram: quasi sempre (dato qualitativo) secondo la sintesi dell'utente [D1] | alta |
 | `analisi-statica` | Analisi statica del codice | 3 | — | — | — | bassa |
+| `banca-domande-teoria-guerra` | Banca domande: teoria ricorrente (prove Guerra) | 3 | — | — | — | alta |
+| `banca-esercizi-bva-guerra` | Banca esercizi: classi di equivalenza e boundary value analysis (prove Guerra) | 3 | — | — | — | alta |
 | `black-box-vs-white-box` | Black box e white box testing | 3 | Implementazione e testing (1,5 CFU) | Testing, Teoria | Testing black box a scaglioni: 13 prove su 13 secondo la sintesi dell'utente [D1]<br>White box, tema generale: 4 prove su 13 secondo la sintesi dell'utente [D1]<br>Differenze black/white: 1 prova su 13 secondo la sintesi dell'utente [D1] | alta |
 | `boundary-value-analysis` | Analisi dei valori limite (Boundary Value Analysis) | 3 | Implementazione e testing (1,5 CFU) | Testing | Testing black box a scaglioni: 13 prove su 13 secondo la sintesi dell'utente [D1] | alta |
 | `buone-pratiche-programmazione` | Buona programmazione e best practices | 3 | Implementazione e testing (1,5 CFU) | Teoria | Implementazione, tema generale: 1 prova su 13 secondo la sintesi dell'utente [D1] | media |
@@ -90,9 +93,12 @@ Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti di pre
 
 ## Nodi non mappati
 
+- `banca-esercizi-pattern-guerra` — Banca esercizi: pattern di progettazione (prove Guerra) (area 2)
 - `clean-architecture-accoppiamento-componenti` — Clean Architecture: accoppiamento tra componenti (area 2)
 - `design-pattern-builder` — Design pattern Builder (area 2)
 - `esercizio-tesina-individuale` — Esercizio: tesina individuale del corso (area 2)
 - `uml-diagramma-package` — Diagramma UML dei package (area 2)
 - `analisi-statica` — Analisi statica del codice (area 3)
+- `banca-domande-teoria-guerra` — Banca domande: teoria ricorrente (prove Guerra) (area 3)
+- `banca-esercizi-bva-guerra` — Banca esercizi: classi di equivalenza e boundary value analysis (prove Guerra) (area 3)
 - `commenti-codice` — Commenti nel codice (area 3)

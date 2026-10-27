@@ -1,0 +1,140 @@
+[
+  {
+    "id": "banca-esercizi-pattern-guerra",
+    "title": "Banca esercizi: pattern di progettazione (prove Guerra)",
+    "area": 2,
+    "tipo": "tipo_esercizio",
+    "sapere": "Banca di esercizi della Parte 1 Design 1.4: worked example in Java per Decorator, Template Method, Observer (mailing list Farmacia 2025), Factory (cioccolatini 'cioba') e Strategy (resistenza in 3 modalità). Ciascuno ha scenario ricostruito dalla sintesi dell'utente, motivazione con il principio SOLID soddisfatto e un'alternativa scartata, limiti, diagramma delle classi in mermaid e classi Java minime compilabili.",
+    "saper_fare": [
+      "Riconoscere il pattern da uno scenario di esame",
+      "Motivare la scelta con il principio SOLID e un'alternativa scartata",
+      "Disegnare il class diagram del pattern applicato al dominio",
+      "Scrivere le classi Java minime compilabili",
+      "Indicare i limiti del pattern"
+    ],
+    "prerequisiti": [
+      {
+        "id": "design-pattern-decorator",
+        "forza": "hard",
+        "motivo": "Uno dei pattern della banca."
+      },
+      {
+        "id": "design-pattern-template-method",
+        "forza": "hard",
+        "motivo": "Uno dei pattern della banca."
+      },
+      {
+        "id": "design-pattern-observer",
+        "forza": "hard",
+        "motivo": "Uno dei pattern della banca."
+      },
+      {
+        "id": "design-pattern-simple-factory",
+        "forza": "hard",
+        "motivo": "Uno dei pattern della banca."
+      },
+      {
+        "id": "design-pattern-strategy",
+        "forza": "hard",
+        "motivo": "Uno dei pattern della banca."
+      },
+      {
+        "id": "riconoscere-pattern-scenario",
+        "forza": "soft",
+        "motivo": "Abilità propedeutica: riconoscere il pattern dallo scenario."
+      },
+      {
+        "id": "esercizio-pattern-motivato-java",
+        "forza": "soft",
+        "motivo": "Stesso formato d'esame (pattern motivato + diagramma + Java)."
+      },
+      {
+        "id": "uml-diagramma-classi",
+        "forza": "soft",
+        "motivo": "Notazione per il class diagram."
+      }
+    ],
+    "esercizi": [
+      {
+        "tipo_esame": "Parte 1 Design 1.4: Decorator (prova 2021-02, sintesi dell'utente)",
+        "testo": "Mercato ambulanti: una piazzola ha un costo base; si possono aggiungere accessori opzionali e combinabili (es. allaccio corrente, tettoia, posto auto), ognuno con un sovrapprezzo, anche più di uno insieme. Calcola il costo totale. **Scenario ricostruito dalla sintesi dell'utente**.",
+        "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nMercato ambulanti: una piazzola ha un costo base; si possono aggiungere accessori opzionali e combinabili (es. allaccio corrente, tettoia, posto auto), ognuno con un sovrapprezzo, anche più di uno insieme. Calcola il costo totale. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: opzioni/accessori combinabili che modificano il costo → variabilità nella composizione, non nel tipo di oggetto.\n2) Scelta: Decorator (strutturale). Alternativa scartata: una sottoclasse per ogni combinazione di accessori → esplosione esponenziale (2^n classi).\n3) Motivo SOLID: Open/Closed — si aggiungono accessori nuovi senza modificare le classi esistenti; composizione invece di ereditarietà.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Piazzola {\n        +costo(): double\n    }\n    class PiazzolaBase {\n        -mq: double\n        +costo(): double\n    }\n    class Accessorio {\n        <<abstract>>\n        -piazzola: Piazzola\n    }\n    class Corrente {\n        +costo(): double\n    }\n    class Tettoia {\n        +costo(): double\n    }\n    PiazzolaBase --|> Piazzola\n    Accessorio --|> Piazzola\n    Corrente --|> Accessorio\n    Tettoia --|> Accessorio\n    Accessorio o-- Piazzola\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Piazzola {\n    double costo();\n}\nclass PiazzolaBase implements Piazzola {\n    private final double mq;\n    PiazzolaBase(double mq) { this.mq = mq; }\n    public double costo() { return 2.0 * mq; }\n}\nabstract class Accessorio implements Piazzola {\n    protected final Piazzola p;\n    Accessorio(Piazzola p) { this.p = p; }\n}\nclass Corrente extends Accessorio {\n    Corrente(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 10.0; }\n}\nclass Tettoia extends Accessorio {\n    Tettoia(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 15.0; }\n}\npublic class MercatoDemo {\n    public static void main(String[] args) {\n        Piazzola piazzola = new Tettoia(new Corrente(new PiazzolaBase(20.0)));\n        System.out.println(piazzola.costo()); // fa 65.0\n    }\n}\n```\n\n## Limiti\n6) Limiti: molti oggetti piccoli; l'ordine di avvolgimento può influire su descrizione/costo; identità dell'oggetto decorato che cambia."
+      },
+      {
+        "tipo_esame": "Parte 1 Design 1.4: Template Method (prova 2023-01, sintesi dell'utente)",
+        "testo": "Piscina: ogni ingresso segue gli stessi passi (verifica badge, calcolo costo, registrazione ingresso, stampa ricevuta), ma la verifica e il calcolo cambiano tra nuoto libero, corso e acquagym. **Scenario ricostruito dalla sintesi dell'utente**.",
+        "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nPiscina: ogni ingresso segue gli stessi passi (verifica badge, calcolo costo, registrazione ingresso, stampa ricevuta), ma la verifica e il calcolo cambiano tra nuoto libero, corso e acquagym. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: algoritmo a passi fissi con alcune varianti → scheletro invariato, passi variabili.\n2) Scelta: Template Method (comportamentale). Alternativa scartata: Strategy — qui la sequenza è fissa e condivisa, non l'algoritmo intero scambiato a runtime.\n3) Motivo SOLID: Open/Closed per i passi variabili; inversione di controllo ('non chiamarci, ti chiamiamo noi').\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    class Accesso {\n        <<abstract>>\n        +esegui(): void final\n        +verifica(): boolean\n        +costo(): double\n        +registra(double): void\n        +stampaRicevuta(double): void\n    }\n    class NuotoLibero\n    class Corso\n    Accesso <|-- NuotoLibero\n    Accesso <|-- Corso\n```\n\n## Classi Java minime (compilabili)\n```java\nabstract class Accesso {\n    public final void esegui() {\n        if (!verifica()) return;\n        double c = costo();\n        registra(c);\n        stampaRicevuta(c);\n    }\n    protected abstract boolean verifica();\n    protected abstract double costo();\n    protected void registra(double c) { /* comune */ }\n    protected void stampaRicevuta(double c) { System.out.println(c); } // hook\n}\nclass NuotoLibero extends Accesso {\n    protected boolean verifica() { return true; }\n    protected double costo() { return 6.0; }\n}\nclass Corso extends Accesso {\n    protected boolean verifica() { return true; }\n    protected double costo() { return 0.0; }\n}\n```\n\n## Limiti\n6) Limiti: legato all'ereditarietà (una sola superclasse); le varianti sono fissate a compile time; molte sottoclassi se le varianti si combinano."
+      },
+      {
+        "tipo_esame": "Parte 1 Design 1.4: Observer (prova 2025-11, sintesi dell'utente)",
+        "testo": "Farmacia: quando il titolare pubblica una promozione, tutti i clienti iscritti alla mailing list devono essere avvisati; i clienti possono iscriversi e disiscriversi in qualunque momento. **Scenario ricostruito dalla sintesi dell'utente** (prova 5/11/2025).",
+        "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nFarmacia: quando il titolare pubblica una promozione, tutti i clienti iscritti alla mailing list devono essere avvisati; i clienti possono iscriversi e disiscriversi in qualunque momento. **Scenario ricostruito dalla sintesi dell'utente** (prova 5/11/2025).\n\n## Scelta e motivazione\n1) Indizio: evento che notifica un insieme variabile di interessati → uno-a-molti, iscrizione dinamica.\n2) Scelta: Observer (comportamentale). Alternativa scartata: polling dei clienti (inefficiente, accoppia i tempi).\n3) Motivo SOLID: Open/Closed — nuovi tipi di destinatari (email, SMS) senza modificare la Farmacia/MailingList; basso accoppiamento verso interfaccia.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Iscritto {\n        +notifica(String): void\n    }\n    class MailingList {\n        -iscritti: List<Iscritto>\n        +iscrivi(Iscritto): void\n        +disiscrivi(Iscritto): void\n        +pubblica(String): void\n    }\n    class Cliente {\n        -email: String\n        +notifica(String): void\n    }\n    MailingList o-- Iscritto\n    Cliente ..|> Iscritto\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Iscritto {\n    void notifica(String promozione);\n}\nimport java.util.ArrayList;\nimport java.util.List;\nclass MailingList {\n    private final List<Iscritto> iscritti = new ArrayList<>();\n    void iscrivi(Iscritto i) { iscritti.add(i); }\n    void disiscrivi(Iscritto i) { iscritti.remove(i); }\n    void pubblica(String promozione) {\n        for (Iscritto i : iscritti) i.notifica(promozione);\n    }\n}\nclass Cliente implements Iscritto {\n    private final String email;\n    Cliente(String email) { this.email = email; }\n    public void notifica(String promozione) {\n        System.out.println(\"Mail a \" + email + \": \" + promozione);\n    }\n}\n```\n\n## Limiti\n6) Limiti: ordine di notifica non garantito; aggiornamenti costosi con molti iscritti; rischio memory leak se non ci si disiscrive."
+      },
+      {
+        "tipo_esame": "Parte 1 Design 1.4: Factory (prova 2020-11, sintesi dell'utente)",
+        "testo": "Produzione cioccolatini 'cioba': varianti standard, bianco e mini. Il cliente chiede un cioccolatino per tipo e il sistema deve restituire l'oggetto giusto senza esporre le classi concrete. **Scenario ricostruito dalla sintesi dell'utente**.",
+        "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nProduzione cioccolatini 'cioba': varianti standard, bianco e mini. Il cliente chiede un cioccolatino per tipo e il sistema deve restituire l'oggetto giusto senza esporre le classi concrete. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: creazione dipendente da un parametro (tipo di prodotto) → incapsulamento della creazione.\n2) Scelta: Simple Factory (idioma, non pattern GoF) con metodo static crea(String tipo).\n3) Motivo: il client non usa 'new' direttamente e dipende solo dall'interfaccia Cioccolatino; creazione centralizzata.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Cioccolatino {\n        +tipo(): String\n    }\n    class CiobaStandard\n    class CiobaBianco\n    class CiobaMini\n    class CiobaFactory {\n        +crea(String): Cioccolatino\n    }\n    Cioccolatino <|.. CiobaStandard\n    Cioccolatino <|.. CiobaBianco\n    Cioccolatino <|.. CiobaMini\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Cioccolatino {\n    String tipo();\n}\nclass CiobaStandard implements Cioccolatino {\n    public String tipo() { return \"standard\"; }\n}\nclass CiobaBianco implements Cioccolatino {\n    public String tipo() { return \"bianco\"; }\n}\nclass CiobaMini implements Cioccolatino {\n    public String tipo() { return \"mini\"; }\n}\nclass CiobaFactory {\n    static Cioccolatino crea(String tipo) {\n        switch (tipo) {\n            case \"standard\": return new CiobaStandard();\n            case \"bianco\": return new CiobaBianco();\n            case \"mini\": return new CiobaMini();\n            default: throw new IllegalArgumentException(\"tipo sconosciuto: \" + tipo);\n        }\n    }\n}\n```\n\n## Limiti\n6) Limiti: static non estendibile né mockabile; aggiungere un tipo modifica lo switch (viola OCP). Per l'evoluzione serve Factory Method."
+      },
+      {
+        "tipo_esame": "Parte 1 Design 1.4: Strategy (prova 2022-01, sintesi dell'utente)",
+        "testo": "Laboratorio riparazioni: il calcolo della resistenza (o del preventivo) può avvenire in 3 modalità (es. economica, standard, premium) scegliibili a runtime, e nuove modalità saranno aggiunte. **Scenario ricostruito dalla sintesi dell'utente**.",
+        "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nLaboratorio riparazioni: il calcolo della resistenza (o del preventivo) può avvenire in 3 modalità (es. economica, standard, premium) scegliibili a runtime, e nuove modalità saranno aggiunte. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: una famiglia di algoritmi intercambiabili, scelta a runtime, aggiunta di varianti senza modificare il contesto.\n2) Scelta: Strategy (comportamentale). Alternativa scartata: catena di if/switch sul tipo (ogni nuova modalità modifica il contesto).\n3) Motivo SOLID: Open/Closed — nuove modalità = nuove classi, contesto invariato; composizione invece di ereditarietà.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Resistenza {\n        +calcola(double): double\n    }\n    class ResistenzaEconomica\n    class ResistenzaStandard\n    class ResistenzaPremium\n    class Contesto {\n        -resistenza: Resistenza\n        +setResistenza(Resistenza): void\n        +esegui(double): double\n    }\n    Resistenza <|.. ResistenzaEconomica\n    Resistenza <|.. ResistenzaStandard\n    Resistenza <|.. ResistenzaPremium\n    Contesto o-- Resistenza\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Resistenza {\n    double calcola(double valore);\n}\nclass ResistenzaEconomica implements Resistenza {\n    public double calcola(double valore) { return valore; }\n}\nclass ResistenzaStandard implements Resistenza {\n    public double calcola(double valore) { return valore * 1.1; }\n}\nclass ResistenzaPremium implements Resistenza {\n    public double calcola(double valore) { return valore * 1.3; }\n}\nclass Contesto {\n    private Resistenza resistenza;\n    void setResistenza(Resistenza r) { this.resistenza = r; }\n    double esegui(double valore) { return resistenza.calcola(valore); }\n}\n```\n\n## Limiti\n6) Limiti: il client deve conoscere le strategie per sceglierle; proliferazione di classi piccole."
+      }
+    ],
+    "tempo_studio_min": 90,
+    "priorita": {
+      "livello": "alta",
+      "motivazione": "Decorator 6 prove, Template Method 4, Observer 1, Factory 2, Strategy 1 secondo la sintesi dell'utente [D1 §1.3]; l'es. 1.4 di Design si presenta in ogni prova."
+    },
+    "risorse": [
+      {
+        "titolo": "Programma del corso (F. Guerra)",
+        "url": "https://fguerra73.github.io/teaching/",
+        "verificato": true
+      },
+      {
+        "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+        "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+        "verificato": true
+      },
+      {
+        "titolo": "Wikipedia (en): Boundary value analysis",
+        "url": "https://en.wikipedia.org/wiki/Boundary_value_analysis",
+        "verificato": true
+      },
+      {
+        "titolo": "Wikipedia (en): Equivalence partitioning",
+        "url": "https://en.wikipedia.org/wiki/Equivalence_partitioning",
+        "verificato": true
+      },
+      {
+        "titolo": "Refactoring.Guru: catalog",
+        "url": "https://refactoring.guru/design-patterns/catalog",
+        "verificato": true
+      },
+      {
+        "titolo": "Wikipedia (en): Design Patterns",
+        "url": "https://en.wikipedia.org/wiki/Design_Patterns",
+        "verificato": true
+      }
+    ],
+    "riferimenti_testo": [
+      {
+        "libro": "GOF",
+        "capitolo_o_sezione": "catalogo dei 23 pattern GoF"
+      },
+      {
+        "libro": "HFDP",
+        "capitolo_o_sezione": "esempi Java dei pattern"
+      }
+    ],
+    "checklist_ripasso": [
+      "Accessori combinabili con costo → Decorator",
+      "Stessi passi con varianti → Template Method",
+      "Iscriviti/avvisa → Observer",
+      "Creazione con switch → Simple Factory",
+      "Algoritmo scelto a runtime → Strategy",
+      "Scrivere sempre i LIMITI del pattern scelto"
+    ]
+  }
+]

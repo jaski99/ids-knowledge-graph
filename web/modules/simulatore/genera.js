@@ -19,6 +19,8 @@ function matchPattern(e) { return /pattern\s*1\.4|1\.4 completo/.test(t(e)); }
 function matchBlackBox(e) {
   // Sul nodo d'esame la consegna è EC+BVA anche quando il testo dice solo «tabella finale».
   if (e.nodoId === 'esercizio-black-box-scaglioni') return true;
+  // Le banche di esercizi X3 (area 2/3) hanno catalogo e tipo_esame propri: non confliggono con lo slot d'esame.
+  if (/^banca-/.test(e.nodoId)) return false;
   const testo = (e.testo || '').toLowerCase();
   if (!/parte 2/.test(t(e))) return false;
   const chiedeEc = /classi di equivalenza/.test(testo) || /classi,/.test(testo);
