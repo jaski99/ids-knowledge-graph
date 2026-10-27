@@ -4,14 +4,14 @@
 
 ## Trappole note dalle prove d'esame
 
-- [ ] **Es. 1.4 - pattern** (tutte le prove (2016/17, 2022, 2023, 2025)). Trappola: Il testo non nomina mai il pattern: descrive uno scenario. → Riconosci lo scenario: gerarchia parte-tutto → Composite; accessori opzionali con costo → Decorator; algoritmo a passi fissi con varianti → Template Method; evento che notifica un insieme variabile di interessati → Observer. Motiva la scelta e indica i limiti.
-- [ ] **Ottimizzazione del codice** (prova 9/6/2022 (sintesi)). Trappola: Dire che la velocità va ottimizzata fin dall'inizio. → Knuth: 'premature optimization is the root of all evil'. Make it work, make it right, make it fast: si ottimizza dopo il profiling, solo sui veri colli di bottiglia, senza sacrificare leggibilità.
-- [ ] **Errori nei requisiti** (prova 9/6/2022 (sintesi)). Trappola: Dire che gli errori di analisi si correggono facilmente in programmazione. → Curva di Boehm: il costo di correzione cresce lungo il ciclo di vita (fino a ~100 volte in produzione). Prevenzione: review delle specifiche, prototipi, coinvolgimento degli stakeholder.
-- [ ] **Coesione dei componenti** (prove 9/6/2022 e 27/1/2023 (sintesi)). Trappola: Rispondere con la coesione delle classi invece che dei componenti. → Enuncia REP (granulo di riuso = granulo di rilascio), CCP (classi che cambiano insieme stanno insieme, SRP sui componenti), CRP (non dipendere da ciò che non usi, ISP sui componenti) e la loro tensione.
-- [ ] **Black box a scaglioni** (Parte 2 di tutte le prove). Trappola: Dimenticare le classi non valide o fare la BVA su tutti i parametri quando ne è chiesto uno solo. → Classi valide e non valide per ogni parametro; test minimi: una classe non valida per test, le valide combinate; BVA solo sui casi validi e solo sul parametro richiesto (es. 'numero' nel 5/11/2025).
-- [ ] **Coerenza tra diagrammi** (2016/17 e 5/11/2025). Trappola: Sequence/activity/state con oggetti o metodi che non esistono nel class diagram. → Ogni lifeline è un'istanza di una classe progettata; ogni messaggio è un'operazione di quella classe.
-- [ ] **Simple Factory e static** (prova 5/11/2025). Trappola: Chiamarla Factory Method o non discutere lo static. → È una Simple Factory (non un pattern GoF). Static: comodo, senza istanza, ma non si può sottoclassare né sostituire nei test.
-- [ ] **White box** (2022, 2023, 5/11/2025). Trappola: Confondere statement coverage con decision coverage (un while va percorso sia vero sia falso). → Disegna il CFG; statement = ogni nodo; decision = ogni ramo vero/falso di ogni if/while; MC/DC = ogni condizione influenza da sola l'esito.
+- [ ] **Es. 1.4 - pattern** (fac-simile 2016/17 fornito dall'utente; prove storiche secondo la sintesi dell'utente [D1]). Trappola: Il testo non nomina mai il pattern: descrive uno scenario. → Riconosci lo scenario: gerarchia parte-tutto → Composite; accessori opzionali con costo → Decorator; algoritmo a passi fissi con varianti → Template Method; evento che notifica un insieme variabile di interessati → Observer. Motiva la scelta e indica i limiti.
+- [ ] **Ottimizzazione del codice** (prova 9/6/2022, sintesi dell'utente [D1]). Trappola: Dire che la velocità va ottimizzata fin dall'inizio. → Knuth: 'premature optimization is the root of all evil'. Make it work, make it right, make it fast: si ottimizza dopo il profiling, solo sui veri colli di bottiglia, senza sacrificare leggibilità.
+- [ ] **Errori nei requisiti** (prova 9/6/2022, sintesi dell'utente [D1]). Trappola: Dire che gli errori di analisi si correggono facilmente in programmazione. → Curva di Boehm: il costo di correzione cresce lungo il ciclo di vita (fino a ~100 volte in produzione). Prevenzione: review delle specifiche, prototipi, coinvolgimento degli stakeholder.
+- [ ] **Coesione dei componenti** (prove 9/6/2022 e 27/1/2023, sintesi dell'utente [D1]). Trappola: Rispondere con la coesione delle classi invece che dei componenti. → Enuncia REP (granulo di riuso = granulo di rilascio), CCP (classi che cambiano insieme stanno insieme, SRP sui componenti), CRP (non dipendere da ciò che non usi, ISP sui componenti) e la loro tensione.
+- [ ] **Black box a scaglioni** (testing black box nelle 13 prove secondo la sintesi dell'utente [D1]). Trappola: Dimenticare le classi non valide o fare la BVA su tutti i parametri quando ne è chiesto uno solo. → Classi valide e non valide per ogni parametro; test minimi: una classe non valida per test, le valide combinate; BVA solo sui casi validi e solo sul parametro richiesto (es. 'numero' nel 5/11/2025).
+- [ ] **Coerenza tra diagrammi** (fac-simile 2016/17 fornito dall'utente e prova 5/11/2025, sintesi dell'utente [D1]). Trappola: Sequence/activity/state con oggetti o metodi che non esistono nel class diagram. → Ogni lifeline è un'istanza di una classe progettata; ogni messaggio è un'operazione di quella classe.
+- [ ] **Simple Factory e static** (prova 5/11/2025, sintesi dell'utente [D1]). Trappola: Chiamarla Factory Method o non discutere lo static. → È una Simple Factory (non un pattern GoF). Static: comodo, senza istanza, ma non si può sottoclassare né sostituire nei test.
+- [ ] **White box** (prove 2022, 2023 e 5/11/2025, sintesi dell'utente [D1]). Trappola: Confondere statement coverage con decision coverage (un while va percorso sia vero sia falso). → Disegna il CFG; statement = ogni nodo; decision = ogni ramo vero/falso di ogni if/while; MC/DC = ogni condizione influenza da sola l'esito.
 
 ## Area 1. Specifica dei requisiti
 
@@ -155,7 +155,25 @@
 - [ ] Limite: vincolare i tipi dei figli
 - [ ] Trappola: far ereditare Settore da Scaffale invece di usare l'interfaccia comune
 
-### Principi SOLID (priorità ALTA)
+### Pattern Adapter (priorità MEDIA)
+
+- [ ] Target, Adapter, Adaptee
+- [ ] Object adapter (composizione) preferibile
+- [ ] Adapter cambia interfaccia; Decorator la mantiene
+
+### Pattern Singleton (priorità MEDIA)
+
+- [ ] Costruttore privato + static getInstance
+- [ ] Thread safety (eager/holder/enum)
+- [ ] Limiti: stato globale, test
+
+### Pattern State (priorità MEDIA)
+
+- [ ] Una classe per stato, il contesto delega
+- [ ] Le transizioni le decidono gli stati (≠ Strategy)
+- [ ] Mappa diretta da state diagram
+
+### Principi SOLID (priorità MEDIA)
 
 - [ ] S: una ragione di cambiamento
 - [ ] O: estendi senza modificare
@@ -193,18 +211,6 @@
 - [ ] Contro static: niente override, difficile da mockare, viola OCP
 - [ ] Risposta attesa: nome del pattern + pro + contro, in 5-6 righe
 
-### Pattern Factory Method (priorità ALTA)
-
-- [ ] Metodo factory astratto + sottoclassi
-- [ ] Spesso usato dentro un Template Method
-- [ ] Tabella: Simple (switch) / Method (ereditarietà) / Abstract (famiglie)
-
-### Pattern Abstract Factory (priorità ALTA)
-
-- [ ] Famiglie di prodotti coerenti
-- [ ] Facile aggiungere famiglie, difficile aggiungere prodotti
-- [ ] Factory iniettata nel client
-
 ### Pattern Strategy (priorità ALTA)
 
 - [ ] Algoritmi intercambiabili, scelti dal client
@@ -217,24 +223,6 @@
 - [ ] Ereditarietà (TM) vs composizione (Strategy)
 - [ ] Parole chiave: 'segue sempre gli stessi passi, ma...'
 - [ ] Trappola: rendere il template ridefinibile (va final)
-
-### Pattern Adapter (priorità MEDIA)
-
-- [ ] Target, Adapter, Adaptee
-- [ ] Object adapter (composizione) preferibile
-- [ ] Adapter cambia interfaccia; Decorator la mantiene
-
-### Pattern Singleton (priorità MEDIA)
-
-- [ ] Costruttore privato + static getInstance
-- [ ] Thread safety (eager/holder/enum)
-- [ ] Limiti: stato globale, test
-
-### Pattern State (priorità MEDIA)
-
-- [ ] Una classe per stato, il contesto delega
-- [ ] Le transizioni le decidono gli stati (≠ Strategy)
-- [ ] Mappa diretta da state diagram
 
 ### Riconoscere il pattern dallo scenario (priorità ALTA)
 
@@ -259,25 +247,37 @@
 - [ ] Riceve e avvolge lo stesso tipo → Decorator
 - [ ] Lista di listener + notify → Observer
 
+### Pattern Factory Method (priorità MEDIA)
+
+- [ ] Metodo factory astratto + sottoclassi
+- [ ] Spesso usato dentro un Template Method
+- [ ] Tabella: Simple (switch) / Method (ereditarietà) / Abstract (famiglie)
+
+### Pattern Abstract Factory (priorità MEDIA)
+
+- [ ] Famiglie di prodotti coerenti
+- [ ] Facile aggiungere famiglie, difficile aggiungere prodotti
+- [ ] Factory iniettata nel client
+
 ### Caratteristiche di qualità del progetto (priorità MEDIA)
 
 - [ ] Qualità esterne vs attributi interni
 - [ ] ISO 9126/25010: 6-8 caratteristiche
 - [ ] Manutenibilità ← coesione/accoppiamento
 
-### Metriche software (priorità ALTA)
+### Metriche software (priorità MEDIA)
 
 - [ ] Dimensione, complessità, OO (CK)
 - [ ] Per la metrica scelta: definizione, formula, esempio, interpretazione, limiti
 - [ ] Trappola: dire che una metrica misura direttamente la 'qualità'
 
-### Calcolare la complessità ciclomatica (priorità ALTA)
+### Calcolare la complessità ciclomatica (priorità MEDIA)
 
 - [ ] V(G)=E−N+2 = decisioni+1
 - [ ] Contare && e || come decisioni se si conta per condizioni
 - [ ] Verificare con due formule
 
-### Esercizio d'esame: domanda teorica sulle metriche (priorità ALTA)
+### Esercizio d'esame: domanda teorica sulle metriche (priorità MEDIA)
 
 - [ ] Scaletta in 4 punti
 - [ ] Esempio numerico

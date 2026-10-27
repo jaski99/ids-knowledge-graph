@@ -31,7 +31,8 @@
     "area": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 5,
+      "description": "Area del programma; il collegamento alle voci e ai CFU è in graph/meta.json → programma."
     },
     "tipo": {
       "enum": [
@@ -92,11 +93,13 @@
         "properties": {
           "tipo_esame": {
             "type": "string",
-            "minLength": 3
+            "minLength": 3,
+            "description": "Per i nodi banca usare il prefisso della parte e il suffisso della fonte previsti da docs/CONTRACTS.md §4.1."
           },
           "testo": {
             "type": "string",
-            "minLength": 5
+            "minLength": 5,
+            "description": "Testo della consegna; nei dati delle banche le formule incerte o mancanti sono marcate [da verificare]."
           },
           "soluzione": {
             "type": "string",
@@ -127,7 +130,8 @@
         },
         "motivazione": {
           "type": "string",
-          "minLength": 5
+          "minLength": 5,
+          "description": "Motivare il livello distinguendo la scheda ufficiale [S1], la pagina del docente [S2] e la sintesi dell'utente [D1]; non inventare frequenze o punteggi."
         }
       }
     },
@@ -178,7 +182,8 @@
           },
           "capitolo_o_sezione": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "description": "Indicare il capitolo solo se verificato su un indice reale; non cambiare le chiavi dei testi."
           }
         }
       }

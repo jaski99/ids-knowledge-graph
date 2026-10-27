@@ -31,7 +31,7 @@ Campi: `id` opaco (`mt_...`), `type` (CONCEPTUAL / PROCEDURAL / REPRESENTATIONAL
 | `domain` | `area` 1..5 del programma |
 | DAG + JSON Schema + validazione | test pytest (schema, id, prerequisiti, aciclicità, topo) |
 
-Differenze volute: prerequisiti inline (un solo file sorgente, più facile da editare a rami); niente `strength`/`reason` per ora (possibile estensione v2); id leggibili kebab-case invece che opachi.
+Differenze volute: prerequisiti inline nei nodi (più facili da mantenere per part), con `forza` hard/soft e `motivo`; id leggibili kebab-case invece che opachi. La mappatura `programma` in `graph/meta.json` collega le voci ufficiali ai nodi e segnala i non mappati in `docs/NODES.md`; le frequenze provengono dalla sintesi dell'utente, non da uno standard ufficiale. I nodi nuovi di X2/X3 sono mappati dall'integrazione, senza duplicare concetti.
 
 ## Ricerca didattica (`data/teaching-research.json`, ri-studiato in Fase 4)
 Record per topic (copertura parziale, ~1.049/1.842): `pedagogy{summary` (markdown ~2.000 car., la "lezione" vera e propria), `bestPractices[5]`, `keyRepresentations[4]`, `commonMisconceptions[5]}`, `learn`/`assess` (risorse), `sources`, `confidence`, `provenance`. Separa il "cosa" (topic + evidence) dal "come si insegna".
