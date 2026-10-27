@@ -271,6 +271,14 @@
 - [ ] Per la metrica scelta: definizione, formula, esempio, interpretazione, limiti
 - [ ] Trappola: dire che una metrica misura direttamente la 'qualità'
 
+### Clean Architecture: accoppiamento tra componenti (priorità MEDIA)
+
+- [ ] ADP: dipendenze acicliche
+- [ ] SDP: dipendere da componenti più stabili
+- [ ] SAP: componenti stabili sufficientemente astratti
+- [ ] I=Ce/(Ca+Ce), A=astratti/totale, A+I=1
+- [ ] Nessuna soglia del docente attribuita
+
 ### Calcolare la complessità ciclomatica (priorità MEDIA)
 
 - [ ] V(G)=E−N+2 = decisioni+1
@@ -293,6 +301,29 @@
 
 - [ ] Top-down: funzione → sottofunzioni
 - [ ] Confronto con OO: dati incapsulati
+
+### Diagramma UML dei package (priorità MEDIA)
+
+- [ ] Package = raggruppamento logico
+- [ ] Freccia dal package dipendente a quello usato
+- [ ] «import» e «access» specificano l’accesso
+- [ ] Package ≠ componente ≠ deployment
+
+### Esercizio: tesina individuale del corso (priorità ALTA)
+
+- [ ] Prodotto software
+- [ ] Requisiti e diagrammi UML
+- [ ] Revisione del progetto con pattern
+- [ ] Criteri nominati, senza inventare pesi
+- [ ] Scadenze e formati: [da verificare sulla scheda S1]
+
+### Design pattern Builder (priorità BASSA)
+
+- [ ] Prodotto separato dalla costruzione
+- [ ] Metodi fluenti e build()
+- [ ] Validazione degli invarianti
+- [ ] Studio dentistico ricostruito da [D1]
+- [ ] Builder ≠ Factory ≠ Decorator
 
 ### Object Relational Mapping, problematiche e JPA/Hibernate (priorità BASSA)
 
@@ -385,6 +416,14 @@
 - [ ] Make it work → right → fast
 - [ ] Profiler → hotspot → algoritmo prima delle micro-ottimizzazioni → nuova misura + test
 
+### Commenti nel codice (priorità MEDIA)
+
+- [ ] Commenta contratti, motivazioni e invarianti non ovvi
+- [ ] Non parafrasare codice evidente
+- [ ] Javadoc per API quando appropriato
+- [ ] TODO/FIXME contestualizzati e temporanei
+- [ ] Se serve un commento lungo, valuta refactoring
+
 ### Path analysis e complessità ciclomatica di McCabe (priorità MEDIA)
 
 - [ ] V(G) = E − N + 2 = decisioni + 1
@@ -427,6 +466,14 @@
 - [ ] Riproduci → localizza → causa radice → correggi → test di regressione
 - [ ] Testing ≠ debugging
 - [ ] Bisezione (git bisect), breakpoint, log
+
+### Analisi statica del codice (priorità BASSA)
+
+- [ ] Statica: analizza senza eseguire
+- [ ] Ispezione: revisione umana
+- [ ] Dinamica: esegue su input
+- [ ] Warning non prova bug né correttezza
+- [ ] Verifica contesto e limiti dello strumento
 
 ### Build automation con Maven (priorità BASSA)
 

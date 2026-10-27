@@ -2203,6 +2203,145 @@
       }
     },
     {
+      "id": "clean-architecture-accoppiamento-componenti",
+      "title": "Clean Architecture: accoppiamento tra componenti",
+      "area": 2,
+      "tipo": "concetto",
+      "sapere": "ADP (Acyclic Dependencies Principle), SDP (Stable Dependencies Principle) e SAP (Stable Abstractions Principle) guidano le dipendenze tra componenti. L’instabilità I = Ce/(Ca+Ce) confronta dipendenze uscenti e totali; l’astrattezza A confronta tipi astratti e tipi totali. La sequenza principale è A+I=1; D=|A+I−1| descrive la distanza, non è soglia universale. Martin è riferimento extra [MARTIN], non testo ufficiale.",
+      "saper_fare": [
+        "Enunciare ADP, SDP e SAP senza confonderli con REP/CCP/CRP",
+        "Calcolare Ca, Ce, I e A da un modello dichiarato",
+        "Interpretare sequenza principale e distanza senza inventare soglie"
+      ],
+      "prerequisiti": [
+        {
+          "id": "clean-architecture-coesione-componenti",
+          "forza": "hard",
+          "motivo": "Completa REP/CCP/CRP distinguendo accoppiamento tra componenti."
+        },
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "soft",
+          "motivo": "Il lessico di dipendenze e qualità dei moduli è utile."
+        },
+        {
+          "id": "metriche-software",
+          "forza": "soft",
+          "motivo": "I e A sono indici da definire e interpretare con cautela."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica: accoppiamento tra componenti",
+          "testo": "Definisci ADP, SDP e SAP; distinguili da REP/CCP/CRP e spiega I e A.",
+          "soluzione": "ADP evita cicli; SDP fa dipendere da componenti più stabili; SAP associa stabilità ad astrazione. REP/CCP/CRP guidano coesione. I=Ce/(Ca+Ce), A=tipi astratti/totale; sequenza principale A+I=1 senza soglie universali."
+        },
+        {
+          "tipo_esame": "esercizio: indici da grafo didattico",
+          "testo": "Vendite dipende da tre componenti, due componenti dipendono da Vendite. Contiene un’interfaccia e quattro tipi totali. Calcola gli indici secondo le definizioni.",
+          "soluzione": "Assumendo Ce=3, Ca=2: I=3/5=0,6. A=1/4=0,25. D=|0,25+0,6−1|=0,15. Descrive il modello, non dà un giudizio automatico."
+        }
+      ],
+      "tempo_studio_min": 40,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "ADP/SDP/SAP compaiono nella sintesi dell’utente [D1]; Martin è riferimento extra, non testo ufficiale del corso."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "MARTIN"
+        }
+      ],
+      "checklist_ripasso": [
+        "ADP: dipendenze acicliche",
+        "SDP: dipendere da componenti più stabili",
+        "SAP: componenti stabili sufficientemente astratti",
+        "I=Ce/(Ca+Ce), A=astratti/totale, A+I=1",
+        "Nessuna soglia del docente attribuita"
+      ],
+      "lezione": {
+        "intuizione": "A livello di componenti non basta sapere quali classi cambiano insieme: bisogna anche controllare la direzione delle dipendenze. ADP, SDP e SAP aiutano a mantenere un grafo orientato e modificabile; instabilità e astrattezza descrivono proprietà, non emettono da sole un verdetto.",
+        "spiegazione": "## Confine e provenienza\n\nLa lezione `clean-architecture-coesione-componenti` tratta REP, CCP e CRP. Qui studiamo i principi di **accoppiamento tra componenti**: ADP, SDP e SAP. Robert C. Martin, *Clean Architecture*, è un riferimento **extra** in `CONTRACTS.md`, non un testo ufficiale del corso. La sintesi dell’utente [D1] menziona le sigle; non fornisce soglie o formule attribuibili al docente.\n\n## Perché ti serve\n\nLa sintesi dell’utente [D1] riporta Clean Architecture in tre prove e coesione in un’altra voce; questo dato descrive una macro-area del riepilogo, non prova che ADP/SDP/SAP siano comparsi in ciascuna prova. La risposta va presentata come studio teorico, senza attribuire punti o una formulazione ufficiale.\n\n## ADP, SDP e SAP\n\n- **ADP — Acyclic Dependencies Principle:** il grafo delle dipendenze tra componenti non deve contenere cicli. Un ciclo rende più difficile modificare o riusare un componente senza coinvolgere il gruppo.\n- **SDP — Stable Dependencies Principle:** fai dipendere i componenti da componenti più stabili. Stabilità riguarda la difficoltà di cambiamento quando altri dipendono dal componente, non quanto spesso il programma viene eseguito.\n- **SAP — Stable Abstractions Principle:** un componente molto stabile dovrebbe essere sufficientemente astratto e quindi estendibile. Non significa che ogni componente debba contenere molte interfacce.\n\nREP/CCP/CRP sono principi di **coesione** che guidano quali classi raggruppare; ADP/SDP/SAP orientano le **dipendenze** tra componenti. Le analogie con DIP/OCP aiutano a ricordare, ma non rendono i principi identici.\n\n## Instabilità e astrattezza\n\n**Ca** conta le dipendenze entranti, cioè componenti che dipendono dal componente considerato. **Ce** conta le dipendenze uscenti, cioè componenti da cui esso dipende. Se Ca+Ce>0, l’instabilità è **I=Ce/(Ca+Ce)**. Se il denominatore è zero, la formula non è definita: non inventare un valore sostitutivo.\n\nL’**astrattezza A** è il rapporto fra tipi astratti (classi astratte e interfacce secondo la convenzione esplicita) e tipi totali del componente. Il conteggio richiede totale positivo e una convenzione dichiarata; non tutte le categorie di tipi sono necessariamente trattate nello stesso modo da ogni strumento.\n\nLa **sequenza principale** è la relazione ideale **A+I=1**. La distanza **D=|A+I−1|** descrive quanto il punto si discosta dalla retta in un modello A-I; non è una soglia universale né un voto. Responsabilità, contesto e grafo complessivo restano importanti. Nessuna soglia numerica del docente è trovata: non attribuirgliela.\n\n```mermaid\nflowchart LR\n    A[Dipendenze entranti Ca] --> B[I = Ce / (Ca + Ce)]\n    C[Dipendenze uscenti Ce] --> B\n    D[Tipi astratti / tipi totali] --> E[A]\n    B --> F[Sequenza principale A + I = 1]\n    E --> F\n```\n\nÈ una mappa della definizione, non il grafico cartesiano. Sul piano A-I, la sequenza è la retta A+I=1.\n\n## Procedura di calcolo e interpretazione\n\n1. Fissa componenti e regola di conteggio delle dipendenze.\n2. Conta Ca e Ce per il componente scelto.\n3. Calcola I, oppure dichiara la formula non definita se il totale è zero.\n4. Conta tipi astratti e tipi totali con convenzione esplicita; calcola A.\n5. Confronta A+I con 1 e descrivi D senza imporre soglie.\n6. Controlla ADP separatamente: I non dimostra che il grafo sia aciclico.\n\n## Esempio Java e limite\n\n```java\ninterface ArchivioOrdini { void salva(String ordine); }\nfinal class ServizioOrdini {\n    private final ArchivioOrdini archivio;\n    ServizioOrdini(ArchivioOrdini archivio) { this.archivio = archivio; }\n    void registra(String ordine) { archivio.salva(ordine); }\n}\nfinal class ArchivioMemoria implements ArchivioOrdini {\n    public void salva(String ordine) { /* esempio didattico */ }\n}\n```\n\nIl servizio dipende da un’astrazione, non da una concreta implementazione. Questo frammento illustra una scelta possibile, ma non dimostra da solo SDP, SAP o assenza di cicli: si valuta il grafo completo.\n\n## Fading e risposta autonoma\n\nEsempio intero: calcola I, A e D da conteggi dati. Nel completion problem ricevi Ca/Ce e completi formula e interpretazione. Nell’esercizio autonomo dichiari prima confini e convenzioni; se la traccia non li dà, rendi esplicite le assunzioni o scrivi **[da verificare]**.",
+        "analogia": "È una rete di biblioteche: ADP evita un giro in cui tutti aspettano gli altri; SDP fa dipendere una sede da un archivio più stabile; SAP mantiene stabile l’archivio usando regole generali. L’analogia smette di valere perché stabilità e astrazione nel software hanno definizioni strutturali e misurabili.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "REP, CCP e CRP",
+            "collegamento": "La lezione precedente tratta coesione; qui il focus è la direzione delle dipendenze.",
+            "nodo": "clean-architecture-coesione-componenti"
+          },
+          {
+            "conoscenza": "Coesione e accoppiamento",
+            "collegamento": "Le dipendenze sono una dimensione di qualità, ma i principi qui sono a livello componente.",
+            "nodo": "coesione-accoppiamento"
+          },
+          {
+            "conoscenza": "Metriche software",
+            "collegamento": "I e A sono indici descrittivi che richiedono convenzioni esplicite.",
+            "nodo": "metriche-software"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Calcolare gli indici",
+            "problema": "X dipende da tre componenti, due componenti dipendono da X; X contiene un’interfaccia e quattro tipi.",
+            "passi": [
+              "1. Dichiaro Ca=2 (entranti) e Ce=3 (uscenti).",
+              "2. I=3/(2+3)=0,6.",
+              "3. A=1/4=0,25.",
+              "4. D=|0,25+0,6−1|=0,15.",
+              "5. Interpreto come descrizione, non soglia universale."
+            ],
+            "soluzione": "I=0,6; A=0,25; D=0,15; numeri ipotetici didattici.",
+            "perche_funziona": "I conteggi sono fissati prima delle formule e l’interpretazione resta prudente."
+          },
+          {
+            "titolo": "Individuare un ciclo",
+            "problema": "Ordini → Catalogo → Prezzi → Ordini. Quale principio è coinvolto?",
+            "passi": [
+              "1. Seguo gli archi fino a tornare a Ordini.",
+              "2. Riconosco un ciclo nel grafo.",
+              "3. Associo la violazione ad ADP.",
+              "4. Non uso I come sostituto del controllo di cicli."
+            ],
+            "soluzione": "Il grafo viola ADP; I è un indice per singolo componente, non una prova di aciclicità.",
+            "perche_funziona": "Separa una proprietà topologica da un rapporto numerico locale."
+          }
+        ],
+        "errori_comuni": [
+          "Confondere ADP/SDP/SAP con REP/CCP/CRP.",
+          "Invertire Ca e Ce: Ca entra, Ce esce.",
+          "Calcolare I o A con denominatore nullo.",
+          "Trattare A+I=1 o D come soglia di qualità universale."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Enuncia ADP, SDP e SAP.",
+            "risposta": "ADP evita cicli; SDP fa dipendere da componenti più stabili; SAP associa componenti stabili ad astrazione sufficiente."
+          },
+          {
+            "domanda": "Come distingui Ca da Ce?",
+            "risposta": "Ca conta chi dipende dal componente; Ce conta da quali componenti esso dipende. I=Ce/(Ca+Ce), con denominatore positivo."
+          },
+          {
+            "domanda": "Che cosa descrive la sequenza principale?",
+            "risposta": "La relazione A+I=1; D può descrivere lo scostamento, non è soglia universale né valutazione automatica."
+          },
+          {
+            "domanda": "Perché Martin è extra?",
+            "risposta": "Il contratto indica *Clean Architecture* come riferimento extra, non tra i testi ufficiali del corso."
+          }
+        ],
+        "riepilogo": "ADP: niente cicli; SDP: dipendi da componenti più stabili; SAP: stabili abbastanza astratti.\nCa entra, Ce esce; I=Ce/(Ca+Ce), A=astratti/totale.\nSequenza principale A+I=1; D è descrittiva.\nMartin è riferimento extra; nessuna soglia del docente è trovata."
+      }
+    },
+    {
       "id": "clean-architecture-coesione-componenti",
       "title": "Coesione dei componenti (Clean Architecture): REP, CCP, CRP",
       "area": 2,
@@ -2930,6 +3069,144 @@
         ],
         "riepilogo": "Adapter (strutturale): converte l'interfaccia di una classe esistente in quella attesa dal client.\nRuoli: Target, Adaptee, Adapter, Client.\nObject adapter (composizione) preferito al class adapter (ereditarietà).\nTraduce nomi, dati ed errori; isola il fornitore (DIP, OCP).\nAdapter cambia l'interfaccia, Decorator la mantiene, Facade la semplifica.",
         "perche_ti_serve": "Approfondimento: adattatore di interfaccia, non citato nelle prove 2017-2025; utile per capire l'adattamento di interfacce (sintesi dell'utente)."
+      }
+    },
+    {
+      "id": "design-pattern-builder",
+      "title": "Design pattern Builder",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Builder separa la costruzione progressiva di un oggetto dalla sua rappresentazione, concentrando opzioni e validazione. È utile con più scelte o invarianti, non per ogni classe e non richiede sempre un Director. Builder/Decorator compaiono nella sintesi utente [D1] per lo studio dentistico; l’esempio qui è ricostruito, non originale.",
+      "saper_fare": [
+        "Riconoscere costruttori lunghi o parametri opzionali ambigui",
+        "Disegnare prodotto e builder con metodi fluenti e build()",
+        "Implementare validazione in Java",
+        "Dichiarare limiti e provenienza ricostruita"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-introduzione",
+          "forza": "hard",
+          "motivo": "Builder è un pattern e richiede lessico di intenti e ruoli."
+        },
+        {
+          "id": "design-pattern-simple-factory",
+          "forza": "soft",
+          "motivo": "Confrontare creazione di prodotto e sua configurazione."
+        },
+        {
+          "id": "design-pattern-decorator",
+          "forza": "soft",
+          "motivo": "Distinguere configurazione iniziale da aggiunte dinamiche."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "esercizio Java: Builder ricostruito",
+          "testo": "Studio dentistico ricostruito dalla sintesi utente [D1]: costruisci un fascicolo-visita con identificativo paziente, descrizione e importo non negativo. Campi e vincolo sono assunzioni didattiche.",
+          "soluzione": "Prodotto immutabile e builder annidato; metodi fluenti impostano i campi; build() controlla obbligatori e importo. Non è la consegna originale né una regola verificata del caso."
+        }
+      ],
+      "tempo_studio_min": 35,
+      "priorita": {
+        "livello": "bassa",
+        "motivazione": "Builder compare nella sintesi dell’utente [D1] una volta insieme a Decorator per lo studio dentistico; frequenza non verificata indipendentemente."
+      },
+      "risorse": [
+        {
+          "titolo": "Catalogo dei design pattern",
+          "url": "https://refactoring.guru/design-patterns/catalog",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "HFDP"
+        },
+        {
+          "libro": "GOF"
+        }
+      ],
+      "checklist_ripasso": [
+        "Prodotto separato dalla costruzione",
+        "Metodi fluenti e build()",
+        "Validazione degli invarianti",
+        "Studio dentistico ricostruito da [D1]",
+        "Builder ≠ Factory ≠ Decorator"
+      ],
+      "lezione": {
+        "intuizione": "Builder è utile quando costruire un oggetto richiede più scelte coerenti: invece di passare argomenti indistinguibili, si nominano le opzioni e si verifica il risultato in un punto. Lo studio dentistico è uno scenario ricostruito, non una trascrizione della prova.",
+        "spiegazione": "## Provenienza e intento\n\nLa sintesi dell’utente [D1] associa Builder/Decorator allo scenario dello studio dentistico (2018-01-30), ma gli originali non sono disponibili. Il caso seguente è **ricostruito a scopo didattico**: attributi, vincoli e classi sono assunzioni, non dettagli attestati della prova.\n\nBuilder separa la costruzione di un oggetto complesso dalla sua rappresentazione. Una forma comune ha prodotto immutabile, builder con metodi fluenti e `build()`. Un Director è opzionale e serve solo se si riutilizzano ricette predefinite.\n\n## Perché ti serve\n\nBuilder è riportato una volta nella sintesi dell’utente [D1], insieme a Decorator e allo scenario dentistico; gli originali non sono disponibili. Il caso ricostruito esercita la scelta e la motivazione, non riproduce una soluzione verificata.\n\n## Perché non un costruttore enorme?\n\nMolti parametri dello stesso tipo sono difficili da passare nell’ordine corretto; flag e `null` rendono la chiamata opaca. Il Builder nomina le scelte e concentra le verifiche. Ha però un costo in classi e codice: per pochi parametri obbligatori un costruttore semplice è spesso più chiaro.\n\n## Java originale: visita ricostruita\n\nAssunzioni didattiche: un fascicolo conserva identificativo paziente, descrizione e importo non negativo. Questa struttura non è riportata come tale nella sintesi [D1].\n\n```java\nimport java.math.BigDecimal;\nimport java.util.Objects;\nfinal class FascicoloVisita {\n  private final String pazienteId, descrizione;\n  private final BigDecimal importo;\n  private FascicoloVisita(Builder b) {\n    pazienteId=b.pazienteId; descrizione=b.descrizione; importo=b.importo;\n  }\n  static Builder builder() { return new Builder(); }\n  static final class Builder {\n    private String pazienteId, descrizione;\n    private BigDecimal importo=BigDecimal.ZERO;\n    Builder paziente(String id) { pazienteId=id; return this; }\n    Builder descrizione(String s) { descrizione=s; return this; }\n    Builder importo(BigDecimal v) { importo=v; return this; }\n    FascicoloVisita build() {\n      Objects.requireNonNull(pazienteId); Objects.requireNonNull(descrizione);\n      Objects.requireNonNull(importo);\n      if(importo.signum()<0) throw new IllegalArgumentException(\"importo negativo\");\n      return new FascicoloVisita(this);\n    }\n  }\n}\n```\n\nUso: `FascicoloVisita.builder().paziente(\"P-1\").descrizione(\"controllo\").importo(new BigDecimal(\"25.00\")).build();`. Il vincolo sul valore è un’assunzione del modello, non un dato originale.\n\n## Ruoli e notazione didattica\n\n- **Product:** `FascicoloVisita`, lo stato finale.\n- **Builder:** `FascicoloVisita.Builder`, raccoglie opzioni e costruisce.\n- **Client:** sceglie e chiama `build()`.\n- **Director:** assente; non è obbligatorio.\n\n```mermaid\nclassDiagram\n    class FascicoloVisita {\n      -String pazienteId\n      -String descrizione\n      -BigDecimal importo\n    }\n    class Builder {\n      +paziente(String) Builder\n      +descrizione(String) Builder\n      +importo(BigDecimal) Builder\n      +build() FascicoloVisita\n    }\n    Builder ..> FascicoloVisita : costruisce\n```\n\nÈ uno schema compatto: «costruisce» è un’etichetta illustrativa. Sul foglio usa notazione UML leggibile e le classi essenziali richieste.\n\n## Confronto e limiti\n\n**Factory** risponde soprattutto a “quale tipo concreto creo?”; **Builder** a “come configuro il prodotto?”. Possono collaborare. **Decorator** avvolge un oggetto per aggiungere comportamento dopo la costruzione; Builder non decora. Il Builder non garantisce da solo validità o immutabilità: il prodotto e `build()` devono far rispettare invarianti reali.\n\n## Fading didattico\n\nEsempio completo: determina prodotto, opzioni e invarianti. Completion problem: completa la guardia in `build()`. Esercizio autonomo: applica lo schema a campi opzionali davvero dichiarati, senza copiare proprietà dentistico non presenti. Se un caso ha poche opzioni, motiva perché non usare Builder.",
+        "analogia": "È come compilare una scheda d’ordine con campi nominati e un controllo prima dell’invio. L’analogia smette di valere perché Builder è codice tipizzato con invarianti: la scheda cartacea non garantisce immutabilità o correttezza.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Introduzione ai pattern",
+            "collegamento": "Intento, ruoli e limiti aiutano a decidere se Builder è necessario.",
+            "nodo": "design-pattern-introduzione"
+          },
+          {
+            "conoscenza": "Simple Factory",
+            "collegamento": "Factory seleziona un tipo di prodotto; Builder lo configura progressivamente.",
+            "nodo": "design-pattern-simple-factory"
+          },
+          {
+            "conoscenza": "Decorator",
+            "collegamento": "Decorator aggiunge comportamento avvolgendo l’oggetto durante l’uso.",
+            "nodo": "design-pattern-decorator"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Fascicolo-visita dentistico",
+            "problema": "Scenario ricostruito [D1], con ID, descrizione e importo non negativo come assunzioni.",
+            "passi": [
+              "1. Separo prodotto immutabile e builder temporaneo.",
+              "2. Espongo metodi fluenti nominati.",
+              "3. In build() controllo campi obbligatori e importo.",
+              "4. Creo il prodotto solo dopo la validazione.",
+              "5. Dichiaro che i campi e il vincolo sono ipotesi didattiche."
+            ],
+            "soluzione": "La chiamata `builder().paziente(...).descrizione(...).importo(...).build()` restituisce l’oggetto dopo i controlli.",
+            "perche_funziona": "Opzioni leggibili e validazione centralizzata rispettano le assunzioni dichiarate."
+          },
+          {
+            "titolo": "Builder o costruttore semplice?",
+            "problema": "CodiceFiscale ha un valore obbligatorio; PianoVisita didattico ha più scelte facoltative e vincoli.",
+            "passi": [
+              "1. Il costruttore di CodiceFiscale ha un solo argomento chiaro.",
+              "2. Le opzioni di PianoVisita rendono una lista posizionale ambigua.",
+              "3. Valuto un punto unico per i vincoli incrociati.",
+              "4. Uso Builder solo se chiarezza e controllo compensano codice aggiunto."
+            ],
+            "soluzione": "Costruttore semplice per il valore singolo; Builder è candidato per la configurazione articolata.",
+            "perche_funziona": "La selezione nasce dal problema e non dall’applicazione meccanica del pattern."
+          }
+        ],
+        "errori_comuni": [
+          "Usare Builder per ogni classe, anche con un costruttore breve.",
+          "Confondere Factory (scelta del tipo) con Builder (configurazione).",
+          "Dimenticare la validazione prima di restituire il prodotto.",
+          "Presentare campi dentistici ricostruiti come fatti dell’originale."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Quale problema risolve Builder?",
+            "risposta": "Separa la costruzione progressiva di un oggetto con più scelte dalla rappresentazione e può centralizzare la validazione."
+          },
+          {
+            "domanda": "Quando basta un costruttore?",
+            "risposta": "Quando pochi parametri obbligatori rendono la chiamata chiara e non vi sono configurazioni complesse."
+          },
+          {
+            "domanda": "Come distingui Builder da Decorator?",
+            "risposta": "Builder configura e crea il prodotto; Decorator avvolge un oggetto compatibile per aggiungere comportamento durante l’uso."
+          },
+          {
+            "domanda": "Quali dettagli dentistici sono verificati?",
+            "risposta": "La sintesi utente cita lo scenario e Builder/Decorator; campi e regole qui mostrati sono ricostruzioni didattiche."
+          }
+        ],
+        "riepilogo": "Builder separa costruzione e prodotto e valida in build().\nÈ utile per configurazioni articolate, non obbligatorio per ogni classe.\nFactory seleziona; Decorator avvolge e aggiunge comportamento.\nStudio dentistico e Java sono ricostruiti da [D1]."
       }
     },
     {
@@ -5380,6 +5657,152 @@
       }
     },
     {
+      "id": "esercizio-tesina-individuale",
+      "title": "Esercizio: tesina individuale del corso",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "La scheda ufficiale INF-36 2026/27 [S1] descrive una tesina individuale su un prodotto software con requisiti e diagrammi UML e una revisione del progetto con pattern. Criteri indicati: precisione/correttezza, completezza/design/pattern ed «effetto wow». I dettagli operativi non specificati restano da verificare sulla scheda [S1].",
+      "saper_fare": [
+        "Riformulare solo i contenuti della tesina riportati in [S1]",
+        "Organizzare requisiti, UML e revisione con pattern senza inventare deliverable",
+        "Controllare i criteri nominati senza trasformarli in pesi o voto",
+        "Separare dati della scheda da dettagli da verificare"
+      ],
+      "prerequisiti": [
+        {
+          "id": "requisiti-processo-specifica",
+          "forza": "hard",
+          "motivo": "La descrizione del prodotto include requisiti."
+        },
+        {
+          "id": "esercizio-class-diagram-da-testo",
+          "forza": "hard",
+          "motivo": "La scheda menziona diagrammi UML."
+        },
+        {
+          "id": "esercizio-pattern-motivato-java",
+          "forza": "hard",
+          "motivo": "La revisione del progetto usa pattern."
+        },
+        {
+          "id": "uml-diagramma-package",
+          "forza": "soft",
+          "motivo": "Utile per il programma UML, non indicato come deliverable specifico della tesina."
+        },
+        {
+          "id": "uml-diagramma-sequenza",
+          "forza": "soft",
+          "motivo": "Conoscenza UML di supporto, non deliverable qui attribuito alla scheda."
+        },
+        {
+          "id": "uml-diagramma-attivita",
+          "forza": "soft",
+          "motivo": "Conoscenza UML di supporto, non deliverable qui attribuito alla scheda."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "esercizio: pianificazione tesina [S1]",
+          "testo": "Usa solo la scheda [S1]: elenca i contenuti e i criteri nominati. Non aggiungere scadenze, pagine, pesi o deliverable.",
+          "soluzione": "1) Prodotto software. 2) Requisiti e diagrammi UML. 3) Revisione del progetto con pattern. 4) Criteri: precisione/correttezza, completezza/design/pattern, «effetto wow». 5) Dettagli operativi non specificati: [da verificare sulla scheda S1]."
+        }
+      ],
+      "tempo_studio_min": 30,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "La tesina individuale è indicata dalla scheda ufficiale INF-36 2026/27 [S1]; dettagli non presenti restano da verificare."
+      },
+      "risorse": [
+        {
+          "titolo": "Scheda INF-36 2026/27 [S1]",
+          "url": "https://unimore.coursecatalogue.cineca.it/corsi/2024/10296/insegnamenti/2026/27351/2022/10001?schemaid=22867",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [],
+      "checklist_ripasso": [
+        "Prodotto software",
+        "Requisiti e diagrammi UML",
+        "Revisione del progetto con pattern",
+        "Criteri nominati, senza inventare pesi",
+        "Scadenze e formati: [da verificare sulla scheda S1]"
+      ],
+      "lezione": {
+        "intuizione": "La tesina non è un altro nome per lo scritto: la scheda ufficiale [S1] la descrive come lavoro individuale su un prodotto software, requisiti, UML e revisione con pattern. Separa ciò che la scheda dice dai dettagli che non specifica.",
+        "spiegazione": "## Che cosa è documentato\n\nLa scheda INF-36 2026/27 [S1] descrive una **tesina individuale**. Comprende la descrizione di un prodotto software, requisiti e diagrammi UML, oltre alla revisione del progetto con pattern. I criteri indicati sono precisione/correttezza, completezza/design/pattern ed «effetto wow».\n\nQuesta lezione non aggiunge scadenze, lunghezze, linguaggi, modalità di consegna o struttura obbligatoria. Se servono, sono **[da verificare sulla scheda S1]** o nelle istruzioni ufficiali aggiornate. Non trasferire pesi dello scritto alla tesina né calcolare un voto.\n\n## Perché ti serve\n\nLa scheda [S1] nomina la tesina individuale separatamente dallo scritto: preparare una descrizione di prodotto, requisiti, UML e revisione con pattern copre questa richiesta ufficiale. La sintesi storica dell’utente [D1] non specifica la tesina e non va usata per riempire i dettagli mancanti.\n\n## Un metodo di organizzazione, non un formato imposto\n\nCome supporto personale puoi: (1) definire il prodotto che intendi descrivere; (2) formulare requisiti; (3) selezionare diagrammi UML pertinenti; (4) rivedere il progetto motivando pattern. È una sequenza didattica coerente con i temi nominati, non una sequenza ufficialmente prescritta o un elenco esaustivo di artefatti. Non aggiungere consegne non presenti senza marcarle come scelte personali.\n\n## Criteri tradotti in controlli osservabili\n\n- **Precisione/correttezza:** cerca contraddizioni fra requisiti, diagrammi e descrizione; verifica che l’applicazione del pattern risponda al problema dichiarato.\n- **Completezza/design/pattern:** controlla che gli argomenti nominati siano rappresentati e che la revisione renda visibili decisione e motivazione. La scheda non specifica qui una checklist più granulare.\n- **«Effetto wow»:** la scheda usa questa espressione, ma la definizione operativa non è trovata nei documenti consultati. Non inventare una formula: resta **[da verificare sulla scheda S1]**.\n\nSono nomi di criteri, non pesi o promesse di valutazione. L’autoverifica trova omissioni ma non predice il giudizio del docente.\n\n## Confine con lo scritto\n\nLa scheda [S1] descrive separatamente scritto e tesina. Gli intervalli e i punti attribuiti alle prove storiche in `DATI_PROVE_GUERRA.md` sono una sintesi dell’utente [D1], non istruzioni per la tesina. Non trasferire la struttura storica in tre parti, punti, durata o soglie.\n\n## Esempio completo, completamento e autonomia\n\nEsempio completo: estrai dalla scheda i contenuti nominati. Completamento: associa i criteri senza inventare pesi. Autonomia: annota separatamente ciò che è presente, assente e da chiarire. Il prodotto specifico non è fornito qui: non ne inventiamo requisiti.\n\n```mermaid\nflowchart TD\n    A[Prodotto software] --> B[Requisiti]\n    A --> C[Diagrammi UML]\n    B --> D[Revisione con pattern]\n    C --> D\n    D --> E[Criteri della scheda]\n```\n\nQuesto flowchart è un promemoria dei temi menzionati, non un diagramma richiesto per la tesina. Numero di artefatti, modalità e pesi esatti non riportati restano **[da verificare sulla scheda S1]**.",
+        "analogia": "È come preparare una cartella di progetto con una lista di temi pubblicata. L’analogia smette di valere se si presume che la scheda sia una check-list tecnica completa: la fonte non definisce tutti i dettagli operativi.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Processo dei requisiti",
+            "collegamento": "La scheda nomina requisiti del prodotto; formula requisiti senza colmare i buchi con supposizioni.",
+            "nodo": "requisiti-processo-specifica"
+          },
+          {
+            "conoscenza": "Class diagram da testo",
+            "collegamento": "Tecnica utile per passare dalla descrizione a una vista UML, non l’unico diagramma dichiarato.",
+            "nodo": "esercizio-class-diagram-da-testo"
+          },
+          {
+            "conoscenza": "Pattern motivato",
+            "collegamento": "La scheda nomina la revisione con pattern, da collegare al problema e al progetto.",
+            "nodo": "esercizio-pattern-motivato-java"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Estrarre i contenuti",
+            "problema": "Leggi [S1] e annota attività e criteri esplicitamente nominati.",
+            "passi": [
+              "1. Registro che è una tesina individuale.",
+              "2. Registro prodotto software, requisiti e diagrammi UML.",
+              "3. Registro revisione del progetto con pattern.",
+              "4. Trascrivo precisione/correttezza, completezza/design/pattern ed «effetto wow».",
+              "5. Segno scadenze, pagine, formato e pesi esatti come [da verificare sulla scheda S1]."
+            ],
+            "soluzione": "Contenuti: prodotto software, requisiti, UML e revisione con pattern; criteri: precisione/correttezza, completezza/design/pattern ed effetto wow.",
+            "perche_funziona": "Ogni affermazione è ricondotta a [S1] e gli elementi mancanti non vengono inventati."
+          },
+          {
+            "titolo": "Controllo senza calcolare un voto",
+            "problema": "Una bozza contiene requisiti, un class diagram e una proposta di pattern. Costruisci un controllo qualitativo.",
+            "passi": [
+              "1. Precisione: cerca contraddizioni tra requisito e diagramma.",
+              "2. Completezza: verifica i contenuti nominati nella scheda.",
+              "3. Effetto wow: annota che manca una definizione operativa.",
+              "4. Non convertire il controllo in percentuali o voto."
+            ],
+            "soluzione": "Checklist qualitativa sui criteri nominati; definizione operativa di effetto wow da verificare.",
+            "perche_funziona": "La checklist rileva omissioni ma rispetta i limiti della fonte."
+          }
+        ],
+        "errori_comuni": [
+          "Aggiungere scadenze, pagine, linguaggi o consegne non riportati in [S1].",
+          "Trasferire alla tesina punti o durata della sintesi utente sulle prove scritte.",
+          "Inventare una definizione di «effetto wow» o preferenze del docente.",
+          "Confondere tesina e scritto, descritti separatamente."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Quali contenuti della tesina sono nominati in [S1]?",
+            "risposta": "Descrizione di un prodotto software con requisiti e diagrammi UML e revisione del progetto con design pattern."
+          },
+          {
+            "domanda": "Quali criteri sono menzionati?",
+            "risposta": "Precisione/correttezza, completezza/design/pattern ed «effetto wow»; non aggiungere pesi o dettagli operativi."
+          },
+          {
+            "domanda": "Tesina e scritto coincidono?",
+            "risposta": "No: la scheda [S1] li descrive separatamente e la sintesi storica utente non specifica modalità della tesina."
+          },
+          {
+            "domanda": "Come si misura l’effetto wow?",
+            "risposta": "La definizione operativa non è trovata nei documenti qui disponibili; è da verificare sulla scheda [S1]."
+          }
+        ],
+        "riepilogo": "[S1]: prodotto software, requisiti, UML e revisione con pattern.\nCriteri: precisione/correttezza, completezza/design/pattern, «effetto wow».\nTesina e scritto sono distinti.\nScadenze, formato e pesi: [da verificare sulla scheda S1]."
+      }
+    },
+    {
       "id": "metrica-complessita-ciclomatica",
       "title": "Calcolare la complessità ciclomatica",
       "area": 2,
@@ -7279,6 +7702,142 @@
       }
     },
     {
+      "id": "uml-diagramma-package",
+      "title": "Diagramma UML dei package",
+      "area": 2,
+      "tipo": "abilita",
+      "sapere": "Un package UML raggruppa elementi del modello e ne definisce un namespace. Una dipendenza indica che un elemento del package sorgente usa elementi del package destinazione; «import» e «access» ne precisano la semantica. Il package diagram descrive organizzazione logica, non componenti distribuibili o nodi di deployment.",
+      "saper_fare": [
+        "Raggruppare classi in package coerenti",
+        "Disegnare dipendenze con verso e stereotipo quando noto",
+        "Distinguere package, componenti e deployment",
+        "Ricavare una proposta di package da una traccia Farmacia"
+      ],
+      "prerequisiti": [
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "hard",
+          "motivo": "Le classi del modello sono gli elementi da organizzare."
+        },
+        {
+          "id": "decomposizione-funzionale",
+          "forza": "soft",
+          "motivo": "Le responsabilità individuate suggeriscono gruppi logici."
+        },
+        {
+          "id": "coesione-accoppiamento",
+          "forza": "soft",
+          "motivo": "Coesione e dipendenze aiutano a valutare i confini."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "esercizio UML: package da testo",
+          "testo": "Farmacia didattica: raggruppa Cliente, Ordine, Prodotto, Magazzino e ServizioNotifiche e indica le dipendenze. Proposta di modellazione, non testo d’esame originale.",
+          "soluzione": "1) Propongo package dominio, applicazione e infrastruttura. 2) L’applicazione usa classi del dominio e contratti esterni. 3) Traccio la freccia dal client al package usato. 4) Ogni raggruppamento è una proposta didattica, non un fatto della prova."
+        }
+      ],
+      "tempo_studio_min": 35,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Il package diagram è nominato nel programma ufficiale 2026/27 [S1]; non gli attribuisco frequenze storiche."
+      },
+      "risorse": [
+        {
+          "titolo": "Scheda INF-36 2026/27 [S1]",
+          "url": "https://unimore.coursecatalogue.cineca.it/corsi/2024/10296/insegnamenti/2026/27351/2022/10001?schemaid=22867",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "FOWLER"
+        },
+        {
+          "libro": "UMLCLASS"
+        }
+      ],
+      "checklist_ripasso": [
+        "Package = raggruppamento logico",
+        "Freccia dal package dipendente a quello usato",
+        "«import» e «access» specificano l’accesso",
+        "Package ≠ componente ≠ deployment"
+      ],
+      "lezione": {
+        "intuizione": "Un package diagram risponde a una domanda architetturale: quali gruppi logici compongono il modello e chi dipende da chi? Prima si stabiliscono confini comprensibili, poi si tracciano dipendenze; la figura non dice dove gira il software.",
+        "spiegazione": "## Perché serve e provenienza\n\nIl **package diagram** organizza elementi UML in gruppi denominati package e rende visibili dipendenze fra gruppi. La scheda INF-36 2026/27 nomina il package diagram [S1]. La sintesi dell’utente sulle prove 2017–2025 [D1] non ne documenta la frequenza: non la attribuiamo.\n\n## Perché ti serve\n\nLa scheda ufficiale 2026/27 nomina il package diagram [S1]. La sintesi utente [D1] non fornisce una frequenza storica per questo diagramma: il motivo documentato qui è la copertura del programma. La Farmacia è il caso fil rouge ricostruito, non una soluzione originale.\n\n## Notazione essenziale\n\nIn UML un package si disegna come cartella con linguetta e nome; può contenere o elencare elementi. Una dipendenza è una freccia tratteggiata dalla sorgente al bersaglio: la sorgente usa il bersaglio. Gli stereotipi **«import»** e **«access»** precisano la visibilità dei membri importati. Disegna la notazione UML richiesta dalla consegna. Il Mermaid seguente è uno schema didattico, non la notazione normativa da copiare sul foglio.\n\n## Farmacia: confini e dipendenze\n\nLa Farmacia è uno scenario della sintesi dell’utente [D1]; la seguente organizzazione è una **ricostruzione didattica**, non una soluzione originale. I nomi dichiarati qui sono una scelta per l’esercizio.\n\n```mermaid\nflowchart LR\n    subgraph Dominio\n      Ordine\n      Prodotto\n      Cliente\n    end\n    subgraph Applicazione\n      GestioneOrdini\n    end\n    subgraph Infrastruttura\n      MagazzinoRepository\n      ServizioNotifiche\n    end\n    GestioneOrdini -.->|usa elementi| Dominio\n    GestioneOrdini -.->|usa contratti| Infrastruttura\n```\n\n`subgraph` mostra contenitori e le frecce il verso; non rende tutta la semantica UML. Sul foglio usa i simboli UML e aggiungi «import» o «access» solo se la semantica è scelta e richiesta.\n\n## Come leggere e disegnare\n\n1. Individua il package client, cioè quello che contiene codice che usa un elemento esterno.\n2. Disegna la dipendenza dal client al package usato; non invertire la freccia.\n3. «Import» rende i membri pubblici importati disponibili senza qualificarne il nome; «access» permette l’uso ma non esporta i nomi importati ai client del package sorgente.\n4. Traccia solo gli usi giustificati: l’esistenza di due package non implica una dipendenza.\n5. Controlla eventuali cicli e motiva i confini; il diagramma da solo non dimostra qualità o comportamento runtime.\n\n## Package, componenti e deployment\n\n**Package diagram**: raggruppamento logico del modello e dipendenze tra namespace. **Component diagram**: moduli con interfacce/porte e relazioni di realizzazione o uso; può rappresentare unità sostituibili. **Deployment diagram**: nodi di esecuzione, collocazione di artefatti/componenti e comunicazioni infrastrutturali. Un package può contenere classi ma non è per questo distribuibile; un componente può essere realizzato da elementi di più package; package non indica un server. Chiediti: raggruppo il modello, descrivo moduli con interfacce o colloco software su infrastruttura?\n\n## Esempio, completamento e autonomia\n\nProcedura: sottolinea gruppi e responsabilità, proponi package, assegna elementi, poi traccia dipendenze motivate. Nel completion problem lascia vuoti i nomi dei package e fai completare il verso delle frecce. Nell’esercizio autonomo giustifica ogni scelta con un fatto della traccia oppure marchiala come assunzione. La notazione Mermaid è semplificata; se la consegna non definisce un dettaglio di notazione, scrivi **[da verificare]** invece di inventare.",
+        "analogia": "Sono scaffali di un archivio: ogni cartella raccoglie documenti affini e un registro indica quale cartella consulta l’altra. L’analogia smette di valere quando si confondono cartelle logiche con server fisici: il package diagram non localizza il software.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Class diagram",
+            "collegamento": "Classi e interfacce sono gli elementi che organizzi nei package.",
+            "nodo": "uml-diagramma-classi"
+          },
+          {
+            "conoscenza": "Decomposizione funzionale",
+            "collegamento": "Responsabilità individuate nella scomposizione suggeriscono confini da verificare sul modello.",
+            "nodo": "decomposizione-funzionale"
+          },
+          {
+            "conoscenza": "Coesione e accoppiamento",
+            "collegamento": "Valuta se i gruppi sono coerenti e le dipendenze motivate.",
+            "nodo": "coesione-accoppiamento"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Farmacia: raggruppa il modello",
+            "problema": "Ricostruzione da Farmacia [D1]: organizza Cliente, Ordine, RigaOrdine, Prodotto e Magazzino.",
+            "passi": [
+              "1. Raggruppo Cliente, Ordine, RigaOrdine e Prodotto nel package dominio.",
+              "2. Metto il coordinamento dell’ordine in applicazione; repository e notifiche sono assunzioni di esempio.",
+              "3. Traccio dal coordinatore verso gli elementi/contratti che usa.",
+              "4. Non aggiungo cardinalità né spaccio i confini per dati originali."
+            ],
+            "soluzione": "Una proposta: dominio, applicazione e infrastruttura; la direzione va dal coordinatore al package usato. È una ricostruzione, non soluzione ufficiale.",
+            "perche_funziona": "Dichiara provenienza e motivazione dei confini, evitando di aggiungere dettagli non dati."
+          },
+          {
+            "titolo": "Verso della dipendenza",
+            "problema": "Report usa la classe Ordine del package Dominio; la traccia non parla di deployment.",
+            "passi": [
+              "1. Report è il client che usa Ordine.",
+              "2. Disegno Report → Dominio.",
+              "3. Aggiungo «import» o «access» solo se serve e la semantica è scelta.",
+              "4. Non invento nodi server."
+            ],
+            "soluzione": "Dipendenza tratteggiata Report → Dominio; nessun deployment diagram.",
+            "perche_funziona": "La freccia risponde alla dipendenza logica e non introduce infrastruttura non specificata."
+          }
+        ],
+        "errori_comuni": [
+          "Invertire la freccia: parte dal package che dipende.",
+          "Trattare Mermaid come notazione UML normativa.",
+          "Confondere package logico, componente distribuibile e nodo di deployment.",
+          "Presentare la suddivisione Farmacia come originale, benché sia ricostruita."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Qual è la differenza tra package e deployment diagram?",
+            "risposta": "Package mostra raggruppamenti logici e dipendenze; deployment colloca artefatti/componenti sui nodi di esecuzione."
+          },
+          {
+            "domanda": "In quale direzione punta una dipendenza?",
+            "risposta": "Dal package client che dipende verso il package che contiene l’elemento usato."
+          },
+          {
+            "domanda": "Che cosa precisano «import» e «access»?",
+            "risposta": "Sono stereotipi UML che qualificano la visibilità/accesso agli elementi del package bersaglio."
+          },
+          {
+            "domanda": "Che cosa prova la proposta Farmacia?",
+            "risposta": "È una soluzione didattica possibile, non la soluzione originale né una frequenza d’esame documentata."
+          }
+        ],
+        "riepilogo": "Package diagram = organizzazione logica e dipendenze.\nFreccia dal client al package usato; «import» e «access» qualificano l’uso.\nComponent = modulo; deployment = collocazione su nodi.\nFarmacia è ricostruita, non una soluzione originale verificata."
+      }
+    },
+    {
       "id": "uml-diagramma-sequenza",
       "title": "Diagramma UML di sequenza",
       "area": 2,
@@ -7576,6 +8135,142 @@
         ],
         "riepilogo": "Stati (participi, situazioni d'attesa), transizioni evento [guardia] / azione.\nIniziale e finale; self-transition se lo stato non cambia.\nStati = valori dell'enum stato; eventi = operazioni della classe.\nEventi anche temporali: after(15 giorni).",
         "perche_ti_serve": "Parte 1 Design: state diagram di un'entità — quasi sempre, 1-2 pt (sintesi dell'utente sulle 13 prove 2017-2025)."
+      }
+    },
+    {
+      "id": "analisi-statica",
+      "title": "Analisi statica del codice",
+      "area": 3,
+      "tipo": "concetto",
+      "sapere": "L’analisi statica esamina sorgente o rappresentazioni intermedie senza eseguire il programma e segnala possibili difetti, violazioni di regole o proprietà. Si distingue dall’ispezione manuale e dal testing dinamico, che esegue il programma su input. Un warning è un’indicazione da valutare, non una prova di errore o correttezza.",
+      "saper_fare": [
+        "Distinguere analisi automatica, ispezione manuale e test dinamico",
+        "Interpretare un warning senza scambiarlo per prova definitiva",
+        "Confrontare controllo statico e test su Java originale",
+        "Descrivere falsi positivi, falsi negativi e limiti"
+      ],
+      "prerequisiti": [
+        {
+          "id": "ispezione-codice",
+          "forza": "hard",
+          "motivo": "La distinzione dall’ispezione manuale è obiettivo centrale."
+        },
+        {
+          "id": "code-smell",
+          "forza": "soft",
+          "motivo": "Gli smell possono essere individuati da persone o regole statiche."
+        },
+        {
+          "id": "metrica-complessita-ciclomatica",
+          "forza": "soft",
+          "motivo": "Una misura può essere statica ma non prova il comportamento."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica: analisi statica",
+          "testo": "Definisci analisi statica e confrontala con ispezione e testing dinamico. Spiega che cosa dimostra un warning.",
+          "soluzione": "Analizza sorgente o bytecode senza eseguirli; ispezione è revisione umana, test dinamico esegue su input. Un warning segnala un rischio/regola da valutare e non prova da solo né un bug né la correttezza globale."
+        }
+      ],
+      "tempo_studio_min": 25,
+      "priorita": {
+        "livello": "bassa",
+        "motivazione": "La sintesi dell’utente [D1] riporta il tema tra quelli minori; è dato della sintesi, non frequenza ufficiale verificata."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 10.5 (ispezioni; non equivale a trattazione completa dell’analisi automatica)"
+        }
+      ],
+      "checklist_ripasso": [
+        "Statica: analizza senza eseguire",
+        "Ispezione: revisione umana",
+        "Dinamica: esegue su input",
+        "Warning non prova bug né correttezza",
+        "Verifica contesto e limiti dello strumento"
+      ],
+      "lezione": {
+        "intuizione": "L’analisi statica osserva il programma senza farlo girare: può segnalare percorsi sospetti o regole violate, ma non vede ogni comportamento concreto. È diversa dalla revisione umana e dal test che esegue il codice su input scelti.",
+        "spiegazione": "## Definizione e provenienza\n\nL’**analisi statica** esamina codice sorgente o una rappresentazione senza eseguire il programma. Può applicare regole sintattiche, tipi, analisi di flusso, controlli di nullabilità o metriche e restituire avvisi. La sintesi utente [D1] riporta il tema in una prova; gli originali non sono disponibili, quindi non attribuiamo definizioni o preferenze al docente.\n\nUn risultato è un’indicazione da interpretare. Un **falso positivo** è un warning che non corrisponde a un difetto nel contesto; un **falso negativo** è un difetto non rilevato. L’assenza di warning non dimostra l’assenza di bug.\n\n## Perché ti serve\n\nNella sintesi dell’utente [D1] l’analisi statica è riportata una volta, nel riepilogo della prova 2017-04, ed è classificata tra gli argomenti minori. È un dato della sintesi, non una frequenza verificata indipendentemente; la lezione chiarisce la distinzione utile tra ispezione e test.\n\n## Tre attività diverse\n\n| Attività | Che cosa fa | Evidenza | Limite |\n|---|---|---|---|\n| Analisi statica | Esamina codice o modello senza eseguirlo | Warning, violazioni di regole, metriche | Non osserva ogni risultato runtime |\n| Ispezione/revisione | Persone leggono codice o artefatti | Difetti individuati con ragionamento | Dipende da esperienza e attenzione |\n| Testing dinamico | Esegue su input e confronta risultati | Esiti osservati per quei test | Copre solo input e percorsi esercitati |\n\nUna pipeline può combinarle: analisi automatica, revisione e test. Non sono sostituti perfetti e nessuna, da sola, garantisce assenza di difetti.\n\n## Esempio Java originale: possibile null\n\n```java\nfinal class Sconto {\n    static int percentuale(String codice) {\n        if (codice.equals(\"VIP\")) return 10;\n        return 0;\n    }\n}\n```\n\nSe `codice` può essere `null`, la chiamata può causare `NullPointerException`. Un analizzatore potrebbe segnalarlo in base a tool, configurazione e informazioni disponibili. Una revisione può notare il rischio; un test `percentuale(null)` può osservarlo per quell’input. Nessuno dei due prova la correttezza di tutti gli usi. Una modifica possibile è `\"VIP\".equals(codice)`, ma la decisione dipende dal contratto: forse il chiamante deve vietare null.\n\n## Che cosa può cercare uno strumento\n\nEsempi: variabili non usate, flussi potenzialmente nulli, conversioni sospette, codice irraggiungibile, pattern di errore, stile o metriche configurate. Regole e severità dipendono dallo strumento. Una metrica come la complessità ciclomatica può essere calcolata staticamente, ma un valore elevato non dimostra automaticamente un bug. Non citiamo tool o soglie come requisiti d’esame non documentati.\n\n## Procedura per interpretare un warning\n\n1. Leggi regola e posizione; ricostruisci il percorso o l’assunzione segnalata.\n2. Controlla contratto e valori che possono raggiungere il codice.\n3. Classifica: difetto riproducibile, rischio plausibile, falso positivo o informazione insufficiente.\n4. Se osservabile, scrivi un test mirato; se strutturale, valuta revisione o refactoring.\n5. Sopprimi un avviso solo con motivazione e secondo le regole del progetto.\n\n## Esempio, completamento e autonomia\n\nEsempio svolto: il warning su `codice.equals` indica rischio di null; verifica il contratto e scegli test o guardia coerente. Nel completamento, valuta un warning su variabile non usata: può essere codice morto o limite dell’analisi. In autonomia confronta analisi statica, test e lettura manuale e annota che cosa ciascuno dimostra. La sintesi [D1] classifica il tema tra quelli minori: è un’informazione attribuita all’utente, non una statistica ufficiale.\n\n```mermaid\nflowchart LR\n    S[Codice sorgente] --> A[Analisi statica senza esecuzione]\n    S --> I[Ispezione manuale]\n    S --> T[Test dinamico con input]\n    A --> W[Warning da valutare]\n    T --> R[Risultato osservato]\n```\n",
+        "analogia": "È un revisore che legge una ricetta senza cucinarla e segnala passaggi ambigui. L’analogia smette di valere perché l’analizzatore applica regole formali e può esplorare automaticamente proprietà del codice, ma resta limitato da regole e modello.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Ispezione del codice",
+            "collegamento": "Entrambe possono trovare problemi senza eseguire; l’ispezione è umana, l’analisi può essere automatica.",
+            "nodo": "ispezione-codice"
+          },
+          {
+            "conoscenza": "Code smell",
+            "collegamento": "Uno smell è un indizio progettuale, può emergere da revisione o regole ma non è necessariamente un bug.",
+            "nodo": "code-smell"
+          },
+          {
+            "conoscenza": "Complessità ciclomatica",
+            "collegamento": "Una metrica può essere calcolata staticamente ma non dimostra il comportamento corretto.",
+            "nodo": "metrica-complessita-ciclomatica"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Warning di possibile null",
+            "problema": "Valuta `if (codice.equals(\"VIP\"))` senza assumere il contratto del parametro.",
+            "passi": [
+              "1. Se codice è null, la chiamata fallisce.",
+              "2. Cerca se il contratto vieta null; se non lo specifica, il comportamento è non definito.",
+              "3. Se null è vietato, verifica che i chiamanti lo garantiscano; altrimenti definisci il comportamento.",
+              "4. Aggiungi test mirato e una guardia coerente con il contratto.",
+              "5. Valuta il warning nel contesto: non è prova definitiva."
+            ],
+            "soluzione": "Il rischio esiste se null può arrivare. Possibili soluzioni: controllo esplicito o `\"VIP\".equals(codice)`, secondo il contratto.",
+            "perche_funziona": "La soluzione distingue il difetto condizionale dalle assunzioni non fornite."
+          },
+          {
+            "titolo": "Statico, ispezione o dinamico?",
+            "problema": "Una regola segnala variabile non usata; un revisore legge il metodo; un test esegue un input.",
+            "passi": [
+              "1. Il warning deriva da analisi statica senza esecuzione.",
+              "2. La lettura del revisore è ispezione manuale.",
+              "3. L’esecuzione di input è test dinamico.",
+              "4. Confronta risultati: possono trovare problemi diversi e nessuno copre tutto."
+            ],
+            "soluzione": "Sono tre attività distinte, complementari; il warning va verificato nel contesto.",
+            "perche_funziona": "Classifica il metodo in base a come produce evidenza, non al nome dello strumento."
+          }
+        ],
+        "errori_comuni": [
+          "Dire che analisi statica esegue il programma: quello è testing dinamico.",
+          "Confondere tool automatico e ispezione manuale.",
+          "Trattare warning o assenza di warning come prova definitiva.",
+          "Credere che una metrica elevata dimostri automaticamente un bug."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Che cosa definisce l’analisi statica?",
+            "risposta": "Esamina il codice o una rappresentazione senza eseguire il programma e segnala proprietà/rischi secondo regole configurate."
+          },
+          {
+            "domanda": "Come differisce da un test dinamico?",
+            "risposta": "Il test esegue il programma su input e osserva risultati; l’analisi statica non lo esegue."
+          },
+          {
+            "domanda": "Un warning dimostra un bug?",
+            "risposta": "No: è un’indicazione da valutare; può essere falso positivo e l’assenza di warning non dimostra correttezza."
+          },
+          {
+            "domanda": "Che differenza c’è tra analisi statica e ispezione?",
+            "risposta": "La prima può essere automatizzata su regole; l’ispezione è una revisione umana. Entrambe possono essere complementari."
+          }
+        ],
+        "riepilogo": "Statica analizza senza eseguire; ispezione è umana; dinamica esegue input.\nUn warning è un segnale, non una prova di bug o correttezza.\nVerifica contratto, contesto e limiti dello strumento.\nTema riportato nella sintesi utente [D1], non verificato sugli originali."
       }
     },
     {
@@ -8300,6 +8995,131 @@
         ],
         "riepilogo": "Smell = sintomo di cattiva struttura, non bug; va valutato.\nDuplicated Code, Long Method, Large Class, Long Parameter List, Feature Envy.\nSwitch Statements, Shotgun Surgery, Divergent Change, Data Class, Primitive Obsession.\nOgni smell ha un refactoring associato; molti si curano con pattern.\nSi trovano con review, metriche e analisi statica.",
         "perche_ti_serve": "Parte 3 Teoria: code smell e refactoring — 2 prove su 13 secondo la sintesi dell'utente."
+      }
+    },
+    {
+      "id": "commenti-codice",
+      "title": "Commenti nel codice",
+      "area": 3,
+      "tipo": "concetto",
+      "sapere": "I commenti chiariscono contratti, invarianti e motivazioni non ovvie; non devono ripetere ciò che il codice esprime. Categorie pratiche: documentazione API, commenti esplicativi/in-line e note temporanee come TODO/FIXME, da mantenere. La sintesi utente [D1] riporta il tema commenti nella teoria di una prova del 2022; gli originali non sono disponibili.",
+      "saper_fare": [
+        "Decidere se un commento aggiunge informazione o duplica il codice",
+        "Scrivere una nota breve per un invariante o una scelta non ovvia",
+        "Distinguere documentazione API, commento esplicativo e nota temporanea",
+        "Valutare un refactoring quando il commento compensa una struttura confusa"
+      ],
+      "prerequisiti": [
+        {
+          "id": "buone-pratiche-programmazione",
+          "forza": "hard",
+          "motivo": "Naming e leggibilità aiutano a decidere cosa richiede spiegazione."
+        },
+        {
+          "id": "refactoring",
+          "forza": "soft",
+          "motivo": "Un commento che spiega codice confuso può suggerire di chiarire la struttura."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "domanda teorica: commenti",
+          "testo": "Spiega quando commentare e distingui tre categorie. Valuta un frammento Java senza parafrasare la logica ovvia.",
+          "soluzione": "Javadoc documenta il contratto API; un commento esplicativo chiarisce una ragione/invariante non ovvia; TODO/FIXME è una nota temporanea da mantenere. Non commentare `i++` con “incrementa i”."
+        }
+      ],
+      "tempo_studio_min": 25,
+      "priorita": {
+        "livello": "media",
+        "motivazione": "Il tema è riportato per una prova del 2022 nella sintesi dell’utente [D1], non verificata sugli originali."
+      },
+      "risorse": [
+        {
+          "titolo": "Google Java Style Guide (stile, non fonte d’esame)",
+          "url": "https://google.github.io/styleguide/javaguide.html",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 9"
+        }
+      ],
+      "checklist_ripasso": [
+        "Commenta contratti, motivazioni e invarianti non ovvi",
+        "Non parafrasare codice evidente",
+        "Javadoc per API quando appropriato",
+        "TODO/FIXME contestualizzati e temporanei",
+        "Se serve un commento lungo, valuta refactoring"
+      ],
+      "lezione": {
+        "intuizione": "Un commento è utile quando aggiunge una ragione, un vincolo o un contratto non visibile leggendo le istruzioni. Se racconta soltanto la riga, crea una seconda versione della stessa informazione che può diventare falsa dopo una modifica.",
+        "spiegazione": "## Provenienza e idea centrale\n\nLa sintesi dell’utente [D1] riporta «commenti» tra i temi teorici associati a una prova del 2022; gli originali non sono disponibili. Non attribuiamo al docente una tassonomia o una risposta ufficiale. Qui si usa una classificazione pratica.\n\nUn commento è informazione testuale mantenuta insieme al programma. È utile se chiarisce un **contratto**, un **invariante**, una **ragione di progetto** o un fatto esterno necessario a interpretare una scelta. Non rende corretto il codice e non sostituisce nomi, tipi, metodi o test.\n\n## Perché ti serve\n\nLa sintesi dell’utente [D1] riporta il tema una volta tra i temi teorici di una prova del 2022; gli originali non sono disponibili. Questa è una risposta di studio, non una formulazione verificata né un’indicazione sui punti.\n\n## Tre categorie pratiche\n\n1. **Documentazione API:** descrive uso, parametri, risultato, eccezioni o condizioni di un metodo pubblico. In Java Javadoc (`/** ... */`) può essere trasformato in documentazione dagli strumenti.\n2. **Commento esplicativo:** annota una ragione non ovvia, un vincolo o un’invariante locale; va vicino al codice pertinente e mantenuto con esso.\n3. **Nota temporanea:** `TODO` o `FIXME` segnala lavoro incompleto o problema noto. Non è un sistema di issue, non deve occultare un difetto e richiede contesto e manutenzione.\n\nÈ una tassonomia didattica, non una lista normativa completa: convenzioni di progetto possono differire.\n\n## Quando commentare e quando migliorare il codice\n\n```java\nimport java.math.BigDecimal;\nimport java.util.Objects;\n\nfinal class Promozioni {\n    /** Restituisce il prezzo dopo aver verificato il codice promozionale. */\n    BigDecimal prezzoConPromozione(String codice) {\n        // Il controllo precede il calcolo perché i codici scaduti non vanno riutilizzati.\n        verificaNonScaduto(codice);\n        return calcolaPrezzo(codice);\n    }\n\n    private void verificaNonScaduto(String codice) {\n        Objects.requireNonNull(codice, \"codice\");\n    }\n\n    private BigDecimal calcolaPrezzo(String codice) {\n        return BigDecimal.ZERO; // valore dimostrativo, non regola di dominio\n    }\n}\n```\n\nIl commento esplicativo è giustificato solo se la motivazione non è già evidente da nome o requisito; il contratto deve corrispondere al comportamento reale. Esempio ridondante: `i++; // incrementa i`. Non spiega perché l’incremento avvenga. Una nota utile potrebbe dire che l’ordine di inserimento è conservato perché una specifica richiede di mostrare le righe in quell’ordine: si scrive solo se il requisito esiste davvero.\n\nSe un metodo è difficile da capire, prova a rinominare variabili, estrarre funzioni o separare responsabilità. Un commento lungo che parafrasa molti rami può segnalare che la struttura va chiarita. Non è una legge: la documentazione di un algoritmo complesso può essere necessaria, ma va distinta da una spiegazione di codice mal organizzato.\n\n## Regole di qualità\n\n- Scrivi note brevi, specifiche e vicine al codice che spiegano.\n- Descrivi il “perché” o un contratto, non ogni istruzione.\n- Aggiorna o rimuovi commenti divenuti falsi dopo una modifica.\n- Non inserire segreti o dati personali nei commenti.\n- Per TODO/FIXME annota contesto e segui le pratiche del team per tracciare il lavoro.\n\n```java\nfinal class LimiteOrdini {\n    private final int massimo;\n    LimiteOrdini(int massimo) {\n        if (massimo < 0) throw new IllegalArgumentException(\"massimo negativo\");\n        this.massimo = massimo;\n    }\n    boolean consente(int correnti) {\n        // Il massimo è incluso: il limite è raggiungibile.\n        return correnti <= massimo;\n    }\n}\n```\n\nLa nota sull’inclusività è utile solo se non è già chiara dal requisito o dal nome. Esempio completo: separa Javadoc, commento d’invariante e TODO. Completion problem: ricevi una nota “controlla disponibilità” e chiediti se spiega il perché o ripete la chiamata. Autonomia: commenta solo il contratto o la ragione che non emergono dalla struttura. Ogni commento resta da revisionare insieme al codice.\n\n```mermaid\nflowchart TD\n    C[Contratto API] --> J[Javadoc]\n    M[Motivazione non ovvia] --> I[Commento inline]\n    N[Attività temporanea] --> T[TODO o FIXME]\n```\n",
+        "analogia": "È una nota a margine in una ricetta che spiega perché un passaggio va fatto in un certo ordine, non la riscrittura di ogni gesto. L’analogia smette di valere perché il commento può diventare obsoleto mentre il codice continua a funzionare: va mantenuto e verificato.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Buone pratiche",
+            "collegamento": "Nomi e metodi coesi riducono i commenti ridondanti.",
+            "nodo": "buone-pratiche-programmazione"
+          },
+          {
+            "conoscenza": "Refactoring",
+            "collegamento": "Un commento lungo che racconta un metodo confuso può suggerire una ristrutturazione.",
+            "nodo": "refactoring"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Scegliere categoria e contenuto",
+            "problema": "Per API paga(importo), invariante locale e lavoro futuro, scegli commenti appropriati.",
+            "passi": [
+              "1. Documenta contratto, parametri e condizioni di paga con Javadoc quando è API esposta.",
+              "2. Spiega l’invariante non ovvio vicino al controllo che lo mantiene.",
+              "3. Usa TODO con contesto per una nota temporanea e segui la pratica del team.",
+              "4. Elimina le parafrasi di righe ovvie."
+            ],
+            "soluzione": "Javadoc per il contratto, commento inline per motivazione/invariante, TODO contestualizzato per lavoro temporaneo.",
+            "perche_funziona": "La forma segue lo scopo e riduce duplicazioni."
+          },
+          {
+            "titolo": "Commento o refactoring?",
+            "problema": "Un metodo lungo ha un commento di dieci righe che descrive tutti i rami.",
+            "passi": [
+              "1. Chiedo se il commento documenta un contratto esterno o parafrasa la logica.",
+              "2. Se parafrasa, valuto nomi migliori o metodi estratti.",
+              "3. Mantengo la motivazione che non emerge dalla struttura.",
+              "4. Dopo il cambiamento verifico il comportamento con i test disponibili."
+            ],
+            "soluzione": "La nota lunga è un indizio da valutare, non prova automatica di errore; migliora la struttura quando aiuta, conserva solo motivazioni non ovvie.",
+            "perche_funziona": "Distingue informazione di dominio dal rumore descrittivo senza usare commenti come sostituti del design."
+          }
+        ],
+        "errori_comuni": [
+          "Parafrasare ogni riga e duplicare il codice.",
+          "Lasciare commenti non aggiornati che contraddicono il comportamento.",
+          "Usare TODO come unica traccia di lavoro senza contesto.",
+          "Credere che Javadoc renda corretto un contratto non rispettato."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Quando è utile un commento inline?",
+            "risposta": "Quando chiarisce motivazione, invariante o vincolo non evidente; va mantenuto breve e aggiornato."
+          },
+          {
+            "domanda": "Differenza fra Javadoc e parafrasi?",
+            "risposta": "Javadoc documenta uso e contratto di un elemento API; la parafrasi ripete ciò che il codice mostra già."
+          },
+          {
+            "domanda": "Come si gestisce TODO/FIXME?",
+            "risposta": "Si dà contesto, non si occulta un difetto e si aggiorna/rimuove quando risolto, seguendo il processo del team."
+          },
+          {
+            "domanda": "Un commento rende il codice autoesplicativo?",
+            "risposta": "Non necessariamente: se descrive logica complessa, valuta nomi e struttura migliori e conserva le sole motivazioni non ovvie."
+          }
+        ],
+        "riepilogo": "Commenta contratti, motivazioni e invarianti non ovvi.\nJavadoc documenta API; inline spiega scelte; TODO/FIXME sono note temporanee.\nNon parafrasare righe ovvie: migliora nomi e struttura.\nLa sintesi utente [D1] riporta il tema; gli originali non sono disponibili."
       }
     },
     {
