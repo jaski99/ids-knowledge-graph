@@ -2,6 +2,7 @@
 import copy
 import datetime as dt
 import json
+import re
 import subprocess
 import threading
 from functools import partial
@@ -116,6 +117,7 @@ def test_percorsi_tentativi_ricerca_ripasso_backup_e_tastiera(browser, base_url,
     # Il tentativo guida il filtro e diventa una carta di ripasso, senza generare una soluzione nuova.
     page.click('.ls-top > .btn')
     page.wait_for_selector('#view-percorso:not([hidden])')
+    assert not re.search(r'\b(null|undefined|NaN)\b', page.locator('#view-percorso').inner_text())
     page.wait_for_function("id => document.activeElement?.id === 'chk-' + id", arg=BANK_ID)
     page.fill('#search', '')
     page.get_by_label('Sbagliati o parziali').check()

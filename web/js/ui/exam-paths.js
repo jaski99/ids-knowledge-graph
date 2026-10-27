@@ -13,7 +13,7 @@ export function createExamPathsView(root, graph, { onOpenLesson, onSelect }) {
       clear(root).append(
         h('h2', {}, 'Percorsi per esame'),
         h('p', { class: 'muted' }, 'Ordine di studio proposto dalla sintesi dell’utente sulle prove, non una graduatoria ufficiale. I prerequisiti indispensabili restano indicati.'),
-        !graph.programma ? h('p', { class: 'muted' }, 'Mappatura del programma [da verificare]: selezione basata sui contenuti e sulle priorità disponibili.') : null,
+        ...(graph.programma ? [] : [h('p', { class: 'muted' }, 'Mappatura del programma [da verificare]: selezione basata sui contenuti e sulle priorità disponibili.')]),
         ...paths.map((p, i) => {
           const nodi = p.nodi.filter((n) => visible.has(n.id));
           return h('details', { class: 'exam-path', 'data-path': p.id, open: firstRender ? i === 0 : open.has(p.id) },
