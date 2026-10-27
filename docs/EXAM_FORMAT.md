@@ -1,22 +1,48 @@
-# Formato esame (dal fac-simile a.a. 2016/17 fornito dall'utente)
-Scritto, 2 ore, 30 punti.
-- Parte 1 Design (13 pt, ~1h) su un caso di studio testuale (es. biblioteca): 1.1 Use Case + Class diagram (3); 1.2 Sequence diagram coerente con le classi (3); 1.3 Activity diagram (2); 1.4 Design pattern motivato con limiti + class diagram + classi Java minime (5) (soluzione ufficiale: Composite).
-- Parte 2 Testing (7 pt, ~20 min): black box su una funzione Java (es. luggageCost(int,double)): classi di equivalenza, test minimi validi/non validi, boundary conditions sui casi validi.
-- Parte 3 Domande (10 pt, ~40 min): teoria aperta (es. processo di specifica dei requisiti; software metrics e una metrica a scelta; refactoring scopo e rischi).
-Priorità: diagrammi UML (use case, classi, sequenza, attività) e design pattern GoF con codice Java = ALTA; equivalence class + BVA = ALTA; teoria requisiti/metriche/refactoring = ALTA come domande. Ogni nodo tipo_esercizio deve ricalcare questi formati.
+# Registro delle versioni dell'esame
 
-# Prova del 5/11/2025 (a.a. 2024/25) — più recente, PESA DI PIÙ
-Scritto 2h, sufficienza >17/30, nessun materiale.
-- Parte 1 Design (16 pt, 60 min), caso farmacia: 1.1 Class diagram con proprietà, operazioni, direzione e molteplicità delle associazioni (5); 1.2 Sequence (ordine cliente con tessera) + Activity dell'intera app + State diagram degli stati di un acquisto, coerenti con le classi (5); 1.3 Use case (2); 1.4 pattern per mailing list/promozioni = Observer: giustificare, class diagram, classi Java minime (4).
-- Parte 2 Testing (3 pt, 10 min): black box calcolaCostoSpedizione(int numero,int peso,int tariffa) a fasce (<=50, 51-150, 151-500, peso<=1000g): classi di equivalenza + BVA solo su 'numero'.
-- Parte 3 Domande (11 pt, 30 min): debugging e processo di debugging (3); riconoscere Simple Factory dal codice e pro/contro del metodo static (2); white box e decision coverage (2); dato codice con if/while: diagramma di flusso + test minimi per statement coverage e decision coverage (4).
-Priorità aggiornate ALTA: class diagram (molteplicità/direzione), sequence, activity, state diagram, use case, Observer, Composite, Factory (simple/method/abstract), black box EC+BVA, white box (CFG, statement/decision coverage), debugging, refactoring, metriche, specifica requisiti.
+Le righe descrivono **fonti e versioni distinte**: non sono un unico formato invariabile. Il fac-simile e la ricostruzione 2025 sono stati forniti dall'utente; [D1] è la sintesi dell'utente, [S6] una trascrizione di terzi e [S1] la scheda ufficiale della coorte 2026/27. I riferimenti completi sono in [SYLLABUS.md](SYLLABUS.md#fonti) e [IMPROVEMENT_PLAN.md §1.2](IMPROVEMENT_PLAN.md).
 
-# Prove 9/6/2022 e 27/1/2023 (da sintesi dell'utente, testo originale non disponibile)
-- 2022: Design su mercato ambulanti; 1.4 = Decorator (accessori opzionali piazzole con costo). Black box costoPiazzola a scaglioni m² (<15, 15..40, 40..100). Domande: ottimizzazione per la velocità (Knuth: premature optimization; make it work/right/fast; profiling); coesione dei componenti Clean Architecture (REP, CCP, CRP); statement e decision coverage; errori nei requisiti e costo di correzione nel ciclo di vita (curva di Boehm; review, prototipi, stakeholder).
-- 2023: Design su piscine (badge, accessi, servizi, top 10); 1.4 = Template Method. Black box calcolaCostoAccessi (4 scaglioni). Domande: REP/CCP/CRP; MC/DC; processo requisiti; processo debugging.
-# Regole ricorrenti
-- 1.4 non chiede mai "descrivi X": scenario operativo -> riconoscere il pattern (Decorator, Template Method, Observer, Composite, Factory...).
-- Parte 2 sempre funzione a scaglioni: EC + BVA su un parametro.
-- Clean Architecture REP/CCP/CRP richiesta in 2 prove su 3.
-- White box: dalle definizioni (statement, decision, MC/DC) al CFG con calcolo dei test.
+## Confronto delle versioni — piano §1.2
+
+| Fonte | Durata | Design | Testing | Teoria | Note |
+|---|---|---|---|---|---|
+| Prova 5/11/2025, ricostruzione fornita dall'utente | 2 h | 16 pt, 60 min: 1.1 classi 5; 1.2 sequenza + attività + stati 5; 1.3 casi d'uso 2; 1.4 Observer 4 | 3 pt, 10 min: classi di equivalenza + BVA su `numero` | 11 pt, 30 min: debugging 3; Simple Factory/`static` 2; white box e decision coverage 2; CFG + statement/decision coverage 4 | Sufficienza >17/30; nessun materiale. Dati della ricostruzione, non verifica indipendente. |
+| Fac-simile 2016/17, fornito dall'utente | 2 h | 13 pt, ~1 h: 1.1 use case + classi 3; 1.2 sequenza 3; 1.3 attività 2; 1.4 pattern 5 | 7 pt, ~20 min | 10 pt, ~40 min | Soluzione 1.4 indicata come ufficiale nel materiale fornito: Composite. |
+| Prova 13/01/2017 [S6], Studocu, fonte terza | 2h15 | 14 pt, 70 min | 6 pt, 20 min | 10 pt, 30 min | Punti per singola consegna non riportati nella ricerca R3. Non è una fonte istituzionale. |
+| Sintesi dell'utente 2017–2025 [D1 §1] | 1h15, 1h20, 2 h o 2h15 | 14–16 pt (60–85 min) | 3–5 pt (10–20 min) | 10–11 pt (30 min) | Soglia >17/30 oppure >18/20 secondo l'appello. Originali non disponibili. |
+| Scheda 2026/27 [S1] | 2 h | Esercizi di design con UML e pattern | Esercizi su una funzione | 3–4 domande aperte | Pesi 30%/55%/55%, somma **140%**: incoerenti, non calcolare un voto; tesina separata. |
+
+I tempi per singola parte sono riportati come nelle rispettive fonti; eventuale tempo non attribuito e differenze di somma sono **[da verificare]**, non vanno riempiti per supposizione. Gli intervalli di [D1] non vanno combinati per ricostruire un appello preciso.
+
+## Fac-simile 2016/17 — materiale fornito dall'utente
+
+- **Design:** caso testuale, ad esempio biblioteca; use case e class diagram; sequence coerente con le classi; activity; pattern motivato con limiti, class diagram e classi Java minime. La soluzione 1.4 del materiale fornito indica Composite.
+- **Testing:** black box su una funzione Java, ad esempio `luggageCost(int,double)`: classi di equivalenza, test minimi validi/non validi e boundary conditions sui casi validi.
+- **Teoria:** domande aperte, ad esempio processo di specifica dei requisiti, metriche e una metrica a scelta, refactoring con scopo e rischi.
+
+## Prova 5/11/2025 — ricostruzione fornita dall'utente
+
+- **Design:** caso farmacia; 1.1 class diagram con proprietà, operazioni, direzione e molteplicità; 1.2 sequence dell'ordine cliente con tessera, activity dell'app e state degli stati di un acquisto, coerenti con le classi; 1.3 use case; 1.4 Observer per mailing list/promozioni, motivazione, class diagram e Java minimo.
+- **Testing:** black box `calcolaCostoSpedizione(int numero,int peso,int tariffa)` a fasce (fino a 50, 51–150, 151–500; peso fino a 1000 g): classi di equivalenza e BVA sul solo `numero`. Per i limiti e le formule si consulti [D1] come sintesi dell'utente, non come originale verificato.
+- **Teoria:** debugging e processo; Simple Factory dal codice e pro/contro di `static`; white box e decision coverage; dato un metodo con `if`/`while`, CFG e test minimi per statement e decision coverage.
+
+## Prova del 13/01/2017 — [S6], fonte terza
+
+La trascrizione Studocu riporta una prova storica con scenari di ristorante e alberi addobbati, modellazione UML e pattern, una funzione di pedaggio a fasce per classi di equivalenza e valori limite, domande su SRS, coesione/accoppiamento e composizione/ereditarietà [S6]. I punti e i tempi documentati per parte sono **solo quelli della tabella**. Non confondere questa prova con il diverso appello e scenario di gennaio riportati nella sintesi dell'utente [D1].
+
+## Prove del 9/6/2022 e 27/1/2023 — sintesi dell'utente
+
+Gli originali non sono disponibili; i dettagli seguenti sono dati dell'utente [D1] e della documentazione già fornita, non trascrizioni autenticate.
+
+- **2022:** mercato ambulanti, Decorator per accessori opzionali delle piazzole; black box `costoPiazzola` a scaglioni; teoria su ottimizzazione, coesione dei componenti REP/CCP/CRP, statement/decision coverage ed errori nei requisiti e costo di correzione.
+- **2023:** piscine, badge, accessi, servizi e top ten; Template Method; black box `calcolaCostoAccessi` a scaglioni; teoria su REP/CCP/CRP, MC/DC, processo dei requisiti e debugging.
+
+## Sintesi dell'utente 2017–2025 — [D1]
+
+Nella sintesi dell'utente, i diagrammi sono qualificati così: use case **sempre** (1–2 pt); class diagram **sempre** (4–6 pt); sequence **quasi sempre** (1–5 pt); activity **quasi sempre** (2–3 pt); state **quasi sempre** (1–2 pt). Sono dati qualitativi e intervalli della sintesi, non punteggi da assegnare a una prova specifica [D1 §2].
+
+Il piano [§1.3](IMPROVEMENT_PLAN.md) conta gli argomenti riportati nella tabella di [D1]: per esempio testing black box a scaglioni in **13 prove su 13 secondo la sintesi dell'utente**. I conteggi per pattern e teoria sono indicati nella mappatura generata [NODES.md](NODES.md), con il tema generale e la provenienza. Non significano che ogni sotto-abilità o domanda specifica sia comparsa in tutte quelle prove. Le formule marcate «probabile» o mancanti in [D1] sono **[da verificare]**.
+
+## Scheda 2026/27 — [S1]
+
+La scheda ufficiale descrive lo scritto di 2 ore con domande aperte, design e testing, e una **tesina individuale** distinta; menziona il package diagram e l'unità AI-native. Le percentuali 30%/55%/55% sommano 140%: **non normalizzarle e non calcolare un voto** finché non sono chiarite. Le consegne e i tempi storici non completano automaticamente questa modalità. Vedi [SYLLABUS.md](SYLLABUS.md#s1-scheda-ufficiale-202627).

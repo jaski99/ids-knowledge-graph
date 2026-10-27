@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera docs/PIANO_STUDIO.md e docs/CHECKLIST_RIPASSO.md da graph/graph.json.
+"""Genera piano, checklist e mappa NODES da graph/graph.json.
 Uso: python scripts/gen_docs.py [check]"""
 import sys
 from kg import ROOT, load_graph, topo_order
@@ -71,9 +71,76 @@ def checklist(g):
     return "\n".join(L).rstrip() + "\n"
 
 
+def _cell(value):
+    """Mantiene il testo su una sola cella Markdown, anche con barre o a capo."""
+    return str(value).replace("|", "\\|").replace("\n", " ")
+
+
+def _frequenza_md(frequenza):
+    tema = _cell(frequenza["tema"])
+    if "prove" in frequenza:
+        numero = frequenza["prove"]
+        prove = "prova" if numero == 1 else "prove"
+        valore = f"{numero} {prove} su {frequenza['totale']}"
+    else:
+        valore = f"{_cell(frequenza['qualitativa'])} (dato qualitativo)"
+    return f"{tema}: {valore} secondo la sintesi dell'utente [D1]"
+
+
+def nodes_md(g):
+    """Tabella deterministica programma → nodi; non modifica il grafo in ingresso."""
+    programma = g.get("programma") or {}
+    frequenze = programma.get("frequenze", {})
+    mappa = {}
+    for voce in programma.get("voci", []):
+        cfu = str(voce["cfu"]).replace(".", ",")
+        nome_voce = f"{voce['voce']} ({cfu} CFU)"
+        for item in voce["nodi"]:
+            node_id = item["id"]
+            if node_id in mappa:
+                raise ValueError(f"nodo mappato a più voci: {node_id}")
+            mappa[node_id] = (nome_voce, item)
+
+    righe = [
+        ORIGINE,
+        "# Nodi e copertura del programma\n",
+        "Voci e CFU provengono dalla scheda 2026/27 [S1]; le parti indicano ambiti "
+        "di preparazione, non domande garantite. `—` indica un dato non trovato. "
+        "Le frequenze sono tratte dalla **sintesi dell'utente** [D1], non da "
+        "statistiche ufficiali: quelle riferite a un tema generale non certificano "
+        "la frequenza di ogni sotto-argomento. Fonti: [SYLLABUS.md](SYLLABUS.md).\n",
+        "| ID | Titolo | Area | Voce di programma | Parte d'esame | Frequenza | Priorità |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    non_mappati = []
+    for nodo in sorted(g["nodi"], key=lambda n: (n["area"], n["id"])):
+        assegnazione = mappa.get(nodo["id"])
+        if assegnazione is None:
+            voce, parti, frequenza = "—", "—", "—"
+            non_mappati.append(nodo)
+        else:
+            voce, item = assegnazione
+            parti = ", ".join(_cell(p) for p in item.get("parti_esame", [])) or "—"
+            frequenza = "<br>".join(_frequenza_md(frequenze[k]) for k in item.get("frequenze", [])) or "—"
+        righe.append(
+            f"| `{_cell(nodo['id'])}` | {_cell(nodo['title'])} | {nodo['area']} | "
+            f"{_cell(voce)} | {parti} | {frequenza} | {_cell(nodo['priorita']['livello'])} |"
+        )
+    righe.append("\n## Nodi non mappati\n")
+    if non_mappati:
+        righe.extend(f"- `{_cell(n['id'])}` — {_cell(n['title'])} (area {n['area']})" for n in non_mappati)
+    else:
+        righe.append("Nessuno.")
+    return "\n".join(righe).rstrip() + "\n"
+
+
 def outputs(g=None):
-    g = g or load_graph()
-    return {DOCS / "PIANO_STUDIO.md": piano(g), DOCS / "CHECKLIST_RIPASSO.md": checklist(g)}
+    g = load_graph() if g is None else g
+    return {
+        DOCS / "PIANO_STUDIO.md": piano(g),
+        DOCS / "CHECKLIST_RIPASSO.md": checklist(g),
+        DOCS / "NODES.md": nodes_md(g),
+    }
 
 
 def main():

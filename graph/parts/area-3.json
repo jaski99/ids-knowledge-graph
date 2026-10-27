@@ -97,7 +97,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domanda 3.1 del 9/6/2022 (ottimizzazione per la velocità: Knuth, profiling) (2022/2023: solo sintesi dell'utente)."
+      "motivazione": "Ottimizzazione è riportata in 1 prova su 13 secondo la sintesi dell'utente [D1]; le pratiche di implementazione figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -232,7 +232,7 @@
     "tempo_studio_min": 45,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domanda teorica di Parte 3 nel 2016/17 (cos'è, a cosa serve, rischi); nel programma e in TSUI 9.3.4."
+      "motivazione": "Refactoring è riportato in 2 prove su 13 secondo la sintesi dell'utente [D1], come tema generale; figura nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -305,7 +305,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domanda di Parte 3 nel 2016/17 (scopo e rischi del refactoring); la struttura in 6 punti serve per prendere tutti i punti."
+      "motivazione": "Refactoring è riportato in 2 prove su 13 secondo la sintesi dell'utente [D1], come tema generale; figura nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -417,7 +417,7 @@
     "tempo_studio_min": 25,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Parte 2 sempre black box (2016/17, 2022, 2023, 2025); white box nelle domande 2022 (statement/decision), 2023 (MC/DC) e 2025 (CFG + coperture)."
+      "motivazione": "La sintesi dell'utente [D1] riporta black box a scaglioni in 13 prove su 13; nella teoria, white box in 4 prove su 13 e MC/DC in 1 prova su 13: sono conteggi di temi generali, non del singolo nodo. Path Analysis e BVA figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -476,7 +476,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Classi di equivalenza nella Parte 2 di tutte le prove note: 2016/17 (7 pt), 2022, 2023, 5/11/2025 (3 pt)."
+      "motivazione": "Il testing black box a scaglioni è riportato in 13 prove su 13 secondo la sintesi dell'utente [D1]; la BVA compare nel programma ufficiale [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -535,7 +535,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "BVA richiesta nella Parte 2 di tutte le prove note: luggageCost 2016/17, costoPiazzola 2022, calcolaCostoAccessi 2023, calcolaCostoSpedizione 5/11/2025 (solo su 'numero'). TSUI 10.3.2."
+      "motivazione": "Il testing black box a scaglioni è riportato in 13 prove su 13 secondo la sintesi dell'utente [D1]; la BVA compare nel programma ufficiale [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -616,7 +616,7 @@
     "tempo_studio_min": 60,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Parte 2 in tutte le prove note: luggageCost (2016/17, 7 pt), costoPiazzola (9/6/2022), calcolaCostoAccessi (27/1/2023), calcolaCostoSpedizione (5/11/2025, 3 pt). Miglior rapporto punti/tempo."
+      "motivazione": "Il testing black box a scaglioni è riportato in 13 prove su 13 secondo la sintesi dell'utente [D1]; la BVA compare nel programma ufficiale [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -671,7 +671,7 @@
     "tempo_studio_min": 30,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Il 5/11/2025 chiede di disegnare il diagramma di flusso del metodo (es. 3.3, 4 pt); serve anche per le domande white box del 2022 e 2023. TSUI 10.3.3."
+      "motivazione": "La sintesi dell'utente [D1] riporta black box a scaglioni in 13 prove su 13; nella teoria, white box in 4 prove su 13 e MC/DC in 1 prova su 13: sono conteggi di temi generali, non del singolo nodo. Path Analysis e BVA figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -789,7 +789,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domande nel 9/6/2022 (statement e decision), 27/1/2023 (MC/DC) e 5/11/2025 (decision coverage, 2 pt + esercizio da 4 pt)."
+      "motivazione": "La sintesi dell'utente [D1] riporta black box a scaglioni in 13 prove su 13; nella teoria, white box in 4 prove su 13 e MC/DC in 1 prova su 13: sono conteggi di temi generali, non del singolo nodo. Path Analysis e BVA figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -862,7 +862,7 @@
     "tempo_studio_min": 40,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Esercizio 3.3 del 5/11/2025 (CFG + test per statement e decision coverage, 4 pt); coperture chieste anche nel 2022 e 2023."
+      "motivazione": "La sintesi dell'utente [D1] riporta black box a scaglioni in 13 prove su 13; nella teoria, white box in 4 prove su 13 e MC/DC in 1 prova su 13: sono conteggi di temi generali, non del singolo nodo. Path Analysis e BVA figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {
@@ -931,7 +931,7 @@
     "tempo_studio_min": 35,
     "priorita": {
       "livello": "alta",
-      "motivazione": "Domanda di Parte 3 nel 27/1/2023 (processo di debugging) e nel 5/11/2025 (3.1, 3 pt)."
+      "motivazione": "Debugging è riportato in 3 prove su 13 secondo la sintesi dell'utente [D1]; testing e implementazione figurano nel programma [S1] e nella pagina docente [S2]."
     },
     "risorse": [
       {

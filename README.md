@@ -1,5 +1,7 @@
 # ids-kg — Knowledge graph per l'esame di Ingegneria del Software (UNIMORE)
-Fonte unica: `graph/graph.json`. Vedi `docs/CONTRACTS.md`, `docs/SYLLABUS.md`, `docs/STATUS.md`.
+Fonte unica: `graph/graph.json`, generato dai dati in `graph/`. Fonti e versioni: [programma](docs/SYLLABUS.md), [registro degli esami](docs/EXAM_FORMAT.md), [mappa dei nodi](docs/NODES.md). Contratti e stato: [CONTRACTS](docs/CONTRACTS.md), [STATUS](docs/STATUS.md). Il piano vincolante del round 2 è [IMPROVEMENT_PLAN.md](docs/IMPROVEMENT_PLAN.md), con scope X1–X6 e ordine di integrazione.
+
+Le frequenze delle prove sono attribuite alla **sintesi dell'utente**, non a statistiche ufficiali. La scheda 2026/27 include una tesina e riporta pesi incoerenti: non usare le modalità storiche come se fossero quelle correnti.
 
 ## Web app (`web/`)
 App statica in italiano, vanilla JS a moduli ES, nessuna build obbligatoria (Cytoscape.js + dagre da CDN).
