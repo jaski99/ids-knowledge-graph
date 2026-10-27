@@ -84,11 +84,14 @@ export function nodiDaRipassare(risultato) {
 export function testoEsito(risultato, prova) {
   const t = risultato.totale;
   const righe = [`Totale: ${t.ottenuti}/${t.maxValutabile} punti autovalutati.`];
-  if (!prova.coperta) righe.push('La prova non copre tutte le voci ufficiali: nel grafo mancano degli esercizi, quindi il totale non è su 30.');
+  if (prova.calcolaVoto === false) {
+    righe.push(prova.motivoVotoAssente || 'Per questo profilo non calcolo un voto: mancano punti documentati per tutti gli slot.');
+    if (!prova.coperta) righe.push('Inoltre la prova non copre tutte le voci: nel grafo mancano degli esercizi per alcuni slot, dichiarati come vuoti.');
+  } else if (!prova.coperta) righe.push('La prova non copre tutte le voci ufficiali: nel grafo mancano degli esercizi, quindi il totale non è su 30.');
   if (t.senzaGiudizio > 0) {
     const voce = t.senzaGiudizio === 1 ? 'voce senza punteggio' : 'voci senza punteggio';
     righe.push(`Autovalutazione incompleta: ${t.senzaGiudizio} ${voce}.`);
-  } else if (prova.coperta) {
+  } else if (prova.coperta && prova.calcolaVoto !== false) {
     righe.push(t.ottenuti > prova.sogliaSufficienza
       ? 'Sopra la soglia di sufficienza della prova 2025 (più di 17 su 30).'
       : 'Sotto la soglia di sufficienza della prova 2025 (serve più di 17 su 30).');

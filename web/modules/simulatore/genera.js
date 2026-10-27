@@ -1,87 +1,26 @@
-// Genera una prova dalla struttura della prova del 5/11/2025 (docs/EXAM_FORMAT.md).
-// I testi arrivano solo da nodi[].esercizi. Se uno slot non ha esercizi, resta vuoto.
+// Genera una prova a struttura fissa Design / Testing / Teoria dai profili
+// di profili.js (tabella 1.2 di docs/IMPROVEMENT_PLAN.md; profilo predefinito:
+// prova del 5/11/2025, docs/EXAM_FORMAT.md). I testi arrivano solo da
+// nodi[].esercizi: dalle banche di X3 (slot.js, contratto 4.1) e dagli
+// esercizi esistenti. Se uno slot non ha esercizi, resta vuoto e dichiarato.
+import { getProfilo, durataMsPerProfilo, PROFILO_PREDEFINITO_ID } from './profili.js';
+import { corrisponde } from './slot.js';
 
 export const FONTE_PUNTEGGI = 'Prova del 5/11/2025';
 export const DURATA_MS = 2 * 60 * 60 * 1000;
 export const PUNTI_TOTALI = 30;
 export const SOGLIA_SUFFICIENZA = 17;
 
-const t = (e) => (e.tipoEsame || '').toLowerCase();
+export const MODALITA_VALIDE = Object.freeze(['allenamento', 'simulazione']);
 
-function matchClassi(e) { return /class diagram/.test(t(e)) && !/molteplicit|verifica di coerenza/.test(t(e)); }
-function matchSequence(e) { return /\bsequence\b/.test(t(e)); }
-function matchActivity(e) { return /\bactivity\b/.test(t(e)); }
-function matchState(e) { return /state diagram/.test(t(e)); }
-function matchUseCase(e) {
-  return /use case/.test(t(e)) && !/errori/.test(t(e));
+function partiDelProfilo(profilo) {
+  return profilo.parti.map((parte) => ({
+    ...parte,
+    slot: parte.slot.map((slot) => (slot.bundle
+      ? { ...slot, bundle: slot.bundle.map((b) => ({ ...b, match: (e) => corrisponde(b.matcher, e) })) }
+      : { ...slot, match: (e) => corrisponde(slot.matcher, e) })),
+  }));
 }
-function matchPattern(e) { return /pattern\s*1\.4|1\.4 completo/.test(t(e)); }
-function matchBlackBox(e) {
-  // Sul nodo d'esame la consegna è EC+BVA anche quando il testo dice solo «tabella finale».
-  if (e.nodoId === 'esercizio-black-box-scaglioni') return true;
-  const testo = (e.testo || '').toLowerCase();
-  if (!/parte 2/.test(t(e))) return false;
-  const chiedeEc = /classi di equivalenza/.test(testo) || /classi,/.test(testo);
-  const chiedeBva = /\bbva\b|boundary|valori limite/.test(testo);
-  return chiedeEc && chiedeBva;
-}
-function matchDebug(e) { return /debugging/.test(t(e)); }
-function matchFactory(e) {
-  if (e.nodoId === 'design-pattern-simple-factory') return true;
-  const blob = `${e.tipoEsame}\n${e.testo}`.toLowerCase();
-  return /parte 3/.test(t(e)) && /static/.test(blob) && /factory|pagamento/.test(blob);
-}
-function matchWhiteBox(e) {
-  if (/mc\/dc|mcdc/.test(t(e))) return false;
-  if (e.nodoId === 'esercizio-white-box-copertura' || e.nodoId === 'grafo-flusso-controllo') return false;
-  return /statement e decision/.test(t(e));
-}
-function matchCfg(e) { return e.nodoId === 'esercizio-white-box-copertura'; }
-
-const PARTI = [
-  {
-    id: 'design',
-    titolo: 'Parte 1 — Design',
-    punti: 16,
-    minuti: 60,
-    slot: [
-      { id: 'classi', titolo: '1.1 Diagramma delle classi', punti: 5, match: matchClassi },
-      {
-        id: 'comportamento',
-        titolo: '1.2 Sequenza, attività e stati',
-        punti: 5,
-        bundle: [
-          { id: 'sequence', etichetta: 'Diagramma di sequenza', match: matchSequence },
-          { id: 'activity', etichetta: 'Diagramma di attività', match: matchActivity },
-          { id: 'state', etichetta: 'Diagramma di stato', match: matchState },
-        ],
-      },
-      { id: 'usecase', titolo: "1.3 Casi d'uso", punti: 2, match: matchUseCase },
-      { id: 'pattern', titolo: '1.4 Design pattern', punti: 4, match: matchPattern },
-    ],
-  },
-  {
-    id: 'blackbox',
-    titolo: 'Parte 2 — Testing black box',
-    punti: 3,
-    minuti: 10,
-    slot: [
-      { id: 'bva', titolo: 'Classi di equivalenza e valori limite', punti: 3, match: matchBlackBox },
-    ],
-  },
-  {
-    id: 'teoria',
-    titolo: 'Parte 3 — Domande',
-    punti: 11,
-    minuti: 30,
-    slot: [
-      { id: 'debug', titolo: 'Debugging', punti: 3, match: matchDebug },
-      { id: 'factory', titolo: 'Simple Factory', punti: 2, match: matchFactory },
-      { id: 'whitebox', titolo: 'White box e decision coverage', punti: 2, match: matchWhiteBox },
-      { id: 'cfg', titolo: 'Diagramma di flusso e coperture', punti: 4, match: matchCfg },
-    ],
-  },
-];
 
 export function messaggioSlotVuoto(titolo) {
   return `Dati insufficienti per «${titolo}»: nel grafo non c'è un esercizio svolto che corrisponda a questa voce. Non è stato inventato un testo.`;
@@ -116,12 +55,14 @@ export function catalogoEsercizi(nodi) {
   return out;
 }
 
-export function strutturaPunteggi() {
-  return PARTI.map((p) => ({
+export function strutturaPunteggi(profiloId = PROFILO_PREDEFINITO_ID) {
+  return partiDelProfilo(getProfilo(profiloId)).map((p) => ({
     id: p.id,
     titolo: p.titolo,
     punti: p.punti,
+    puntiIntervallo: p.puntiIntervallo,
     minuti: p.minuti,
+    minutiIntervallo: p.minutiIntervallo,
     slot: p.slot.map((s) => ({
       id: s.id,
       titolo: s.titolo,
@@ -131,10 +72,10 @@ export function strutturaPunteggi() {
   }));
 }
 
-export function copertura(nodi) {
+export function copertura(nodi, profiloId = PROFILO_PREDEFINITO_ID) {
   const cat = catalogoEsercizi(nodi);
   const righe = [];
-  for (const parte of PARTI) {
+  for (const parte of partiDelProfilo(getProfilo(profiloId))) {
     for (const slot of parte.slot) {
       if (slot.bundle) {
         for (const b of slot.bundle) {
@@ -170,8 +111,11 @@ function etichettaPunti(punti) {
   return (e) => re.test(e.tipoEsame);
 }
 
-function scegli(rng, pool, match, punti) {
+function scegli(rng, pool, match, punti, preferisciNodoId = null) {
   let cands = pool.filter(match);
+  if (preferisciNodoId && cands.some((c) => c.nodoId === preferisciNodoId)) {
+    cands = cands.filter((c) => c.nodoId === preferisciNodoId);
+  }
   if (punti != null) {
     const labeled = cands.filter(etichettaPunti(punti));
     if (labeled.length) cands = labeled;
@@ -199,7 +143,9 @@ function consegnaDa(e, etichetta) {
 function quesitoSingolo(parte, slot, esercizio) {
   return {
     id: `${parte.id}:${slot.id}`,
+    parteId: parte.id,
     slotId: slot.id,
+    matcher: slot.matcher || null,
     titolo: slot.titolo,
     puntiMax: slot.punti,
     puntiUfficiali: slot.punti,
@@ -213,7 +159,9 @@ function quesitoBundle(parte, slot, trovati, mancanti) {
   const completo = mancanti.length === 0;
   return {
     id: `${parte.id}:${slot.id}`,
+    parteId: parte.id,
     slotId: slot.id,
+    matcher: null,
     titolo: slot.titolo,
     puntiMax: completo ? slot.punti : null,
     puntiUfficiali: slot.punti,
@@ -223,11 +171,14 @@ function quesitoBundle(parte, slot, trovati, mancanti) {
   };
 }
 
-export function generaProva(nodi, { seed, now = 0 } = {}) {
+export function generaProva(nodi, { seed, now = 0, profiloId = PROFILO_PREDEFINITO_ID, durataMinuti = null, modalita = 'simulazione' } = {}) {
   if (!Number.isInteger(seed)) throw new TypeError('seed intero obbligatorio');
+  if (!MODALITA_VALIDE.includes(modalita)) throw new RangeError(`modalità non valida: ${modalita} (allenamento|simulazione)`);
+  const profilo = getProfilo(profiloId);
+  const durataMs = durataMsPerProfilo(profilo, durataMinuti);
   const rng = mulberry32(seed);
   let pool = catalogoEsercizi(nodi);
-  const parti = PARTI.map((parte) => {
+  const parti = partiDelProfilo(profilo).map((parte) => {
     const quesiti = [];
     const mancanti = [];
     for (const slot of parte.slot) {
@@ -244,7 +195,7 @@ export function generaProva(nodi, { seed, now = 0 } = {}) {
         else quesiti.push(quesitoBundle(parte, slot, trovati, assenti));
         continue;
       }
-      const scelto = scegli(rng, pool, slot.match, slot.punti);
+      const scelto = scegli(rng, pool, slot.match, slot.punti, slot.preferisciNodoId || null);
       if (!scelto) {
         mancanti.push({ id: slot.id, titolo: slot.titolo, messaggio: messaggioSlotVuoto(slot.titolo) });
         continue;
@@ -252,14 +203,24 @@ export function generaProva(nodi, { seed, now = 0 } = {}) {
       pool = senza(pool, scelto);
       quesiti.push(quesitoSingolo(parte, slot, scelto));
     }
-    return { id: parte.id, titolo: parte.titolo, punti: parte.punti, minuti: parte.minuti, quesiti, mancanti };
+    return {
+      id: parte.id, titolo: parte.titolo, punti: parte.punti, puntiIntervallo: parte.puntiIntervallo,
+      minuti: parte.minuti, minutiIntervallo: parte.minutiIntervallo, quesiti, mancanti,
+    };
   });
   const coperta = parti.every((p) => p.mancanti.length === 0 && p.quesiti.every((q) => q.puntiMax != null && q.mancantiConsegne.length === 0));
   return {
-    fontePunteggi: FONTE_PUNTEGGI,
-    durataMs: DURATA_MS,
-    puntiTotali: PUNTI_TOTALI,
-    sogliaSufficienza: SOGLIA_SUFFICIENZA,
+    fontePunteggi: profilo.id === PROFILO_PREDEFINITO_ID ? FONTE_PUNTEGGI : profilo.fonte,
+    fonteProfilo: profilo.fonte,
+    profiloId: profilo.id,
+    profiloTitolo: profilo.titolo,
+    modalita,
+    durataMs,
+    durataMinuti: durataMs / 60000,
+    puntiTotali: profilo.puntiTotali,
+    sogliaSufficienza: profilo.sogliaSufficienza,
+    calcolaVoto: profilo.calcolaVoto,
+    motivoVotoAssente: profilo.motivoVotoAssente,
     seed,
     generataIl: now,
     coperta,

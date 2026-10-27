@@ -1,4 +1,15 @@
 .sim-lead { font-size: 1.02rem; }
+.sim-controlli { display: flex; flex-wrap: wrap; gap: .6rem 1rem; margin: .6rem 0; }
+.sim-controlli label { font-weight: 600; }
+.sim-select {
+  font: inherit; padding: .4rem .5rem; min-height: 44px; max-width: 100%;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--input-bg); color: var(--input-fg);
+}
+.sim-fonte { font-weight: 600; }
+.sim-rubrica { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; }
+.sim-rubrica ul { margin: .3rem 0 0; padding-left: 1.15rem; }
+.sim-sol-area { margin-top: .4rem; }
+.sim-esiti-msg { min-height: 1.2em; }
 .sim-parti { padding-left: 1.2rem; margin: .4rem 0 1rem; }
 .sim-parti li { margin: .25rem 0; }
 .sim-timer {
