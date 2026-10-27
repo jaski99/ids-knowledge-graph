@@ -1,0 +1,73 @@
+{
+  "intuizione": "La Parte 3 Teoria vale 10-11 pt in 30 min con domande brevi e ripetitive: una risposta sintetica (definizione, punti chiave, esempio) basta per raccogliere i punti.",
+  "spiegazione": "## Perché ti serve\n\nLe domande di teoria ricorrenti (debugging, requisiti, refactoring, REP/CCP/CRP, coverage, Simple Factory static, Observer in Java, commenti, post-vendita, analisi statica, SOLID, metriche, Knuth, Boehm, differenze black/white) tornano in prove diverse con la stessa struttura [D1 §1.3]: allenare risposte brevi, da 3 a 6 righe, evita elenchi vaghi e risposte troppo lunghe.\n\n## Definizione d'esame\n\nOgni domanda prevede: definizione in 1-2 frasi, elenco minimo ordinato, esempio concreto, eventuale limite o contesto. I punti si citano solo dove documentati (§1.2 del piano: ad esempio Simple Factory/static 2 pt e debugging 3 pt nella prova 5/11/2025); tutto il resto è senza punteggio dichiarato.\n\n## Come si risponde\n\n1. Leggi il tema e richiami il nodo prerequisito corrispondente nel grafo.\n2. Scrivi la definizione esatta (senza rimandi al libro: la lezione è autosufficiente).\n3. Aggiungi i punti chiave elencati nella risposta sintetica.\n4. Chiudi con esempio o limite; se un dato non è nelle fonti, scrivi esplicitamente 'da verificare' invece di inventarlo.\n\n\n## Schema della risposta sintetica\n\n```mermaid\nflowchart TD\n    A[Leggi il tema] --> B[Definizione in 1-2 frasi]\n    B --> C[Punti chiave ordinati]\n    C --> D[Esempio concreto o limite]\n    D --> E[Fonte dichiarata; dato mancante = 'da verificare']\n```\n\n## Fonti e punteggi\n\nI punteggi si citano solo dove documentati (§1.2 del piano: ad esempio Simple Factory con metodo static 2 pt e debugging 3 pt nella prova del 5/11/2025); per ogni altro tema non esiste un punteggio dichiarato, quindi non se ne inventa uno. Le fonti sono prove ricorrenti secondo la sintesi dell'utente (appelli 2017-01, 2019-02-19, 2020-11, 2021-02, 2022-01, 2022-06, 2023-01, 5/11/2025). Quando un dato manca (docente, numero di esercizio, durata), si scrive 'da verificare' e si passa oltre, senza completare per supposizione.",
+  "analogia": "È come un compito a risposte brevi: poche righe, ma ciascuna deve contenere il punto che vale il punteggio. L'analogia smette di valere quando la domanda chiede di applicare il concetto a uno scenario: allora serve l'esercizio collegato, non solo la definizione.",
+  "collegamenti_prior": [
+    {
+      "conoscenza": "Debugging",
+      "collegamento": "Tema della banca; le fasi si applicano a ogni difetto.",
+      "nodo": "debugging"
+    },
+    {
+      "conoscenza": "Criteri di copertura",
+      "collegamento": "Tema della banca; statement, decision, MC/DC.",
+      "nodo": "criteri-copertura"
+    },
+    {
+      "conoscenza": "Clean Architecture coesione componenti",
+      "collegamento": "Tema della banca; REP/CCP/CRP.",
+      "nodo": "clean-architecture-coesione-componenti"
+    },
+    {
+      "conoscenza": "Requisiti processo e specifica",
+      "collegamento": "Tema della banca; elicitazione, analisi, specifica, validazione.",
+      "nodo": "requisiti-processo-specifica"
+    }
+  ],
+  "esempi_svolti": [
+    {
+      "titolo": "Boehm e costo del cambiamento",
+      "problema": "Domanda: 'Qual è il costo del cambiamento degli errori nei requisiti secondo Boehm?'",
+      "passi": [
+        "1) Definizione: il costo di correzione di un errore cresce lungo il ciclo di vita.",
+        "2) Punto chiave: fino a ~100 volte di più in produzione rispetto all'analisi (già riportato nelle trappole del grafo).",
+        "3) Prevenzione: review delle specifiche, prototipi, stakeholder coinvolti, test di accettazione.",
+        "4) Risposta sintetica da 3-6 righe."
+      ],
+      "soluzione": "Gli errori trovati late costano molto di più; prevenzione con review, prototipi, test di accettazione. Fonte: sintesi dell'utente, prove 2022-01 e 2023-01.",
+      "perche_funziona": "Struttura definizione → cifra → prevenzione, ripetibile per ogni appello."
+    },
+    {
+      "titolo": "Simple Factory e metodo static",
+      "problema": "Domanda: 'Che cos'è questa factory con metodo static? Pro e contro?'",
+      "passi": [
+        "1) Definizione: idioma (non GoF) che crea l'oggetto in base a un parametro e restituisce l'astrazione.",
+        "2) Pro: niente istanza, creazione centralizzata, nome espressivo.",
+        "3) Contro: static non estendibile né mockabile; switch da modificare per ogni nuovo tipo (viola OCP).",
+        "4) Fonte: prova 5/11/2025, 2 pt, sintesi dell'utente."
+      ],
+      "soluzione": "Simple Factory con metodo static: pro e contro in 5-6 righe, punteggio citato solo perché documentato in §1.2.",
+      "perche_funziona": "Distinguere idioma da pattern GoF e citare il punteggio solo se documentato."
+    }
+  ],
+  "errori_comuni": [
+    "Attribuire al docente punteggi, durate o soglie non documentati.",
+    "Confondere Simple Factory con Factory Method/Abstract Factory.",
+    "Dire 'senza test automatici non è refactoring' come definizione assoluta (è una pratica consigliata, non la definizione)."
+  ],
+  "domande_autoverifica": [
+    {
+      "domanda": "Quante righe deve avere una risposta sintetica d'esame?",
+      "risposta": "3-6 righe: definizione, punti chiave, esempio o limite."
+    },
+    {
+      "domanda": "Quando si cita un punteggio per una domanda di teoria?",
+      "risposta": "Solo se documentato in §1.2 del piano (es. Simple Factory/static 2 pt, debugging 3 pt nella prova 5/11/2025); altrimenti nessun punteggio."
+    },
+    {
+      "domanda": "Cosa si intende per refactoring?",
+      "risposta": "Migliorare la struttura interna senza cambiare il comportamento osservabile; si fa in passi piccoli con test di regressione."
+    }
+  ],
+  "riepilogo": "Definizione in 1-2 frasi, punti chiave ordinati, esempio concreto, limite/contesto. Fonte sempre dichiarata; nessun punteggio fuori §1.2."
+}

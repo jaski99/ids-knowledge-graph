@@ -252,6 +252,15 @@
 - [ ] Trappola: dimenticare i LIMITI (chiesti esplicitamente)
 - [ ] Java minimo: interfaccia + 2 classi + metodo chiave
 
+### Banca esercizi: pattern di progettazione (prove Guerra) (priorità ALTA)
+
+- [ ] Accessori combinabili con costo → Decorator
+- [ ] Stessi passi con varianti → Template Method
+- [ ] Iscriviti/avvisa → Observer
+- [ ] Creazione con switch → Simple Factory
+- [ ] Algoritmo scelto a runtime → Strategy
+- [ ] Scrivere sempre i LIMITI del pattern scelto
+
 ### Esercizio d'esame: riconoscere il pattern dal codice (priorità ALTA)
 
 - [ ] static + switch + new → Simple Factory
@@ -354,6 +363,13 @@
 - [ ] Segnala i salti di prezzo o i buchi tra scaglioni
 - [ ] Scrivi l'output atteso numerico per OGNI caso
 
+### Banca esercizi: classi di equivalenza e boundary value analysis (prove Guerra) (priorità ALTA)
+
+- [ ] Uno scaglione = una classe valida
+- [ ] Una sola classe non valida per test (error masking)
+- [ ] Valori limite esattamente ai bordi delle classi
+- [ ] Se la formula è '[da verificare]', l'output non è certo
+
 ### Buona programmazione e best practices (priorità MEDIA)
 
 - [ ] DRY, KISS, YAGNI, SRP
@@ -433,6 +449,13 @@
 - [ ] pom.xml: GAV + dependencies + scope
 - [ ] validate → compile → test → package → verify → install → deploy
 - [ ] Convenzione sulle cartelle
+
+### Banca domande: teoria ricorrente (prove Guerra) (priorità ALTA)
+
+- [ ] Definizione in 1-2 frasi
+- [ ] Esempio concreto
+- [ ] Limite o contesto di applicazione
+- [ ] Non citare punteggi o durate non documentati (§1.2 del piano)
 
 
 ## Area 4. Distribuzione e manutenzione

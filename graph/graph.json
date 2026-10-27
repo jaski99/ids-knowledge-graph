@@ -1366,6 +1366,214 @@
       }
     },
     {
+      "id": "banca-esercizi-pattern-guerra",
+      "title": "Banca esercizi: pattern di progettazione (prove Guerra)",
+      "area": 2,
+      "tipo": "tipo_esercizio",
+      "sapere": "Banca di esercizi della Parte 1 Design 1.4: worked example in Java per Decorator, Template Method, Observer (mailing list Farmacia 2025), Factory (cioccolatini 'cioba') e Strategy (resistenza in 3 modalità). Ciascuno ha scenario ricostruito dalla sintesi dell'utente, motivazione con il principio SOLID soddisfatto e un'alternativa scartata, limiti, diagramma delle classi in mermaid e classi Java minime compilabili.",
+      "saper_fare": [
+        "Riconoscere il pattern da uno scenario di esame",
+        "Motivare la scelta con il principio SOLID e un'alternativa scartata",
+        "Disegnare il class diagram del pattern applicato al dominio",
+        "Scrivere le classi Java minime compilabili",
+        "Indicare i limiti del pattern"
+      ],
+      "prerequisiti": [
+        {
+          "id": "design-pattern-decorator",
+          "forza": "hard",
+          "motivo": "Uno dei pattern della banca."
+        },
+        {
+          "id": "design-pattern-template-method",
+          "forza": "hard",
+          "motivo": "Uno dei pattern della banca."
+        },
+        {
+          "id": "design-pattern-observer",
+          "forza": "hard",
+          "motivo": "Uno dei pattern della banca."
+        },
+        {
+          "id": "design-pattern-simple-factory",
+          "forza": "hard",
+          "motivo": "Uno dei pattern della banca."
+        },
+        {
+          "id": "design-pattern-strategy",
+          "forza": "hard",
+          "motivo": "Uno dei pattern della banca."
+        },
+        {
+          "id": "riconoscere-pattern-scenario",
+          "forza": "soft",
+          "motivo": "Abilità propedeutica: riconoscere il pattern dallo scenario."
+        },
+        {
+          "id": "esercizio-pattern-motivato-java",
+          "forza": "soft",
+          "motivo": "Stesso formato d'esame (pattern motivato + diagramma + Java)."
+        },
+        {
+          "id": "uml-diagramma-classi",
+          "forza": "soft",
+          "motivo": "Notazione per il class diagram."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "Parte 1 Design 1.4: Decorator (prova 2021-02, sintesi dell'utente)",
+          "testo": "Mercato ambulanti: una piazzola ha un costo base; si possono aggiungere accessori opzionali e combinabili (es. allaccio corrente, tettoia, posto auto), ognuno con un sovrapprezzo, anche più di uno insieme. Calcola il costo totale. **Scenario ricostruito dalla sintesi dell'utente**.",
+          "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nMercato ambulanti: una piazzola ha un costo base; si possono aggiungere accessori opzionali e combinabili (es. allaccio corrente, tettoia, posto auto), ognuno con un sovrapprezzo, anche più di uno insieme. Calcola il costo totale. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: opzioni/accessori combinabili che modificano il costo → variabilità nella composizione, non nel tipo di oggetto.\n2) Scelta: Decorator (strutturale). Alternativa scartata: una sottoclasse per ogni combinazione di accessori → esplosione esponenziale (2^n classi).\n3) Motivo SOLID: Open/Closed — si aggiungono accessori nuovi senza modificare le classi esistenti; composizione invece di ereditarietà.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Piazzola {\n        +costo(): double\n    }\n    class PiazzolaBase {\n        -mq: double\n        +costo(): double\n    }\n    class Accessorio {\n        <<abstract>>\n        -piazzola: Piazzola\n    }\n    class Corrente {\n        +costo(): double\n    }\n    class Tettoia {\n        +costo(): double\n    }\n    PiazzolaBase --|> Piazzola\n    Accessorio --|> Piazzola\n    Corrente --|> Accessorio\n    Tettoia --|> Accessorio\n    Accessorio o-- Piazzola\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Piazzola {\n    double costo();\n}\nclass PiazzolaBase implements Piazzola {\n    private final double mq;\n    PiazzolaBase(double mq) { this.mq = mq; }\n    public double costo() { return 2.0 * mq; }\n}\nabstract class Accessorio implements Piazzola {\n    protected final Piazzola p;\n    Accessorio(Piazzola p) { this.p = p; }\n}\nclass Corrente extends Accessorio {\n    Corrente(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 10.0; }\n}\nclass Tettoia extends Accessorio {\n    Tettoia(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 15.0; }\n}\npublic class MercatoDemo {\n    public static void main(String[] args) {\n        Piazzola piazzola = new Tettoia(new Corrente(new PiazzolaBase(20.0)));\n        System.out.println(piazzola.costo()); // fa 65.0\n    }\n}\n```\n\n## Limiti\n6) Limiti: molti oggetti piccoli; l'ordine di avvolgimento può influire su descrizione/costo; identità dell'oggetto decorato che cambia."
+        },
+        {
+          "tipo_esame": "Parte 1 Design 1.4: Template Method (prova 2023-01, sintesi dell'utente)",
+          "testo": "Piscina: ogni ingresso segue gli stessi passi (verifica badge, calcolo costo, registrazione ingresso, stampa ricevuta), ma la verifica e il calcolo cambiano tra nuoto libero, corso e acquagym. **Scenario ricostruito dalla sintesi dell'utente**.",
+          "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nPiscina: ogni ingresso segue gli stessi passi (verifica badge, calcolo costo, registrazione ingresso, stampa ricevuta), ma la verifica e il calcolo cambiano tra nuoto libero, corso e acquagym. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: algoritmo a passi fissi con alcune varianti → scheletro invariato, passi variabili.\n2) Scelta: Template Method (comportamentale). Alternativa scartata: Strategy — qui la sequenza è fissa e condivisa, non l'algoritmo intero scambiato a runtime.\n3) Motivo SOLID: Open/Closed per i passi variabili; inversione di controllo ('non chiamarci, ti chiamiamo noi').\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    class Accesso {\n        <<abstract>>\n        +esegui(): void final\n        +verifica(): boolean\n        +costo(): double\n        +registra(double): void\n        +stampaRicevuta(double): void\n    }\n    class NuotoLibero\n    class Corso\n    Accesso <|-- NuotoLibero\n    Accesso <|-- Corso\n```\n\n## Classi Java minime (compilabili)\n```java\nabstract class Accesso {\n    public final void esegui() {\n        if (!verifica()) return;\n        double c = costo();\n        registra(c);\n        stampaRicevuta(c);\n    }\n    protected abstract boolean verifica();\n    protected abstract double costo();\n    protected void registra(double c) { /* comune */ }\n    protected void stampaRicevuta(double c) { System.out.println(c); } // hook\n}\nclass NuotoLibero extends Accesso {\n    protected boolean verifica() { return true; }\n    protected double costo() { return 6.0; }\n}\nclass Corso extends Accesso {\n    protected boolean verifica() { return true; }\n    protected double costo() { return 0.0; }\n}\n```\n\n## Limiti\n6) Limiti: legato all'ereditarietà (una sola superclasse); le varianti sono fissate a compile time; molte sottoclassi se le varianti si combinano."
+        },
+        {
+          "tipo_esame": "Parte 1 Design 1.4: Observer (prova 2025-11, sintesi dell'utente)",
+          "testo": "Farmacia: quando il titolare pubblica una promozione, tutti i clienti iscritti alla mailing list devono essere avvisati; i clienti possono iscriversi e disiscriversi in qualunque momento. **Scenario ricostruito dalla sintesi dell'utente** (prova 5/11/2025).",
+          "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nFarmacia: quando il titolare pubblica una promozione, tutti i clienti iscritti alla mailing list devono essere avvisati; i clienti possono iscriversi e disiscriversi in qualunque momento. **Scenario ricostruito dalla sintesi dell'utente** (prova 5/11/2025).\n\n## Scelta e motivazione\n1) Indizio: evento che notifica un insieme variabile di interessati → uno-a-molti, iscrizione dinamica.\n2) Scelta: Observer (comportamentale). Alternativa scartata: polling dei clienti (inefficiente, accoppia i tempi).\n3) Motivo SOLID: Open/Closed — nuovi tipi di destinatari (email, SMS) senza modificare la Farmacia/MailingList; basso accoppiamento verso interfaccia.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Iscritto {\n        +notifica(String): void\n    }\n    class MailingList {\n        -iscritti: List<Iscritto>\n        +iscrivi(Iscritto): void\n        +disiscrivi(Iscritto): void\n        +pubblica(String): void\n    }\n    class Cliente {\n        -email: String\n        +notifica(String): void\n    }\n    MailingList o-- Iscritto\n    Cliente ..|> Iscritto\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Iscritto {\n    void notifica(String promozione);\n}\nimport java.util.ArrayList;\nimport java.util.List;\nclass MailingList {\n    private final List<Iscritto> iscritti = new ArrayList<>();\n    void iscrivi(Iscritto i) { iscritti.add(i); }\n    void disiscrivi(Iscritto i) { iscritti.remove(i); }\n    void pubblica(String promozione) {\n        for (Iscritto i : iscritti) i.notifica(promozione);\n    }\n}\nclass Cliente implements Iscritto {\n    private final String email;\n    Cliente(String email) { this.email = email; }\n    public void notifica(String promozione) {\n        System.out.println(\"Mail a \" + email + \": \" + promozione);\n    }\n}\n```\n\n## Limiti\n6) Limiti: ordine di notifica non garantito; aggiornamenti costosi con molti iscritti; rischio memory leak se non ci si disiscrive."
+        },
+        {
+          "tipo_esame": "Parte 1 Design 1.4: Factory (prova 2020-11, sintesi dell'utente)",
+          "testo": "Produzione cioccolatini 'cioba': varianti standard, bianco e mini. Il cliente chiede un cioccolatino per tipo e il sistema deve restituire l'oggetto giusto senza esporre le classi concrete. **Scenario ricostruito dalla sintesi dell'utente**.",
+          "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nProduzione cioccolatini 'cioba': varianti standard, bianco e mini. Il cliente chiede un cioccolatino per tipo e il sistema deve restituire l'oggetto giusto senza esporre le classi concrete. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: creazione dipendente da un parametro (tipo di prodotto) → incapsulamento della creazione.\n2) Scelta: Simple Factory (idioma, non pattern GoF) con metodo static crea(String tipo).\n3) Motivo: il client non usa 'new' direttamente e dipende solo dall'interfaccia Cioccolatino; creazione centralizzata.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Cioccolatino {\n        +tipo(): String\n    }\n    class CiobaStandard\n    class CiobaBianco\n    class CiobaMini\n    class CiobaFactory {\n        +crea(String): Cioccolatino\n    }\n    Cioccolatino <|.. CiobaStandard\n    Cioccolatino <|.. CiobaBianco\n    Cioccolatino <|.. CiobaMini\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Cioccolatino {\n    String tipo();\n}\nclass CiobaStandard implements Cioccolatino {\n    public String tipo() { return \"standard\"; }\n}\nclass CiobaBianco implements Cioccolatino {\n    public String tipo() { return \"bianco\"; }\n}\nclass CiobaMini implements Cioccolatino {\n    public String tipo() { return \"mini\"; }\n}\nclass CiobaFactory {\n    static Cioccolatino crea(String tipo) {\n        switch (tipo) {\n            case \"standard\": return new CiobaStandard();\n            case \"bianco\": return new CiobaBianco();\n            case \"mini\": return new CiobaMini();\n            default: throw new IllegalArgumentException(\"tipo sconosciuto: \" + tipo);\n        }\n    }\n}\n```\n\n## Limiti\n6) Limiti: static non estendibile né mockabile; aggiungere un tipo modifica lo switch (viola OCP). Per l'evoluzione serve Factory Method."
+        },
+        {
+          "tipo_esame": "Parte 1 Design 1.4: Strategy (prova 2022-01, sintesi dell'utente)",
+          "testo": "Laboratorio riparazioni: il calcolo della resistenza (o del preventivo) può avvenire in 3 modalità (es. economica, standard, premium) scegliibili a runtime, e nuove modalità saranno aggiunte. **Scenario ricostruito dalla sintesi dell'utente**.",
+          "soluzione": "## Scenario (ricostruito dalla sintesi dell'utente)\nLaboratorio riparazioni: il calcolo della resistenza (o del preventivo) può avvenire in 3 modalità (es. economica, standard, premium) scegliibili a runtime, e nuove modalità saranno aggiunte. **Scenario ricostruito dalla sintesi dell'utente**.\n\n## Scelta e motivazione\n1) Indizio: una famiglia di algoritmi intercambiabili, scelta a runtime, aggiunta di varianti senza modificare il contesto.\n2) Scelta: Strategy (comportamentale). Alternativa scartata: catena di if/switch sul tipo (ogni nuova modalità modifica il contesto).\n3) Motivo SOLID: Open/Closed — nuove modalità = nuove classi, contesto invariato; composizione invece di ereditarietà.\n\n## Class diagram (mermaid)\n```mermaid\nclassDiagram\n    interface Resistenza {\n        +calcola(double): double\n    }\n    class ResistenzaEconomica\n    class ResistenzaStandard\n    class ResistenzaPremium\n    class Contesto {\n        -resistenza: Resistenza\n        +setResistenza(Resistenza): void\n        +esegui(double): double\n    }\n    Resistenza <|.. ResistenzaEconomica\n    Resistenza <|.. ResistenzaStandard\n    Resistenza <|.. ResistenzaPremium\n    Contesto o-- Resistenza\n```\n\n## Classi Java minime (compilabili)\n```java\ninterface Resistenza {\n    double calcola(double valore);\n}\nclass ResistenzaEconomica implements Resistenza {\n    public double calcola(double valore) { return valore; }\n}\nclass ResistenzaStandard implements Resistenza {\n    public double calcola(double valore) { return valore * 1.1; }\n}\nclass ResistenzaPremium implements Resistenza {\n    public double calcola(double valore) { return valore * 1.3; }\n}\nclass Contesto {\n    private Resistenza resistenza;\n    void setResistenza(Resistenza r) { this.resistenza = r; }\n    double esegui(double valore) { return resistenza.calcola(valore); }\n}\n```\n\n## Limiti\n6) Limiti: il client deve conoscere le strategie per sceglierle; proliferazione di classi piccole."
+        }
+      ],
+      "tempo_studio_min": 90,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Decorator 6 prove, Template Method 4, Observer 1, Factory 2, Strategy 1 secondo la sintesi dell'utente [D1 §1.3]; l'es. 1.4 di Design si presenta in ogni prova."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Boundary value analysis",
+          "url": "https://en.wikipedia.org/wiki/Boundary_value_analysis",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Equivalence partitioning",
+          "url": "https://en.wikipedia.org/wiki/Equivalence_partitioning",
+          "verificato": true
+        },
+        {
+          "titolo": "Refactoring.Guru: catalog",
+          "url": "https://refactoring.guru/design-patterns/catalog",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Design Patterns",
+          "url": "https://en.wikipedia.org/wiki/Design_Patterns",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "GOF",
+          "capitolo_o_sezione": "catalogo dei 23 pattern GoF"
+        },
+        {
+          "libro": "HFDP",
+          "capitolo_o_sezione": "esempi Java dei pattern"
+        }
+      ],
+      "checklist_ripasso": [
+        "Accessori combinabili con costo → Decorator",
+        "Stessi passi con varianti → Template Method",
+        "Iscriviti/avvisa → Observer",
+        "Creazione con switch → Simple Factory",
+        "Algoritmo scelto a runtime → Strategy",
+        "Scrivere sempre i LIMITI del pattern scelto"
+      ],
+      "lezione": {
+        "intuizione": "I pattern ricorrenti nelle prove (Decorator, Template Method, Observer, Factory, Strategy) si riconoscono dallo scenario: non si nomina mai il pattern, si descrive un problema operativo da cui ricavare la scelta.",
+        "spiegazione": "## Perché ti serve\n\nL'es. 1.4 di Design (4-5 pt, ~15-20 min) si presenta in ogni prova nota [D1 §1.3]: Decorator 6 prove, Template Method 4, Observer 1, Factory 2, Strategy 1 secondo la sintesi dell'utente. La consegna non dice mai il nome del pattern: descrive uno scenario (piazzole con corrente, aule con microfoni, mailing list Farmacia 2025, cioccolatini 'cioba', resistenza in 3 modalità) e chiede di scegliere, motivare, disegnare e implementare.\n\n## Definizione d'esame\n\n- **Decorator**: accessori opzionali combinabili che modificano costo/descrizione; evita l'esplosione di sottoclassi; Open/Closed.\n- **Template Method**: algoritmo a passi fissi con varianti in alcuni passi; ereditarietà, metodo template final.\n- **Observer**: evento che notifica un insieme variabile di interessati; iscrizione dinamica; basso accoppiamento.\n- **Simple Factory**: metodo (spesso static) che crea l'oggetto in base a un parametro; idioma, non GoF.\n- **Strategy**: famiglia di algoritmi intercambiabili scelti a runtime; composizione, elimina i condizionali.\n\n## Come scegliere (domande guida)\n\nChiedi sempre: qual è la variabilità? Chi decide? Uno o molti oggetti? L'algoritmo intero o solo alcuni passi? Le opzioni si sommano (Decorator) o si scelgono una alla volta (Strategy)?\n\n```mermaid\nclassDiagram\n    class Decorator {\n        <<pattern>>\n        +operazione()\n    }\n    class TemplateMethod {\n        <<pattern>>\n        +metodoTemplate(): void final\n    }\n    class Observer {\n        <<pattern>>\n        +attach(); +detach(); +notify()\n    }\n    class SimpleFactory {\n        <<idioma>>\n        +crea(Tipo): Prodotto\n    }\n    class Strategy {\n        <<pattern>>\n        +esegui(): Result\n    }\n```\n\n## Motivazione e limiti (validi per tutti)\n\nOgni esempio indica il principio SOLID soddisfatto, l'alternativa scartata e i limiti: nessun pattern è la risposta giusta in assoluto, va giustificato sullo scenario concreto.",
+        "analogia": "È come scegliere l'attrezzo in cassetta: il cacciavite non serve per tutto. L'analogia smette di valere quando due pattern si assomigliano (Decorator vs Strategy: si sommano o si scelgono?) e serve l'analisi dello scenario, non l'assonanza delle parole.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Design pattern: introduzione",
+            "collegamento": "Nome, problema, soluzione e conseguenze di ogni pattern.",
+            "nodo": "design-pattern-introduzione"
+          },
+          {
+            "conoscenza": "Principi SOLID",
+            "collegamento": "Ogni pattern si giustifica con il principio che applica (es. Strategy → OCP, DIP).",
+            "nodo": "principi-solid"
+          },
+          {
+            "conoscenza": "UML delle classi",
+            "collegamento": "Il class diagram del pattern deve usare associazioni, molteplicità e navigabilità corrette.",
+            "nodo": "uml-diagramma-classi"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Decorator — piazzole del mercato con accessori",
+            "problema": "Mercato ambulanti: piazzola con costo base più accessori opzionali combinabili (corrente, tettoia, posto auto). Calcola il costo totale. Scenario ricostruito dalla sintesi dell'utente.",
+            "passi": [
+              "1) Indizio: accessori combinabili che sommano il costo → composizione dinamica.",
+              "2) Scelta: Decorator; alternativa scartata: sottoclasse per ogni combinazione (2^n classi).",
+              "3) Java minimo: interfaccia Piazzola, base, decoratore astratto, Corrente e Tettoia concreti.",
+              "4) Verifica: new Tettoia(new Corrente(new Base(20))).costo() = 40 + 10 + 15 = 65.0.",
+              "5) Limiti: molti oggetti piccoli; ordine di avvolgimento può influire."
+            ],
+            "soluzione": "Decorator soddisfa Open/Closed: nuovo accessorio = nuova classe, PiazzolaBase invariata.\n\n## Implementazione Java minima (compilabile)\n```java\ninterface Piazzola {\n    double costo();\n}\nclass PiazzolaBase implements Piazzola {\n    private final double mq;\n    PiazzolaBase(double mq) { this.mq = mq; }\n    public double costo() { return 2.0 * mq; }\n}\nabstract class Accessorio implements Piazzola {\n    protected final Piazzola p;\n    Accessorio(Piazzola p) { this.p = p; }\n}\nclass Corrente extends Accessorio {\n    Corrente(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 10.0; }\n}\nclass Tettoia extends Accessorio {\n    Tettoia(Piazzola p) { super(p); }\n    public double costo() { return p.costo() + 15.0; }\n}\npublic class MercatoDemo {\n    public static void main(String[] args) {\n        Piazzola piazzola = new Tettoia(new Corrente(new PiazzolaBase(20.0)));\n        System.out.println(piazzola.costo()); // fa 65.0\n    }\n}\n```\n",
+            "perche_funziona": "Ogni accessorio È una Piazzola E HA una Piazzola: costo = costo avvolto + supplemento."
+          },
+          {
+            "titolo": "Observer — mailing list promozioni Farmacia 2025",
+            "problema": "Farmacia: pubblicare una promozione e avvisare tutti i clienti iscritti, con iscrizione/disiscrizione in qualsiasi momento. Scenario ricostruito dalla sintesi dell'utente (prova 5/11/2025).",
+            "passi": [
+              "1) Indizio: uno-a-molti con iscrizione dinamica.",
+              "2) Scelta: Observer; alternativa scartata: polling dei clienti.",
+              "3) Java minimo: interfaccia Iscritto, MailingList con lista di iscritti, Cliente che stampa.",
+              "4) Motivazione SOLID: OCP e basso accoppiamento verso l'interfaccia.",
+              "5) Limiti: ordine di notifica non garantito, rischio memory leak."
+            ],
+            "soluzione": "Observer è il core d'esame della prova 2025 (4 pt); java.util.Observable/Observer deprecati, si usano listener.\n\n## Implementazione Java minima (compilabile)\n```java\ninterface Iscritto {\n    void notifica(String promozione);\n}\nimport java.util.ArrayList;\nimport java.util.List;\nclass MailingList {\n    private final List<Iscritto> iscritti = new ArrayList<>();\n    void iscrivi(Iscritto i) { iscritti.add(i); }\n    void disiscrivi(Iscritto i) { iscritti.remove(i); }\n    void pubblica(String promozione) {\n        for (Iscritto i : iscritti) i.notifica(promozione);\n    }\n}\nclass Cliente implements Iscritto {\n    private final String email;\n    Cliente(String email) { this.email = email; }\n    public void notifica(String promozione) {\n        System.out.println(\"Mail a \" + email + \": \" + promozione);\n    }\n}\n```\n",
+            "perche_funziona": "Il Subject dipende solo dall'interfaccia Observer, non dalle classi concrete dei destinatari."
+          }
+        ],
+        "errori_comuni": [
+          "Scegliere lo Strategy quando le opzioni si sommano (è Decorator).",
+          "Dimenticare i limiti del pattern (chiesti esplicitamente nell'es. 1.4).",
+          "Usare java.util.Observable senza segnalarlo deprecato."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Quale parola chiave suggerisce Decorator invece di Strategy?",
+            "risposta": "Accessori/opzioni che si sommano insieme (combinabili), non un algoritmo scelto uno alla volta."
+          },
+          {
+            "domanda": "Perché il metodo template va dichiarato final?",
+            "risposta": "Per fissare la sequenza dei passi e lasciare alle sottoclassi solo i passi variabili (inversione di controllo)."
+          },
+          {
+            "domanda": "Observer in Java: quali classi JDK sono deprecate?",
+            "risposta": "java.util.Observable e java.util.Observer (deprecati da Java 9); si preferiscono listener o PropertyChangeListener."
+          }
+        ],
+        "riepilogo": "Scenario → pattern → motivazione SOLID → alternativa scartata → limiti → class diagram → Java minimo. Ogni esempio è marcato 'scenario ricostruito dalla sintesi dell'utente'."
+      }
+    },
+    {
       "id": "clean-architecture-coesione-componenti",
       "title": "Coesione dei componenti (Clean Architecture): REP, CCP, CRP",
       "area": 2,
@@ -6651,6 +6859,506 @@
           }
         ],
         "riepilogo": "Stati (participi, situazioni d'attesa), transizioni evento [guardia] / azione.\nIniziale e finale; self-transition se lo stato non cambia.\nStati = valori dell'enum stato; eventi = operazioni della classe.\nEventi anche temporali: after(15 giorni)."
+      }
+    },
+    {
+      "id": "banca-domande-teoria-guerra",
+      "title": "Banca domande: teoria ricorrente (prove Guerra)",
+      "area": 3,
+      "tipo": "tipo_esercizio",
+      "sapere": "Banca di domande aperte della Parte 3 Teoria: una domanda per ogni tema ricorrente nelle prove 2017-2025 secondo la sintesi dell'utente (Knuth, Boehm, REP/CCP/CRP, debugging, coverage, Simple Factory static, Observer Java, requisiti, refactoring, commenti, post-vendita, analisi statica, SOLID, metriche, differenze black/white), ciascuna con risposta sintetica d'esame (3-6 righe) e fonte dichiarata. I punti sono citati solo dove documentati (§1.2 del piano).",
+      "saper_fare": [
+        "Rispondere in 3-6 righe con definizione, punti chiave ed esempio",
+        "Collegare la domanda ai nodi prerequisito del grafo",
+        "Citare come fonte la sintesi dell'utente dove il dato non è ufficiale"
+      ],
+      "prerequisiti": [
+        {
+          "id": "debugging",
+          "forza": "hard",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "criteri-copertura",
+          "forza": "hard",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "clean-architecture-coesione-componenti",
+          "forza": "hard",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "requisiti-processo-specifica",
+          "forza": "hard",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "refactoring",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "ottimizzazione-codice",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "requisiti-costo-errori-boehm",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "design-pattern-observer",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "design-pattern-simple-factory",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "principi-solid",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "metriche-software",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "black-box-vs-white-box",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "ispezione-codice",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        },
+        {
+          "id": "tipi-manutenzione",
+          "forza": "soft",
+          "motivo": "Tema della banca."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "Parte 3 Teoria: Knuth e ottimizzazione prematura (prova 2022-06, sintesi dell'utente)",
+          "testo": "Spiega l'ottimizzazione prematura secondo Knuth e quando si ottimizza.",
+          "soluzione": "Non ottimizzare prima di aver misurato: 'premature optimization is the root of all evil' (Knuth, citato nelle trappole del grafo). Prima fai funzionare e fai bene (correttezza, leggibilità), poi profila e ottimizza solo i veri colli di bottiglia, senza sacrificare la leggibilità. Fonte: sintesi dell'utente (trappola riportata per la prova 2022-06)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Boehm e costo del cambiamento/errori nei requisiti (prove 2022-01 e 2023-01, sintesi dell'utente)",
+          "testo": "Spiega il costo del cambiamento degli errori secondo Boehm e come prevenirlo.",
+          "soluzione": "Gli errori trovati late costano molto di più (curva di Boehm, già nelle trappole del grafo: fino a ~100 volte in produzione rispetto all'analisi). Prevenzione: review delle specifiche, prototipi, coinvolgimento degli stakeholder, test di accettazione. Fonte: sintesi dell'utente, prove 2022-01 e 2023-01."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: REP/CCP/CRP (coesione dei componenti) (prove 2022-01, 2022-06 e 2023-01, sintesi dell'utente)",
+          "testo": "Descrivi i principi di coesione dei componenti REP, CCP e CRP e la loro tensione.",
+          "soluzione": "REP: l'unità di riuso è l'unità di rilascio (le classi di un componente si rilasciano e versionano insieme). CCP: le classi che cambiano per le stesse ragioni stanno nello stesso componente (SRP a livello di componente). CRP: chi usa un componente non deve dipendere da classi che non usa (ISP a livello di componente). I tre sono in tensione: REP e CCP tendono a ingrandire i componenti, CRP a rimpicciolirli. Fonte: sintesi dell'utente, prove 2022-01, 2022-06 e 2023-01 (Martin è riferimento extra)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Debugging e fasi (prove ricorrenti, sintesi dell'utente)",
+          "testo": "Descrivi il debugging e le sue fasi.",
+          "soluzione": "Individuare, isolare e correggere un difetto. Fasi: riproduzione (caso che fallisce in modo affidabile), diagnosi (ipotesi ed esperimento discriminante), correzione, verifica (test di regressione che prima falliva e ora passa). Tecniche: breakpoint, logging, test di regressione. Fonte: sintesi dell'utente (debugging ricorrente)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: White box: statement, decision, MC/DC (prove ricorrenti, sintesi dell'utente)",
+          "testo": "Confronta statement coverage, decision coverage e MC/DC con un esempio.",
+          "soluzione": "White box = test sulla struttura interna del codice (CFG). Statement copre ogni istruzione; decision copre ogni esito vero/falso di ogni decisione; MC/DC richiede che ogni condizione elementare influenzi indipendentemente l'esito della decisione (coppie di test che variano una sola condizione). Attenzione a short-circuit e condizioni mascherate. Fonte: sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Simple Factory e metodo static (prova 5/11/2025, sintesi dell'utente)",
+          "testo": "Cos'è una Simple Factory e quali sono pro e contro del metodo static?",
+          "soluzione": "È un idioma (non un pattern GoF): un metodo, spesso static, che in base a un parametro sceglie la classe concreta da istanziare e restituisce l'astrazione. Pro: niente istanza della factory, creazione centralizzata, nome espressivo. Contro: static non si estende né si mocka, lo switch va modificato per ogni nuovo tipo (viola OCP). Fonte: prova 5/11/2025 (2 pt), sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Observer in Java (prove 2025-11 e 2017-01, sintesi dell'utente)",
+          "testo": "Come si implementa Observer in Java oggi e quali sono i suoi limiti?",
+          "soluzione": "Subject mantiene una lista di observer tramite un'interfaccia (update) e li notifica a ogni cambio di stato; attach/detach gestiscono l'iscrizione dinamica. java.util.Observable/Observer sono deprecati (da Java 9): si preferiscono listener o PropertyChangeListener. Core d'esame: uno-a-molti, basso accoppiamento, Open/Closed. Limiti: ordine di notifica non garantito, rischio memory leak. Fonte: sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Requisiti (prove ricorrenti, sintesi dell'utente)",
+          "testo": "Quali sono le fasi del processo dei requisiti e i suoi errori tipici?",
+          "soluzione": "Elicitazione (raccogliere i bisogni), analisi (risolvere ambiguità), specifica (documentare), validazione (confermare con gli stakeholder). Errori tipici: ambiguità, incompletezza, incoerenza; correzione: prototipazione, revisioni, test di accettazione. Fonte: sintesi dell'utente (requisiti, 6 prove su 13)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Refactoring (prove ricorrenti, sintesi dell'utente)",
+          "testo": "Cos'è il refactoring e come si distingue da un bug fix?",
+          "soluzione": "Migliorare la struttura interna del codice senza cambiarne il comportamento osservabile; riduce il debito tecnico. Si fa in passi piccoli con test di regressione dopo ognuno. Non è un bug fix né una nuova funzionalità: se il comportamento cambia, non è refactoring. Fonte: sintesi dell'utente (2 prove su 13)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Commenti nel codice (prova 2022-01, sintesi dell'utente)",
+          "testo": "Quando commentare il codice e come si classificano i commenti?",
+          "soluzione": "Commenta il 'perché', non il 'cosa' (il codice si spiega da solo con nomi parlanti). Tipi utili: spiegazione di ciò che è complesso e inevitabile, avviso (TODO/FIXME), documentazione delle API. Evita commenti ridondanti e codice commentato lasciato nel sorgente. Fonte: sintesi dell'utente (prova 2022-01)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Post-vendita / manutenzione (prove 2022-01 e 2019-01-09, sintesi dell'utente)",
+          "testo": "Che cosa si intende per post-vendita/manutenzione e quali tipi esistono?",
+          "soluzione": "Manutenzione dopo il rilascio: correttiva (bug), adattativa (cambiamento dell'ambiente), perfettiva (prestazioni/funzioni), preventiva (rischi). Include assistenza, patch, release e gestione delle configurazioni. Il costo degli errori cresce col tempo (curva di Boehm). Fonte: sintesi dell'utente, prove 2022-01 e 2019-01-09."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Analisi statica (prova 2017-04, sintesi dell'utente)",
+          "testo": "Cos'è l'analisi statica e in cosa differisce da ispezione e testing?",
+          "soluzione": "Analisi del codice senza eseguirlo (es. strumenti di lint, ispezione, review, metriche di complessità). Si distingue dall'ispezione (attività umana strutturata) e dal testing (esecuzione): trova difetti precocemente ma non sostituisce i test dinamici. Fonte: sintesi dell'utente (prova 2017-04)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: SOLID (prova ricorrente, sintesi dell'utente)",
+          "testo": "Elenca i principi SOLID e come vanno motivati.",
+          "soluzione": "SRP: una classe, una ragione di cambiamento. OCP: aperto all'estensione, chiuso alla modifica. LSP: i sottotipi sostituiscono i supertipi. ISP: interfacce piccole e specifiche. DIP: dipendi da astrazioni, non da implementazioni. Ogni affermazione va motivata con la direzione del cambiamento; non sono slogan assoluti. Fonte: sintesi dell'utente (1 prova su 13)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Metriche software (prova 2019-02-19, sintesi dell'utente)",
+          "testo": "Cosa sono le metriche software e quali sono i loro limiti?",
+          "soluzione": "Quantificano attributi di prodotto/processo (dimensione: LOC o function point; complessità: McCabe; OO: metriche CK). Servono per stima, controllo qualità e individuazione di moduli a rischio; una metrica isolata non misura la 'qualità' e va interpretata con contesto e limiti. Fonte: sintesi dell'utente (prova 2019-02-19, bassa frequenza)."
+        },
+        {
+          "tipo_esame": "Parte 3 Teoria: Differenze black box e white box (prove ricorrenti, sintesi dell'utente)",
+          "testo": "Quali sono le differenze tra testing black box e white box?",
+          "soluzione": "Black box: test dalla specifica senza vedere il codice (classi di equivalenza, BVA). White box: test sulla struttura interna (CFG, statement, decision, MC/DC). Si completano: la black box valida i requisiti, la white box valida che il codice raggiunga ogni ramo. Fonte: sintesi dell'utente (prove 2017-01 e altre)."
+        }
+      ],
+      "tempo_studio_min": 60,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Teoria vale 10-11 pt in 30 min nelle prove [D1 §1.2]; le domande sono ricorrenti con risposte sintetiche."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Boundary value analysis",
+          "url": "https://en.wikipedia.org/wiki/Boundary_value_analysis",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Equivalence partitioning",
+          "url": "https://en.wikipedia.org/wiki/Equivalence_partitioning",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 1 (1.1.2-1.1.4)"
+        },
+        {
+          "libro": "GOF",
+          "capitolo_o_sezione": "catalogo pattern"
+        }
+      ],
+      "checklist_ripasso": [
+        "Definizione in 1-2 frasi",
+        "Esempio concreto",
+        "Limite o contesto di applicazione",
+        "Non citare punteggi o durate non documentati (§1.2 del piano)"
+      ],
+      "lezione": {
+        "intuizione": "La Parte 3 Teoria vale 10-11 pt in 30 min con domande brevi e ripetitive: una risposta sintetica (definizione, punti chiave, esempio) basta per raccogliere i punti.",
+        "spiegazione": "## Perché ti serve\n\nLe domande di teoria ricorrenti (debugging, requisiti, refactoring, REP/CCP/CRP, coverage, Simple Factory static, Observer in Java, commenti, post-vendita, analisi statica, SOLID, metriche, Knuth, Boehm, differenze black/white) tornano in prove diverse con la stessa struttura [D1 §1.3]: allenare risposte brevi, da 3 a 6 righe, evita elenchi vaghi e risposte troppo lunghe.\n\n## Definizione d'esame\n\nOgni domanda prevede: definizione in 1-2 frasi, elenco minimo ordinato, esempio concreto, eventuale limite o contesto. I punti si citano solo dove documentati (§1.2 del piano: ad esempio Simple Factory/static 2 pt e debugging 3 pt nella prova 5/11/2025); tutto il resto è senza punteggio dichiarato.\n\n## Come si risponde\n\n1. Leggi il tema e richiami il nodo prerequisito corrispondente nel grafo.\n2. Scrivi la definizione esatta (senza rimandi al libro: la lezione è autosufficiente).\n3. Aggiungi i punti chiave elencati nella risposta sintetica.\n4. Chiudi con esempio o limite; se un dato non è nelle fonti, scrivi esplicitamente 'da verificare' invece di inventarlo.\n\n\n## Schema della risposta sintetica\n\n```mermaid\nflowchart TD\n    A[Leggi il tema] --> B[Definizione in 1-2 frasi]\n    B --> C[Punti chiave ordinati]\n    C --> D[Esempio concreto o limite]\n    D --> E[Fonte dichiarata; dato mancante = 'da verificare']\n```\n\n## Fonti e punteggi\n\nI punteggi si citano solo dove documentati (§1.2 del piano: ad esempio Simple Factory con metodo static 2 pt e debugging 3 pt nella prova del 5/11/2025); per ogni altro tema non esiste un punteggio dichiarato, quindi non se ne inventa uno. Le fonti sono prove ricorrenti secondo la sintesi dell'utente (appelli 2017-01, 2019-02-19, 2020-11, 2021-02, 2022-01, 2022-06, 2023-01, 5/11/2025). Quando un dato manca (docente, numero di esercizio, durata), si scrive 'da verificare' e si passa oltre, senza completare per supposizione.",
+        "analogia": "È come un compito a risposte brevi: poche righe, ma ciascuna deve contenere il punto che vale il punteggio. L'analogia smette di valere quando la domanda chiede di applicare il concetto a uno scenario: allora serve l'esercizio collegato, non solo la definizione.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Debugging",
+            "collegamento": "Tema della banca; le fasi si applicano a ogni difetto.",
+            "nodo": "debugging"
+          },
+          {
+            "conoscenza": "Criteri di copertura",
+            "collegamento": "Tema della banca; statement, decision, MC/DC.",
+            "nodo": "criteri-copertura"
+          },
+          {
+            "conoscenza": "Clean Architecture coesione componenti",
+            "collegamento": "Tema della banca; REP/CCP/CRP.",
+            "nodo": "clean-architecture-coesione-componenti"
+          },
+          {
+            "conoscenza": "Requisiti processo e specifica",
+            "collegamento": "Tema della banca; elicitazione, analisi, specifica, validazione.",
+            "nodo": "requisiti-processo-specifica"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "Boehm e costo del cambiamento",
+            "problema": "Domanda: 'Qual è il costo del cambiamento degli errori nei requisiti secondo Boehm?'",
+            "passi": [
+              "1) Definizione: il costo di correzione di un errore cresce lungo il ciclo di vita.",
+              "2) Punto chiave: fino a ~100 volte di più in produzione rispetto all'analisi (già riportato nelle trappole del grafo).",
+              "3) Prevenzione: review delle specifiche, prototipi, stakeholder coinvolti, test di accettazione.",
+              "4) Risposta sintetica da 3-6 righe."
+            ],
+            "soluzione": "Gli errori trovati late costano molto di più; prevenzione con review, prototipi, test di accettazione. Fonte: sintesi dell'utente, prove 2022-01 e 2023-01.",
+            "perche_funziona": "Struttura definizione → cifra → prevenzione, ripetibile per ogni appello."
+          },
+          {
+            "titolo": "Simple Factory e metodo static",
+            "problema": "Domanda: 'Che cos'è questa factory con metodo static? Pro e contro?'",
+            "passi": [
+              "1) Definizione: idioma (non GoF) che crea l'oggetto in base a un parametro e restituisce l'astrazione.",
+              "2) Pro: niente istanza, creazione centralizzata, nome espressivo.",
+              "3) Contro: static non estendibile né mockabile; switch da modificare per ogni nuovo tipo (viola OCP).",
+              "4) Fonte: prova 5/11/2025, 2 pt, sintesi dell'utente."
+            ],
+            "soluzione": "Simple Factory con metodo static: pro e contro in 5-6 righe, punteggio citato solo perché documentato in §1.2.",
+            "perche_funziona": "Distinguere idioma da pattern GoF e citare il punteggio solo se documentato."
+          }
+        ],
+        "errori_comuni": [
+          "Attribuire al docente punteggi, durate o soglie non documentati.",
+          "Confondere Simple Factory con Factory Method/Abstract Factory.",
+          "Dire 'senza test automatici non è refactoring' come definizione assoluta (è una pratica consigliata, non la definizione)."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Quante righe deve avere una risposta sintetica d'esame?",
+            "risposta": "3-6 righe: definizione, punti chiave, esempio o limite."
+          },
+          {
+            "domanda": "Quando si cita un punteggio per una domanda di teoria?",
+            "risposta": "Solo se documentato in §1.2 del piano (es. Simple Factory/static 2 pt, debugging 3 pt nella prova 5/11/2025); altrimenti nessun punteggio."
+          },
+          {
+            "domanda": "Cosa si intende per refactoring?",
+            "risposta": "Migliorare la struttura interna senza cambiare il comportamento osservabile; si fa in passi piccoli con test di regressione."
+          }
+        ],
+        "riepilogo": "Definizione in 1-2 frasi, punti chiave ordinati, esempio concreto, limite/contesto. Fonte sempre dichiarata; nessun punteggio fuori §1.2."
+      }
+    },
+    {
+      "id": "banca-esercizi-bva-guerra",
+      "title": "Banca esercizi: classi di equivalenza e boundary value analysis (prove Guerra)",
+      "area": 3,
+      "tipo": "tipo_esercizio",
+      "sapere": "Banca di esercizi della Parte 2 Testing: le 13 funzioni a scaglioni delle prove 2017-2025 secondo la sintesi dell'utente (D1 §3), nello stesso ordine e con la stessa firma. Ciascuna ha classi di equivalenza valide/non valide, valori limite esatti e test minimi con output atteso calcolato solo dalle formule certe. Le formule segnate 'probabile' o 'mancante' restano '[da verificare]'.",
+      "saper_fare": [
+        "Ricavare classi di equivalenza valide e non valide da una funzione a scaglioni",
+        "Individuare i valori limite esatti della sintesi dell'utente",
+        "Costruire test minimi con output atteso calcolato dalle formule certe",
+        "Segnalare come '[da verificare]' le formule probabili o mancanti, senza usarle come certe"
+      ],
+      "prerequisiti": [
+        {
+          "id": "classi-equivalenza",
+          "forza": "hard",
+          "motivo": "Le classi di equivalenza sono il prerequisito diretto."
+        },
+        {
+          "id": "boundary-value-analysis",
+          "forza": "hard",
+          "motivo": "I valori limite sono il secondo oggetto dell'esercizio."
+        },
+        {
+          "id": "esercizio-black-box-scaglioni",
+          "forza": "soft",
+          "motivo": "Stessa famiglia di esercizi d'esame, esempio generico già presente."
+        }
+      ],
+      "esercizi": [
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2025-11, sintesi dell'utente)",
+          "testo": "double calcolaCostoSpedizione(int numero, int peso, int tariffa).(sintesi dell'utente): 2 EUR fino a 50 pagine incluso; tariffa·peso·numero per 51-150 pagine; 450·peso·numero per 151-500 pagine; oltre 500 pagine e oltre 1 kg non gestiti. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale numero (pagine); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nnumero (pagine) — numero = pagine (intero); peso in grammi; tariffa in centesimi; output in euro (formule in centesimi convertite in euro).\n\n### 2) Ipotesi dichiarate\nvalori non gestiti → -1; numero, peso e tariffa ≥ 1 (valori negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nC1: 1 ≤ numero ≤ 50 → 2,00 €\nC2: 51 ≤ numero ≤ 150 → tariffa·peso·numero/100\nC3: 151 ≤ numero ≤ 500 → 450·peso·numero/100\n\n### 4) Classi non valide\nnumero ≤ 0\nnumero > 500\npeso ≤ 0\npeso > 1000\ntariffa ≤ 0\n\n### 5) Valori limite (sintesi dell'utente)\n50, 51, 150, 151, 500, 501\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (25, 2, 10) | — | 2,00 € |  |\n| 2 | (100, 2, 10) | — | 20,00 € |  |\n| 3 | (300, 2, 10) | — | 2700,00 € |  |\n| 4 | (-5, 2, 10) | — | -1 |  |\n| 5 | (700, 2, 10) | — | -1 |  |\n| 6 | (100, 0, 10) | — | -1 |  |\n| 7 | (100, 1500, 10) | — | -1 |  |\n| 8 | (100, 2, 0) | — | -1 |  |\n| 9 | (50, 2, 10) | — | 2,00 € | BV |\n| 10 | (51, 2, 10) | — | 10,20 € | BV |\n| 11 | (150, 2, 10) | — | 30,00 € | BV |\n| 12 | (151, 2, 10) | — | 1359,00 € | BV |\n| 13 | (500, 2, 10) | — | 4500,00 € | BV |\n| 14 | (501, 2, 10) | — | -1 | BV, NV > 500 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2023-01, sintesi dell'utente)",
+          "testo": "double calcolaCostoAccessi(int num, float sconto, float costo, int Quota_fissa).(sintesi dell'utente): num·costo+quota_fissa se num < 10; num·costo·sconto+quota_fissa per 10-29; num·costo·sconto·0.5+quota_fissa per 30-49; non gestito per num ≥ 50. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale num (numero di accessi); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nnum (numero di accessi) — num = numero di accessi (intero); costo, sconto, quota_fissa numerici; output nella stessa unità di costo.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; num ≥ 1; costo ≥ 0; 0 < sconto ≤ 1; quota_fissa ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nC1: 1 ≤ num ≤ 9 → num·costo+quota_fissa\nC2: 10 ≤ num ≤ 29 → num·costo·sconto+quota_fissa\nC3: 30 ≤ num ≤ 49 → num·costo·sconto·0.5+quota_fissa\n\n### 4) Classi non valide\nnum < 1\nnum ≥ 50\nsconto ≤ 0\ncosto < 0\nquota_fissa < 0\n\n### 5) Valori limite (sintesi dell'utente)\n9, 10, 29, 30, 49, 50\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (9, 0.10, 5.0, 100) | — | 145,00 |  |\n| 2 | (10, 0.10, 5.0, 100) | — | 105,00 |  |\n| 3 | (29, 0.10, 5.0, 100) | — | 114,50 |  |\n| 4 | (30, 0.10, 5.0, 100) | — | 107,50 |  |\n| 5 | (49, 0.10, 5.0, 100) | — | 112,25 |  |\n| 6 | (50, 0.10, 5.0, 100) | — | -1 |  |\n| 7 | (0, 0.1, 5, 100) | — | -1 | assunzione: num < 1 |\n| 8 | (55, 0.1, 5, 100) | — | -1 |  |\n| 9 | (10, -0.1, 5, 100) | — | -1 | assunzione: sconto ≤ 0 |\n| 10 | (10, 0.1, -5, 100) | — | -1 | assunzione: costo < 0 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2017-01, sintesi dell'utente)",
+          "testo": "double calcolaCostoSpedizione(int km, double peso, int tariffa).(sintesi dell'utente): 1 EUR se peso < 0.5; tariffa·km·peso per 0.5-5 escluso; 2·tariffa·km·peso per 5-10 escluso; non gestite tratte > 2000 km e peso > 10. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale peso; (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\npeso — km = chilometri; peso (es. kg); tariffa; output in euro (1 EUR dichiarato nella sintesi; unità delle altre formule da verificare).\n\n### 2) Ipotesi dichiarate\nvalori non gestiti → -1; km ≥ 1, peso > 0, tariffa ≥ 1 (peso ≤ 0 solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 0 < peso < 0.5 → 1 EUR\nV2: 0.5 ≤ peso < 5 → tariffa·km·peso\nV3: 5 ≤ peso < 10 → 2·tariffa·km·peso\n\n### 4) Classi non valide\npeso ≤ 0\npeso ≥ 10\nkm > 2000 [non gestito, soglia esatta da verificare]\ntariffa < 1\n\n### 5) Valori limite (sintesi dell'utente)\n0.49, 0.5, 4.99, 5, 9.99, 10\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (100, 0.49, 2) | — | 1 EUR | BV |\n| 2 | (100, 0.5, 2) | — | 100 | BV |\n| 3 | (100, 4.99, 2) | — | 998 | BV |\n| 4 | (100, 5, 2) | — | 2000 | BV |\n| 5 | (100, 9.99, 2) | — | 1998 | BV |\n| 6 | (100, 10, 2) | — | 4000 | BV, NV ≥ 10 |\n| 7 | (100, -1, 2) | — | -1 | assunzione: peso ≤ 0 |\n| 8 | (100, 11, 2) | — | -1 |  |\n| 9 | (3000, 1, 2) | — | -1 |  |\n\n\n### 7) Verifica\nOutput calcolati con le formule certe della sintesi; l'unità di output delle formule a scaglioni non è dichiarata nella sintesi e resta [da verificare]."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2021-02, sintesi dell'utente)",
+          "testo": "double costoPulizia(int dimensione, float costo1, float costo2, float cf).(sintesi dell'utente): cf se dimensione < 50 mq; cf+dimensione·costo1 per 50-150; cf+dimensione·costo1 (probabile costo2) per 151-500; non gestite > 500. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale dimensione (mq); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\ndimensione (mq) — dimensione in mq; costo1, costo2, cf numerici; output nella stessa unità monetaria.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; dimensione ≥ 1; costo1, costo2, cf ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 1 ≤ dimensione ≤ 49 → cf\n> **Attenzione**: cf+dimensione·costo2 per 151-500 mq (probabile costo2, mancante nella sintesi) — segnato '[da verificare]', non usare per output certi.\nV2: 50 ≤ dimensione ≤ 150 → cf+dimensione·costo1\nV3: 151 ≤ dimensione ≤ 500 → cf+dimensione·costo2 [da verificare: la sintesi segnala 'probabile costo2']\n\n### 4) Classi non valide\ndimensione < 1\ndimensione > 500\n\n### 5) Valori limite (sintesi dell'utente)\n49, 50, 150, 151, 500, 501\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (49, 2.0, 3.0, 10.0) | — | 10,00 | BV |\n| 2 | (50, 2.0, 3.0, 10.0) | — | 110,00 | BV |\n| 3 | (150, 2.0, 3.0, 10.0) | — | 310,00 | BV |\n| 4 | (151, 2.0, 3.0, 10.0) | — | 463,00 | formula incerta |\n| 5 | (500, 2.0, 3.0, 10.0) | — | 1510,00 | formula incerta |\n| 6 | (501, 2.0, 3.0, 10.0) | — | -1 | BV, NV > 500 |\n| 7 | (0, 2.0, 3.0, 10.0) | — | -1 | assunzione: dimensione < 1 |\n| 8 | (600, 2.0, 3.0, 10.0) | — | -1 |  |\n\n\n### 7) Verifica\nGli output di V1 e V2 usano formule certe; per V3 (151-500) la sintesi segnala 'probabile costo2': gli output 463,00 e 1510,00 restano [da verificare] finché la formula non è confermata.\n\nNota: cf+dimensione·costo2 per 151-500 mq (probabile costo2, mancante nella sintesi) → '[da verificare]'."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2021-04, sintesi dell'utente)",
+          "testo": "double costoconsegna(int distanza, float costo1, float costo2).(sintesi dell'utente): distanza·costo1 se distanza ≤ 2000 m; formula mancante per 2001-5000 (probabile costo2); non gestite > 5000. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale distanza (m); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\ndistanza (m) — distanza in metri; costo1, costo2 numerici; output nella stessa unità monetaria.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; distanza ≥ 1; costo1, costo2 ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 1 ≤ distanza ≤ 2000 → distanza·costo1\n> **Attenzione**: formula per 2001-5000 m (mancante nella sintesi; probabile distanza·costo2) — segnato '[da verificare]', non usare per output certi.\nV2: 2001 ≤ distanza ≤ 5000 → [da verificare: formula mancante, probabile distanza·costo2]\n\n### 4) Classi non valide\ndistanza < 1\ndistanza > 5000\n\n### 5) Valori limite (sintesi dell'utente)\n1999, 2000, 2001, 4999, 5000, 5001\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (1999, 2.0, 3.0) | — | 3998 | BV |\n| 2 | (2000, 2.0, 3.0) | — | 4000 | BV |\n| 3 | (2001, 2.0, 3.0) | — | 6003 | formula incerta |\n| 4 | (4999, 2.0, 3.0) | — | 14997 | formula incerta |\n| 5 | (5000, 2.0, 3.0) | — | 15000 | formula incerta |\n| 6 | (5001, 2.0, 3.0) | — | -1 | BV, NV > 5000 |\n| 7 | (0, 2.0, 3.0) | — | -1 | assunzione: distanza < 1 |\n| 8 | (6000, 2.0, 3.0) | — | -1 |  |\n\n\n### 7) Verifica\nSolo V1 ha output certo (distanza·costo1); V2 (2001-5000) è segnato [da verificare] perché la sintesi dichiara la formula mancante.\n\nNota: formula per 2001-5000 m (mancante nella sintesi; probabile distanza·costo2) → '[da verificare]'."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2020-11, sintesi dell'utente)",
+          "testo": "double stimaCostoPosa(int lunghezza, int materiale, int manodopera).(sintesi dell'utente): 15000 EUR fino a 100 m; manodopera·materiale·lunghezza per 101-250; 3·manodopera·materiale·lunghezza per 251-1000; non gestite > 1000. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale lunghezza (m); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nlunghezza (m) — lunghezza in metri; output in EUR.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; lunghezza ≥ 1; materiale, manodopera ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 1 ≤ lunghezza ≤ 100 → 15000 EUR\nV2: 101 ≤ lunghezza ≤ 250 → manodopera·materiale·lunghezza\nV3: 251 ≤ lunghezza ≤ 1000 → 3·manodopera·materiale·lunghezza\n\n### 4) Classi non valide\nlunghezza < 1\nlunghezza > 1000\nmateriale < 0\nmanodopera < 0\n\n### 5) Valori limite (sintesi dell'utente)\n100, 101, 250, 251, 1000, 1001\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (100, 10, 20) | — | 15000 EUR | BV |\n| 2 | (101, 10, 20) | — | 20200 | BV |\n| 3 | (250, 10, 20) | — | 50000 | BV |\n| 4 | (251, 10, 20) | — | 150600 | BV |\n| 5 | (1000, 10, 20) | — | 600000 | BV |\n| 6 | (1001, 10, 20) | — | -1 | BV, NV > 1000 |\n| 7 | (0, 10, 20) | — | -1 | assunzione: lunghezza < 1 |\n| 8 | (-1, 10, 20) | — | -1 | assunzione: lunghezza < 1 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2022-01, sintesi dell'utente)",
+          "testo": "double calcolaManodopera(int livello_tecnico, float costo_orario, float durata).(sintesi dell'utente): livello·costo_orario se durata < 1 h; livello·costo_orario·durata per 1-3 h; costo_orario·durata per > 3 h; non gestite > 6 h. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale durata (ore); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\ndurata (ore) — durata in ore; costo_orario in EUR/ora; output in EUR.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; durata > 0; livello ≥ 1; costo_orario ≥ 0 (durata ≤ 0 solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 0 < durata < 1 → livello·costo_orario\nV2: 1 ≤ durata ≤ 3 → livello·costo_orario·durata\nV3: 3 < durata ≤ 6 → costo_orario·durata\n\n### 4) Classi non valide\ndurata ≤ 0\ndurata > 6\nlivello < 1\ncosto_orario < 0\n\n### 5) Valori limite (sintesi dell'utente)\n0.99, 1, 3, 3.01, 6, 6.01\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (2, 30.0, 0.99) | — | 60,00 | BV |\n| 2 | (2, 30.0, 1) | — | 60,00 | BV |\n| 3 | (2, 30.0, 3) | — | 180,00 | BV |\n| 4 | (2, 30.0, 3.01) | — | 90,30 | BV |\n| 5 | (2, 30.0, 6) | — | 180,00 | BV |\n| 6 | (2, 30.0, 6.01) | — | -1 | BV, NV > 6 |\n| 7 | (2, 30.0, 0) | — | -1 | assunzione: durata ≤ 0 |\n| 8 | (2, 30.0, 7) | — | -1 |  |\n| 9 | (0, 30, 2) | — | -1 | assunzione: livello < 1 |\n| 10 | (2, -5, 2) | — | -1 | assunzione: costo_orario < 0 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2022-06, sintesi dell'utente)",
+          "testo": "double costoPiazzola(float costo, int area, int quota_fissa).(sintesi dell'utente): quota_fissa se area < 15; area·costo+quota_fissa per 15-40 escluso; (area-40)·costo·0.8+area·costo+quota_fissa per 40-100; non gestite > 100. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale area (mq); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\narea (mq) — area in metri quadri; costo e quota_fissa numerici; output nella stessa unità monetaria.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; area ≥ 1; costo, quota_fissa ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 1 ≤ area ≤ 14 → quota_fissa\nV2: 15 ≤ area ≤ 39 → area·costo+quota_fissa\nV3: 40 ≤ area ≤ 100 → (area-40)·costo·0.8+area·costo+quota_fissa\n\n### 4) Classi non valide\narea < 1\narea > 100\n\n### 5) Valori limite (sintesi dell'utente)\n14, 15, 39, 40, 100, 101\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (2, 14, 10) | — | 10 | BV |\n| 2 | (2, 15, 10) | — | 40 | BV |\n| 3 | (2, 39, 10) | — | 88 | BV |\n| 4 | (2, 40, 10) | — | 90 | BV |\n| 5 | (2, 100, 10) | — | 306 | BV |\n| 6 | (2, 101, 10) | — | -1 | BV, NV > 100 |\n| 7 | (2, 0, 10) | — | -1 | assunzione: area < 1 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2017-04, sintesi dell'utente)",
+          "testo": "double calcolaCostoStampa(int numero, int tariffa1, int tariffa2).(sintesi dell'utente): 1,5 EUR fino a 200; tariffa1·numero per 201-450; 450·tariffa1+tariffa2·numero per 451-700; non gestite > 700. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale numero (copie); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nnumero (copie) — numero = copie (intero); tariffe in EUR/copia; output in EUR.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1; numero ≥ 1; tariffa1, tariffa2 ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 1 ≤ numero ≤ 200 → 1,50 EUR\nV2: 201 ≤ numero ≤ 450 → tariffa1·numero\nV3: 451 ≤ numero ≤ 700 → 450·tariffa1+tariffa2·numero\n\n### 4) Classi non valide\nnumero < 1\nnumero > 700\ntariffa1 < 0\ntariffa2 < 0\n\n### 5) Valori limite (sintesi dell'utente)\n200, 201, 450, 451, 700, 701\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (200, 2, 1) | — | 1,50 EUR | BV |\n| 2 | (201, 2, 1) | — | 402 | BV |\n| 3 | (450, 2, 1) | — | 900 | BV |\n| 4 | (451, 2, 1) | — | 1351 | BV |\n| 5 | (700, 2, 1) | — | 1600 | BV |\n| 6 | (701, 2, 1) | — | -1 | BV, NV > 700 |\n| 7 | (0, 2, 1) | — | -1 | assunzione: numero < 1 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2018-01-09, sintesi dell'utente)",
+          "testo": "double computeCarSharingFee(int driving_time, int stop_time, int reservation_time).(sintesi dell'utente): 0.10 EUR al minuto di guida, 0.05 EUR al minuto di sosta, 0.10 EUR al minuto di prenotazione (gratis i primi 15 min); max 8 ore. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale driving_time (minuti di guida); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\ndriving_time (minuti di guida) — tempi in minuti; output in EUR.\n\n### 2) Ipotesi dichiarate\nvalori non gestiti → -1 se oltre 8 ore (max 8 ore = 480 min; la sintesi non dice se il limite è sul totale o per componente: [da verificare]); tempi ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: driving_time ≥ 0 → 0.10·driving_time\n> **Attenzione**: soglia 'max 8 ore': se si applica al totale o a ciascuna componente — segnato '[da verificare]', non usare per output certi.\nV2: stop_time ≥ 0 → 0.05·stop_time\nV3: 0 ≤ reservation_time ≤ 15 → 0 (gratis i primi 15 min)\nV4: reservation_time > 15 → 0.10·(reservation_time-15)\n\n### 4) Classi non valide\nqualsiasi tempo < 0 [assunzione]\nqualsiasi tempo > 480 min [max 8 ore, soglia da verificare]\n\n### 5) Valori limite (derivati dalla regola ('gratis primi 15 min', 'max 8 ore'); la sintesi dell'utente non dà i valori limite)\nreservation_time: 14, 15, 16; 479, 480, 481\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (30, 0, 0) | — | 3,00 EUR |  |\n| 2 | (0, 20, 0) | — | 1,00 EUR |  |\n| 3 | (0, 0, 10) | — | 0 EUR | BV |\n| 4 | (0, 0, 20) | — | 0,50 EUR | BV: 0.10·(20-15) |\n| 5 | (0, 0, 481) | — | -1 | formula incerta |\n| 6 | (0, 0, 14) | — | 0 EUR | BV |\n| 7 | (0, 0, 15) | — | 0 EUR | BV |\n| 8 | (0, 0, 16) | — | 0,10 EUR | BV |\n\n\n### 7) Verifica\nOutput calcolati con le tariffe certe della sintesi (0.10, 0.05, gratis primi 15 min); i valori limite non sono nella sintesi e sono derivati, marcati 'derivati'.\n\nNota: soglia 'max 8 ore': se si applica al totale o a ciascuna componente → '[da verificare]'."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2018-01-30, sintesi dell'utente)",
+          "testo": "double computeGroupFee(double basePrice, int n_passengers, int n_under18, double discount).(sintesi dell'utente): n_passengers·basePrice - discount·n_under18·basePrice; max 10 persone; almeno un maggiorenne. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale n_passengers; (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nn_passengers — basePrice in EUR; output in EUR.\n\n### 2) Ipotesi dichiarate\nvalore non valido → -1 se n_passengers < 1 o > 10, o se n_under18 ≥ n_passengers (nessun maggiorenne); basePrice ≥ 0; 0 ≤ discount ≤ 1 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 1 ≤ n_passengers ≤ 10 e n_under18 < n_passengers → n_passengers·basePrice - discount·n_under18·basePrice\n\n### 4) Classi non valide\nn_passengers < 1\nn_passengers > 10\nn_under18 ≥ n_passengers (con n_passengers ≥ 1, nessun maggiorenne)\nbasePrice < 0\ndiscount < 0 o > 1 [assunzione]\n\n### 5) Valori limite (sintesi dell'utente)\n1, 9, 10, 11\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (10, 1, 2, 0.20) | — | 10,00 | BV |\n| 2 | (10, 9, 2, 0.20) | — | 86,00 | BV |\n| 3 | (10, 10, 2, 0.20) | — | 96,00 | BV |\n| 4 | (10, 11, 2, 0.20) | — | -1 | BV, NV > 10 |\n| 5 | (10, 0, 2, 0.20) | — | -1 | assunzione: n < 1 |\n| 6 | (10, 5, 5, 0.20) | — | -1 |  |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2019-01-09, sintesi dell'utente)",
+          "testo": "double computeBikeSharingFee(int use_time, int stop_time, int km_traveled).(sintesi dell'utente): 0.10 EUR al minuto di utilizzo, 0.05 EUR al minuto di sosta, 0.10 EUR al km (gratis i primi 5 km, costo raddoppiato oltre 50 km). Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale km_traveled (km); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nkm_traveled (km) — tempi in minuti, km in chilometri; output in EUR.\n\n### 2) Ipotesi dichiarate\nvalore non gestito → -1 se km < 0; km 0-5 → 0; oltre 50 km il costo al km raddoppia a 0.20 EUR (la sintesi non fissa un limite superiore: [da verificare]); tempi ≥ 0.\n\n### 3) Classi valide\nV1: 0 ≤ km_traveled ≤ 5 → 0 (gratis i primi 5 km)\n> **Attenzione**: nessun limite superiore dichiarato per i km oltre 50 — segnato '[da verificare]', non usare per output certi.\nV2: 6 ≤ km_traveled ≤ 50 → 0.10·km_traveled\nV3: km_traveled > 50 → 0.20·km_traveled [costo raddoppiato, senza limite superiore dichiarato]\n\n### 4) Classi non valide\nkm_traveled < 0 [assunzione]\n\n### 5) Valori limite (sintesi dell'utente)\n4, 5, 6, 49, 50, 51\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (30, 10, 4) | — | 3,50 EUR | BV: 0.10·30 + 0.05·10 |\n| 2 | (30, 10, 5) | — | 3,50 EUR | BV |\n| 3 | (30, 10, 6) | — | 3,60 EUR | BV |\n| 4 | (30, 10, 49) | — | 7,90 EUR | BV |\n| 5 | (30, 10, 50) | — | 8,00 EUR | BV |\n| 6 | (30, 10, 51) | — | 11,10 EUR | BV: 0.10·30 + 0.05·10 + 0.20·51 |\n\n\n### 7) Verifica\nOutput calcolati con le tariffe certe della sintesi; oltre 50 km applico il raddoppio dichiarato (0.20 EUR/km).\n\nNota: nessun limite superiore dichiarato per i km oltre 50 → '[da verificare]'."
+        },
+        {
+          "tipo_esame": "Parte 2 Testing: classi di equivalenza e boundary (prova 2019-02-19, sintesi dell'utente)",
+          "testo": "double costo_noleggio(int days, int km, double carModel).(sintesi dell'utente): days·km·carModel se km < 1000; 0.85·days·km·carModel altrimenti; non valida oltre 100000 km. Richiesta: (1) classi di equivalenza valide e non valide sul parametro principale km (chilometri); (2) valori limite esatti; (3) test minimi con output atteso. Dichiarare le ipotesi quando la sintesi non le specifica.",
+          "soluzione": "### 1) Parametro principale e unità\nkm (chilometri) — days in giorni, km in chilometri, carModel moltiplicatore (es. 1.0); output in EUR.\n\n### 2) Ipotesi dichiarate\nnon valida → -1 se km > 100000; days ≥ 1; km ≥ 0; carModel ≥ 0 (negativi solo come assunzione per esercitarsi).\n\n### 3) Classi valide\nV1: 0 ≤ km < 1000 → days·km·carModel\nV2: 1000 ≤ km ≤ 100000 → 0.85·days·km·carModel\n\n### 4) Classi non valide\nkm < 0 [assunzione]\nkm > 100000\ndays < 1\ncarModel < 0\n\n### 5) Valori limite (sintesi dell'utente)\n999, 1000, 1001, 99999, 100000, 100001\n\n### 6) Test minimi\n| # | input | classi coinvolte | output atteso | note |\n|---|---|---|---|---|\n| 1 | (3, 999, 1.2) | — | 3596,40 EUR | BV |\n| 2 | (3, 1000, 1.2) | — | 3060,00 EUR | BV |\n| 3 | (3, 1001, 1.2) | — | 3063,06 EUR | BV |\n| 4 | (3, 99999, 1.2) | — | 305996,94 EUR | BV |\n| 5 | (3, 100000, 1.2) | — | 306000,00 EUR | BV |\n| 6 | (3, 100001, 1.2) | — | -1 | BV, NV > 100000 |\n| 7 | (3, -5, 1.2) | — | -1 | assunzione: km < 0 |\n| 8 | (0, 100, 1.2) | — | -1 | assunzione: days < 1 |\n\n\n### 7) Verifica\nTutti gli output attesi sono calcolati con le formule certe della sintesi dell'utente."
+        }
+      ],
+      "tempo_studio_min": 90,
+      "priorita": {
+        "livello": "alta",
+        "motivazione": "Testing è presente in 13 prove su 13 secondo la sintesi dell'utente [D1 §1]; le 13 funzioni non erano ancora esercizi svolti nel grafo."
+      },
+      "risorse": [
+        {
+          "titolo": "Programma del corso (F. Guerra)",
+          "url": "https://fguerra73.github.io/teaching/",
+          "verificato": true
+        },
+        {
+          "titolo": "Indice di Essentials of Software Engineering 5th ed. (O'Reilly)",
+          "url": "https://www.oreilly.com/library/view/essentials-of-software/9781284229004/xhtml/9781284376180_Contents.xhtml",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Boundary value analysis",
+          "url": "https://en.wikipedia.org/wiki/Boundary_value_analysis",
+          "verificato": true
+        },
+        {
+          "titolo": "Wikipedia (en): Equivalence partitioning",
+          "url": "https://en.wikipedia.org/wiki/Equivalence_partitioning",
+          "verificato": true
+        }
+      ],
+      "riferimenti_testo": [
+        {
+          "libro": "TSUI",
+          "capitolo_o_sezione": "cap. 10 (10.3.2 BVA)"
+        }
+      ],
+      "checklist_ripasso": [
+        "Uno scaglione = una classe valida",
+        "Una sola classe non valida per test (error masking)",
+        "Valori limite esattamente ai bordi delle classi",
+        "Se la formula è '[da verificare]', l'output non è certo"
+      ],
+      "lezione": {
+        "intuizione": "Le 13 funzioni a scaglioni delle prove 2017-2025 si risolvono sempre allo stesso modo: partizione del dominio in classi di equivalenza, valori limite sui bordi, un test per classe non valida e output atteso calcolato dalle formule certe della sintesi.",
+        "spiegazione": "## Perché ti serve\n\nLa Parte 2 Testing vale 3-5 pt in 10-20 min ed è presente in 13 prove su 13 secondo la sintesi dell'utente [D1 §1.3]: è la parte più meccanica e redditizia dell'esame. La consegna chiede sempre equivalence class e boundary conditions sul parametro principale di una funzione a scaglioni.\n\n## Definizione d'esame\n\n- **Classe di equivalenza** = sottoinsieme del dominio di un input per cui la specifica prevede lo stesso comportamento; basta un rappresentante per classe.\n- **Classe valida** = input ammesso, una per ogni regola di calcolo diversa (ogni scaglione).\n- **Classe non valida** = input fuori dal dominio (sotto il minimo, sopra il massimo, valori vietati); una sola classe non valida per test, altrimenti un controllo mancante resta nascosto (error masking).\n- **Boundary value analysis** = testare esattamente ai bordi delle classi, dove il codice sbaglia più spesso (``<`` al posto di ``<=``).\n\n## Procedura in 5 passi\n\n**(0) Precondizioni, unità e parametro principale.** Dichiaro cosa è gestito e cosa no, le unità di misura e quale parametro varia (il principale); i valori negativi entrano solo come assunzione per esercitarsi.\n\n**(1) Classi valide per fascia.** Una classe per ogni scaglione della specifica, partizione disgiunta che copre il dominio gestito.\n\n**(2) Classi non valide.** Oltre il limite non gestito e valori vietati; mai due non valide nello stesso test.\n\n**(3) Valori limite.** Esattamente quelli della sintesi dell'utente (es. 50, 51, 150, 151, 500, 501); dove la sintesi non li dà (es. ``computeCarSharingFee``) sono derivati dalla regola e marcati ``derivati``.\n\n**(4) Test minimi.** Tabella con input, classi, output atteso calcolato solo con formule certe; le formule 'probabile' o 'mancante' restano ``[da verificare]``.\n\n**(5) Verifica.** Ogni scaglione ha un test valido; ogni controllo d'errore un test con una sola non valida.\n\n```mermaid\nflowchart TD\n    A[Specifica della funzione] --> B[Parametro principale e unità]\n    B --> C[Classi valide: una per scaglione]\n    C --> D[Classi non valide: fuori dominio]\n    C --> E[Valori limite ai bordi]\n    D --> F[Un test per NV, resto valido]\n    E --> G[Test sui valori di confine]\n    F --> H[Output atteso da formule certe]\n    G --> H\n```\n\n## Formule incerte\n\n``costoPulizia`` (151-500 mq, 'probabile costo2') e ``costoconsegna`` (2001-5000 m, formula mancante) sono segnati ``[da verificare]``: non ne uso l'output come certo né li presento come fatti del docente.\n\n## Come si presenta all'esame\n\nScrivi precondizioni e ipotesi, poi tabella classi, valori limite e test minimi con output atteso. Ogni output deve essere giustificato dalla formula; se la formula è incerta, scrivi esplicitamente ``[da verificare]`` invece di inventare un numero.",
+        "analogia": "È come un sondaggio: invece di intervistare tutti, scelgo un rappresentante per ogni gruppo che si comporta allo stesso modo, e provo anche qualcuno fuori target per vedere se viene scartato. L'analogia smette di valere quando il codice ha un bug proprio su un valore di bordo: da qui la BVA.",
+        "collegamenti_prior": [
+          {
+            "conoscenza": "Classi di equivalenza",
+            "collegamento": "Le classi di equivalenza partizionano il dominio; qui servono come input della procedura.",
+            "nodo": "classi-equivalenza"
+          },
+          {
+            "conoscenza": "Boundary Value Analysis",
+            "collegamento": "La BVA fornisce i valori limite da testare sui bordi delle classi.",
+            "nodo": "boundary-value-analysis"
+          },
+          {
+            "conoscenza": "Black box vs white box",
+            "collegamento": "Le classi si ricavano solo dalla specifica, tecnica black box.",
+            "nodo": "black-box-vs-white-box"
+          }
+        ],
+        "esempi_svolti": [
+          {
+            "titolo": "calcolaCostoSpedizione(numero, peso, tariffa) — prova 5/11/2025",
+            "problema": "double calcolaCostoSpedizione(int numero, int peso, int tariffa): 2 EUR fino a 50 pagine incluso; tariffa·peso·numero per 51-150; 450·peso·numero per 151-500; oltre 500 pagine o oltre 1 kg non gestiti. Trova classi e boundary.",
+            "passi": [
+              "(0) Precondizioni: numero = pagine ≥ 1, peso in grammi ≥ 1, tariffa in centesimi ≥ 1. Ipotesi: non gestito → -1; output in euro (centesimi ÷ 100). Parametro principale: numero.",
+              "(1) Classi valide: C1 1-50 → 2,00 €; C2 51-150 → tariffa·peso·numero/100; C3 151-500 → 450·peso·numero/100.",
+              "(2) Classi non valide: numero ≤ 0, numero > 500; peso ≤ 0, peso > 1000; tariffa ≤ 0 (negativi solo come assunzione per esercitarsi).",
+              "(3) Valori limite: 50, 51, 150, 151, 500, 501 (sintesi dell'utente).",
+              "(4) Test minimi: validi (25,2,10)→2,00 €; (100,2,10)→20,00 €; (300,2,10)→2700,00 €. Non validi: (-5,2,10), (700,2,10), (100,0,10), (100,1500,10), (100,2,0) → -1. Boundary: (50)→2,00 €; (51)→10,20 €; (150)→30,00 €; (151)→1359,00 €; (500)→4500,00 €; (501)→-1.",
+              "(5) Verifica: tutti gli output usano formule certe della sintesi."
+            ],
+            "soluzione": "10 classi (C1-C10), 6 valori limite, 14 test minimi; nessuna formula incerta.",
+            "perche_funziona": "Ogni scaglione ha un test valido e ogni controllo d'errore un test con una sola NV, quindi ogni fallimento è diagnostico."
+          },
+          {
+            "titolo": "costoPulizia(dimensione, costo1, costo2, cf) — prova 2021-02",
+            "problema": "double costoPulizia(int dimensione, float costo1, float costo2, float cf): cf se < 50 mq; cf+dimensione·costo1 per 50-150; cf+dimensione·costo1 (probabile costo2) per 151-500; oltre 500 non gestito.",
+            "passi": [
+              "(0) Precondizioni: dimensione ≥ 1 mq; costo1, costo2, cf ≥ 0. Ipotesi: non gestito → -1. Parametro principale: dimensione.",
+              "(1) Classi valide: V1 1-49 → cf; V2 50-150 → cf+dimensione·costo1; V3 151-500 → cf+dimensione·costo2.",
+              "(2) Classi non valide: dimensione < 1, dimensione > 500.",
+              "(3) Valori limite: 49, 50, 150, 151, 500, 501 (sintesi dell'utente).",
+              "(4) Test minimi con output certo: (49)→cf; (50)→cf+50·costo1; (150)→cf+150·costo1. Per (151) e (500) la formula è 'probabile costo2': output [da verificare].",
+              "(5) Verifica: output certi solo per V1 e V2; V3 resta [da verificare] finché la formula non è confermata."
+            ],
+            "soluzione": "6 classi, 6 valori limite, 8 test minimi; formula V3 segnata [da verificare].",
+            "perche_funziona": "Separare le formule certe da quelle probabili impedisce di presentare un'ipotesi come risultato dell'esame."
+          },
+          {
+            "titolo": "costoconsegna(distanza, costo1, costo2) — prova 2021-04",
+            "problema": "double costoconsegna(int distanza, float costo1, float costo2): distanza·costo1 se ≤ 2000 m; formula mancante per 2001-5000 (probabile costo2); oltre 5000 non gestito.",
+            "passi": [
+              "(0) Precondizioni: distanza ≥ 1 m; costo1, costo2 ≥ 0. Ipotesi: non gestito → -1. Parametro principale: distanza.",
+              "(1) Classi valide: V1 1-2000 → distanza·costo1; V2 2001-5000 → [da verificare: formula mancante].",
+              "(2) Classi non valide: distanza < 1, distanza > 5000.",
+              "(3) Valori limite: 1999, 2000, 2001, 4999, 5000, 5001 (sintesi dell'utente).",
+              "(4) Test minimi: (1999)→1999·costo1; (2000)→2000·costo1 certi. Per 2001-5000 l'output è [da verificare] finché la formula non si conosce.",
+              "(5) Verifica: V2 è interamente segnato [da verificare]; nessun output inventato."
+            ],
+            "soluzione": "4 classi, 6 valori limite, 8 test minimi; formula 2001-5000 segnata [da verificare].",
+            "perche_funziona": "Segnalare la formula mancante è parte corretta della risposta: all'esame si dichiara ciò che non si sa."
+          }
+        ],
+        "errori_comuni": [
+          "Dimenticare le classi non valide degli altri parametri (peso, tariffa) concentrandosi solo sul principale.",
+          "Mettere due valori non validi nello stesso test: il -1 non dice quale controllo ha funzionato (error masking).",
+          "Usare una formula 'probabile' o 'mancante' come se fosse certa: va marcata '[da verificare]'.",
+          "Confondere il bordo incluso con quello escluso (≤ 50 vs < 50)."
+        ],
+        "domande_autoverifica": [
+          {
+            "domanda": "Quante classi valide ha calcolaCostoSpedizione(numero, peso, tariffa) per il parametro principale numero?",
+            "risposta": "Tre: 1-50 (2 EUR), 51-150 (tariffa·peso·numero), 151-500 (450·peso·numero)."
+          },
+          {
+            "domanda": "Perché mai due classi non valide nello stesso test?",
+            "risposta": "Error masking: il primo controllo che scatta nasconde gli altri, quindi un controllo mancante sul secondo parametro resterebbe non rilevato."
+          },
+          {
+            "domanda": "costoPulizia per 151-500 mq ha un output certo?",
+            "risposta": "No: la sintesi segnala 'probabile costo2', cioè la formula è [da verificare]; l'output va dichiarato incerto, non inventato."
+          }
+        ],
+        "riepilogo": "Tre passi fissi: classi valide (una per scaglione), classi non valide (una per test), valori limite ai bordi. Output atteso solo da formule certe; tutto il resto è '[da verificare]' o 'assunzione per esercitarsi'."
       }
     },
     {
