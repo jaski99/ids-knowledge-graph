@@ -25,19 +25,56 @@ def _perche(id_):
     return lezione(id_).get('perche_ti_serve', '')
 
 
-def _tutti_perche():
+# Numero di lezioni presenti quando X4 ha introdotto perche_ti_serve: il totale
+# reale può solo crescere (X2 e round futuri aggiungono lezioni).
+MIN_LEZIONI = 75
+
+
+def _titoli_nodi():
+    with open('graph/graph.json', encoding='utf-8') as fh:
+        return {n['id']: n.get('title', '') for n in json.load(fh)['nodi']}
+
+
+def _e_banca(id_, titolo=''):
+    """Le banche di esercizi (X3: banca-*) sono raccolte di tracce, non lezioni:
+    non devono avere perche_ti_serve e sono escluse dal conteggio."""
+    return id_.startswith('banca-') or titolo.strip().lower().startswith('banca ')
+
+
+def _file_lezioni():
+    titoli = _titoli_nodi()
     out = []
     for path in sorted(glob.glob(f'{LEZIONI}/*.json')):
+        id_ = path.rsplit('/', 1)[-1][:-len('.json')]
+        if not _e_banca(id_, titoli.get(id_, '')):
+            out.append(path)
+    return out
+
+
+def _tutti_perche():
+    out = []
+    for path in _file_lezioni():
         obj = json.load(open(path, encoding='utf-8'))
         out.append((path, obj.get('perche_ti_serve', '')))
     return out
 
 
+def test_conteggio_lezioni_dinamico_coerente_col_grafo():
+    """Il conteggio non è fisso: ogni nodo non-banca del grafo ha la sua lezione
+    e viceversa, e le lezioni non scendono sotto quelle corrette da X4."""
+    titoli = _titoli_nodi()
+    lezioni = {p.rsplit('/', 1)[-1][:-len('.json')] for p in _file_lezioni()}
+    nodi = {i for i, t in titoli.items() if not _e_banca(i, t)}
+    assert lezioni == nodi, (
+        f'lezioni senza nodo: {sorted(lezioni - nodi)}; nodi senza lezione: {sorted(nodi - lezioni)}')
+    assert len(lezioni) >= MIN_LEZIONI, f'attese almeno {MIN_LEZIONI} lezioni, trovate {len(lezioni)}'
+
+
 # ---------------- Perché ti serve (ogni lezione, formato e frequenze) ----------------
 
 def test_ogni_lezione_ha_perche_ti_serve_corretto():
-    file = sorted(glob.glob(f'{LEZIONI}/*.json'))
-    assert len(file) == 75, f'attesi 75 file lezione, trovati {len(file)}'
+    file = _file_lezioni()
+    assert len(file) >= MIN_LEZIONI, f'attesi almeno {MIN_LEZIONI} file lezione, trovati {len(file)}'
     for path, p in _tutti_perche():
         assert p, f'{path}: manca perche_ti_serve'
         assert len(p) <= 200, f'{path}: perche_ti_serve troppo lungo ({len(p)}): {p[:90]!r}'
