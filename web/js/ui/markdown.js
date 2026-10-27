@@ -1,6 +1,5 @@
 // Render markdown sicuro: marked (GFM) + DOMPurify + highlight.js; blocchi ```mermaid -> <pre class="mermaid">.
-// Le librerie arrivano da CDN come globali; se mancano si degrada a testo semplice.
-const MERMAID_URL = 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs';
+// Le librerie sono distribuite con la build; se mancano si degrada a testo semplice.
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -49,7 +48,6 @@ export function mdElement(md, { inline = false, tag = 'div', className = 'md' } 
   return el;
 }
 
-let mermaidPromise;
 let mermaidApi;
 let mermaidTheme = 'default';
 
@@ -80,8 +78,8 @@ export async function renderMermaid(root) {
   const nodes = [...root.querySelectorAll('pre.mermaid:not([data-processed])')].filter((n) => n.getClientRects().length > 0 && !n.querySelector('svg'));
   if (!nodes.length) return 0;
   try {
-    mermaidPromise ||= import(MERMAID_URL).then((m) => m.default);
-    const mermaid = await mermaidPromise;
+    const mermaid = globalThis.mermaid;
+    if (!mermaid) throw new Error('libreria locale mancante: esegui web/build.sh');
     mermaidApi = mermaid;
     mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: mermaidTheme, fontFamily: 'inherit' });
     await mermaid.run({ nodes, suppressErrors: true });

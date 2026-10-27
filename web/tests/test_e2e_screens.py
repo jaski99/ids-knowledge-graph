@@ -60,6 +60,8 @@ def test_schermate(browser, base_url, vp):
     page.goto(base_url)
     page.wait_for_selector("#resume:not([hidden])")
     page.wait_for_selector("#cy canvas")
+    assert page.locator("#cy canvas").first.bounding_box()["width"] > 0
+    assert page.locator("#cy canvas").first.bounding_box()["height"] > 0
     page.wait_for_timeout(400)
     assert overflow(page) <= 1
     shot(page, f"home-{vp}.png")
@@ -72,7 +74,8 @@ def test_schermate(browser, base_url, vp):
     shot(page, f"percorso-{vp}.png")
     page.goto(f"{base_url}#/lezione/{LESSON}")
     page.wait_for_selector("#lesson-title")
-    page.wait_for_selector(".toc, .section-progress")
+    # L’indice è visibile su desktop, la barra di avanzamento su mobile.
+    page.wait_for_selector(".section-progress" if vp == "mobile" else ".toc")
     page.wait_for_selector("pre.mermaid svg, pre.code", timeout=20000)
     page.wait_for_timeout(300)
     assert overflow(page) <= 1

@@ -1,67 +1,49 @@
 # Architettura della web app
 
-App statica, senza bundler. `index.html` carica `js/main.js` come modulo ES. I testi visibili sono in italiano. I contenuti non stanno qui: arrivano da `graph.json` (copia di `graph/graph.json` prodotta da `build.sh`).
+L'app è statica: `index.html` carica `js/main.js`, mentre i contenuti arrivano da `graph.json`, copia del grafo generato dal repository. Non assume un numero fisso di nodi o aree. I testi sulle prove storiche sono attribuiti alla **sintesi dell'utente** in `docs/DATI_PROVE_GUERRA.md`; le informazioni incerte restano da verificare.
 
-## Strati
+## Build e test
 
-| cartella | ruolo |
-|---|---|
-| `js/core/` | funzioni pure: ordine topologico, filtri, ricerca, percorso dei prerequisiti, progresso, tema, stato, storage |
-| `js/ui/` | viste. Ricevono il contenitore, il grafo e le callback. Non leggono `localStorage` e non si chiamano tra loro |
-| `js/data.js` | fetch e validazione leggera |
-| `js/main.js` | composition root: unico posto che collega dati, stato e viste |
-| `modules/registry.js` | viste di navigazione aggiunte da altri moduli |
-
-Non ci sono variabili globali di applicazione. `navigation` è l'istanza del registro esportata dal modulo, così un altro file può registrarsi senza ricevere l'oggetto da `main`. Lo stato di studio e il tema passano da storage iniettato (`localStorage` in produzione, un doppio in memoria nei test).
-
-## Flusso
-
-1. `loadGraph` prova gli URL del meta `kg-graph-url` (o `?graph=`).
-2. `createState` tiene filtri, nodi completati e nodo selezionato. Le viste si aggiornano in `subscribe`.
-3. L'hash `#/lezione/<id>` apre il lettore a tutta pagina. `#/percorso` torna al percorso sulla lezione corrente. Esc chiude la lezione o il pannello dettagli.
-
-## Registro delle viste
-
-Gli id `grafo`, `percorso` e `ripasso` sono già nel markup: registrarli di nuovo non crea una seconda scheda. Un id nuovo diventa una scheda in più, anche se la registrazione arriva dopo l'avvio.
-
-```js
-import { navigation } from '../modules/registry.js';
-
-navigation.register({
-  id: 'simulatore',          // kebab-case, univoco
-  title: 'Simulatore',       // etichetta visibile
-  mount(panel, ctx) {
-    // ctx.graph, ctx.getState(), ctx.subscribe(fn), ctx.openLesson(id),
-    // ctx.select(id), ctx.toggleDone(id, on), ctx.h, ctx.clear
-    return {
-      update(vm) {}, // vm.visible (Set), vm.done (Set), vm.selected (id | null)
-      resize() {},
-    };
-  },
-});
-```
-
-Perché il modulo venga eseguito va importato da `js/main.js` (basta l'import, la registrazione è un effetto del modulo). `simulatore*` e `ripasso*` non stanno in questo ramo: li aggiunge un altro intervento, usando questo registro.
-
-## Lettore
-
-`lesson-view.js` compone la pagina. Il markdown passa da `markdown.js` (marked + DOMPurify + highlight.js). I blocchi di codice ricevono lingua e copia da `code-block.js`. I diagrammi mermaid stanno in una cornice (`diagram.js`) con zoom interno; al cambio tema il sorgente, tenuto in `data-src`, viene ridisegnato. L'indice (`toc.js`) non usa l'hash: un `#sezione` chiuderebbe la lezione, perché l'hash è il router.
-
-## Grafo
-
-Cytoscape resta dietro `graph-view.js`. Colore = area, dimensione = priorità, clic = chiusura dei prerequisiti (`prereq-path.js`). La minimappa (`minimap.js`) riceve l'istanza Cytoscape dal composition root: non la cerca sul `window`.
-
-## Tema
-
-`data-theme` su `<html>`. Uno script in testa legge `ids-kg:tema:v1` prima del CSS, la stessa chiave di `THEME_STORAGE_KEY`. Senza scelta salvata si segue `prefers-color-scheme`. I token in `css/style.css` sono controllati da `tests/theme.test.js` (contrasto AA).
-
-## Test
-
-```bash
-cd web && node --test tests/
+```sh
+python scripts/kg.py build
+python scripts/gen_docs.py
+npm ci --prefix web
+sh web/build.sh
+python scripts/kg.py check
+python scripts/gen_docs.py check
+npm test --prefix web
+pip install -r requirements.txt
+python -m playwright install --with-deps chromium
 pytest -q
-# e2e, se Playwright è installato (serve rete per i CDN):
-python -m pytest web/tests/test_e2e_lesson.py web/tests/test_e2e_screens.py -q
 ```
 
-Gli screenshot in `docs/screens/` sono prodotti da `test_e2e_screens.py` (390×844 e 1440×900: home, grafo, lezione, percorso).
+Serve Node.js 22.12 o successivo. La build copia il grafo e le versioni bloccate delle librerie da `node_modules` in `web/vendor/`, quindi genera il manifest della cache. `node_modules/`, `vendor/`, `graph.json` e il manifest generato non sono versionati. Alla prima build, se le dipendenze non ci sono, `build.sh` esegue `npm ci`; le librerie non vengono più caricate da CDN al runtime. La CI testa i rami di sessione e pubblica Pages solo da `main`.
+
+## Strati e dipendenze
+
+| Percorso | Ruolo |
+|---|---|
+| `js/core/` | logica di filtri, ricerca, padronanza, percorsi, tentativi, ripasso, backup e PWA; storage e tempo sono iniettati |
+| `js/ui/` | viste e interazioni accessibili; ricevono dati, storage e callback |
+| `js/data.js` | caricamento, validazione leggera e ordine topologico |
+| `js/main.js` | composition root, stato, routing e aggiornamento delle viste |
+| `modules/registry.js`, `modules/avvia.js` | registrazione e navigazione degli strumenti |
+| `modules/ripasso/` | flashcard e scheduler SM-2 |
+
+L'hash `#/lezione/<id>` apre una lezione; `#/percorso` ritorna al percorso. Esc chiude la lezione, lo strumento o i dettagli. Le schede si navigano con frecce, Home e Fine; `/` apre i filtri e porta alla ricerca anche su mobile. Il grafo ha zoom e pan da tastiera e un'alternativa testuale; anche la minimappa accetta le frecce.
+
+## Apprendimento e contratti
+
+- La spunta è una dichiarazione di studio, non una certificazione. `mastery.js` combina completati, stati SM-2 ed esiti valutati. Un richiamo corretto richiede un'autovalutazione riuscita o il massimo nel singolo esito; due ripetizioni SM-2 consecutive riuscite su una carta indicano **padronanza provvisoria**. Errori o esiti parziali prevalgono prudentemente. «Da fare ora» richiede almeno un richiamo corretto dei prerequisiti hard, non solo la spunta. La data dell'ultimo voto SM-2 non è disponibile.
+- Gli esiti del simulatore entrano solo tramite `leggiEsiti(storage)` di `modules/simulatore/esiti.js`, contratto 4.2 del piano. Prima del merge di X6 non ci sono esiti da leggere; i test usano un doppio dello stesso contratto. Nessun punteggio viene dedotto da parole chiave.
+- I percorsi Testing meccanico, Class Diagram, Pattern, Diagrammi dinamici e Teoria seguono l'ordine della sintesi dell'utente. Usano titoli, tipi di esercizio, priorità, ordine topologico e `programma` quando presente, senza elenchi di id; se la mappatura manca l'interfaccia lo segnala.
+- Gli esercizi della banca rispettano il contratto `{tipo_esame, testo, soluzione}`. La soluzione non entra nel DOM finché non si invia un tentativo scritto. Le autovalutazioni sono esplicite; i tentativi alimentano i filtri e le carte di ripasso, senza correzione automatica.
+- Il ripasso alterna nodi e aree, dando precedenza agli errori; se è impostata una data d'esame futura, anticipa le carte la cui scadenza cadrebbe dopo tale data. La data è facoltativa e non modifica gli intervalli SM-2 salvati.
+
+## Dati e offline
+
+I dati restano nel browser: completati, checklist, SM-2, tentativi, data d'esame, tema, ultima lezione, sessione ed esiti del simulatore. Il backup JSON versionato contiene solo le chiavi dell'app e può includere risposte personali: conservarlo privatamente. Il ripristino valida i dati prima di sovrascrivere le chiavi presenti. Il TSV Anki contiene fronte e retro delle domande, checklist ed esercizi, comprese le soluzioni.
+
+Il service worker usa una cache versionata con impronta dei contenuti e separata per percorso di installazione. Dopo la prima visita completata, grafo, lezioni, librerie e strumenti sono disponibili offline; i collegamenti esterni non sono salvati. Gli aggiornamenti richiedono una nuova connessione. Non è prevista sincronizzazione tra dispositivi: usare il backup esplicito.
+
+Gli screenshot in `docs/screens/` sono generati dai test Playwright; le viste X5 vengono verificate a 390×844 e 1440×900.

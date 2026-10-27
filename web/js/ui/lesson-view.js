@@ -8,8 +8,10 @@ import { enhanceCodeBlocks } from './code-block.js';
 import { frameDiagrams, fitDiagrams } from './diagram.js';
 import { bindSectionNav } from './toc.js';
 import { syncThemeButtons } from '../core/theme.js';
+import { createExercise } from './exercise.js';
+import { MASTERY_LABELS } from '../core/mastery.js';
 
-export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, onToggleTheme, closeLabel = '← Percorso' }) {
+export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, onToggleTheme, attemptStore, closeLabel = '← Percorso' }) {
   const title = (id) => (graph.byId.get(id) || { title: id }).title;
   const lessonLink = (id, text) => h('button', { type: 'button', class: 'link', onclick: () => onOpen(id) }, text || title(id));
   const block = (cls, heading, ...body) => h('section', { class: `ls ${cls}`, id: `sec-${cls}` }, h('h2', {}, heading), ...body);
@@ -91,9 +93,9 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
 
   function commonTail(n) {
     return [
-      (n.esercizi || []).length ? block('esercizi', '📝 Esercizi tipo d\u2019esame', n.esercizi.map((e) => h('article', { class: 'ex' },
-        h('p', { class: 'muted' }, e.tipo_esame), h('p', {}, e.testo),
-        h('details', {}, h('summary', {}, 'Mostra soluzione'), h('p', { class: 'sol' }, e.soluzione))))) : null,
+      (n.esercizi || []).length ? block('esercizi', '📝 Esercizi tipo d\u2019esame',
+        h('p', { class: 'muted' }, 'Prova per iscritto prima di confrontare la soluzione. Poi puoi autovalutarti.'),
+        n.esercizi.map((e, i) => createExercise(n, e, i, attemptStore))) : null,
       n.prerequisiti.length ? block('prereq', 'Prerequisiti', h('ul', {}, n.prerequisiti.map((p) => h('li', {}, lessonLink(p.id), ' ',
         h('span', { class: `badge forza-${p.forza}` }, p.forza === 'hard' ? 'indispensabile' : 'utile'))))) : null,
       block('approfondimento', 'Per approfondire (facoltativo)',
@@ -115,7 +117,7 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
   let detachNav = () => {};
   let mediaToken = 0;
   return {
-    async render(id, done) {
+    async render(id, done, mastery) {
       detachNav();
       detachNav = () => {};
       clear(root);
@@ -136,7 +138,9 @@ export function createLessonView(root, graph, { onOpen, onClose, onToggleDone, o
       const article = h('article', { class: 'lesson', 'data-node': n.id },
         h('header', {},
           h('h1', { id: 'lesson-title', tabindex: '-1' }, n.title),
-          h('p', { class: 'badges' }, areaBadge(n, graph.aree), tipoBadge(n), prioBadge(n), h('span', { class: 'badge' }, '⏱ ' + formatMinuti(n.tempo_studio_min)),
+          h('p', { class: 'badges' }, areaBadge(n, graph.aree), tipoBadge(n), prioBadge(n),
+            h('span', { class: 'badge mastery' }, MASTERY_LABELS[mastery?.get(n.id)?.livello || 'non_iniziato']),
+            h('span', { class: 'badge' }, '⏱ ' + formatMinuti(n.tempo_studio_min)),
             hasLesson(n) ? null : h('span', { class: 'badge warn' }, 'lezione TODO')),
           h('label', { class: 'check big' }, h('input', { type: 'checkbox', checked: done.has(n.id), onchange: (e) => onToggleDone(n.id, e.target.checked) }), ' Ho capito: segna come completato')),
         ...(hasLesson(n) ? lessonBody(n) : fallbackBody(n)),
