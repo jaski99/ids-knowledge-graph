@@ -1,1 +1,4 @@
 graph.json
+node_modules/
+vendor/
+precache-manifest.js

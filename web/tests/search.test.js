@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lessonPlainText, eventShouldFocusSearch } from '../js/core/search.js';
+import { exercisePlainText, lessonPlainText, eventShouldFocusSearch } from '../js/core/search.js';
 import { emptyFilters, applyFilters } from '../js/core/filters.js';
 import { nodi } from './fixture.js';
 
@@ -45,4 +45,16 @@ test('scorciatoia / : non ruba il tasto mentre si scrive, accetta il maiusc', ()
   assert.equal(eventShouldFocusSearch(ev({ ctrlKey: true })), false);
   assert.equal(eventShouldFocusSearch(ev({ key: 'k' })), false);
   assert.equal(eventShouldFocusSearch(null), false);
+});
+
+
+test('ricerca in esercizi, domande, errori e codice senza dipendere dagli id', () => {
+  const nodes = nodi();
+  nodes[0].esercizi = [{ tipo_esame: 'Parte 2 Testing', testo: 'costoPulizia', soluzione: 'fascia incerta [da verificare]' }];
+  nodes[0].lezione = { domande_autoverifica: [{ domanda: 'perché la sentinella?', risposta: 'un valore speciale' }],
+    errori_comuni: ['confondere i confini'], spiegazione: '```java\n int peculiarSentinel = 0; \n```' };
+  assert.match(exercisePlainText(nodes[0]), /costoPulizia/);
+  for (const q of ['costopulizia', 'fascia incerta', 'sentinella', 'confondere confini', 'peculiarsentinel']) {
+    assert.deepEqual(applyFilters(nodes, { ...emptyFilters(), q }, new Set()).map((n) => n.id), ['c'], q);
+  }
 });

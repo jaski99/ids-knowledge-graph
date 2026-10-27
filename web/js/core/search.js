@@ -16,6 +16,11 @@ export function lessonPlainText(node) {
   return pieces(lesson).join(' ');
 }
 
+/** Testi e soluzioni degli esercizi del nodo, incluse le banche (contratto 4.1). */
+export function exercisePlainText(node) {
+  return pieces(node?.esercizi || []).join(' ');
+}
+
 const TYPING = new Set(['input', 'textarea', 'select']);
 
 /**

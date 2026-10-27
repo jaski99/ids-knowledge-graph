@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { minimapTransform, panToCenter } from '../js/ui/minimap.js';
+import { minimapKeyDelta, minimapTransform, panToCenter } from '../js/ui/minimap.js';
 
 test('gli estremi del grafo cadono dentro la tela e la mappa è invertibile', () => {
   const t = minimapTransform({ x1: -20, y1: 10, x2: 80, y2: 60 }, 200, 100, 10);
@@ -21,4 +21,11 @@ test('un bounding box degenere non produce scala infinita', () => {
 
 test('panToCenter porta il punto al centro del viewport', () => {
   assert.deepEqual(panToCenter({ x: 10, y: 4 }, 2, 200, 100), { x: 80, y: 42 });
+});
+
+
+test('minimappa navigabile anche con le frecce', () => {
+  assert.deepEqual(minimapKeyDelta('ArrowLeft', 300, 150), [100, 0]);
+  assert.deepEqual(minimapKeyDelta('ArrowDown', 300, 150), [0, -50]);
+  assert.equal(minimapKeyDelta('Enter', 300, 150), null);
 });

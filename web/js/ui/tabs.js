@@ -1,5 +1,14 @@
 // Schede accessibili (ARIA tabs, frecce sinistra/destra).
 // bind() permette di aggiungere schede dopo l'avvio (viste registrate).
+
+export function tabTargetIndex(key, current, count) {
+  if (count <= 0 || current < 0 || current >= count) return null;
+  if (key === 'Home') return 0;
+  if (key === 'End') return count - 1;
+  if (key === 'ArrowRight') return (current + 1) % count;
+  if (key === 'ArrowLeft') return (current - 1 + count) % count;
+  return null;
+}
 export function initTabs(doc, onShow) {
   const tablist = doc.querySelector('[role="tablist"]');
   const tabs = () => [...tablist.querySelectorAll('[role="tab"]')];
@@ -16,10 +25,10 @@ export function initTabs(doc, onShow) {
   const onKey = (e) => {
     const list = tabs();
     const i = list.indexOf(e.currentTarget);
-    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-    if (!d || i < 0) return;
+    const next = tabTargetIndex(e.key, i, list.length);
+    if (next === null) return;
     e.preventDefault();
-    const n = list[(i + d + list.length) % list.length];
+    const n = list[next];
     n.focus();
     show(n);
   };

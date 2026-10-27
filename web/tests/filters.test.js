@@ -15,3 +15,14 @@ test('ricerca testo, senza accenti e multi-parola', () => {
   assert.deepEqual(ids({ q: 'fare b' }), ['b']);
 });
 test('filtri combinati (AND)', () => assert.deepEqual(ids({ aree: new Set([1]), q: 'c' }), ['c']));
+
+
+test('filtri rapidi combinano padronanza, tentativi e priorità effettiva', () => {
+  const nodes = nodi();
+  const mastery = new Map([['a', { daFareOra: true, errore: false }], ['b', { daFareOra: true, errore: true }],
+    ['c', { daFareOra: false, errore: false }], ['d', { daFareOra: false, errore: false, sbloccato: true }]]);
+  const apply = (stato) => applyFilters(nodes, { ...emptyFilters(), stato }, new Set(), mastery, new Set(['d'])).map((n) => n.id).sort();
+  assert.deepEqual(apply('ora'), ['a', 'b', 'd']);
+  assert.deepEqual(apply('sbagliati'), ['b', 'd']);
+  assert.deepEqual(apply('alta'), ['b']);
+});
