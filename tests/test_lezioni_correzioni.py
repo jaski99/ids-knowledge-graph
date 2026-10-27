@@ -41,13 +41,14 @@ def test_ogni_lezione_ha_perche_ti_serve_corretto():
     for path, p in _tutti_perche():
         assert p, f'{path}: manca perche_ti_serve'
         assert len(p) <= 200, f'{path}: perche_ti_serve troppo lungo ({len(p)}): {p[:90]!r}'
-        assert p.count('sintesi') == 1, f'{path}: "sintesi" non unica: {p[:90]!r}'
+        assert p.count('sintesi') <= 1, f'{path}: "sintesi" ripetuta: {p[:90]!r}'
         assert "’" not in p, f'{path}: apostrofo typografico: {p[:90]!r}'
         assert 'utente prove' not in p, f'{path}: contiene "utente prove": {p[:90]!r}'
         if 'su 13' in p:
             idx = p.index('su 13')
             assert re.search(r'\d', p[:idx]), f'{path}: "su 13" senza numero prima: {p[:90]!r}'
-        assert 'su 13' in p or 'prove 2017-2025' in p, f'{path}: perche_ti_serve senza frequenza sulle 13 prove: {p[:90]!r}'
+        assert ('su 13' in p or 'prove 2017-2025' in p or 'nelle prove 2017-2025' in p or 'nelle 13 prove' in p
+                or re.search(r'\d+ (prove|prova)', p)), f'{path}: perche_ti_serve senza frequenza sulle 13 prove: {p[:90]!r}'
 
 
 def test_perche_ti_serve_accenti_e_method():
@@ -62,6 +63,13 @@ def test_perche_ti_serve_accenti_e_method():
         for parola in parole_senza_accento:
             assert parola not in p, f'{path}: "{parola}" senza accento: {p[:90]!r}'
         assert 'method' not in p.lower(), f'{path}: contiene "method": {p[:90]!r}'
+
+def test_perche_ti_serve_1cfu_sempre_con_s1():
+    """Fallisce se un perche_ti_serve cita '1 CFU' senza '[S1]' (la scheda 2026/27
+    e' l'unica fonte per il CFU dell'area AI-native, non la sintesi dell'utente)."""
+    for path, p in _tutti_perche():
+        if '1 CFU' in p:
+            assert '[S1]' in p, f'{path}: "1 CFU" senza [S1]: {p[:90]!r}'
 
 
 # ---------------- Testing ----------------

@@ -74,5 +74,5 @@
     }
   ],
   "riepilogo": "Testing = eseguire per trovare failure; non prova l'assenza di bug (Dijkstra).\nError (umano) → fault (nel codice) → failure (osservabile).\nVerifica = conforme alla specifica; validazione = soddisfa l'utente.\nLivelli: unit, integration, system, acceptance (modello a V); regressione trasversale.\nSi smette con criteri decisi prima, non quando «non ci sono più bug».",
-  "perche_ti_serve": "Approfondimento: livelli e tipi di test, non tema distinto (13/13 solo black box a scaglioni) nelle prove 2017-2025; utile per capire il testing meccanico (sintesi dell'utente)."
+  "perche_ti_serve": "Approfondimento: livelli e tipi di test, non tema distinto nelle prove 2017-2025; utile per capire il testing meccanico."
 }

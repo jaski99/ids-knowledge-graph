@@ -79,5 +79,5 @@
     }
   ],
   "riepilogo": "Git: VCS distribuito; working tree → staging (add) → commit → push.\nCommit = fotografia con hash; branch = puntatore mobile; HEAD = dove sei.\nMerge (fast-forward o merge commit), rebase solo su commit non pubblicati; conflitti risolti a mano + test.\nWorkflow: feature branch + PR, Gitflow, trunk-based.\ntag per le release, revert per annullare, bisect per trovare regressioni.",
-  "perche_ti_serve": "Approfondimento: versionamento git, non tema distinto nelle prove 2017-2025; utile per capire git e versionamento semantico (sintesi dell'utente)."
+  "perche_ti_serve": "Approfondimento: controllo versione con git, non è una domanda a sé nelle prove 2017-2025; utile per capire il versionamento del codice."
 }

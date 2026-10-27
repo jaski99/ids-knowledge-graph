@@ -75,5 +75,5 @@
     }
   ],
   "riepilogo": "SemVer: MAJOR (incompatibile) . MINOR (funzionalità compatibili) . PATCH (bug fix compatibili); azzera i numeri inferiori.\n0.y.z = instabile; versioni rilasciate immutabili; pre-release 1.0.0-rc.1 < 1.0.0; +build ignorato.\nCompatibilità = firme e comportamento documentato.\nChangelog per persone: Added, Changed, Deprecated, Removed, Fixed, Security.",
-  "perche_ti_serve": "Approfondimento: versionamento semantico, non tema distinto nelle prove 2017-2025; utile per capire il controllo delle versioni (sintesi dell'utente)."
+  "perche_ti_serve": "Approfondimento: regole di versionamento semantico, non è una domanda a sé nelle prove 2017-2025; utile per capire le convenzioni di release."
 }

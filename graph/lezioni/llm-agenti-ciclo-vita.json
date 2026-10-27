@@ -64,5 +64,5 @@
     }
   ],
   "riepilogo": "LLM: prevede il token successivo; output plausibile, non garantito, non deterministico.\nAgente: LLM + strumenti + ciclo pianifica-agisci-osserva, con limiti e review umana.\nUsi in tutte le fasi: requisiti, progettazione, codice, test, manutenzione, documentazione.\nIl collo di bottiglia passa dalla scrittura a specifica e verifica.",
-  "perche_ti_serve": "Approfondimento: area ufficiale 2026/27 (1 CFU), non storica nelle prove 2017-2025; utile per capire l'estensione AI-native (sintesi dell'utente)."
+  "perche_ti_serve": "Approfondimento: area ufficiale 2026/27 (1 CFU [S1]), assente nelle prove 2017-2025 (sintesi dell'utente); utile per capire l'estensione AI-native."
 }
